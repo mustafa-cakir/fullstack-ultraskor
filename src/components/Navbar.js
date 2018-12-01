@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import logo from "../logo.png"
 import Icon from "./Icon";
+import Link from "react-router-dom/es/Link";
 
 class Navbar extends Component {
 
@@ -89,7 +90,7 @@ class Navbar extends Component {
                         </div>
                         <div className="col text-center">
                             <img src={logo} className="logo" alt="Movie Search"/>
-                            <h1 className="header-title pl-0"><a href="/" title="Movie Search"><strong>LIVE</strong>SCORES</a></h1>
+                            <h1 className="header-title pl-0"><Link to="/" title="Movie Search"><strong>LIVE</strong>SCORES</Link></h1>
                         </div>
                         <div className="col col-search px-0">
                             <button className="header-btn" onClick={this.toggleSearchBar}>
