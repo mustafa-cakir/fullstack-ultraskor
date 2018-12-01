@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
+import Link from "react-router-dom/es/Link";
 
 class Event extends Component {
     constructor(props) {
@@ -60,7 +61,7 @@ class Event extends Component {
         return (
             <div className={this.state.favActive ? "fav-active event-container " : "event-container"}>
                 <div className="container">
-                    <a href={"/eventdetails/" + event.id} className="event-link">
+                    <Link to={"/eventdetails/" + event.id} className="event-link">
                         <div className="row">
                             <div className="col event-time pr-0 pl-2">
                                 {this.isInProgress()}
@@ -82,7 +83,7 @@ class Event extends Component {
 
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </div>
             </div>
         )
