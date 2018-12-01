@@ -50,6 +50,11 @@
     max-width: 60px;
     @include line-clamp(1);
 }
+.event-link,
+.event-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
 
 .live,
 .red{

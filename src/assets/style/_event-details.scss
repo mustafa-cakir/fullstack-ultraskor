@@ -1,0 +1,46 @@
+.event-details {
+    &-header {
+        margin-top: 15px;
+        .team-logo {
+            img {
+                max-width: 100%;
+                max-height: 50px;
+            }
+        }
+        .col {
+            padding: 0 10px;
+        }
+        .team-name {
+            font-weight: bolder;
+            @include line-clamp(1);
+        }
+        .team-coach {
+            font-size: 0.8rem;
+            font-weight: lighter;
+        }
+        .team-form {
+            display: inline-block;
+            padding: 1px 5px;
+            margin-right:2px;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            &-L {
+                background: #d0021b;
+            }
+            &-D {
+                background: #c2c300;
+            }
+            &-W {
+                background: #2ba774;
+            }
+        }
+        .score {
+            font-size: 2.5rem;
+            &-halftime {
+                font-size: 0.8rem;
+                color: #777;
+            }
+        }
+    }
+}
