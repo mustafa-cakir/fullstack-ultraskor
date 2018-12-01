@@ -91,7 +91,9 @@ class Eventdetails extends Component {
                         <div className="col col-4 text-center">
                             <div className="team-logo mb-2">
                                 <img
-                                    src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}/>
+                                    alt={eventData.event.homeTeam.name}
+                                    src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+                                />
                             </div>
                             <div className="team-name">{eventData.event.homeTeam.name}</div>
                             <div className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.homeManager.name : ''}</div>
@@ -108,7 +110,7 @@ class Eventdetails extends Component {
                         </div>
                         <div className="col col-4 text-center">
                             <div className="team-logo mb-2">
-                                <img src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
+                                <img alt={eventData.event.awayTeam.name} src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
                             </div>
                             <div className="team-name">{eventData.event.awayTeam.name}</div>
                             <div className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.awayManager.name : ''}</div>

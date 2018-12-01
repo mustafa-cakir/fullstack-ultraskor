@@ -80,7 +80,6 @@ class Event extends Component {
                             </div>
                             <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler}>
                                 {this.state.favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
-
                             </div>
                         </div>
                     </Link>
