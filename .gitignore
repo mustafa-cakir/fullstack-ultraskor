@@ -22,3 +22,5 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+src/assets/style/app\.css\.map
+src/assets/style/app\.css
