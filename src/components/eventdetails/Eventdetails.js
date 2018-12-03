@@ -73,9 +73,7 @@ class Eventdetails extends Component {
     };
 
     render() {
-        let header = [],
-            eventData = this.state.eventData;
-
+        let eventData = this.state.eventData;
         const tabs = [
             'General',
             'Stats',
@@ -90,7 +88,7 @@ class Eventdetails extends Component {
                     {
                         tabs.map((tab, index) => {
                             return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-                                       className={this.state.index === index ? "active" : ""}>{tab}</li>;
+                                       className={(this.state.index === index ? "active" : "") + " ripple-effect grey"}>{tab}</li>;
                         })
                     }
                     <li className="marker" ref={this.swipeMarkerEl}/>
@@ -173,8 +171,8 @@ const GeneralTabContent = props => {
     console.log(eventData);
     return (
         <div key={1} className="container event-details-header">
-            <div className="row text-center">
-                <div className="col">
+            <div className="row text-center flex-nowrap">
+                <div className="col col-4 pr-0">
                     <div className="team-logo mb-2">
                         <img
                             alt={eventData.event.homeTeam.name}
@@ -186,7 +184,7 @@ const GeneralTabContent = props => {
                         className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.homeManager.name : ''}</div>
                     <div><TeamForm data={eventData.teamsForm.homeTeam.form}/></div>
                 </div>
-                <div className="col col-3 align-self-center">
+                <div className="col col-4 align-self-center">
                     <div className="time"><IsInProgress eventData={eventData}/></div>
                     <div className={"score" + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
                         {(typeof eventData.event.homeScore.current !== "undefined" || typeof eventData.event.awayScore.current !== "undefined") ? eventData.event.homeScore.current + ' - ' + eventData.event.awayScore.current : " - "}
@@ -195,7 +193,7 @@ const GeneralTabContent = props => {
                         {(typeof eventData.event.homeScore.period1 !== "undefined" || typeof eventData.event.awayScore.period1 !== "undefined") ? '(HT: ' + eventData.event.homeScore.period1 + ' - ' + eventData.event.awayScore.current + ")" : ""}
                     </div>
                 </div>
-                <div className="col">
+                <div className="col col-4 pl-0">
                     <div className="team-logo mb-2">
                         <img alt={eventData.event.awayTeam.name}
                              src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
