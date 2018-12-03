@@ -17,7 +17,7 @@ class Errors extends Component {
 const NothingFound = () => {
     return(
         <div className="error-no-game">
-            <h>No matches found.</h>
+            <h3>Nothing found.</h3>
             <p className="gray">Please try different filter or date<br/></p>
         </div>
     )

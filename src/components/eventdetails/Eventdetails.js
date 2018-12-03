@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import moment from "moment";
+import Tabview from "./Tabview";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -86,7 +87,7 @@ class Eventdetails extends Component {
             };
 
             header.push(
-                <div className="container event-details-header">
+                <div key={1} className="container event-details-header">
                     <div className="row">
                         <div className="col col-4 text-center">
                             <div className="team-logo mb-2">
@@ -131,7 +132,8 @@ class Eventdetails extends Component {
                     {this.state.loading ? <Loading/> : null}
                     <hr />
                     <p>####</p>
-                    <p>event details will go here</p>
+                    <Tabview/>
+                    <p>####</p>
                 </div>
             </div>
         )
@@ -140,8 +142,8 @@ class Eventdetails extends Component {
 
 const TeamForm = props => {
     let result = [];
-    props.data.forEach((status) => {
-        result.push(<span className={"team-form team-form-" + status}>{status}</span>)
+    props.data.forEach((status, index) => {
+        result.push(<span key={index} className={"team-form team-form-" + status}>{status}</span>)
     });
     return result;
 }

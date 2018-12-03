@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
-import {cloneDeep} from "lodash";
-//import moment from "moment";
 import DayPicker from "react-day-picker";
 import moment from "moment";
 
@@ -64,7 +62,8 @@ class Headertabs extends Component {
     applyFilter(click) {
         if (click) this.setState({isFilterDropdown: false});
         if (this.state.filteredItems.length > 0) {
-            let LiveMatches = cloneDeep(this.props.orjData);
+            let LiveMatches = JSON.parse(JSON.stringify(this.props.orjData));
+            //let LiveMatches = cloneDeep(this.props.orjData);  // requires installing lodash
             LiveMatches.sportItem.tournaments = LiveMatches.sportItem.tournaments.filter((tournament) => {
                 return this.state.filteredItems.indexOf(tournament.tournament.id) > -1
             });
@@ -98,7 +97,8 @@ class Headertabs extends Component {
 
     applyLiveHandler(livePrevState, clicked = false) {
         if (livePrevState === false) {
-            let LiveMatches = cloneDeep(this.props.mainData);
+            let LiveMatches = JSON.parse(JSON.stringify(this.props.mainData));
+            //let LiveMatches = cloneDeep(this.props.mainData);   // requires installing lodash
             LiveMatches.sportItem.tournaments = LiveMatches.sportItem.tournaments.reduce(function (whole, tournament) {
                 tournament.events = tournament.events.filter((event) => {
                     return event.status.type === "inprogress";
