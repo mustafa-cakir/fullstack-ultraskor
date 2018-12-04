@@ -161,7 +161,7 @@ class Homepage extends Component {
                     flagImg={this.flagImg}
                 />
                 {this.state.loading ? <Loading/> : null}
-                <div className="container pb-4 px-0">
+                <div className="container px-0 homepage-list">
                     <div>
                         {mainContent}
                     </div>

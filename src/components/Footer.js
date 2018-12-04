@@ -13,7 +13,7 @@ class Footer extends Component {
                     <p>
                         This app has no commercial intents.<br />Developed just for fun ;)
                     </p>
-                    <small className="gray">Copyright © 2018</small>
+                    <small className="gray">Copyright © 2019. All rights reserved</small>
                 </footer>
             </div>
         )
