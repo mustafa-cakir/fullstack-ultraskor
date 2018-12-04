@@ -24,7 +24,7 @@
             line-height: 16px;
             height: 16px;
             text-align: center;
-            margin-right:2px;
+            margin-right: 2px;
             color: #fff;
             font-size: 0.7rem;
             font-weight: bold;
@@ -74,11 +74,11 @@
         }
         .marker {
             position: absolute;
-            display:block;
-            border-bottom:2px solid #1890ff;
+            display: block;
+            border-bottom: 2px solid #1890ff;
             height: 2px;
-            transition:width .3s, left .3s;
-            bottom:0px;
+            transition: width .3s, left .3s;
+            bottom: 0px;
             padding: 0;
         }
     }
@@ -95,10 +95,10 @@
             width: 20px;
             position: absolute;
             height: calc(100% - 2px);
-            top:0;
+            top: 0;
             left: 0;
             pointer-events: none;
-            background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
         }
         &:after {
             content: '';
@@ -108,7 +108,7 @@
             top: 0;
             left: calc(100% - 20px);
             pointer-events: none;
-            background: linear-gradient(to left, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+            background: linear-gradient(to left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
         }
     }
     .swipe-contents {
@@ -129,23 +129,34 @@
             background: green;
         }
     }
-    .ripple {
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        transform: scale(0);
-        position: absolute;
-        opacity: 1;
-    }
-    .ripple-effect {
-        animation: rippleDrop .6s linear;
-    }
+}
 
-    @keyframes rippleDrop {
-        100% {
-            transform: scale(2);
-            opacity: 0;
-        }
+.ripple-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .3);
+    transform: scale(0);
+    position: absolute;
+    opacity: 1;
+}
+
+.blue .ripple {
+    background: rgba(#1890ff, .3);
+}
+
+.rippleEffect {
+    animation: rippleDrop .6s linear;
+}
+
+@keyframes rippleDrop {
+    100% {
+        transform: scale(2);
+        opacity: 0;
     }
 }

@@ -18,8 +18,33 @@ class Eventdetails extends Component {
         //console.log(percentage);
     };
     swipeTabClick = (event, index) => {
+        this.rippleEffectHandler(event);
         this.swipeEl.current.slide(index);
     };
+
+    rippleEffectHandler(e) {
+        let el = e.target,
+            rippleEl = document.createElement("span"),
+            rect = el.getBoundingClientRect(),
+            clientX = e.clientX ? e.clientX : e.touches[0].clientX,
+            clientY = e.clientY ? e.clientY : e.touches[0].clientY,
+            rippleX = Math.round(clientX - rect.left),
+            rippleY = Math.round(clientY - rect.top),
+            rippleSize = Math.max(el.offsetWidth, el.offsetHeight);
+
+        rippleEl.className = "ripple";
+        el.appendChild(rippleEl);
+
+        rippleEl.style.width = rippleSize + "px";
+        rippleEl.style.height = rippleSize + "px";
+        rippleEl.style.top = -(rippleSize / 2) + rippleY + 'px';
+        rippleEl.style.left = -(rippleSize / 2) + rippleX + 'px';
+        rippleEl.className += " rippleEffect";
+        setTimeout(() => {
+            rippleEl.remove();
+        }, 600);
+    };
+
     getData = api => {
         this.setState({loading: true});
         let jsonData = {};
@@ -78,7 +103,7 @@ class Eventdetails extends Component {
             'General',
             'Stats',
             'Lineup',
-            'Media',
+            'Media Media Media Media',
             'Standing'
         ];
         return (
@@ -88,7 +113,7 @@ class Eventdetails extends Component {
                     {
                         tabs.map((tab, index) => {
                             return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-                                       className={(this.state.index === index ? "active" : "") + " ripple-effect grey"}>{tab}</li>;
+                                       className={(this.state.index === index ? "active" : "") + " ripple-effect blue"}>{tab}</li>;
                         })
                     }
                     <li className="marker" ref={this.swipeMarkerEl}/>
@@ -103,7 +128,7 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping
                             }} ref={this.swipeEl}>
                     <div className="swipe-content general">
-                        { (eventData) ? <GeneralTabContent eventData={eventData}/> : ''}
+                        {(eventData) ? <GeneralTabContent eventData={eventData}/> : ''}
                     </div>
                     <div className="swipe-content stats">Stats content will go here</div>
                     <div className="swipe-content line-up">Line up content will go here</div>
@@ -168,7 +193,6 @@ const IsInProgress = props => {
 
 const GeneralTabContent = props => {
     const eventData = props.eventData;
-    console.log(eventData);
     return (
         <div key={1} className="container event-details-header">
             <div className="row text-center flex-nowrap">
