@@ -266,7 +266,7 @@ const ScoreBoard = props => {
         <div className="event-details-scoreboard stadium">
             <div className="container">
                 <div className="row text-center flex-nowrap">
-                    <div className="col col pr-0">
+                    <div className="col-4 pr-0">
                         <div className="team-logo mb-2">
                             <img
                                 alt={eventData.event.homeTeam.name}
@@ -279,7 +279,7 @@ const ScoreBoard = props => {
                         <div>{(eventData.teamsForm) ?
                             <TeamForm data={eventData.teamsForm.homeTeam.form}/> : ""}</div>
                     </div>
-                    <div className="col col-4 align-self-center middle">
+                    <div className="col-4 align-self-center middle">
                         <div className="time"><IsInProgress eventData={eventData}/></div>
                         <div className={"score" + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
                             {(typeof eventData.event.homeScore.current !== "undefined" || typeof eventData.event.awayScore.current !== "undefined") ? eventData.event.homeScore.current + ' - ' + eventData.event.awayScore.current : " - "}
@@ -288,7 +288,7 @@ const ScoreBoard = props => {
                             <div
                                 className="score-halftime">(HT: {eventData.event.homeScore.period1} - {eventData.event.awayScore.current})</div> : ""}
                     </div>
-                    <div className="col col pl-0">
+                    <div className="col-4 pl-0">
                         <div className="team-logo mb-2">
                             <img alt={eventData.event.awayTeam.name}
                                  src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
@@ -418,6 +418,42 @@ const IncidentsDisplay = props => {
     const {eventData} = props;
     if (!eventData.incidents || eventData.incidents.length === 0) return false;
 
+    const typesHandler = (item, type, isHome) => {
+        if (type === "period") {
+            return (
+                <div className="row align-items-center">
+                    <div className="col col-5 text-right">
+                        {item.text}
+                    </div>
+                    <div className="col-2 center-icon">
+                        <img src={iconWhistle} alt="whistle" className="icon-whistle"/>
+                    </div>
+                </div>
+            )
+        } else if (type === "injuryTime") {
+            return (
+                <div className="row">
+                    <div className="col col-5 text-right">
+                         Additional Time {item.length}'
+                    </div>
+                    <div className="col col-2 center-icon">
+                        <Icon name="fas fa-plus" />
+                    </div>
+                </div>
+            )
+        } else if (type === "card") {
+            return (
+                <div className="row align-items-center">
+                    {/*{!isHome ? <div className="col-2 offset-5"><div className="time">{item.time}'</div></div> : ""}*/}
+                    <div className="col col-5 text-right">
+                        {item.incidentDescription} <Icon name="fas fa-plus" />
+                    </div>
+                    {isHome ? <div className="col col-2"><div className="time">{item.time}'</div></div> : ""}
+                </div>
+            )
+        }
+    };
+
     return (
         <div className="match-incidents">
             {eventData.incidents.map((item, index) => {
@@ -429,33 +465,10 @@ const IncidentsDisplay = props => {
                 let colClass = "col ";
                 colClass += (isGeneral) ? "col-12 text-center general" : (isHome) ? "col-6 text-right home" : "col-6 offset-6 away";
 
-                console.log(colClass);
                 return (
-                    <div key={index} >
-                        {isGeneral ?
-                            <div className="row">
-                                <div className="col-12 text-center general">
-                                    {item.text} <img src={iconWhistle} alt="whistle" className="icon-whistle"/>
-                                </div>
-                            </div> : ""}
-
-                        {isHome ?
-                            <div className="row">
-                                <div className="col-6 text-right home">
-                                    <div className="player">{item.player.name}</div>
-                                    {item.incidentDescription} <span className={"icon-type " + item.incidentClass}/>
-                                </div>
-                                <div className="col col-2">{item.time}</div>
-                                <div className="col col-4"/>
-                            </div> : ""}
-
-                        {isAway ?
-                            <div className="row">
-                                <div className="col-6 offset-6 away">
-                                    {item.incidentDescription} <span className={"icon-type " + item.incidentClass}/>
-                                </div>
-                            </div> : ""}
-
+                    <div key={index}>
+                        {typesHandler(item, item.incidentType, isHome)}
+                        <hr />
                     </div>
                 )
             })}

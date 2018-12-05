@@ -273,11 +273,33 @@
     }
     .match-incidents {
         font-size: 1rem;
+        .row {
+            margin-right: -10px;
+            margin-left: -10px;
+        }
+        .col {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
         .icon-whistle {
             max-height: 30px;
             width: auto;
-            vertical-align: middle;
-            margin-left: 5px;
+        }
+        .center-icon {
+            text-align: center;
+            padding: 0;
+        }
+        .time {
+            border-radius: 100% 100%;
+            height:30px;
+            width: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: $premier-leage-2;
+            color: $premier-leage-4;
+            font-weight: 700;
+            font-size: .8rem;
+            margin: 0 auto;
         }
     }
 }
