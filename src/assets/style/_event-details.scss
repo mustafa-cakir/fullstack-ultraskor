@@ -74,10 +74,7 @@
             position: relative;
             z-index: 2;
             bottom: -26px;
-            animation: timeGoesUp;
-            animation-fill-mode: forwards;
-            animation-duration: .6s;
-            animation-delay: .6s;
+            animation: timeGoesUp .6s cubic-bezier(0.32, 0.08, 0.24, 1) .5s forwards;
         }
         .score-halftime {
             background: $premier-leage-1;
@@ -94,7 +91,6 @@
         overflow-x: scroll;
         color: rgba(0, 0, 0, 0.87);
         background: #fff;
-        //box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
         border-bottom: 1px solid #e8e8e8;
         z-index: 2;
         &::-webkit-scrollbar {
@@ -216,30 +212,54 @@
         );
         height: 120px;
         position: relative;
-        .homeLabel,
-        .awayLabel {
-            position: absolute;
-            top: 5px;
-            font-size: .9rem;
-            font-weight: 400;
-            left: 5px;
-            color: rgba($color-pressure-graph-1, 1);
-            img {
-                max-width: 25px;
-                height: auto;
-                opacity: .5;
+        &-container {
+            background: red;
+            position: relative;
+            overflow: hidden;
+            top: -100%;
+            height: 200%;
+            background: linear-gradient(
+                            to bottom,
+                            #edeff2 0%,
+                            #edeff2 30%,
+                            #d4d8dd 30%,
+                            #d4d8dd 49%,
+                            #CCCCCC 51%,
+                            #CCCCCC 51%,
+                            #d4d8dd 51%,
+                            #d4d8dd 70%,
+                            #edeff2 70%,
+                            #edeff2 100%
+            );
+            .homeLabel,
+            .awayLabel {
+                position: absolute;
+                top: 5px;
+                font-size: .9rem;
+                font-weight: 400;
+                left: 5px;
+                color: rgba($color-pressure-graph-1, 1);
+                img {
+                    max-width: 25px;
+                    height: auto;
+                    opacity: .5;
+                }
+            }
+            .awayLabel {
+                top: auto;
+                bottom: 5px;
+                color: rgba($color-pressure-graph-2, 1);
+            }
+            .blank {
+                border-left: 1px solid #aaa;
             }
         }
-        .awayLabel {
-            top: auto;
-            bottom: 5px;
-            color: rgba($color-pressure-graph-2, 1);
-        }
+
         .row {
             flex-wrap: nowrap;
             position: relative;
             top: 60px;
-            height: 40px;
+            height: 60px;
         }
         .col {
             padding: 0;
@@ -255,6 +275,27 @@
                 border-top: none;
             }
         }
+        &-animation {
+            background: linear-gradient(
+                            to bottom,
+                            #edeff2 0%,
+                            #edeff2 30%,
+                            #d4d8dd 30%,
+                            #d4d8dd 49%,
+                            #CCCCCC 51%,
+                            #CCCCCC 51%,
+                            #d4d8dd 51%,
+                            #d4d8dd 70%,
+                            #edeff2 70%,
+                            #edeff2 100%
+            );
+            position:absolute;
+            height: 100%;
+            width: 100%;
+            top:0;
+            transform: rotate(180deg);
+            animation: pressureGraphAnimation 2s cubic-bezier(0.32, 0.08, 0.24, 1) .6s forwards;
+        }
     }
     .minute-measure {
         font-size: .6rem;
@@ -267,6 +308,9 @@
             &.last {
                 max-width: none;
             }
+        }
+        .empty-space {
+            max-width: 3%;
         }
         .label {
             position: absolute;
@@ -285,7 +329,7 @@
             padding-left: 10px;
         }
         .col-time {
-            max-width: 30px;
+            max-width: 35px;
             padding: 0;
         }
         .col-icon {
@@ -299,23 +343,21 @@
         }
         .time {
             border-radius: 100% 100%;
-            height:30px;
-            width: 30px;
+            height: 30px;
+            width: 35px;
             line-height: 30px;
             text-align: center;
-            //background: $premier-leage-1;
-            //color: $premier-leage-3;
             color: #777;
-            font-size: .8rem;
+            font-size: 1rem;
             margin: 0 auto;
             position: relative;
             z-index: 2;
             &:after {
-                content:'';
+                content: '';
                 height: 150px;
                 width: 1px;
                 position: absolute;
-                top:-20px;
+                top: -20px;
                 left: 13px;
                 background: #eee;
                 z-index: -1;
@@ -326,7 +368,7 @@
         }
         .period-time {
             padding: .7rem 0;
-            background: rgba(0,0,0,.05);
+            background: rgba(0, 0, 0, .05);
             img {
                 height: 30px;
                 width: 30px;
@@ -424,6 +466,16 @@
     100% {
         transform: scale(2);
         opacity: 0;
+    }
+}
+
+
+@keyframes pressureGraphAnimation {
+    from {
+        margin-left: 0;
+    }
+    to {
+        margin-left: 100%;
     }
 }
 

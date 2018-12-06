@@ -393,7 +393,7 @@ const IncidentsDisplay = props => {
                     <div className="col">
                         <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
                             <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
-                                <div className="name">{item.player.name}</div>
+                                {item.player ? <div className="name">{item.player.name}</div> : ""}
                                 <div className="text-gray">{item.reason}</div>
                             </div>
                             <div className="col col-icon text-center">
@@ -415,8 +415,8 @@ const IncidentsDisplay = props => {
                     <div className="col">
                         <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
                             <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
-                                <div className="playerIn">{item.playerIn.name}</div>
-                                <div className="playerOut">{item.playerOut.name}</div>
+                                {item.playerIn ? <div className="playerIn">{item.playerIn.name}</div> : ""}
+                                {item.playerOut ? <div className="playerOut">{item.playerOut.name}</div> : ""}
                             </div>
                             <div className="col col-icon p-0 text-center">
                                 <span className="icon-subs"/>
@@ -437,7 +437,7 @@ const IncidentsDisplay = props => {
                     <div className="col">
                         <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
                             <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
-                                <div className="player text-bold">{item.player.name}</div>
+                                {item.player ? <div className="player text-bold">{item.player.name}</div> : ""}
                                 {item.assist1 ? <div className="text-gray">{item.assist1.name}</div> : ""}
                                 {item.from ? <div className="text-gray goal-from">({item.from})</div> : ""}
                                 {item.awayScore || item.homeScore ?
@@ -450,7 +450,7 @@ const IncidentsDisplay = props => {
                     </div>
                     <div className="col col-time">
                         <div className="time">
-                            <div>{item.time}'</div>
+                            <div>{item.time}{item.addedTime ? <sup>+{item.addedTime}</sup> : "'"}</div>
                         </div>
                     </div>
                     <div className="col"/>
@@ -479,28 +479,51 @@ const IncidentsDisplay = props => {
 const PressureGraph = props => {
     const {eventData} = props;
     if (!eventData.liveForm || eventData.liveForm.length === 0) return false;
+
+    const blankBars = () => {
+        if (eventData.liveForm.length > 89) return false;
+        let blankBars = [];
+        for (let i = 0; i < (90 - eventData.liveForm.length); i++) {
+            blankBars.push(
+                <div key={i} className={"col blank " + (i === 0 ? "first" : "")}>
+
+                </div>
+            )
+        }
+        return blankBars
+    };
+
     return (
         <div>
             <div className="title">Pressure</div>
             <div className="body">
-                <div className="pressure-graph mt-2">
+                <div className="pressure-graph-container mt-2">
+                    <div className="row mx-0">
+                        <div className="col pressure-graph p-0">
+                            <div className="row m-0">
+                                {eventData.liveForm.map((item, i) => {
+                                    let direction = (item.value < 0) ? "away" : (item.value !== 0) ? "home" : "",
+                                        style = {
+                                            height: Math.abs(item.value) + "%",
+                                            top: (item.value > 0) ? "-" + item.value + "%" : ""
+                                        };
+                                    return (
+                                        <div key={i} className={"col " + direction} style={style}/>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                        {eventData.liveForm.length < 91 ? <div className="col blank p-0" style={{
+                            flex: "0 0 " + (91 - eventData.liveForm.length + 5) + "%",
+                            maxWidth: (91 - eventData.liveForm.length + 5) + "%"
+                        }}/> : ""}
+                    </div>
+                    <div className="pressure-graph-animation"/>
                     <div className="homeLabel">
                         <img
                             alt={eventData.event.homeTeam.name}
                             src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
                         />
-                    </div>
-                    <div className="row m-0">
-                        {eventData.liveForm.map((item, i) => {
-                            let direction = (item.value < 0) ? "away" : (item.value !== 0) ? "home" : "",
-                                style = {
-                                    height: Math.abs(item.value) + "%",
-                                    top: (item.value > 0) ? "-" + item.value + "%" : ""
-                                };
-                            return (
-                                <div key={i} className={"col " + direction} style={style}/>
-                            )
-                        })}
                     </div>
                     <div className="awayLabel">
                         <img
@@ -510,7 +533,8 @@ const PressureGraph = props => {
                     </div>
                 </div>
                 <div className="minute-measure row flex-nowrap mt-0 mb-2">
-                    <div className="col label">Min</div>
+                    <div className="col label">Min.</div>
+                    <div className="col empty-space"/>
                     <div className="col">15'</div>
                     <div className="col">30'</div>
                     <div className="col">45'</div>
