@@ -75,8 +75,8 @@ class Event extends Component {
                                 {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ? event.homeScore.current + ':' + event.awayScore.current : " - "}
                             </div>
                             <div className="col event-team away text-left pl-0 pr-2">
-                                {event.awayTeam.name}
                                 {event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}
+                                {event.awayTeam.name}
                             </div>
                             <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler}>
                                 {this.state.favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}

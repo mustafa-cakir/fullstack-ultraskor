@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Loading from "../Loading";
 import moment from "moment";
 import ReactSwipe from "react-swipe";
-import Link from "react-router-dom/es/Link";
 import Icon from "../Icon";
 import iconWhistle from "./../../assets/images/icon-whistle.png"
 
@@ -286,7 +285,7 @@ const ScoreBoard = props => {
                         </div>
                         {(typeof eventData.event.homeScore.period1 !== "undefined" || typeof eventData.event.awayScore.period1 !== "undefined") ?
                             <div
-                                className="score-halftime">(HT: {eventData.event.homeScore.period1} - {eventData.event.awayScore.current})</div> : ""}
+                                className="score-halftime">(HT: {eventData.event.homeScore.period1} - {eventData.event.awayScore.period1})</div> : ""}
                     </div>
                     <div className="col-4 pl-0">
                         <div className="team-logo mb-2">
@@ -320,17 +319,13 @@ const MatchInfo = props => {
         stadium = eventData.event.venue.stadium ? eventData.event.venue.stadium.name : null;
         capacity = (eventData.event.venue.stadium && eventData.event.venue.stadium.capacity) ? eventData.event.venue.stadium.capacity.toLocaleString() : null;
     }
-
     return (
         <div className="event-details-summary">
             <div className="container">
-                <div className="white-box mt-2">
 
+                <div className="white-box mt-2">
                     <PressureGraph eventData={eventData}/>
-                    <div className="title">Match Facts</div>
-                    <div className="body">
-                        <IncidentsDisplay eventData={eventData}/>
-                    </div>
+                    <IncidentsDisplay eventData={eventData}/>
                 </div>
                 <div className="white-box mt-3">
                     <div className="title">Match Information</div>
@@ -364,50 +359,6 @@ const MatchInfo = props => {
                             <div className="col col-7">{referee}</div>
                         </div> : ''}
                     </div>
-                    {/*<div className="footer see-more">*/}
-                    {/*<Link to="/read-more">See More <Icon name="fas fa-angle-down"/></Link>*/}
-                    {/*</div>*/}
-                </div>
-                <div className="white-box mt-3">
-                    <div className="title">Dummy Box</div>
-                    <div className="body">
-                        <div className="row">
-                            <div className="col col-3 f-500 text-right">Tournament</div>
-                            <div className="col col-7">{tournament}</div>
-                            <div className="col col-3 f-500 text-right">Country</div>
-                            <div className="col col-7">{country}</div>
-                            <div className="col col-3 f-500 text-right">City</div>
-                            <div className="col col-7">{city}</div>
-                            <div className="col col-3 f-500 text-right">Stadium</div>
-                            <div className="col col-7">{stadium}</div>
-                            <div className="col col-3 f-500 text-right">Capacity</div>
-                            <div className="col col-7">{capacity}</div>
-                        </div>
-                    </div>
-                    <div className="footer text-right">
-                        <Link to="/read-more" className="mr-4">Link <Icon name="fas fa-angle-right"/></Link>
-                        <Link to="/read-more">Read More <Icon name="fas fa-angle-right"/></Link>
-                    </div>
-                </div>
-                <div className="white-box mt-3">
-                    <div className="title">Another Dummy Box</div>
-                    <div className="body">
-                        <div className="row">
-                            <div className="col col-3 f-500 text-right">Tournament</div>
-                            <div className="col col-7">{tournament}</div>
-                            <div className="col col-3 f-500 text-right">Country</div>
-                            <div className="col col-7">{country}</div>
-                            <div className="col col-3 f-500 text-right">City</div>
-                            <div className="col col-7">{city}</div>
-                            <div className="col col-3 f-500 text-right">Stadium</div>
-                            <div className="col col-7">{stadium}</div>
-                            <div className="col col-3 f-500 text-right">Capacity</div>
-                            <div className="col col-7">{capacity}</div>
-                        </div>
-                    </div>
-                    <div className="footer text-right">
-                        <Link to="/read-more">Read More <Icon name="fas fa-angle-right"/></Link>
-                    </div>
                 </div>
             </div>
         </div>
@@ -417,61 +368,110 @@ const MatchInfo = props => {
 const IncidentsDisplay = props => {
     const {eventData} = props;
     if (!eventData.incidents || eventData.incidents.length === 0) return false;
-
+    eventData.incidents.reverse();
     const typesHandler = (item, type, isHome) => {
         if (type === "period") {
+            if (item.text === "Second half" || item.text === "First half") return false;
             return (
                 <div className="row align-items-center">
-                    <div className="col col-5 text-right">
-                        {item.text}
-                    </div>
-                    <div className="col-2 center-icon">
-                        <img src={iconWhistle} alt="whistle" className="icon-whistle"/>
+                    <div className="col period-time text-center text-bold">
+                        <img src={iconWhistle} alt="whistle" className="icon-whistle"/> {item.text}
                     </div>
                 </div>
             )
         } else if (type === "injuryTime") {
             return (
                 <div className="row">
-                    <div className="col col-5 text-right">
-                         Additional Time {item.length}'
-                    </div>
-                    <div className="col col-2 center-icon">
-                        <Icon name="fas fa-plus" />
+                    <div className="col additional-time text-center text-gray">
+                        <Icon name="fas fa-plus"/> Additional Time {item.length}'
                     </div>
                 </div>
             )
         } else if (type === "card") {
             return (
-                <div className="row align-items-center">
-                    {/*{!isHome ? <div className="col-2 offset-5"><div className="time">{item.time}'</div></div> : ""}*/}
-                    <div className="col col-5 text-right">
-                        {item.incidentDescription} <Icon name="fas fa-plus" />
+                <div className={"py-3 row align-items-center" + (isHome ? "" : " flex-row-reverse")}>
+                    <div className="col">
+                        <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
+                            <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
+                                <div className="name">{item.player.name}</div>
+                                <div className="text-gray">{item.reason}</div>
+                            </div>
+                            <div className="col col-icon text-center">
+                                <div className={item.incidentClass}/>
+                            </div>
+                        </div>
                     </div>
-                    {isHome ? <div className="col col-2"><div className="time">{item.time}'</div></div> : ""}
+                    <div className="col col-time">
+                        <div className="time">
+                            <div>{item.time}'</div>
+                        </div>
+                    </div>
+                    <div className="col"/>
+                </div>
+            )
+        } else if (type === "substitution") {
+            return (
+                <div className={"py-3 row align-items-center" + (isHome ? "" : " flex-row-reverse")}>
+                    <div className="col">
+                        <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
+                            <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
+                                <div className="playerIn">{item.playerIn.name}</div>
+                                <div className="playerOut">{item.playerOut.name}</div>
+                            </div>
+                            <div className="col col-icon p-0 text-center">
+                                <span className="icon-subs"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col col-time">
+                        <div className="time">
+                            <div>{item.time}'</div>
+                        </div>
+                    </div>
+                    <div className="col"/>
+                </div>
+            )
+        } else if (type === "goal") {
+            return (
+                <div className={"py-3 row goal align-items-center" + (isHome ? "" : " flex-row-reverse")}>
+                    <div className="col">
+                        <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
+                            <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
+                                <div className="player text-bold">{item.player.name}</div>
+                                {item.assist1 ? <div className="text-gray">{item.assist1.name}</div> : ""}
+                                {item.from ? <div className="text-gray goal-from">({item.from})</div> : ""}
+                                {item.awayScore || item.homeScore ?
+                                    <div className="text-bold">{item.homeScore} - {item.awayScore}</div> : ""}
+                            </div>
+                            <div className="col col-icon col-goal-icon p-0 text-center">
+                                <Icon name="far fa-futbol icon-goal"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col col-time">
+                        <div className="time">
+                            <div>{item.time}'</div>
+                        </div>
+                    </div>
+                    <div className="col"/>
                 </div>
             )
         }
     };
-
     return (
-        <div className="match-incidents">
-            {eventData.incidents.map((item, index) => {
-
-                let isHome = item.isHome === true,
-                    isAway = item.isHome === false,
-                    isGeneral = (typeof isHome === "undefined") || typeof item.playerTeam === "undefined";
-
-                let colClass = "col ";
-                colClass += (isGeneral) ? "col-12 text-center general" : (isHome) ? "col-6 text-right home" : "col-6 offset-6 away";
-
-                return (
-                    <div key={index}>
-                        {typesHandler(item, item.incidentType, isHome)}
-                        <hr />
-                    </div>
-                )
-            })}
+        <div>
+            <div className="title">Match Incidents</div>
+            <div className="body">
+                <div className="match-incidents">
+                    {eventData.incidents.map((item, index) => {
+                        return (
+                            <div key={index} className={"match-incidents-row"}>
+                                {typesHandler(item, item.incidentType, item.isHome === true)}
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
         </div>
     )
 };
