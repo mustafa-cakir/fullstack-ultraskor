@@ -6,6 +6,7 @@ import Incidents from "./Incidents";
 import PressureGraph from "./PressureGraph";
 import MatchInfo from "./MatchInfo";
 import Bestplayer from "./Bestplayer";
+import Standings from "./Standings";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -123,8 +124,8 @@ class Eventdetails extends Component {
             'Summary',
             'Stats',
             'Lineup',
-            'Media Media Media Media',
-            'Standing'
+            'Standings',
+            'Media'
         ];
         if (!eventData) return (<Loading/>);
         return (
@@ -193,21 +194,11 @@ class Eventdetails extends Component {
                             <p>.</p>
                         </div>
                     </div>
-                    <div className="swipe-content media">
-                        Media content will go here
-                        <div className="row2">
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                        </div>
+                    <div className="swipe-content standing">
+                        { eventData.standingsAvailable ? <Standings/> : <div className="no-standing">Standing is not available for this event</div>}
                     </div>
                     <div className="swipe-content standing">
-                        standing content will go here
+                        Media content will go here
                         <div className="row2">
                             <p>.</p>
                             <p>.</p>
