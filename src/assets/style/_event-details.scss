@@ -289,10 +289,10 @@
                             #edeff2 70%,
                             #edeff2 100%
             );
-            position:absolute;
+            position: absolute;
             height: 100%;
             width: 100%;
-            top:0;
+            top: 0;
             transform: rotate(180deg);
             animation: pressureGraphAnimation 2s cubic-bezier(0.32, 0.08, 0.24, 1) .6s forwards;
         }
@@ -337,9 +337,6 @@
         }
         .col-goal-icon {
             max-width: 30px;
-        }
-        .text-bold {
-            font-weight: 700;
         }
         .time {
             border-radius: 100% 100%;
@@ -429,6 +426,49 @@
             overflow: hidden;
         }
     }
+
+    .best-player {
+        &-container {
+            background: #eee;
+            height: 58px;
+            border-radius: 58px;
+        }
+        .rating {
+            margin: 5px 0;
+        }
+        .col {
+            padding: 0 5px;
+        }
+        &-title {
+            color: $premier-leage-1;
+            font-weight: 300;
+            position: relative;
+            line-height: 20px;
+            margin-top: -20px;
+            bottom: -35px;
+        }
+        &-link {
+            font-weight: 700;
+            font-size: .7rem;
+            cursor: pointer;
+            span {
+                border-bottom: 1px solid #333;
+                display: inline-block;
+            }
+        }
+
+        .col-img {
+            max-width: 58px;
+            padding: 0;
+            img {
+                margin: 4px;
+                height: 50px;
+                width: auto;
+                border-radius: 100%;
+                box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            }
+        }
+    }
 }
 
 .ripple-effect {
@@ -468,7 +508,6 @@
         opacity: 0;
     }
 }
-
 
 @keyframes pressureGraphAnimation {
     from {

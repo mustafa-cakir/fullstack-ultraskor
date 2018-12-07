@@ -1,13 +1,36 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
-import moment from "moment";
 import ReactSwipe from "react-swipe";
 import Scoreboard from "./Scoreboard";
 import Incidents from "./Incidents";
 import PressureGraph from "./PressureGraph";
 import MatchInfo from "./MatchInfo";
+import Bestplayer from "./Bestplayer";
 
 class Eventdetails extends Component {
+    constructor(props) {
+        super(props);
+        this.swipeEl = React.createRef();
+        this.swipeMarkerEl = React.createRef();
+        this.swipeTabsEl = React.createRef();
+        this.swipeByIndex = this.swipeByIndex.bind(this);
+        this.state = {
+            loading: false,
+            eventData: null,
+            index: 0
+        };
+    };
+
+    componentDidMount() {
+        const eventid = this.props.match.params.eventid;
+        this.getData('/event/' + eventid + '/json');
+        if (this.swipeEl.current) this.swipeMarkerAndScrollHandler();
+    };
+
+    componentDidUpdate() {
+        if (this.swipeEl.current) this.swipeAdjustHeight(this.state.index);
+    }
+
     swipeChanging = index => {
         this.setState({
             index: index
@@ -26,6 +49,30 @@ class Eventdetails extends Component {
         this.rippleEffectHandler(event);
         this.swipeEl.current.slide(index);
     };
+
+    swipeAdjustHeight(index) {
+        let container = this.swipeEl.current.containerEl.firstChild;
+        let active = container.childNodes[index];
+        container.style.height = active.offsetHeight + 'px';
+    }
+
+    swipeMarkerAndScrollHandler() {
+        let marker = this.swipeMarkerEl.current,
+            active = document.querySelector('.swipe-tabs .active'),
+            tabs = this.swipeTabsEl.current;
+
+        marker.style.width = active.offsetWidth + 'px';
+        marker.style.left = active.offsetLeft + 'px';
+        tabs.scrollTo({
+            left: active.offsetLeft - ((window.outerWidth - active.offsetWidth) / 2) + 7,
+            behavior: 'smooth'
+        });
+    };
+
+    swipeByIndex(index) {
+        if (this.swipeEl) this.swipeEl.current.slide(index);
+    }
+
     getData = api => {
         this.setState({loading: true});
         let jsonData = {};
@@ -46,35 +93,6 @@ class Eventdetails extends Component {
                 });
             })
     };
-
-    constructor(props) {
-        super(props);
-        this.swipeEl = React.createRef();
-        this.swipeMarkerEl = React.createRef();
-        this.swipeTabsEl = React.createRef();
-        this.state = {
-            loading: false,
-            eventData: null,
-            index: 0
-        };
-    };
-
-    componentDidMount() {
-        const eventid = this.props.match.params.eventid;
-        this.getData('/event/' + eventid + '/json');
-        this.swipeMarkerAndScrollHandler();
-
-    };
-
-    componentDidUpdate() {
-        this.swipeAdjustHeight(this.state.index);
-    }
-
-    swipeAdjustHeight(index) {
-        let container = this.swipeEl.current.containerEl.firstChild;
-        let active = container.childNodes[index];
-        container.style.height = active.offsetHeight + 'px';
-    }
 
     rippleEffectHandler(e) {
         let el = e.target,
@@ -99,19 +117,6 @@ class Eventdetails extends Component {
         }, 600);
     };
 
-    swipeMarkerAndScrollHandler() {
-        let marker = this.swipeMarkerEl.current,
-            active = document.querySelector('.swipe-tabs .active'),
-            tabs = this.swipeTabsEl.current;
-
-        marker.style.width = active.offsetWidth + 'px';
-        marker.style.left = active.offsetLeft + 'px';
-        tabs.scrollTo({
-            left: active.offsetLeft - ((window.outerWidth - active.offsetWidth) / 2) + 7,
-            behavior: 'smooth'
-        });
-    };
-
     render() {
         let eventData = this.state.eventData;
         const tabs = [
@@ -121,10 +126,11 @@ class Eventdetails extends Component {
             'Media Media Media Media',
             'Standing'
         ];
+        if (!eventData) return (<Loading/>);
         return (
             <div className="event-details">
                 {this.state.loading ? <Loading/> : null}
-                {(eventData) ? <Scoreboard eventData={eventData}/> : ''}
+                <Scoreboard eventData={eventData}/>
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
                     {
                         tabs.map((tab, index) => {
@@ -144,8 +150,17 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping,
                                 disableScroll: false
                             }} ref={this.swipeEl}>
-                    <div className="swipe-content general">
-                        {(eventData) ? <MatchInfo eventData={eventData}/> : ''}
+                    <div className="swipe-content summary">
+                        <div className="event-details-summary">
+                            <div className="container">
+                                <div className="white-box mt-2">
+                                    <PressureGraph eventData={eventData}/>
+                                    <Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>
+                                    <Incidents eventData={eventData}/>
+                                </div>
+                                <MatchInfo eventData={eventData}/>
+                            </div>
+                        </div>
                     </div>
                     <div className="swipe-content stats">
                         Stats content will go here

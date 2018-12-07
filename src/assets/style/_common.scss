@@ -140,13 +140,15 @@ code {
     background: none;
     border: none;
 }
+
 .error-refresh-text {
 }
 
 .error-refresh-wrapper {
     cursor: pointer;
-    color:#aaa;
+    color: #aaa;
 }
+
 .error-refresh-wrapper:hover {
     color: #222;
 }
@@ -158,14 +160,90 @@ code {
 .f-300 {
     font-weight: 300;
 }
+
 .f-400 {
     font-weight: 400;
 }
+
 .f-500 {
     font-weight: 500;
 }
+
 .f-700 {
     font-weight: 700;
 }
+
+.text-bold {
+    font-weight: 700;
+}
+
+.player-rating-amazing {
+    color: #00c043;
+    &-bg {
+        background-color: #00c043
+    }
+}
+
+.player-rating {
+    &.great {
+
+    }
+}
+
+.rating {
+    display: inline-block;
+    padding: 1px 4px;
+    font-weight: 700;
+    &.amazing {
+        color: #009f25;
+        &.bg {
+            background-color: #009f25;
+        }
+    }
+    &.great {
+        color: #59e000;
+        &.bg {
+            background-color: #59e000;
+        }
+    }
+    &.good {
+        color: #ebdf3b;
+        &.bg {
+            background-color: #ebdf3b
+        }
+    }
+    &.mediocre {
+        color: #e08f1b;
+        &-bg {
+            background-color: #e08f1b
+        }
+    }
+    &.underwhelming {
+        color: #f55b2f;
+        &.bg {
+            background-color: #f55b2f
+        }
+    }
+    &.bad {
+        color: #ff1c19;
+        &-bg {
+            background-color: #ff1c19;
+        }
+    }
+    &.unrated {
+        color: #ccc;
+        &.bg {
+            background-color: #ccc;
+            color: $premier-leage-1;
+        }
+    }
+    &.bg {
+        border-radius: 2px;
+        box-shadow: 1px 1px 2px rgba(0,0,0,.3);
+        color: #333;
+    }
+}
+
+
 
 
