@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 
 class TestComp extends Component {
+    // constructor(props) {
+    //     super(props);
+    // }
+
     render() {
         return (
             <div>
