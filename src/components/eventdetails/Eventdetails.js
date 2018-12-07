@@ -15,10 +15,12 @@ class Eventdetails extends Component {
         this.swipeMarkerEl = React.createRef();
         this.swipeTabsEl = React.createRef();
         this.swipeByIndex = this.swipeByIndex.bind(this);
+        this.swipeAdjustHeight = this.swipeAdjustHeight.bind(this);
         this.state = {
             loading: false,
             eventData: null,
-            index: 0
+            index: 0,
+            isTabStanding: false
         };
     };
 
@@ -41,7 +43,8 @@ class Eventdetails extends Component {
         });
     };
     swipeComplete = (index, el) => {
-        //console.log(index);
+        let tab = el.getAttribute('data-tab');
+        if (tab === "standing") this.setState({isTabStanding: true});
     };
     swipeSwiping = (percentage) => {
         //console.log(percentage);
@@ -52,9 +55,12 @@ class Eventdetails extends Component {
     };
 
     swipeAdjustHeight(index) {
-        let container = this.swipeEl.current.containerEl.firstChild;
-        let active = container.childNodes[index];
-        container.style.height = active.offsetHeight + 'px';
+        if (this.swipeEl.current.containerEl) {
+            index = index || this.swipeEl.current.getPos();
+            let container = this.swipeEl.current.containerEl.firstChild;
+            let active = container.childNodes[index];
+            container.style.height = active.offsetHeight + 'px';
+        }
     }
 
     swipeMarkerAndScrollHandler() {
@@ -163,7 +169,7 @@ class Eventdetails extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="swipe-content stats">
+                    <div className="swipe-content stats" data-tab="stats">
                         Stats content will go here
                         <div className="row2">
                             <p>.</p>
@@ -182,7 +188,7 @@ class Eventdetails extends Component {
                             <p>.</p>
                         </div>
                     </div>
-                    <div className="swipe-content line-up">
+                    <div className="swipe-content lineup" data-tab="lineup">
                         Line up content will go here
                         <div className="row2">
                             <p>.</p>
@@ -194,10 +200,14 @@ class Eventdetails extends Component {
                             <p>.</p>
                         </div>
                     </div>
-                    <div className="swipe-content standing">
-                        { eventData.standingsAvailable ? <Standings/> : <div className="no-standing">Standing is not available for this event</div>}
+                    <div className="swipe-content standing" data-tab="standing">
+                        { !eventData.standingsAvailable ? (
+                            <div className="no-standing">Standing is not available for this event</div>
+                        ) : (
+                            this.state.isTabStanding ? <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
+                        )}
                     </div>
-                    <div className="swipe-content standing">
+                    <div className="swipe-content media" data-tab="media">
                         Media content will go here
                         <div className="row2">
                             <p>.</p>

@@ -11,7 +11,8 @@
         .team-logo {
             img {
                 max-width: 100%;
-                max-height: 50px;
+                height: 50px;
+                width: auto;
             }
         }
         .container,
@@ -473,6 +474,46 @@
         font-weight: 300;
         min-height: calc(100vh - 400px);
         background: #fff;
+    }
+
+    .standing {
+        .table th {
+            border-top: none;
+            border-bottom: 1px solid #eee;
+        }
+        .table {
+            td {
+                border: none;
+                text-align: center;
+            }
+            th {
+                text-align: center;
+            }
+            td,th {
+                padding: 5px;
+            }
+            .team {
+                text-align: left;
+                font-weight: 700;
+            }
+            .point {
+                font-weight: 700;
+            }
+            .order {
+                width: 30px;
+            }
+        }
+        .heading {
+            .col-img {
+                max-width: 50px;
+                padding-right: 0;
+            }
+            .country {
+                color: #aaa;
+                font-weight: 400;
+            }
+        }
+
     }
 }
 
