@@ -73,7 +73,6 @@ class Standings extends Component {
                                 </thead>
                                 <tbody>
                                 {standingsTables.tableRows.map((item, index) => {
-                                    console.log(standingsTables.promotionsColoring[1]);
                                     return (
                                         <tr key={index}
                                             className={(item.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (item.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (item.isLive ? ("live-game " + item.liveMatchStatus) : "")}>
