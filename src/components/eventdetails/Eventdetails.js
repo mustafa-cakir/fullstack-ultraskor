@@ -130,7 +130,7 @@ class Eventdetails extends Component {
             'Summary',
             'Stats',
             'Lineup',
-            'Standings',
+            'Live Standings',
             'Media'
         ];
         if (!eventData) return (<Loading/>);

@@ -481,6 +481,10 @@
             border-top: none;
             border-bottom: 1px solid #eee;
         }
+        .live-label {
+            color: #c1272d;
+            font-weight: 300;
+        }
         .table {
             td {
                 border: none;
@@ -491,22 +495,121 @@
             }
             td,th {
                 padding: 5px;
+                vertical-align: middle;
             }
             .team {
                 text-align: left;
-                font-weight: 700;
+                font-weight: 500;
             }
-            .point {
-                font-weight: 700;
+            .points {
+                font-weight: 500;
             }
             .order {
                 width: 30px;
+                span {
+                    height: 25px;
+                    width: 25px;
+                    border-radius: 100%;
+                    display: inline-block;
+                    line-height: 25px;
+                }
+                &.promotion {
+                    color: #fff;
+                }
+
+                &.promotion-blue span {
+                    background-color: #00417a
+                }
+
+                &.promotion-blue-light span {
+                    background-color: #0a8dff
+                }
+
+                &.promotion-green span {
+                    background-color: #459428
+                }
+
+                &.promotion-green-light span {
+                    background-color: #64ca3f
+                }
+
+                &.promotion-gray-dark span , &.promotion-gray span {
+                    background-color: #708090
+                }
+
+                &.promotion-gray-light span {
+                    background-color: #bac0c6
+                }
+
+                &.promotion-yellow span {
+                    background-color: #ff0
+                }
+
+                &.promotion-orange span {
+                    background-color: orange
+                }
+
+                &.promotion-red span {
+                    background-color: #c1272d
+                }
+            }
+            .highlight-away {
+                td {
+                    background: #d8f2cf;
+                }
+            }
+            .highlight-home {
+                td {
+                    background: #c2e2ff;
+                }
+            }
+            .live-pulse {
+                display: none;
+                height: 6px;
+                width: 6px;
+                border-radius: 100%;
+                background: #ed1c24;
+                margin-left: 4px;
+                vertical-align: middle;
+                animation: blink-animation 1s linear infinite;
+            }
+            .live-game {
+                &.drawTotal {
+                    .draw {
+                        color: #ed1c24;
+                        font-weight: 500;
+                    }
+                }
+                &.winTotal {
+                    .win {
+                        color: #ed1c24;
+                        font-weight: 500;
+                    }
+                }
+                &.lossTotal {
+                    .loss {
+                        color: #ed1c24;
+                        font-weight: 500;
+                    }
+                }
+                .live-pulse {
+                    display: inline-block;
+                }
+                .team,
+                .points{
+                    color: #ed1c24
+                }
             }
         }
+
         .heading {
             .col-img {
                 max-width: 50px;
                 padding-right: 0;
+                img {
+                    height: 40px;
+                    width: 40px;
+                }
             }
             .country {
                 color: #aaa;

@@ -37,25 +37,9 @@ class Standings extends Component {
             })
     };
 
-    flagImg(event) {
-        let uniqueTournamentImages = [7, 8, 11, 384, 480, 679];
-        if (uniqueTournamentImages.indexOf(event.tournament.uniqueId) > -1) {
-            return (
-                <div className="col flag-img">
-                    <img
-                        src={(process.env.NODE_ENV === 'production' ? '/livescore/' : '/') + "static/media/" + event.tournament.uniqueId + ".png"}
-                        alt={event.tournament.name}/>
-                </div>
-            )
-        } else {
-            return (
-                <div className={"col flag flag-" + event.category.flag}/>
-            )
-        }
-    };
-
     render() {
         const {standingData} = this.state;
+        const {eventData} = this.props;
         if (!standingData) return <Loading/>;
         const standingsTables = standingData.standingsTables[0];
         return (
@@ -64,12 +48,15 @@ class Standings extends Component {
                     <div className="white-box mt-2">
                         <div className="row heading align-items-center">
                             <div className="col col-img">
-                                {this.flagImg(standingsTables)}
+                                <img
+                                    src={"https://www.sofascore.com/u-tournament/" + standingsTables.tournament.uniqueId + "/logo"}
+                                    alt={standingsTables.tournament.name}/>
                             </div>
                             <div className="col">
                                 <div className="name">{standingsTables.tournament.name}</div>
-                                <div className="country">{standingsTables.tournament.name}</div>
+                                <div className="country">{standingsTables.category.name}</div>
                             </div>
+                            <div className="col text-right live-label">Live Table!</div>
                         </div>
                         <div className="body">
                             <table className="table">
@@ -81,20 +68,23 @@ class Standings extends Component {
                                     <th scope="col">W</th>
                                     <th scope="col">D</th>
                                     <th scope="col">L</th>
-                                    <th scope="col">Pt</th>
+                                    <th scope="col">Pts</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {standingsTables.tableRows.map((item, index) => {
+                                    console.log(standingsTables.promotionsColoring[1]);
                                     return (
-                                        <tr key={index}>
-                                            <td className="order">{item.position}</td>
-                                            <td className="team">{item.team.shortName}</td>
-                                            <td>{item.totalFields.matchesTotal}</td>
-                                            <td>{item.totalFields.winTotal}</td>
-                                            <td>{item.totalFields.drawTotal}</td>
-                                            <td>{item.totalFields.lossTotal}</td>
-                                            <td className="point">{item.totalFields.pointsTotal}</td>
+                                        <tr key={index}
+                                            className={(item.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (item.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (item.isLive ? ("live-game " + item.liveMatchStatus) : "")}>
+                                            <td className={"order " + (item.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[item.promotion.id].class : "")}><span>{item.position}</span></td>
+                                            <td className="team">{item.team.shortName}<span className="live-pulse"/>
+                                            </td>
+                                            <td className="matches">{item.totalFields.matchesTotal}</td>
+                                            <td className="win">{item.totalFields.winTotal}</td>
+                                            <td className="draw">{item.totalFields.drawTotal}</td>
+                                            <td className="loss">{item.totalFields.lossTotal}</td>
+                                            <td className="points">{item.totalFields.pointsTotal}</td>
                                         </tr>
                                     )
                                 })}

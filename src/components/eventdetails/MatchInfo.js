@@ -8,7 +8,7 @@ class MatchInfo extends Component {
 
         tournament = eventData.event.tournament ? eventData.event.tournament.name : null;
         attendance = eventData.event.attendance ? eventData.event.attendance.toLocaleString() : null;
-        date = moment(eventData.event.startTimestamp * 1000).format('DD MMM YYYY, H:m');
+        date = moment(eventData.event.startTimestamp * 1000).format('DD MMM YYYY, HH:mm');
         referee = eventData.event.referee ? eventData.event.referee.name : null;
         if (eventData.event.hasVenue) {
             country = eventData.event.venue.country ? eventData.event.venue.country.name : null;
