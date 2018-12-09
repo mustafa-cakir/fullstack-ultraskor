@@ -7,6 +7,7 @@ import PressureGraph from "./PressureGraph";
 import MatchInfo from "./MatchInfo";
 import Bestplayer from "./Bestplayer";
 import Standings from "./Standings";
+import Stats from "./Stats";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -170,23 +171,7 @@ class Eventdetails extends Component {
                         </div>
                     </div>
                     <div className="swipe-content stats" data-tab="stats">
-                        Stats content will go here
-                        <div className="row2">
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                        </div>
+                        <Stats eventData={eventData} />
                     </div>
                     <div className="swipe-content lineup" data-tab="lineup">
                         Line up content will go here
