@@ -12,7 +12,7 @@ class Stats extends Component {
                         {eventData.statistics.periods[0].groups.map((group, index) => {
                             if (group.groupName === "Possession") {
                                 return (
-                                    <div>
+                                    <div key={index}>
                                         <div className="group-title" key={index}>
                                             {group.groupName}
                                         </div>
@@ -34,31 +34,36 @@ class Stats extends Component {
                                         })}
                                     </div>
                                 );
-                            } else if (group.groupName === "Shots") {
+                            } else if (group.groupName === "Shots" || group.groupName === "TVData") {
                                 return (
-                                    <div>
+                                    <div key={index}>
                                         <div className="group-title" key={index}>
                                             {group.groupName}
                                         </div>
                                         {group.statisticsItems.map((item, index) => {
+                                            item.home = parseInt(item.home, 10);
+                                            item.away = parseInt(item.away, 10);
+                                            let homeWidth = Math.floor((100 * item.home) / (item.away + item.home)),
+                                                awayWidth = Math.floor((100 * item.away) / (item.away + item.home));
                                             return (
                                                 <div className="horizontal-bar style-2 mb-3" key={index}>
-                                                    <div className="row labels">
+                                                    <div className="row labels mb-2">
                                                         <div className="col text-left f-700">{item.home}</div>
-                                                        <div className="col mb-1 f-300">{item.name}</div>
+                                                        <div className="col f-300">{item.name}</div>
                                                         <div className="col text-right f-700">{item.away}</div>
                                                     </div>
                                                     <div className="row">
                                                         <div className="col">
                                                             <div className="row col-container">
-                                                                <div className="col" style={{maxWidth: ((parseInt(item.home) > parseInt(item.away)) ? "25%" : ((parseInt(item.away) * 75 / parseInt(item.home)) + "%"))}}/>
-                                                                <div className="col home"/>
+                                                                <div className="col"style={{maxWidth: 100 - homeWidth + "%"}}/>
+                                                                <div className="col home"  style={{maxWidth: homeWidth + "%"}}/>
                                                             </div>
                                                         </div>
+                                                        <div className="col col-space"/>
                                                         <div className="col">
                                                             <div className="row col-container">
-                                                                <div className="col away"/>
-                                                                <div className="col" style={{maxWidth: ((parseInt(item.away) > parseInt(item.home)) ? "25%" : ((parseInt(item.away) * 25 / parseInt(item.home)) + "%"))}}/>
+                                                                <div className="col away"  style={{maxWidth: awayWidth + "%"}}/>
+                                                                <div className="col" style={{maxWidth: 100 - awayWidth + "%"}}/>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -622,7 +622,7 @@
             margin-bottom: 10px;
         }
         .col-space {
-            max-width: 4px;
+            max-width: 3px;
         }
         .horizontal-bar {
             .col-container {
@@ -649,9 +649,23 @@
                 border-radius: 0 28px 28px 0;
             }
             &.style-2 {
+                .col {
+                    padding: 0;
+                    min-height: 5px;
+                }
+                .home {
+                    border-radius: 10px 0 0 10px;
+                }
+                .away {background: #60b455;
+                    border-radius: 0 10px 10px 0;
+                }
+                .col-container {
+                    border-radius: 10px;
+                }
                 .labels {
                     .col {
                         color: #333;
+                        padding: 0;
                     }
                 }
             }
