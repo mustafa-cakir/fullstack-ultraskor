@@ -656,7 +656,8 @@
                 .home {
                     border-radius: 10px 0 0 10px;
                 }
-                .away {background: #60b455;
+                .away {
+                    background: #60b455;
                     border-radius: 0 10px 10px 0;
                 }
                 .col-container {
@@ -666,6 +667,17 @@
                     .col {
                         color: #333;
                         padding: 0;
+                    }
+                }
+                .num {
+                    display: inline-block;
+                    padding: 3px 10px;
+                    border-radius: 10px;
+                    &.higher.home-num {
+                        background: rgba(#4a83ca, .2);
+                    }
+                    &.higher.away-num {
+                        background: rgba(#60b455, .2);
                     }
                 }
             }
