@@ -56,24 +56,6 @@ class Stats extends Component {
                                         })}
                                     </div>
                                 );
-                            } else if (group.groupName === "Shots2") {
-                                return group.statisticsItems.map((item, index) => {
-                                    return (
-                                        <div className="row border-bottom align-items-center" key={index}>
-                                            <div className="col text-left home">
-                                                <span
-                                                    className={"indicator " + (item.compareCode === 1 ? "active" : "")}>{item.home}</span>
-                                            </div>
-                                            <div className="col text-center">
-                                                <span>{item.name}</span>
-                                            </div>
-                                            <div className="col text-right away">
-                                                <span
-                                                    className={"indicator " + (item.compareCode === 2 ? "active" : "")}>{item.away}</span>
-                                            </div>
-                                        </div>
-                                    )
-                                });
                             } else {
                                 return (
                                     <div key={index}>
