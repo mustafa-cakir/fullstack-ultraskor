@@ -68,7 +68,6 @@ class Eventdetails extends Component {
             active = document.querySelector('.swipe-tabs .active'),
             tabs = this.swipeTabsEl.current;
 
-        console.log(active);
         marker.style.width = active.offsetWidth + 'px';
         marker.style.left = active.offsetLeft + 'px';
         tabs.scrollTo({
@@ -142,7 +141,7 @@ class Eventdetails extends Component {
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
                     {
                         tabs.map((tab, index) => {
-                            if (tab === "Stats" && !eventData.statistics) return;
+                            if (tab === "Stats" && !eventData.statistics) return false;
                             return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                        className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
                         })
