@@ -374,7 +374,8 @@
             //background: rgba(0,0,0,.03);
         }
         .yellowcard,
-        .redcard {
+        .redcard,
+        .yellowcard2{
             display: inline-block;
             vertical-align: middle;
             height: 15px;
@@ -384,6 +385,10 @@
         }
         .redcard {
             background: #dc0d17;
+        }
+        .yellowcard2 {
+            background: linear-gradient(to right, #f6c825 0%,#f6c825 50%,#dc0d17 50%,#dc0d17 100%);
+            width: 17px;
         }
         .text-gray {
             color: #aaa;

@@ -43,6 +43,28 @@ class Incidents extends Component {
                     <div className="col"/>
                 </div>
             )
+        } else if (type === "YellowRed") {
+            return (
+                <div className={"py-3 row align-items-center" + (isHome ? "" : " flex-row-reverse")}>
+                    <div className="col">
+                        <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
+                            <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
+                                {item.player ? <div className="name">{item.player.name}</div> : ""}
+                                <div className="text-gray">{item.reason}</div>
+                            </div>
+                            <div className="col col-icon text-center">
+                                <div className={item.incidentClass}/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col col-time">
+                        <div className="time">
+                            <div>{item.time}'</div>
+                        </div>
+                    </div>
+                    <div className="col"/>
+                </div>
+            )
         } else if (type === "substitution") {
             return (
                 <div className={"py-3 row align-items-center" + (isHome ? "" : " flex-row-reverse")}>
@@ -102,6 +124,11 @@ class Incidents extends Component {
                 <div className="title">Match Incidents</div>
                 <div className="body">
                     <div className="match-incidents">
+                        <div className="row align-items-center">
+                            <div className="col period-time text-center text-bold">
+                                <img src={iconWhistle} alt="whistle" className="icon-whistle"/> Kick off
+                            </div>
+                        </div>
                         {eventData.incidents.map((item, index) => {
                             return (
                                 <div key={index} className={"match-incidents-row"}>
