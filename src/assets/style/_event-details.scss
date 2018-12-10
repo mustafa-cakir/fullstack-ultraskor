@@ -490,7 +490,7 @@
             th {
                 text-align: center;
             }
-            td,th {
+            td, th {
                 padding: 5px;
                 vertical-align: middle;
             }
@@ -530,7 +530,7 @@
                     background-color: #64ca3f
                 }
 
-                &.promotion-gray-dark span , &.promotion-gray span {
+                &.promotion-gray-dark span, &.promotion-gray span {
                     background-color: #708090
                 }
 
@@ -593,7 +593,7 @@
                     display: inline-block;
                 }
                 .team,
-                .points{
+                .points {
                     color: #ed1c24
                 }
             }
@@ -702,6 +702,38 @@
                 background: #d8f2cf;
             }
 
+        }
+        .period-changer {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            border-bottom: 1px solid #ccc;
+            margin: 10px 0 15px 0;
+            li {
+                margin: 0 5px;
+                &:first-child {
+                    margin-left: 10px;
+                }
+                span {
+                    display: block;
+                    padding: 10px 15px;
+                    background: #fff;
+                    position: relative;
+                    border: 1px solid transparent;
+                    border-bottom: none;
+                    color: #aaa;
+                    cursor: pointer;
+                    transition: all .2s linear;
+                    border-radius: 5px 5px 0 0;
+                }
+                &.active {
+                    span {
+                        border-color: #ccc;
+                        color: #000;
+                        box-shadow: 0 1px 0 white;
+                    }
+                }
+            }
         }
     }
 }

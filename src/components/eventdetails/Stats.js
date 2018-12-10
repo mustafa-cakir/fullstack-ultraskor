@@ -4,13 +4,23 @@ class Stats extends Component {
     constructor(props) {
         super(props);
         this.groups = [];
+        this.state = {
+            period: 0
+        };
+        this.periodChangeHandler = this.periodChangeHandler.bind(this);
     };
 
-    componentDidMount() {
-        const {eventData} = this.props;
+    periodChangeHandler(period) {
+        this.setState({
+            period: period
+        })
+    }
+
+    render() {
+        const periods = this.props.eventData.statistics.periods;
+        if (!periods[this.state.period]) return;
         const customSorting = ["Possession", "Shots", "Passes", "TVData", "Duels", "Defending"];
-        this.groups = eventData.statistics.periods[0].groups;
-        this.groups = this.groups.reduce((total, item) => {
+        let groups = periods[this.state.period].groups.reduce((total, item) => {
             if (item.groupName === "Shots extra") {
                 let shotIndex = total.findIndex(item => item.groupName === "Shots");
                 item.statisticsItems.forEach((item) => {
@@ -22,16 +32,22 @@ class Stats extends Component {
             }
             return total;
         }, []);
-        this.groups.sort((a, b) => (a.sorting > b.sorting) ? 1 : ((b.sorting > a.sorting) ? -1 : 0));
-    };
-
-    render() {
-
+        groups.sort((a, b) => (a.sorting > b.sorting) ? 1 : ((b.sorting > a.sorting) ? -1 : 0));
         return (
             <div>
                 <div className="stats container">
                     <div className="white-box mt-2 pb-2">
-                        {this.groups.map((group, index) => {
+                        {periods[1] && periods[2] ? (
+                            <ul className="period-changer">
+                                <li className={this.state.period === 0 ? "active" : ""}
+                                    onClick={() => this.periodChangeHandler(0)}><span>Overal</span></li>
+                                <li className={this.state.period === 1 ? "active" : ""}
+                                    onClick={() => this.periodChangeHandler(1)}><span>1st Half</span></li>
+                                <li className={this.state.period === 2 ? "active" : ""}
+                                    onClick={() => this.periodChangeHandler(2)}><span>2nd Half</span></li>
+                            </ul>
+                        ) : ""}
+                        {groups.map((group, index) => {
                             if (group.groupName === "Possession") {
                                 return (
                                     <div key={index}>

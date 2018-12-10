@@ -56,7 +56,7 @@ class Standings extends Component {
                                 <div className="name">{standingsTables.tournament.name}</div>
                                 <div className="country">{standingsTables.category.name}</div>
                             </div>
-                            <div className="col text-right live-label">Live Table!</div>
+                            {standingsTables.isLive ? <div className="col text-right live-label pr-4">Live Table!</div> : ""}
                         </div>
                         <div className="body">
                             <table className="table">

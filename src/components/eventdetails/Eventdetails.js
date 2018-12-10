@@ -28,19 +28,18 @@ class Eventdetails extends Component {
     componentDidMount() {
         const eventid = this.props.match.params.eventid;
         this.getData('/event/' + eventid + '/json');
-        if (this.swipeEl.current) this.swipeMarkerAndScrollHandler();
     };
 
     componentDidUpdate() {
-        if (this.swipeEl.current) this.swipeAdjustHeight(this.state.index);
+        if (this.swipeEl.current) {
+            this.swipeAdjustHeight(this.state.index);
+            this.swipeMarkerAndScrollHandler();
+        }
     }
 
     swipeChanging = index => {
         this.setState({
             index: index
-        }, () => {
-            this.swipeMarkerAndScrollHandler();
-            this.swipeAdjustHeight(index);
         });
     };
     swipeComplete = (index, el) => {
@@ -69,6 +68,7 @@ class Eventdetails extends Component {
             active = document.querySelector('.swipe-tabs .active'),
             tabs = this.swipeTabsEl.current;
 
+        console.log(active);
         marker.style.width = active.offsetWidth + 'px';
         marker.style.left = active.offsetLeft + 'px';
         tabs.scrollTo({
@@ -131,7 +131,7 @@ class Eventdetails extends Component {
             'Summary',
             'Stats',
             'Lineup',
-            'Live Standings',
+            'Standings',
             'Media'
         ];
         if (!eventData) return (<Loading/>);
@@ -142,6 +142,7 @@ class Eventdetails extends Component {
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
                     {
                         tabs.map((tab, index) => {
+                            if (tab === "Stats" && !eventData.statistics) return;
                             return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                        className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
                         })
@@ -171,7 +172,7 @@ class Eventdetails extends Component {
                         </div>
                     </div>
                     <div className="swipe-content stats" data-tab="stats">
-                        <Stats eventData={eventData} />
+                        {eventData.statistics ? <Stats eventData={eventData} /> : ""}
                     </div>
                     <div className="swipe-content lineup" data-tab="lineup">
                         Line up content will go here
