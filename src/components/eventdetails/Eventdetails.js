@@ -8,6 +8,7 @@ import MatchInfo from "./MatchInfo";
 import Bestplayer from "./Bestplayer";
 import Standings from "./Standings";
 import Stats from "./Stats";
+import Lineup from "./Lineup";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -21,7 +22,8 @@ class Eventdetails extends Component {
             loading: false,
             eventData: null,
             index: 0,
-            isTabStanding: false
+            isTabStanding: false,
+            isTabLineup: false
         };
     };
 
@@ -44,7 +46,13 @@ class Eventdetails extends Component {
     };
     swipeComplete = (index, el) => {
         let tab = el.getAttribute('data-tab');
-        if (tab === "standing") this.setState({isTabStanding: true});
+
+        if (tab === "standing") {
+            this.setState({isTabStanding: true})
+        }
+        else if (tab === "lineup") {
+            this.setState({isTabLineup: true})
+        }
     };
     swipeSwiping = (percentage) => {
         //console.log(percentage);
@@ -171,25 +179,22 @@ class Eventdetails extends Component {
                         </div>
                     </div>
                     <div className="swipe-content stats" data-tab="stats">
-                        {eventData.statistics ? <Stats eventData={eventData} /> : ""}
+                        {eventData.statistics ? <Stats eventData={eventData}/> : ""}
                     </div>
                     <div className="swipe-content lineup" data-tab="lineup">
-                        Line up content will go here
-                        <div className="row2">
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                            <p>.</p>
-                        </div>
+                        {!eventData.event.hasLineups ? (
+                            <div className="no-standing">Lineup is not currently available for this event. Please check back later</div>
+                        ) : (
+                            this.state.isTabLineup ?
+                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
+                        )}
                     </div>
                     <div className="swipe-content standing" data-tab="standing">
-                        { !eventData.standingsAvailable ? (
-                            <div className="no-standing">Standing is not available for this event</div>
+                        {!eventData.standingsAvailable ? (
+                            <div className="no-standing">Standing is not currently available for this event. Please check back later</div>
                         ) : (
-                            this.state.isTabStanding ? <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
+                            this.state.isTabStanding ?
+                                <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
                         )}
                     </div>
                     <div className="swipe-content media" data-tab="media">
