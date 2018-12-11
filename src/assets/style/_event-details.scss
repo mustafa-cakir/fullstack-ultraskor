@@ -708,42 +708,50 @@
             }
 
         }
-        .period-changer {
-            list-style: none;
-            display: flex;
-            padding: 0;
-            border-bottom: 1px solid #ccc;
-            margin: 10px 0 15px 0;
-            li {
-                margin: 0 5px;
-                &:first-child {
-                    margin-left: 10px;
-                }
+    }
+    .horizontal-tab {
+        list-style: none;
+        display: flex;
+        padding: 0;
+        border-bottom: 1px solid #ccc;
+        margin: 10px 0 15px 0;
+        li {
+            margin: 0 5px;
+            &:first-child {
+                margin-left: 10px;
+            }
+            span {
+                display: block;
+                padding: 10px 15px;
+                background: #fff;
+                position: relative;
+                border: 1px solid transparent;
+                border-bottom: none;
+                color: #aaa;
+                cursor: pointer;
+                transition: all .2s linear;
+                border-radius: 5px 5px 0 0;
+            }
+            &.active {
                 span {
-                    display: block;
-                    padding: 10px 15px;
-                    background: #fff;
-                    position: relative;
-                    border: 1px solid transparent;
-                    border-bottom: none;
-                    color: #aaa;
-                    cursor: pointer;
-                    transition: all .2s linear;
-                    border-radius: 5px 5px 0 0;
-                }
-                &.active {
-                    span {
-                        border-color: #ccc;
-                        color: #000;
-                        box-shadow: 0 1px 0 white;
-                    }
+                    border-color: #ccc;
+                    color: #000;
+                    box-shadow: 0 1px 0 white;
                 }
             }
         }
     }
     .lineup {
+        .row {
+            margin-left: -5px;
+            margin-right: -5px;
+        }
+        .col {
+            padding-right: 5px;
+            padding-left: 5px;
+        }
         .formation {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #999;
             margin: 15px;
@@ -754,51 +762,193 @@
                 border-radius: 18px;
             }
             img {
-                height: 25px;
+                height: 35px;
                 width: auto;
                 vertical-align: middle;
                 margin: 0 10px;
             }
             .col {
                 text-align: center;
-                padding: 5px 0;
+                padding: 0;
                 transition: all .2s linear;
                 cursor: pointer;
+                line-height: 55px;
                 &.home {
                     border-right: 1px solid #ccc;
                     border-radius: 18px 0 0 18px;
+                    text-align: left;
                 }
                 &.away {
+                    text-align: right;
                     border-radius: 0 18px 18px 0;
                 }
                 &.active {
                     box-shadow: inset 1px 1px 2px 0px rgba(0, 0, 0, 0.3);
                     background: #fff;
+                    color: $premier-leage-2;
                 }
             }
         }
         .pitch {
-            margin-top: 30px;
-            background: url(../images/pitch.png) 0 0 no-repeat;
-            height: 300px;
+            margin: 20px auto;
+            background: url(../images/pitch4.png) center center no-repeat;
+            height: 450px;
             width: 100%;
-            background-size: 100% auto;
+            background-size: auto 100%;
             position: relative;
             padding-top: 20px;
+            max-width: 400px;
         }
         .area-container {
+            position: relative;
+            .row {
+                margin-left: -5px;
+                margin-right: -5px;
+                flex-wrap: nowrap;
+            }
+            .col {
+                padding-right: 5px;
+                padding-left: 5px;
+            }
             .area {
-                margin-bottom: 50px;
+                margin-bottom: 20px;
+                &-2 {
+                    padding: 0 25%;
+                }
+                &-3 {
+                    padding: 0 15%;
+                    .row {
+                        .col:first-child,
+                        .col:last-child{
+                            position: relative;
+                            top: -5px;
+                        }
+                    }
+                }
+                &-4 {
+                    padding: 0 10%;
+                    .row {
+                        .col:first-child,
+                        .col:last-child{
+                            position: relative;
+                            top: -10px;
+                        }
+                    }
+                }
+                &-5 {
+                    padding: 0;
+                    .row {
+                        .col:first-child,
+                        .col:last-child{
+                            position: relative;
+                            top: -15px;
+                        }
+                    }
+                }
+            }
+            &.row-3 {
+                top: 25px;
+                .area {
+                    margin-bottom: 35px;
+                }
             }
         }
         .player-container {
+            .picture {
+                position: relative;
+                display: inline-block;
+                img {
+                    height: 40px;
+                    width: auto;
+                    border-radius: 100%;
+                    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+                    position: relative;
+                }
+            }
+            .rating {
+                position: absolute;
+                bottom: 4px;
+                left: 35px;
+                z-index: 3;
+                font-size: .75rem;
+            }
             .name {
-                background: $premier-leage-3;
-                color: $premier-leage-1;
+                border-radius: 5px;
+                color :#fff;
                 display: inline-block;
                 padding: 3px 5px;
-                font-size: .8rem;
+                font-size: .6rem;
                 font-weight: 700;
+                margin-top: 3px;
+                span {
+                    max-width: 60px;
+                    @include line-clamp(1);
+                }
+            }
+        }
+        .right-info {
+            font-size: .8rem;
+        }
+        .possible-lineup {
+            color: $premier-leage-2
+        }
+        .confirmed {
+            color: #009d0b;
+        }
+        .col-coach-picture {
+            max-width: 60px;
+        }
+        .coach-picture {
+            height: 50px;
+            width: auto;
+            border-radius: 100%;
+            box-shadow: 1px 1px 3px rgba(0,0,0,.3);
+            border: 1px solid #eee;
+        }
+        .text-gray {
+            color: #aaa;
+        }
+        .list {
+            &-row {
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+            &-rating {
+                max-width: 40px;
+            }
+            .captain {
+                height: 20px;
+                width: 20px;
+                line-height: 20px;
+                background: #acf239;
+                color: #000;
+                border-radius: 10px;
+                display: inline-block;
+                text-align: center;
+            }
+            .substitute {
+                background: rgba($premier-leage-3, .3);
+                color: $premier-leage-2;
+                border-color: rgba($premier-leage-2, .2);
+                .text-gray {
+                    color: rgba($premier-leage-2, .5);
+                }
+            }
+            &-image {
+                max-width: 65px;
+                img {
+                    height: 50px;
+                    width: auto;
+                    border-radius: 100%;
+                    box-shadow: 1px 1px 3px rgba(0,0,0,.3);
+                    border: 1px solid #eee;
+                }
+            }
+            &-text {
+
             }
         }
     }
@@ -848,6 +998,15 @@
     }
     to {
         margin-left: 100%;
+    }
+}
+
+@keyframes ratingAppear {
+    from {
+        right: 0px;
+    }
+    to {
+        right: -27px;
     }
 }
 

@@ -38,7 +38,7 @@ class Stats extends Component {
                 <div className="stats container">
                     <div className="white-box mt-2 pb-2">
                         {periods[1] && periods[2] ? (
-                            <ul className="period-changer">
+                            <ul className="horizontal-tab">
                                 <li className={this.state.period === 0 ? "active" : ""}
                                     onClick={() => this.periodChangeHandler(0)}><span>Overal</span></li>
                                 <li className={this.state.period === 1 ? "active" : ""}

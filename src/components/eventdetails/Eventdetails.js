@@ -140,7 +140,8 @@ class Eventdetails extends Component {
             ...(eventData.event.hasStatistics ? ["Stats"] : []),
             ...(eventData.event.hasLineups ? ["Lineup"] : []),
             ...(eventData.standingsAvailable ? ["Standing"] : []),
-            'Media'
+            'Media',
+            'Forum'
         ];
         return (
             <div className="event-details">
@@ -163,18 +164,18 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping,
                                 disableScroll: false
                             }} ref={this.swipeEl}>
-                    {/*<div className="swipe-content summary">*/}
-                        {/*<div className="event-details-summary">*/}
-                            {/*<div className="container">*/}
-                                {/*<div className="white-box mt-2">*/}
-                                    {/*<PressureGraph eventData={eventData}/>*/}
-                                    {/*<Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>*/}
-                                    {/*<Incidents eventData={eventData}/>*/}
-                                {/*</div>*/}
-                                {/*<MatchInfo eventData={eventData}/>*/}
-                            {/*</div>*/}
-                        {/*</div>*/}
-                    {/*</div>*/}
+                    <div className="swipe-content summary">
+                        <div className="event-details-summary">
+                            <div className="container">
+                                <div className="white-box mt-2">
+                                    <PressureGraph eventData={eventData}/>
+                                    <Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>
+                                    <Incidents eventData={eventData}/>
+                                </div>
+                                <MatchInfo eventData={eventData}/>
+                            </div>
+                        </div>
+                    </div>
 
                     {eventData.event.hasStatistics ? (
                         <div className="swipe-content stats" data-tab="stats">
@@ -184,9 +185,9 @@ class Eventdetails extends Component {
 
                     {eventData.event.hasLineups ? (
                         <div className="swipe-content lineup" data-tab="lineup">
-                            {/*{this.state.isTabLineup ?*/}
+                            {this.state.isTabLineup ?
                                 <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
-                                {/*: ""}*/}
+                                : ""}
                         </div>
                     ) : ""}
 
@@ -198,8 +199,25 @@ class Eventdetails extends Component {
                     ) : ""}
 
                     <div className="swipe-content media" data-tab="media">
-                        Media content will go here
-                        <div className="row2">
+                        <div className="p-4">
+                            <h5>Coming Soon</h5>
+                            Media contents will be here
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                            <p>.</p>
+                        </div>
+                    </div>
+                    <div className="swipe-content forum" data-tab="forum">
+                        <div className="p-4">
+                            <h5>Coming Soon</h5>
+                            Forum will be here
                             <p>.</p>
                             <p>.</p>
                             <p>.</p>

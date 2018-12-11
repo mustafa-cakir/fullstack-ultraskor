@@ -214,20 +214,23 @@ code {
     }
     &.mediocre {
         color: #e08f1b;
-        &-bg {
-            background-color: #e08f1b
+        &.bg {
+            background-color: #e08f1b;
+            color: #fff;
         }
     }
     &.underwhelming {
         color: #f55b2f;
         &.bg {
-            background-color: #f55b2f
+            background-color: #f55b2f;
+            color: #fff;
         }
     }
     &.bad {
         color: #ff1c19;
         &-bg {
             background-color: #ff1c19;
+            color: #fff;
         }
     }
     &.unrated {
@@ -235,6 +238,7 @@ code {
         &.bg {
             background-color: #ccc;
             color: $premier-leage-1;
+            padding: 1px 10px;
         }
     }
     &.bg {
