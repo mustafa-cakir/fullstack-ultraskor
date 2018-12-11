@@ -5,7 +5,9 @@ class Lineup extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            lineupData: null
+            lineupData: null,
+            defaultFormation: 1,
+            activeTeam: null
         };
     }
 
@@ -33,20 +35,80 @@ class Lineup extends Component {
             .then(() => {
                 this.setState({
                     lineupData: jsonData,
+                    activeTeam: jsonData.homeTeam
                 });
             })
     };
+
+    formationSwitchHandler(option) {
+        this.setState({
+            defaultFormation: option,
+            activeTeam: (option === 1) ? this.state.lineupData.homeTeam : this.state.lineupData.awayTeam
+        });
+    }
+
     render() {
-        const {lineupData} = this.state;
-        //const {eventData} = this.props;
+        const {lineupData, activeTeam} = this.state;
+        const {eventData} = this.props;
         if (!lineupData) return <Loading/>;
-        //const standingsTables = lineupData.standingsTables[0];
+
+        const homeFormation = lineupData.homeTeam.formation,
+            awayFormation = lineupData.awayTeam.formation;
+        let iteration = 11;
+
         return (
             <div>
                 <div className="lineup container">
                     <div className="white-box mt-2">
-                        <div className="row heading align-items-center">
-                            heyoo
+                        <div className="formation">
+                            <div className="row">
+                                <div className={"col home" + (this.state.defaultFormation === 1 ? " active" : "")} onClick={() => this.formationSwitchHandler(1)}>
+                                    <img
+                                        alt={eventData.event.homeTeam.name}
+                                        src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+                                    />
+                                    {homeFormation.map((item, index) => {
+                                        return (
+                                            <span key={index}>{item}{index === homeFormation.length - 1 ? "" : " - "}</span>
+                                        )
+                                    })}
+                                </div>
+                                <div className={"col away" + (this.state.defaultFormation === 2 ? " active" : "")} onClick={() => this.formationSwitchHandler(2)}>
+                                    {awayFormation.map((item, index) => {
+                                        return (
+                                            <span key={index}>{item}{index === awayFormation.length - 1 ? "" : " - "}</span>
+                                        )
+                                    })}
+                                    <img alt={eventData.event.awayTeam.name}
+                                         src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="pitch">
+                            <div className="area-container">
+                            {activeTeam.formation.reverse().map((item,index) => {
+                                return (
+                                    <div  key={index} className={"row area area-" + item }>
+                                        {[...Array(parseInt(item))].map((x, i) => {
+                                            iteration--;
+                                             return (
+                                                 <div key={i} className="col text-center">
+                                                     <div className="player-container">
+                                                         <div className="name">{activeTeam.lineupsSorted[iteration].player.shortName}</div>
+                                                     </div>
+                                                 </div>
+                                             )
+                                            }
+                                        )}
+                                    </div>
+                                )
+                            })}
+                            </div>
+                            <div className="row">
+                                <div className="col">
+
+                                </div>
+                            </div>
                         </div>
                         <div className="body">
                             body here

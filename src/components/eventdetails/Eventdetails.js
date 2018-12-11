@@ -163,18 +163,18 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping,
                                 disableScroll: false
                             }} ref={this.swipeEl}>
-                    <div className="swipe-content summary">
-                        <div className="event-details-summary">
-                            <div className="container">
-                                <div className="white-box mt-2">
-                                    <PressureGraph eventData={eventData}/>
-                                    <Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>
-                                    <Incidents eventData={eventData}/>
-                                </div>
-                                <MatchInfo eventData={eventData}/>
-                            </div>
-                        </div>
-                    </div>
+                    {/*<div className="swipe-content summary">*/}
+                        {/*<div className="event-details-summary">*/}
+                            {/*<div className="container">*/}
+                                {/*<div className="white-box mt-2">*/}
+                                    {/*<PressureGraph eventData={eventData}/>*/}
+                                    {/*<Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>*/}
+                                    {/*<Incidents eventData={eventData}/>*/}
+                                {/*</div>*/}
+                                {/*<MatchInfo eventData={eventData}/>*/}
+                            {/*</div>*/}
+                        {/*</div>*/}
+                    {/*</div>*/}
 
                     {eventData.event.hasStatistics ? (
                         <div className="swipe-content stats" data-tab="stats">
@@ -184,8 +184,9 @@ class Eventdetails extends Component {
 
                     {eventData.event.hasLineups ? (
                         <div className="swipe-content lineup" data-tab="lineup">
-                            {this.state.isTabLineup ?
-                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+                            {/*{this.state.isTabLineup ?*/}
+                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                                {/*: ""}*/}
                         </div>
                     ) : ""}
 
@@ -195,7 +196,7 @@ class Eventdetails extends Component {
                                 <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
                         </div>
                     ) : ""}
-                    
+
                     <div className="swipe-content media" data-tab="media">
                         Media content will go here
                         <div className="row2">

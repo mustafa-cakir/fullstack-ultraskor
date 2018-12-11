@@ -375,7 +375,7 @@
         }
         .yellowcard,
         .redcard,
-        .yellowcard2{
+        .yellowcard2 {
             display: inline-block;
             vertical-align: middle;
             height: 15px;
@@ -387,7 +387,7 @@
             background: #dc0d17;
         }
         .yellowcard2 {
-            background: linear-gradient(to right, #f6c825 0%,#f6c825 50%,#dc0d17 50%,#dc0d17 100%);
+            background: linear-gradient(to right, #f6c825 0%, #f6c825 50%, #dc0d17 50%, #dc0d17 100%);
             width: 17px;
         }
         .text-gray {
@@ -738,6 +738,67 @@
                         box-shadow: 0 1px 0 white;
                     }
                 }
+            }
+        }
+    }
+    .lineup {
+        .formation {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #999;
+            margin: 15px;
+            .row {
+                background: #eee;
+                margin: 0;
+                border: 1px solid #ccc;
+                border-radius: 18px;
+            }
+            img {
+                height: 25px;
+                width: auto;
+                vertical-align: middle;
+                margin: 0 10px;
+            }
+            .col {
+                text-align: center;
+                padding: 5px 0;
+                transition: all .2s linear;
+                cursor: pointer;
+                &.home {
+                    border-right: 1px solid #ccc;
+                    border-radius: 18px 0 0 18px;
+                }
+                &.away {
+                    border-radius: 0 18px 18px 0;
+                }
+                &.active {
+                    box-shadow: inset 1px 1px 2px 0px rgba(0, 0, 0, 0.3);
+                    background: #fff;
+                }
+            }
+        }
+        .pitch {
+            margin-top: 30px;
+            background: url(../images/pitch.png) 0 0 no-repeat;
+            height: 300px;
+            width: 100%;
+            background-size: 100% auto;
+            position: relative;
+            padding-top: 20px;
+        }
+        .area-container {
+            .area {
+                margin-bottom: 50px;
+            }
+        }
+        .player-container {
+            .name {
+                background: $premier-leage-3;
+                color: $premier-leage-1;
+                display: inline-block;
+                padding: 3px 5px;
+                font-size: .8rem;
+                font-weight: 700;
             }
         }
     }
