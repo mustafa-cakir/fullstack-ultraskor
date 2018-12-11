@@ -134,26 +134,23 @@ class Eventdetails extends Component {
 
     render() {
         let eventData = this.state.eventData;
+        if (!eventData) return (<Loading/>);
         const tabs = [
             'Summary',
-            'Stats',
-            'Lineup',
-            'Standings',
+            ...(eventData.event.hasStatistics ? ["Stats"] : []),
+            ...(eventData.event.hasLineups ? ["Lineup"] : []),
+            ...(eventData.standingsAvailable ? ["Standing"] : []),
             'Media'
         ];
-        if (!eventData) return (<Loading/>);
         return (
             <div className="event-details">
                 {this.state.loading ? <Loading/> : null}
                 <Scoreboard eventData={eventData}/>
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
-                    {
-                        tabs.map((tab, index) => {
-                            if (tab === "Stats" && !eventData.statistics) return false;
-                            return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-                                       className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
-                        })
-                    }
+                    {tabs.map((tab, index) => {
+                        return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
+                                   className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
+                    })}
                     <li className="marker" ref={this.swipeMarkerEl}/>
                 </ul>
                 <div className="swipe-shadows"/>
@@ -178,25 +175,27 @@ class Eventdetails extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="swipe-content stats" data-tab="stats">
-                        {eventData.statistics ? <Stats eventData={eventData}/> : ""}
-                    </div>
-                    <div className="swipe-content lineup" data-tab="lineup">
-                        {!eventData.event.hasLineups ? (
-                            <div className="no-standing">Lineup is not currently available for this event. Please check back later</div>
-                        ) : (
-                            this.state.isTabLineup ?
-                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
-                        )}
-                    </div>
-                    <div className="swipe-content standing" data-tab="standing">
-                        {!eventData.standingsAvailable ? (
-                            <div className="no-standing">Standing is not currently available for this event. Please check back later</div>
-                        ) : (
-                            this.state.isTabStanding ?
-                                <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""
-                        )}
-                    </div>
+
+                    {eventData.event.hasStatistics ? (
+                        <div className="swipe-content stats" data-tab="stats">
+                            <Stats eventData={eventData}/>
+                        </div>
+                    ) : ""}
+
+                    {eventData.event.hasLineups ? (
+                        <div className="swipe-content lineup" data-tab="lineup">
+                            {this.state.isTabLineup ?
+                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+                        </div>
+                    ) : ""}
+
+                    {eventData.standingsAvailable ? (
+                        <div className="swipe-content standing" data-tab="standing">
+                            {this.state.isTabStanding ?
+                                <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+                        </div>
+                    ) : ""}
+                    
                     <div className="swipe-content media" data-tab="media">
                         Media content will go here
                         <div className="row2">
