@@ -15,6 +15,7 @@ class Navbar extends Component {
     componentDidMount() {
         this.searchHandler = this.debounce(this.searchHandler, 300);
         this.bodyClassList = document.body.classList;
+        console.log(this.props.history);
     };
 
     debounce = (cb, delay) => {
@@ -83,8 +84,9 @@ class Navbar extends Component {
     }
 
     render() {
+        const isPrev = ((this.props.history.location.state) ? this.props.history.location.state.isPrev === true : false);
         return (
-            <header className={"header" + ((this.props.history.location.state && this.props.history.location.state.isPrev) ? " goback-active" : "")} ref={this.headerEl}>
+            <header className={"header" + (isPrev ? " goback-active" : "")} ref={this.headerEl}>
                 <div className="header-animation" />
                 <div className="container">
                     <div className="row">
@@ -96,6 +98,8 @@ class Navbar extends Component {
                                 <span className="ham-border ham-border-bottom">
                                         <span className="ham-border-inner ham-border-inner-bottom"/>
                                     </span>
+                                {isPrev ? <span className="goback-text">Back</span> : ""}
+
                             </div>
                         </div>
                         <div className="col text-center">

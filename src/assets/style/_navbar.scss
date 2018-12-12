@@ -575,6 +575,9 @@
     }
 }
 
+.goback-text {
+    opacity: 0;
+}
 .goback-active {
     .ham-border-top {
         transform: rotate(-45deg);
@@ -593,6 +596,14 @@
     .ham-border-inner-bottom {
         transform: translateY(7px);
         transition: transform .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+    }
+    .goback-text {
+        opacity: 1;
+        transition: opacity .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+        font-weight: 300;
+        position: absolute;
+        left: 35px;
+        top: 12px;
     }
 }
 
