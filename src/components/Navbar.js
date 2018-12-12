@@ -2,12 +2,14 @@ import React, {Component} from 'react'
 import logo from "../logo.png"
 import Icon from "./Icon";
 import Link from "react-router-dom/es/Link";
+import {withRouter} from "react-router-dom";
 
 class Navbar extends Component {
 
     constructor(props) {
         super(props);
         this.headerEl = React.createRef();
+        this.goBack = this.goBack.bind(this);
     }
 
     componentDidMount() {
@@ -39,8 +41,12 @@ class Navbar extends Component {
     };
 
     toggleNavBar = () => {
-        this.bodyClassList.remove('searchbar-opened');
-        this.bodyClassList.toggle('navbar-opened');
+        if (this.props.history.location.state && this.props.history.location.state.isPrev) {
+            this.goBack();
+        } else {
+            this.bodyClassList.remove('searchbar-opened');
+            this.bodyClassList.toggle('navbar-opened');
+        }
     };
 
     clearSearch = () => {
@@ -72,9 +78,13 @@ class Navbar extends Component {
         }
     };
 
+    goBack() {
+        this.props.history.goBack()
+    }
+
     render() {
         return (
-            <header className="header" ref={this.headerEl}>
+            <header className={"header" + ((this.props.history.location.state && this.props.history.location.state.isPrev) ? " goback-active" : "")} ref={this.headerEl}>
                 <div className="header-animation" />
                 <div className="container">
                     <div className="row">
@@ -130,4 +140,4 @@ class Navbar extends Component {
     }
 }
 
-export default Navbar
+export default withRouter(Navbar)

@@ -61,7 +61,10 @@ class Event extends Component {
         return (
             <div className={this.state.favActive ? "fav-active event-container " : "event-container"}>
                 <div className="container">
-                    <Link to={"/eventdetails/" + event.id} className="event-link">
+                    <Link to={{
+                        pathname: "/eventdetails/" + event.id,
+                        state: {isPrev: true}
+                    }} className="event-link">
                         <div className="row">
                             <div className="col event-time pr-0 pl-2">
                                 {this.isInProgress()}
