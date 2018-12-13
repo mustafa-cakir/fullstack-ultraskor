@@ -4,6 +4,7 @@ import Errors from "./Errors";
 import Loading from "./Loading";
 import moment from "moment";
 import Headertabs from "./Headertabs";
+import Footer from "./Footer";
 
 class Homepage extends Component {
     constructor(props) {
@@ -166,6 +167,7 @@ class Homepage extends Component {
                         {mainContent}
                     </div>
                 </div>
+                <Footer/>
             </div>
         )
     }

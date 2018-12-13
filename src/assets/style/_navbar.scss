@@ -590,20 +590,31 @@
 
     .ham-border-inner-top {
         transform: translateY(-7px);
-        transition: transform .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+        width: 15px;
+        height: 2px;
+        transition: all .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
     }
 
     .ham-border-inner-bottom {
         transform: translateY(7px);
-        transition: transform .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+        width: 15px;
+        height: 2px;
+        transition: all .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
     }
     .goback-text {
         opacity: 1;
-        transition: opacity .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+        transition: opacity .1806s cubic-bezier(0.04, 0.04, 0.12, 0.96) .3s;
         font-weight: 300;
         position: absolute;
-        left: 35px;
-        top: 12px;
+        left: 0;
+        top: 0;
+        height: 48px;
+        line-height: 48px;
+        padding-left: 33px;
+        padding-right: 15px;
+        &.show {
+            opacity: 1;
+        }
     }
 }
 

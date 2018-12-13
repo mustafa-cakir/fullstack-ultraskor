@@ -9,6 +9,7 @@ import Bestplayer from "./Bestplayer";
 import Standings from "./Standings";
 import Stats from "./Stats";
 import Lineup from "./Lineup";
+import Footer from "../Footer";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -231,6 +232,7 @@ class Eventdetails extends Component {
                         </div>
                     </div>
                 </ReactSwipe>
+                <Footer/>
             </div>
         )
     }

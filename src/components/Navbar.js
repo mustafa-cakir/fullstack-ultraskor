@@ -98,8 +98,7 @@ class Navbar extends Component {
                                 <span className="ham-border ham-border-bottom">
                                         <span className="ham-border-inner ham-border-inner-bottom"/>
                                     </span>
-                                {isPrev ? <span className="goback-text">Back</span> : ""}
-
+                                <span className={"goback-text" + (isPrev ? " show" : "")}>Back</span>
                             </div>
                         </div>
                         <div className="col text-center">

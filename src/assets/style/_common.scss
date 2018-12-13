@@ -243,11 +243,35 @@ code {
     }
     &.bg {
         border-radius: 2px;
-        box-shadow: 1px 1px 2px rgba(0,0,0,.3);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
         color: #333;
     }
 }
 
 
+.page-main-inner {
+    transition: transform .3192s cubic-bezier(0.04, 0.04, 0.12, 0.96);
+    position: absolute;
+    top:0;
+    width: 100vw;
+}
+.slide-enter {
+    transform: translateX(100%);
+    &-active {
+        transform: translateX(0);
+    }
+    &-done {
+        transform: translateX(0);
+    }
+}
+
+.slide-exit {
+    &-active {
+        transform: translateX(-100%);
+    }
+    &-done {
+        transform: translateX(-100%);
+    }
+}
 
 
