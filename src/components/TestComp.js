@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Loading from "./Loading";
 
 class TestComp extends Component {
     // constructor(props) {
@@ -8,6 +9,7 @@ class TestComp extends Component {
     render() {
         return (
             <div>
+                <Loading/>
                 test comp content goes here
             </div>
         )

@@ -50,6 +50,7 @@
     max-width: 60px;
     @include line-clamp(1);
 }
+
 .event-link,
 .event-link:hover {
     color: inherit;
@@ -75,12 +76,20 @@
 .event-fav {
     font-size: 1.5rem;
     max-width: 40px;
+    cursor: pointer;
     i {
         color: rgba(#333, .2);
     }
     .active {
         color: $color-fav;
+        animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
     }
+}
+
+@keyframes favAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
 }
 
 .live-blinker {

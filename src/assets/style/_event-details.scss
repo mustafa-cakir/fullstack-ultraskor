@@ -954,37 +954,6 @@
     }
 }
 
-.ripple-effect {
-    position: relative;
-    overflow: hidden;
-}
-
-.ripple {
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, .3);
-    transform: scale(0);
-    position: absolute;
-    opacity: 1;
-}
-
-.blue .ripple {
-    background: rgba(#1890ff, .3);
-}
-
-.purple .ripple {
-    background: rgba($color-cl-5, .3);
-}
-
-.pink .ripple {
-    background: rgba($premier-leage-2, .3);
-}
-
-.rippleEffect {
-    animation: rippleDrop .6s linear;
-}
-
 @keyframes rippleDrop {
     100% {
         transform: scale(2);

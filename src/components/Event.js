@@ -61,31 +61,35 @@ class Event extends Component {
         return (
             <div className={this.state.favActive ? "fav-active event-container " : "event-container"}>
                 <div className="container">
-                    <Link to={{
-                        pathname: "/eventdetails/" + event.id,
-                        state: {isPrev: true}
-                    }} className="event-link">
-                        <div className="row">
-                            <div className="col event-time pr-0 pl-2">
-                                {this.isInProgress()}
+
+                    <div className="row">
+                        <Link to={{
+                            pathname: "/eventdetails/" + event.id,
+                            state: {isPrev: true}
+                        }} className="event-link col">
+                            <div className="row">
+                                <div className="col event-time pr-0 pl-2">
+                                    {this.isInProgress()}
+                                </div>
+                                <div className="col event-team home text-right pr-0 pl-2">
+                                    {event.homeRedCards ? <span className={"red-card"}>{event.homeRedCards}</span> : ""}
+                                    {event.homeTeam.name}
+                                </div>
+                                <div
+                                    className={"col event-score text-center font-weight-bold px-0" + (event.status.type === 'inprogress' ? ' live' : '')}>
+                                    {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ? event.homeScore.current + ':' + event.awayScore.current : " - "}
+                                </div>
+                                <div className="col event-team away text-left pl-0 pr-2">
+                                    {event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}
+                                    {event.awayTeam.name}
+                                </div>
                             </div>
-                            <div className="col event-team home text-right pr-0 pl-2">
-                                {event.homeRedCards ? <span className={"red-card"}>{event.homeRedCards}</span> : ""}
-                                {event.homeTeam.name}
-                            </div>
-                            <div
-                                className={"col event-score text-center font-weight-bold px-0" + (event.status.type === 'inprogress' ? ' live' : '')}>
-                                {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ? event.homeScore.current + ':' + event.awayScore.current : " - "}
-                            </div>
-                            <div className="col event-team away text-left pl-0 pr-2">
-                                {event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}
-                                {event.awayTeam.name}
-                            </div>
-                            <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler}>
-                                {this.state.favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
-                            </div>
+                        </Link>
+                        <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler}>
+                            {this.state.favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
                         </div>
-                    </Link>
+                    </div>
+
                 </div>
             </div>
         )

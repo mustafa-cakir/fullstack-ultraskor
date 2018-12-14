@@ -7,6 +7,57 @@
   z-index: 2;
 }
 
+.loading-ball {
+    margin: 20vh auto;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    img {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        top:0;
+        animation: App-logo-spin infinite 2s cubic-bezier(0.5, 0.75, 0.5, 0.25);
+    }
+}
+
+.lds-ripple {
+    display: inline-block;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: -87px;
+    top: -87px;
+    opacity: .2;
+}
+.lds-ripple div {
+    position: absolute;
+    border: 1px solid #000;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 2s cubic-bezier(0.5, 0.75, 0.5, 0.25) infinite;
+    &:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+}
+@keyframes lds-ripple {
+    0% {
+        top: 82px;
+        left: 82px;
+        width: 60px;
+        height: 60px;
+        opacity: 1;
+    }
+    100% {
+        top: -1px;
+        left: -1px;
+        width: 232px;
+        height: 232px;
+        opacity: 0;
+    }
+}
+
+
 .sk-circle {
   margin: 20vh auto;
   width: 15vw;
