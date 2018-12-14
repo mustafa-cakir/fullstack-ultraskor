@@ -101,7 +101,7 @@ class Homepage extends Component {
     };
 
     flagImg(tournament) {
-        let uniqueTournamentImages = [7, 8, 11, 384, 480, 679];
+        let uniqueTournamentImages = [7, 11, 384, 480, 679];
         if (uniqueTournamentImages.indexOf(tournament.tournament.uniqueId) > -1) {
             return (
                 <div className="col flag-img">
@@ -118,7 +118,20 @@ class Homepage extends Component {
     };
 
     componentDidMount() {
-        let todaysDate = moment().format('YYYY-MM-DD');
+        let todaysDate = moment().format('YYYY-MM-DD'),
+            getPersistState = sessionStorage.getItem('HeadertabsState');
+
+        if (getPersistState) {
+            try {
+                let persistState= JSON.parse(getPersistState);
+                if (persistState.selectedDay) {
+                    todaysDate = persistState.selectedDay;
+                }
+            } catch (e) {
+                console.log("Prev state can't implemented, something went seriously wrong!");
+            }
+        }
+
         this.getData({
             api: '/football//' + todaysDate + '/json',
             loading: true,
@@ -144,7 +157,7 @@ class Homepage extends Component {
             } else {
                 if (dataObj.sportItem) {
                     if (dataObj.sportItem.tournaments.length > 0) {
-                        mainContent.push(<Tournament key={1} data={dataObj} flagImg={this.flagImg}/>)
+                        mainContent.push(<Tournament key={1} data={dataObj} flagImg={this.flagImg} {...this.state}/>)
                     } else {
                         mainContent.push(<Errors key={1} type="no-matched-game"/>)
                     }

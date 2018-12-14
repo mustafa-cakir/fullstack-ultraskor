@@ -29,7 +29,7 @@ class Headertabs extends Component {
     }
 
     setSessionStorage() {
-        const {selectedDay, ...obj} = this.state;
+        const {...obj} = this.state;
         sessionStorage.setItem('HeadertabsState', JSON.stringify(obj));
     }
 
@@ -167,7 +167,7 @@ class Headertabs extends Component {
             isDateDropdown: false,
             isLive: false,
             filteredItems: []
-        });
+        }, this.setSessionStorage);
     }
 
 

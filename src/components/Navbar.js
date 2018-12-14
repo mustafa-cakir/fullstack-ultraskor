@@ -15,7 +15,6 @@ class Navbar extends Component {
     componentDidMount() {
         this.searchHandler = this.debounce(this.searchHandler, 300);
         this.bodyClassList = document.body.classList;
-        console.log(this.props.history);
     };
 
     debounce = (cb, delay) => {

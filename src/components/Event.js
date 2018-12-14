@@ -10,6 +10,35 @@ class Event extends Component {
         this.state = {
             favActive: false,
         };
+        this.persistState = {"favEvents": []};
+    }
+
+    componentDidMount() {
+        // this.persistState = sessionStorage.getItem('FavEvents');
+        // if (this.persistState) {
+        //     try {
+        //         if (this.persistState.favEvents.indexOf(this.props.event.id) > -1) {
+        //             this.setState({favActive: true});
+        //         }
+        //     } catch (e) {
+        //         console.log("Prev state can't implemented, something went seriously wrong!");
+        //     }
+        // }
+    }
+
+    setSessionStorage() {
+        const favEventId = this.props.event.id;
+        if (this.persistState.favEvents.indexOf(favEventId) === -1) {
+            this.persistState.favEvents.push(favEventId);
+            debugger;
+        } else {
+            this.persistState = this.persistState.favEvents.filter(function(item) {
+                return item !== favEventId
+            });
+        }
+        console.log(this.persistState.favEvents);
+        //const {...obj} = this.persistState;
+        sessionStorage.setItem('FavEvents', JSON.stringify(this.persistState));
     }
 
     isInProgress() {
@@ -53,7 +82,7 @@ class Event extends Component {
     }
 
     favClickHandler() {
-        this.setState({favActive: !this.state.favActive});
+        this.setState({favActive: !this.state.favActive}, this.setSessionStorage);
     }
 
     render() {
