@@ -20,8 +20,12 @@ class Bestplayer extends Component {
     }
 
     render() {
-        const {eventData, swipeByIndex} = this.props;
-        if (!eventData.event || !eventData.event.bestAwayTeamPlayer || !eventData.event.bestHomeTeamPlayer) return false;
+        const {eventData, swipeByTabName} = this.props;
+        if (
+            !eventData.event
+            || !eventData.event.bestAwayTeamPlayer
+            || !eventData.event.bestHomeTeamPlayer
+        ) return false;
         return (
             <div className="best-player">
                 <div className="best-player-title text-center">Best Players</div>
@@ -45,7 +49,7 @@ class Bestplayer extends Component {
                             alt={eventData.event.bestAwayTeamPlayer.player.name}/></div>
                     </div>
                 </div>
-                <div className={"best-player-link text-center mb-4"} onClick={() => swipeByIndex(2)}><span>See all <Icon
+                <div className={"best-player-link text-center mb-4"} onClick={() => swipeByTabName('Lineup')}><span>See all <Icon
                     name="fas fa-angle-right"/></span>
                 </div>
             </div>

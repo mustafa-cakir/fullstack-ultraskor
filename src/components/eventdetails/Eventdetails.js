@@ -18,6 +18,7 @@ class Eventdetails extends Component {
         this.swipeMarkerEl = React.createRef();
         this.swipeTabsEl = React.createRef();
         this.swipeByIndex = this.swipeByIndex.bind(this);
+        this.swipeByTabName = this.swipeByTabName.bind(this);
         this.swipeAdjustHeight = this.swipeAdjustHeight.bind(this);
         this.state = {
             loading: false,
@@ -31,6 +32,7 @@ class Eventdetails extends Component {
     componentDidMount() {
         const eventid = this.props.match.params.eventid;
         this.getData('/event/' + eventid + '/json');
+        this.tabs = [];
     };
 
     componentDidUpdate() {
@@ -89,6 +91,11 @@ class Eventdetails extends Component {
         if (this.swipeEl) this.swipeEl.current.slide(index);
     }
 
+    swipeByTabName(tab) {
+        let index = (this.tabs) ? this.tabs.indexOf(tab) : 0;
+        if (this.swipeEl) this.swipeEl.current.slide(index);
+    }
+
     getData = api => {
         this.setState({loading: true});
         let jsonData = {};
@@ -136,7 +143,7 @@ class Eventdetails extends Component {
     render() {
         let eventData = this.state.eventData;
         if (!eventData) return (<Loading/>);
-        const tabs = [
+        this.tabs = [
             'Summary',
             ...(eventData.event.hasStatistics ? ["Stats"] : []),
             ...(eventData.event.hasLineups ? ["Lineup"] : []),
@@ -149,7 +156,7 @@ class Eventdetails extends Component {
                 {this.state.loading ? <Loading/> : null}
                 <Scoreboard eventData={eventData}/>
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
-                    {tabs.map((tab, index) => {
+                    {this.tabs.map((tab, index) => {
                         return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                    className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
                     })}
@@ -168,9 +175,9 @@ class Eventdetails extends Component {
                     <div className="swipe-content summary">
                         <div className="event-details-summary">
                             <div className="container">
-                                <div className="white-box mt-2">
+                                <div className="white-box mt-2 pb-2">
                                     <PressureGraph eventData={eventData}/>
-                                    <Bestplayer eventData={eventData} swipeByIndex={this.swipeByIndex}/>
+                                    <Bestplayer eventData={eventData} swipeByTabName={this.swipeByTabName}/>
                                     <Incidents eventData={eventData}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
