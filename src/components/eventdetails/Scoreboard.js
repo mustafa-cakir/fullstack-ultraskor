@@ -24,9 +24,9 @@ class Scoreboard extends Component {
                         <div className="col-4 align-self-center middle">
                             <div className="time"><IsInProgress eventData={eventData}/></div>
                             <div className={"score" + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
-                                {(eventData.event.homeScore && eventData.event.awayScore && eventData.event.homeScore.current && eventData.event.awayScore.current) ? eventData.event.homeScore.current + ' - ' + eventData.event.awayScore.current : " - "}
+                                {eventData.event.homeScore.current} - {eventData.event.awayScore.current}
                             </div>
-                            {(eventData.event.homeScore && eventData.event.awayScore && eventData.event.homeScore.period1 && eventData.event.awayScore.period1) ?
+                            {(eventData.event.hasHalfTimeScore) ?
                                 <div
                                     className="score-halftime">(HT: {eventData.event.homeScore.period1} - {eventData.event.awayScore.period1})</div> : ""}
                         </div>

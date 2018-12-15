@@ -40,7 +40,7 @@ class Standings extends Component {
     render() {
         const {standingData} = this.state;
         const {eventData} = this.props;
-        if (!standingData) return <Loading/>;
+        if (!standingData) return <Loading type="inside"/>;
         const standingsTables = standingData.standingsTables[0];
         return (
             <div>

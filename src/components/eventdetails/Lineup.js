@@ -54,7 +54,7 @@ class Lineup extends Component {
         });
     }
 
-    ratingClass(value) {
+    static ratingClass(value) {
         value = Number(value);
         if (value > 8.0) {
             return "amazing bg";
@@ -74,7 +74,7 @@ class Lineup extends Component {
     render() {
         const {lineupData, activeTeam} = this.state;
         const {eventData} = this.props;
-        if (!lineupData) return <Loading/>;
+        if (!lineupData) return <Loading type="inside"/>;
 
         const homeFormation = lineupData.homeTeam.formation,
             awayFormation = lineupData.awayTeam.formation;
@@ -130,7 +130,7 @@ class Lineup extends Component {
                                                                             alt={activeTeam.lineupsSorted[iteration].player.name}
                                                                             src={"https://www.sofascore.com/images/player/image_" + activeTeam.lineupsSorted[iteration].player.id + ".png"}/>
                                                                         {activeTeam.lineupsSorted[iteration].rating ? <span
-                                                                            className={"text-bold rating " + this.ratingClass(activeTeam.lineupsSorted[iteration].rating)}>{activeTeam.lineupsSorted[iteration].rating}</span> : ""}
+                                                                            className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[iteration].rating)}>{activeTeam.lineupsSorted[iteration].rating}</span> : ""}
                                                                     </div>
                                                                     <div className="clearfix"/>
                                                                     <div className="name" style={{
@@ -157,7 +157,7 @@ class Lineup extends Component {
                                                         alt={activeTeam.lineupsSorted[0].player.name}
                                                         src={"https://www.sofascore.com/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ".png"}/>
                                                     {activeTeam.lineupsSorted[0].rating ? <span
-                                                        className={"text-bold rating " + this.ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
+                                                        className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
 
                                                 </div>
                                                 <div className="clearfix"/>
@@ -194,7 +194,7 @@ class Lineup extends Component {
                                     <div className="possible-lineup">Possible Lineup!</div> : ""}
                                 {activeTeam.rating ?
                                     <div className="team-rating">Team Avg. Rating: <span
-                                        className={"text-bold rating " + this.ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>
+                                        className={"text-bold rating " + Lineup.ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>
                                     </div> : ""}
 
                                 {activeTeam.averageAge.startersAverageAge ?
@@ -226,7 +226,7 @@ class Lineup extends Component {
                                             <div className="text-gray">{item.positionName}</div>
                                         </div>
                                         {item.rating ? <div className="col list-rating"><span
-                                            className={"text-bold rating " + this.ratingClass(item.rating)}>{item.rating}</span>
+                                            className={"text-bold rating " + Lineup.ratingClass(item.rating)}>{item.rating}</span>
                                         </div> : ""}
                                     </div>
                                 )
