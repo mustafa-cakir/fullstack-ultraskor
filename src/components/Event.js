@@ -4,43 +4,6 @@ import moment from "moment";
 import Link from "react-router-dom/es/Link";
 
 class Event extends Component {
-    constructor(props) {
-        super(props);
-        this.favClickHandler = this.favClickHandler.bind(this);
-        this.state = {
-            favActive: false,
-        };
-        this.persistState = {"favEvents": []};
-    }
-
-    componentDidMount() {
-        // this.persistState = sessionStorage.getItem('FavEvents');
-        // if (this.persistState) {
-        //     try {
-        //         if (this.persistState.favEvents.indexOf(this.props.event.id) > -1) {
-        //             this.setState({favActive: true});
-        //         }
-        //     } catch (e) {
-        //         console.log("Prev state can't implemented, something went seriously wrong!");
-        //     }
-        // }
-    }
-
-    setSessionStorage() {
-        const favEventId = this.props.event.id;
-        if (this.persistState.favEvents.indexOf(favEventId) === -1) {
-            this.persistState.favEvents.push(favEventId);
-            debugger;
-        } else {
-            this.persistState = this.persistState.favEvents.filter(function(item) {
-                return item !== favEventId
-            });
-        }
-        console.log(this.persistState.favEvents);
-        //const {...obj} = this.persistState;
-        sessionStorage.setItem('FavEvents', JSON.stringify(this.persistState));
-    }
-
     isInProgress() {
         let text;
         let liveBlinkerCodes = [6, 7];
@@ -82,13 +45,27 @@ class Event extends Component {
     }
 
     favClickHandler() {
-        this.setState({favActive: !this.state.favActive}, this.setSessionStorage);
+        let eventId = this.props.event.id;
+        let favEvents = this.props.favEvents;
+
+        if (favEvents.indexOf(eventId) < 0) {
+            favEvents.push(eventId);
+        } else {
+            favEvents = favEvents.filter(item =>  item !== eventId);
+        }
+
+        localStorage.setItem('FavEvents', JSON.stringify(favEvents));
+
+        this.props.updateParentState({
+            favEvents: favEvents
+        })
     }
 
     render() {
-        const event = this.props.event;
+        const { event } = this.props;
+        const favActive = this.props.favEvents.indexOf(event.id) > -1;
         return (
-            <div className={this.state.favActive ? "fav-active event-container " : "event-container"}>
+            <div className={favActive ? "fav-active event-container " : "event-container"}>
                 <div className="container">
 
                     <div className="row">
@@ -114,8 +91,8 @@ class Event extends Component {
                                 </div>
                             </div>
                         </Link>
-                        <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler}>
-                            {this.state.favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
+                        <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler.bind(this)}>
+                            {favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
                         </div>
                     </div>
 

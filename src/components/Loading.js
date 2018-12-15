@@ -2,9 +2,6 @@ import React, {Component} from 'react';
 import logoBlack from "../logo-black.png";
 
 class Loading extends Component {
-    constructor(props) {
-        super(props);
-    }
     render() {
         const {type} = this.props;
         return (

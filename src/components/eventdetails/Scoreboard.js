@@ -16,8 +16,8 @@ class Scoreboard extends Component {
                                 />
                             </div>
                             <div className="team-name">{eventData.event.homeTeam.name}</div>
-                            <div
-                                className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.homeManager.name : ''}</div>
+                            {eventData.managerDuel ?
+                                <div className="team-coach mb-2">{eventData.managerDuel.homeManager.name}</div> : ''}
                             <div>{(eventData.teamsForm) ?
                                 <TeamForm data={eventData.teamsForm.homeTeam.form}/> : ""}</div>
                         </div>

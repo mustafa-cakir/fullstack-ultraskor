@@ -18,7 +18,7 @@ class Tournament extends Component {
                             </div>
                             <div className="events-wrapper">
                                 {tournament.events.map((event, i) => {
-                                    return (<Event key={i} event={event} {...this.props}/>)
+                                    return (<Event key={i} event={event} updateParentState={this.updateParentState} {...this.props}/>)
                                 })}
                             </div>
                         </div>

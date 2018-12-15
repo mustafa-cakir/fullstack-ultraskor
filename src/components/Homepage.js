@@ -12,12 +12,45 @@ class Homepage extends Component {
         this.state = {
             mainData: null,
             loading: false,
-            orjData: null
+            orjData: null,
+            favEvents: []
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
         this.interval = null;
     };
+
+    componentDidMount() {
+        let todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD'),
+            storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
+            storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
+
+        if (storageHeadertabsState) {
+            if (storageHeadertabsState.selectedDay) {
+                todaysDate = storageHeadertabsState.selectedDay;
+            }
+        }
+
+        if (storageFavEvents) {
+            this.setState({
+                favEvents: storageFavEvents
+            });
+        }
+
+        this.getData({
+            api: '/football//' + todaysDate + '/json',
+            loading: true,
+            interval: false
+        });
+
+        // retrieve fresh data in every 10 seconds without displaying loading
+        // setInterval(()=>{
+        //     this.getData({
+        //         api: '/football//' + todaysDate + '/json',
+        //         loading: false
+        //     });
+        // }, 10000);
+    }
 
     updateParentState = (state) => {
         return new Promise((resolve) => {
@@ -117,36 +150,6 @@ class Homepage extends Component {
         }
     };
 
-    componentDidMount() {
-        let todaysDate = moment().format('YYYY-MM-DD'),
-            getPersistState = sessionStorage.getItem('HeadertabsState');
-
-        if (getPersistState) {
-            try {
-                let persistState= JSON.parse(getPersistState);
-                if (persistState.selectedDay) {
-                    todaysDate = persistState.selectedDay;
-                }
-            } catch (e) {
-                console.log("Prev state can't implemented, something went seriously wrong!");
-            }
-        }
-
-        this.getData({
-            api: '/football//' + todaysDate + '/json',
-            loading: true,
-            interval: false
-        });
-
-        // retrieve fresh data in every 10 seconds without displaying loading
-        // setInterval(()=>{
-        //     this.getData({
-        //         api: '/football//' + todaysDate + '/json',
-        //         loading: false
-        //     });
-        // }, 10000);
-    }
-
     render() {
         const dataObj = this.state.mainData;
         let mainContent = [];
@@ -157,7 +160,7 @@ class Homepage extends Component {
             } else {
                 if (dataObj.sportItem) {
                     if (dataObj.sportItem.tournaments.length > 0) {
-                        mainContent.push(<Tournament key={1} data={dataObj} flagImg={this.flagImg} {...this.state}/>)
+                        mainContent.push(<Tournament key={1} data={dataObj} updateParentState={this.updateParentState} flagImg={this.flagImg} {...this.state}/>)
                     } else {
                         mainContent.push(<Errors key={1} type="no-matched-game"/>)
                     }
