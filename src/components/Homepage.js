@@ -5,6 +5,8 @@ import Loading from "./Loading";
 import moment from "moment";
 import Headertabs from "./Headertabs";
 import Footer from "./Footer";
+import Event from "./Event";
+import Icon from "./Icon";
 
 class Homepage extends Component {
     constructor(props) {
@@ -13,7 +15,8 @@ class Homepage extends Component {
             mainData: null,
             loading: false,
             orjData: null,
-            favEvents: []
+            favEvents: [],
+            favEventsList: [],
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
@@ -96,9 +99,24 @@ class Homepage extends Component {
         return data;
     };
 
+    moveFavEventsToTop(jsonData) {
+        let favEventsList = [];
+        jsonData.sportItem.tournaments.forEach(tournament => {
+            tournament.events.forEach(event => {
+                if (this.state.favEvents.indexOf(event.id) > -1) {
+                    favEventsList.push(event)
+                }
+            })
+        });
+        this.setState({
+            favEventsList: favEventsList
+        })
+    };
+
     getData = options => {
         if (options.loading) this.setState({loading: true});
         let jsonData = {};
+
         fetch('https://www.sofascore.com' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => res.json())
             .then(
@@ -113,6 +131,7 @@ class Homepage extends Component {
                         }, options.intervaltime || 10000);
                     }
                     jsonData = this.preprocessData(result);
+                    if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
                 },
                 (error) => {
                     jsonData = {error: error.toString()};
@@ -152,7 +171,29 @@ class Homepage extends Component {
 
     render() {
         const dataObj = this.state.mainData;
-        let mainContent = [];
+        let mainContent = [],
+            favEventContainer = [];
+
+        if (this.state.favEventsList.length > 0) {
+            favEventContainer.push(
+                <div className="tournament-wrapper" key={1}>
+                    <div className="tournament-title">
+                        <div className="row align-items-center">
+                            <Icon name="fas fa-star event-fav-color"/>
+                            <div className="col tournament-name px-2">
+                                <strong>My Favorites</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="events-wrapper">
+                        {this.state.favEventsList.map((event, i) => {
+                            return (<Event key={i} favContainer={true} event={event}
+                                           updateParentState={this.updateParentState} {...this.state}/>)
+                        })}
+                    </div>
+                </div>
+            )
+        }
 
         if (dataObj) {
             if (typeof dataObj.error !== "undefined") {
@@ -160,7 +201,8 @@ class Homepage extends Component {
             } else {
                 if (dataObj.sportItem) {
                     if (dataObj.sportItem.tournaments.length > 0) {
-                        mainContent.push(<Tournament key={1} data={dataObj} updateParentState={this.updateParentState} flagImg={this.flagImg} {...this.state}/>)
+                        mainContent.push(<Tournament key={1} data={dataObj} updateParentState={this.updateParentState}
+                                                     flagImg={this.flagImg} {...this.state}/>)
                     } else {
                         mainContent.push(<Errors key={1} type="no-matched-game"/>)
                     }
@@ -180,6 +222,7 @@ class Homepage extends Component {
                 {this.state.loading ? <Loading/> : null}
                 <div className="container px-0 homepage-list">
                     <div>
+                        {favEventContainer}
                         {mainContent}
                     </div>
                 </div>

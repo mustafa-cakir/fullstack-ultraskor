@@ -45,19 +45,25 @@ class Event extends Component {
     }
 
     favClickHandler() {
-        let eventId = this.props.event.id;
-        let favEvents = this.props.favEvents;
+        const event = this.props.event,
+            eventId = this.props.event.id;
+
+        let favEvents = this.props.favEvents,
+            favEventsList = this.props.favEventsList;
 
         if (favEvents.indexOf(eventId) < 0) {
             favEvents.push(eventId);
+            favEventsList.push(event);
         } else {
             favEvents = favEvents.filter(item =>  item !== eventId);
+            favEventsList = favEventsList.filter(item =>  item !== event);
         }
 
         localStorage.setItem('FavEvents', JSON.stringify(favEvents));
 
         this.props.updateParentState({
-            favEvents: favEvents
+            favEvents: favEvents,
+            favEventsList: favEventsList
         })
     }
 
@@ -92,7 +98,7 @@ class Event extends Component {
                             </div>
                         </Link>
                         <div className="col event-fav pl-0 text-right pr-2" onClick={this.favClickHandler.bind(this)}>
-                            {favActive ? <Icon name="fas fa-star active"/> : <Icon name="far fa-star"/>}
+                            {this.props.favContainer || favActive ? (<Icon name="fas fa-star active"/>) : event.status.type !== "finished" ? <Icon name="far fa-star"/> : ""}
                         </div>
                     </div>
 

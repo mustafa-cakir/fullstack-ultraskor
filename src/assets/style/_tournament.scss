@@ -73,6 +73,9 @@
 .line-clamp {
     @include line-clamp(1);
 }
+.event-fav-color {
+    color: #fbbc37;
+}
 .event-fav {
     font-size: 1.5rem;
     max-width: 40px;
