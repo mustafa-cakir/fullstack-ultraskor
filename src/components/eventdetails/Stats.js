@@ -19,17 +19,10 @@ class Stats extends Component {
     render() {
         const periods = this.props.eventData.statistics.periods;
         if (!periods[this.state.period]) return;
-        const customSorting = ["Possession", "Shots", "Passes", "TVData", "Duels", "Defending"];
+        const customSorting = ["Possession", "Shots", "Shots extra", "Passes", "TVData", "Duels", "Defending"];
         let groups = periods[this.state.period].groups.reduce((total, item) => {
-            if (item.groupName === "Shots extra") {
-                let shotIndex = total.findIndex(item => item.groupName === "Shots");
-                item.statisticsItems.forEach((item) => {
-                    total[shotIndex].statisticsItems.push(item);
-                });
-            } else {
-                item['sorting'] = customSorting.indexOf(item.groupName) !== -1 ? customSorting.indexOf(item.groupName) : 99;
-                total.push(item);
-            }
+            item['sorting'] = customSorting.indexOf(item.groupName) !== -1 ? customSorting.indexOf(item.groupName) : 99;
+            total.push(item);
             return total;
         }, []);
         groups.sort((a, b) => (a.sorting > b.sorting) ? 1 : ((b.sorting > a.sorting) ? -1 : 0));
