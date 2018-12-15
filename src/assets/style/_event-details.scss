@@ -425,6 +425,21 @@
         .match-incidents-row {
             overflow: hidden;
         }
+        .missed-penalty {
+            .fa-times {
+                position: absolute;
+                bottom: -3px;
+                right: 1px;
+                font-size: .8rem;
+                height: 14px;
+                width: 14px;
+                line-height: 14px;
+                text-align: center;
+                background: red;
+                color: #fff;
+                border-radius: 100%;
+            }
+        }
     }
 
     .best-player {
@@ -644,6 +659,7 @@
                 color: #fff;
                 padding: 5px 0;
                 text-align: center;
+                transition: all .8s cubic-bezier(0.04, 0.04, 0.12, 0.96);
             }
             .home {
                 background: #4a83ca;
@@ -819,7 +835,7 @@
                     padding: 0 15%;
                     .row {
                         .col:first-child,
-                        .col:last-child{
+                        .col:last-child {
                             position: relative;
                             top: -5px;
                         }
@@ -829,7 +845,7 @@
                     padding: 0 10%;
                     .row {
                         .col:first-child,
-                        .col:last-child{
+                        .col:last-child {
                             position: relative;
                             top: -10px;
                         }
@@ -839,7 +855,7 @@
                     padding: 0;
                     .row {
                         .col:first-child,
-                        .col:last-child{
+                        .col:last-child {
                             position: relative;
                             top: -15px;
                         }
@@ -874,7 +890,7 @@
             }
             .name {
                 border-radius: 5px;
-                color :#fff;
+                color: #fff;
                 display: inline-block;
                 padding: 3px 5px;
                 font-size: .6rem;
@@ -902,7 +918,7 @@
             height: 50px;
             width: auto;
             border-radius: 100%;
-            box-shadow: 1px 1px 3px rgba(0,0,0,.3);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
             border: 1px solid #eee;
         }
         .text-gray {
@@ -943,7 +959,7 @@
                     height: 50px;
                     width: auto;
                     border-radius: 100%;
-                    box-shadow: 1px 1px 3px rgba(0,0,0,.3);
+                    box-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
                     border: 1px solid #eee;
                 }
             }

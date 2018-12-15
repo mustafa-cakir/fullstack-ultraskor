@@ -87,6 +87,32 @@ class Incidents extends Component {
                     <div className="col"/>
                 </div>
             )
+        } else if (type === "penalty") {
+            return (
+                <div className={"py-3 row missed-penalty align-items-center" + (isHome ? "" : " flex-row-reverse")}>
+                    <div className="col">
+                        <div className={"row align-items-center " + (isHome ? "" : " flex-row-reverse")}>
+                            <div className={"col put-border " + (isHome ? "home text-right" : " text-left")}>
+                                {item.incidentDescription ? <div className="player text-bold">{item.incidentDescription}</div> : ""}
+                                {item.player ? <div className="text-gray">{item.player.name}</div> : ""}
+                                {item.description ? <div className="text-gray">({item.description})</div> : ""}
+                                {item.awayScore || item.homeScore ?
+                                    <div className="text-bold">{item.homeScore} - {item.awayScore}</div> : ""}
+                            </div>
+                            <div className="col col-icon col-goal-icon p-0 text-center">
+                                <Icon name="far fa-futbol icon-goal"/>
+                                <Icon name="fas fa-times"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col col-time">
+                        <div className="time">
+                            <div>{item.time}{item.addedTime ? <sup>+{item.addedTime}</sup> : "'"}</div>
+                        </div>
+                    </div>
+                    <div className="col"/>
+                </div>
+            )
         } else if (type === "goal") {
             return (
                 <div className={"py-3 row goal align-items-center" + (isHome ? "" : " flex-row-reverse")}>
