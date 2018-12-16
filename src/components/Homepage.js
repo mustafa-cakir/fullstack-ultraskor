@@ -176,7 +176,7 @@ class Homepage extends Component {
 
         if (this.state.favEventsList.length > 0) {
             favEventContainer.push(
-                <div className="tournament-wrapper" key={1}>
+                <React.Fragment key={1}>
                     <div className="tournament-title">
                         <div className="row align-items-center">
                             <Icon name="fas fa-star event-fav-color"/>
@@ -185,13 +185,11 @@ class Homepage extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="events-wrapper">
-                        {this.state.favEventsList.map((event, i) => {
-                            return (<Event key={i} favContainer={true} event={event}
-                                           updateParentState={this.updateParentState} {...this.state}/>)
-                        })}
-                    </div>
-                </div>
+                    {this.state.favEventsList.map((event, i) => {
+                        return (<Event key={i} favContainer={true} event={event}
+                                       updateParentState={this.updateParentState} {...this.state}/>)
+                    })}
+                </React.Fragment>
             )
         }
 
@@ -221,10 +219,8 @@ class Homepage extends Component {
                 />
                 {this.state.loading ? <Loading/> : null}
                 <div className="container px-0 homepage-list">
-                    <div>
-                        {favEventContainer}
-                        {mainContent}
-                    </div>
+                    {favEventContainer}
+                    {mainContent}
                 </div>
                 <Footer/>
             </div>

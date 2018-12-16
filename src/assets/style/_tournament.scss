@@ -23,17 +23,17 @@
     @include line-clamp(1);
 }
 
-.events-wrapper {
-    & > div:nth-child(odd) {
+.homepage-list {
+    & > div:not(.tournament-title):not(.error):nth-child(odd) {
         background: rgba(0, 0, 0, 0.1);
         &.fav-active {
             background: rgba($color-fav, .12);
         }
     }
-    .fav-active {
-        background: rgba($color-fav, .05);
+}
+.fav-active {
+    background: rgba($color-fav, .05);
 
-    }
 }
 
 .event-container {

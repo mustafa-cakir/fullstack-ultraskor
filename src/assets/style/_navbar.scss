@@ -459,6 +459,8 @@
     margin: 0;
     padding: 0;
     min-height: 40px;
+    position: relative;
+    z-index: 2;
     &-container {
         align-items: center;
         border-left: 1px solid rgba($color-cl-3, .4);

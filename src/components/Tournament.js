@@ -4,10 +4,10 @@ import Event from "./Event";
 class Tournament extends Component {
     render() {
         return (
-            <div>
+            <React.Fragment>
                 {this.props.data.sportItem.tournaments.map((tournament, i) => {
                     return (
-                        <div className="tournament-wrapper" key={i}>
+                        <React.Fragment key={i}>
                             <div className="tournament-title">
                                 <div className="row align-items-center">
                                     {this.props.flagImg(tournament)}
@@ -16,15 +16,15 @@ class Tournament extends Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="events-wrapper">
+                            {/*<div className="events-wrapper">*/}
                                 {tournament.events.map((event, i) => {
                                     return (<Event key={i} event={event} updateParentState={this.updateParentState} {...this.props}/>)
                                 })}
-                            </div>
-                        </div>
+                            {/*</div>*/}
+                        </React.Fragment>
                     )
                 })}
-            </div>
+            </React.Fragment>
         )
     }
 }

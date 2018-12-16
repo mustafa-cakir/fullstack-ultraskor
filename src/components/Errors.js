@@ -16,7 +16,7 @@ class Errors extends Component {
 
 const NothingFound = () => {
     return(
-        <div className="error-no-game">
+        <div className="error error-no-game">
             <h3>Nothing found.</h3>
             <p className="gray">Please try different filter or date<br/></p>
         </div>
@@ -25,7 +25,7 @@ const NothingFound = () => {
 
 const NoLiveGame = () => {
     return(
-        <div className="error-no-game">
+        <div className="error error-no-game">
             <p>No live games at the moment</p>
             <p className="gray">Please check again later.<br/>
                 Meanwhile here is a list of all football events for today.</p>
@@ -38,7 +38,7 @@ const Error = props => {
         window.location.reload();
     }
     return (
-            <div className="fetch-alert error">
+            <div className="error fetch-alert">
                 <strong>Error!</strong>
                 <p>Something went wrong :( </p>
                 <div className={"error-refresh-wrapper mt-3 mb-5 d-inline-block"} onClick={refresh}>
