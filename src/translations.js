@@ -9,7 +9,7 @@ i18n.use(reactI18nextModule).use(LanguageDetector).init({
         tr : { translations: tr },
         en : {translations: en}
     },
-    fallbackLng: 'en-US',
+    fallbackLng: 'en',
     debug: false,
 
     //defaultLocale: "tr-TR",

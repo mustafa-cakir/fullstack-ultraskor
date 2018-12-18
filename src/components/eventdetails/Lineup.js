@@ -23,7 +23,7 @@ class Lineup extends Component {
 
     getData = api => {
         let jsonData = {};
-        fetch('https://www.sofascore.com' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('http://host.flexiblewebdesign.com/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {

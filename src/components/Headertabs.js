@@ -300,7 +300,7 @@ const FilterItems = props => {
                         <span className="checkbox"/>
                         {props.flagImg(tournament)}
                         <div className="col tournament-name px-2">
-                            <strong>{tournament.category.name}</strong> - {tournament.tournament.name}</div>
+                            <strong><Trans>{tournament.category.name}</Trans></strong> - {tournament.tournament.name}</div>
                     </div>
                     <hr className="separator"/>
                 </div>

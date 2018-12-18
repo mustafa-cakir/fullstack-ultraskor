@@ -100,12 +100,12 @@ class Eventdetails extends Component {
     getData = api => {
         this.setState({loading: true});
         let jsonData = {};
-        fetch('https://www.sofascore.com' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('http://host.flexiblewebdesign.com/api/?api=' + api, {cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {
                     jsonData = result;
-                    this.getSRdata(jsonData.event.homeTeam.id);
+                    this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
                 },
                 (error) => {
                     jsonData = {error: error.toString()};
@@ -119,19 +119,22 @@ class Eventdetails extends Component {
             })
     };
 
-    getSRdata(homeTeamId) {
-        fetch('http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=18.12.2018', {referrerPolicy: "no-referrer", cache: "no-store"})
-            .then(res=>res.json())
+    getSRdata(homeTeamId, date) {
+        date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
+        fetch('http://host.flexiblewebdesign.com/api/?sr=1&sportId=1&date=' + date, {cache: "reload"})
+            .then(res => res.json())
             .then(res => {
                 res.data.forEach(item => {
-                    let found = item.Matches.filter(match=> match.HomeTeam.Id === homeTeamId);
-                    if (found.length > 0) this.setState({ srMatchData: found[0]})
+                    let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
+                    if (found.length > 0) this.setState({srMatchData: found[0]})
                 });
+                // let srJsonData;
                 // res.data.forEach(item => {
                 //     item.Matches.forEach(match=> {
                 //         if (match.HomeTeam.Id === homeTeamId) srJsonData = match;
                 //     });
                 // });
+                // console.log(srJsonData);
             });
     }
 
@@ -199,7 +202,7 @@ class Eventdetails extends Component {
                                     <Incidents eventData={eventData}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
-                                SporRadar Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}
+                                SR Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}
                             </div>
                         </div>
                     </div>

@@ -118,7 +118,7 @@ class Homepage extends Component {
         if (options.loading) this.setState({loading: true});
         let jsonData = {};
 
-        fetch('https://www.sofascore.com' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('http://host.flexiblewebdesign.com/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {
@@ -230,8 +230,10 @@ class Homepage extends Component {
                     {favEventContainer}
                     {mainContent}
                 </div>
+                <div className="m-3">
                 Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button onClick={() => changeLanguageHandler('en')}>English</button>
-                <Footer/>
+                </div>
+                    <Footer/>
             </div>
         )
     }
