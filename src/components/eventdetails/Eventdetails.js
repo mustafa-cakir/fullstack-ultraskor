@@ -25,7 +25,8 @@ class Eventdetails extends Component {
             eventData: null,
             index: 0,
             isTabStanding: false,
-            isTabLineup: false
+            isTabLineup: false,
+            srMatchData: null
         };
     };
 
@@ -104,6 +105,7 @@ class Eventdetails extends Component {
             .then(
                 (result) => {
                     jsonData = result;
+                    this.getSRdata(jsonData.event.homeTeam.id);
                 },
                 (error) => {
                     jsonData = {error: error.toString()};
@@ -116,6 +118,22 @@ class Eventdetails extends Component {
                 });
             })
     };
+
+    getSRdata(homeTeamId) {
+        fetch('http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=18.12.2018', {referrerPolicy: "no-referrer", cache: "no-store"})
+            .then(res=>res.json())
+            .then(res => {
+                res.data.forEach(item => {
+                    let found = item.Matches.filter(match=> match.HomeTeam.Id === homeTeamId);
+                    if (found.length > 0) this.setState({ srMatchData: found[0]})
+                });
+                // res.data.forEach(item => {
+                //     item.Matches.forEach(match=> {
+                //         if (match.HomeTeam.Id === homeTeamId) srJsonData = match;
+                //     });
+                // });
+            });
+    }
 
     rippleEffectHandler(e) {
         let el = e.target,
@@ -181,6 +199,7 @@ class Eventdetails extends Component {
                                     <Incidents eventData={eventData}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
+                                SporRadar Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}
                             </div>
                         </div>
                     </div>
