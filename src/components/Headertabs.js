@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import Icon from "./Icon";
 import DayPicker from "react-day-picker";
 import moment from "moment";
+import {Trans, withNamespaces} from "react-i18next";
+import 'moment/locale/tr';
 
 class Headertabs extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -172,6 +173,33 @@ class Headertabs extends Component {
 
 
     render() {
+        const {t, i18n} = this.props;
+        const MONTHS = [
+            t('January'),
+            t('February'),
+            t('March'),
+            t('April'),
+            t('May'),
+            t('June'),
+            t('July'),
+            t('August'),
+            t('September'),
+            t('October'),
+            t('November'),
+            t('December'),
+        ];
+        const WEEKDAYS_LONG = [
+            t('Sunday'),
+            t('Monday'),
+            t('Tuesday'),
+            t('Wednesday'),
+            t('Thursday'),
+            t('Friday'),
+            t('Saturday'),
+        ];
+        const WEEKDAYS_SHORT = [t('Su'), t('Mo'), t('Tu'), t('We'), t('Th'), t('Fr'), t('St')];
+        moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
+
         return (
             <ul className="header-tabs row">
                 <li className="col p-0">
@@ -206,13 +234,14 @@ class Headertabs extends Component {
                 <li className={"col col-live p-0" + (this.state.isLive ? ' active' : '')}>
                     <div className="header-tabs-container justify-content-center"
                          onClick={this.toggleLive.bind(this)}>
-                        <Icon name="far fa-clock mr-1"/> Live
+                        <Icon name="far fa-clock mr-1"/> <Trans>Live</Trans>
                     </div>
                 </li>
                 <li className="col col-date p-0">
                     <div className="header-tabs-container justify-content-end"
                          onClick={this.openDateDropdown.bind(this)}>
-                        {(moment(this.state.selectedDay).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) ? "Today" :
+                        {(moment(this.state.selectedDay).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) ?
+                            <Trans>Today</Trans> :
                             <div className={"selected-date"}>
                                 <span>{moment(this.state.selectedDay).format("DD")}</span><span>{moment(this.state.selectedDay).format("MMM")}</span>
                             </div>}
@@ -223,6 +252,9 @@ class Headertabs extends Component {
                             onDayClick={this.handleSelectedDay.bind(this)}
                             firstDayOfWeek={1}
                             selectedDays={new Date(this.state.selectedDay)}
+                            months={MONTHS}
+                            weekdaysLong={WEEKDAYS_LONG}
+                            weekdaysShort={WEEKDAYS_SHORT}
                         />
                     ) : (
                         null
@@ -241,10 +273,10 @@ class Headertabs extends Component {
                         </div>
                         <div className="confirm-container row m-0">
                             <div className="col filter-btn filter-okay" onClick={this.applyFilter.bind(this)}>
-                                Apply (<strong>{this.state.filteredItems.length}</strong>)
+                                <Trans>Apply</Trans> (<strong>{this.state.filteredItems.length}</strong>)
                             </div>
                             <div className="col filter-btn filter-clear" onClick={this.clearFilter.bind(this)}>
-                                Clear
+                                <Trans>Clear</Trans>
                             </div>
 
                         </div>
@@ -279,4 +311,4 @@ const FilterItems = props => {
 
 };
 
-export default Headertabs
+export default withNamespaces('translations')(Headertabs)

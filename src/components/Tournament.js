@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Event from "./Event";
+import {Trans} from "react-i18next";
 
 class Tournament extends Component {
     render() {
@@ -12,7 +13,7 @@ class Tournament extends Component {
                                 <div className="row align-items-center">
                                     {this.props.flagImg(tournament)}
                                     <div className="col tournament-name px-2">
-                                        <strong>{tournament.category.name}</strong> - {tournament.tournament.name}
+                                        <strong><Trans>{tournament.category.name}</Trans></strong> - {tournament.tournament.name}
                                     </div>
                                 </div>
                             </div>

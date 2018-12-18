@@ -7,6 +7,7 @@ import Headertabs from "./Headertabs";
 import Footer from "./Footer";
 import Event from "./Event";
 import Icon from "./Icon";
+import {withNamespaces} from "react-i18next";
 
 class Homepage extends Component {
     constructor(props) {
@@ -103,7 +104,7 @@ class Homepage extends Component {
         let favEventsList = [];
         jsonData.sportItem.tournaments.forEach(tournament => {
             tournament.events.forEach(event => {
-                if (this.state.favEvents.indexOf(event.id) > -1) {
+                if (this.state.favEvents.length > 0 && this.state.favEvents.indexOf(event.id) > -1) {
                     favEventsList.push(event)
                 }
             })
@@ -170,6 +171,12 @@ class Homepage extends Component {
     };
 
     render() {
+        const { i18n } = this.props;
+
+        const changeLanguageHandler = lng => {
+            i18n.changeLanguage(lng);
+        };
+
         const dataObj = this.state.mainData;
         let mainContent = [],
             favEventContainer = [];
@@ -217,15 +224,17 @@ class Homepage extends Component {
                     getData={this.getData}
                     flagImg={this.flagImg}
                 />
+
                 {this.state.loading ? <Loading/> : null}
                 <div className="container px-0 homepage-list">
                     {favEventContainer}
                     {mainContent}
                 </div>
+                Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button onClick={() => changeLanguageHandler('en')}>English</button>
                 <Footer/>
             </div>
         )
     }
 }
 
-export default Homepage
+export default withNamespaces('translations')(Homepage);

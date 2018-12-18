@@ -3,6 +3,7 @@ import logo from "../logo.png"
 import Icon from "./Icon";
 import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
+import {Trans} from "react-i18next";
 
 class Navbar extends Component {
 
@@ -113,8 +114,8 @@ class Navbar extends Component {
                 </div>
                 <ul className="nav-list">
                     <li className="logo"><a href="/">LOGO</a></li>
-                    <li><a href="/">Menu 1</a></li>
-                    <li><a href="/">Menu 2</a></li>
+                    <li><a href="/"><Trans>Menu 1</Trans></a></li>
+                    <li><a href="/"><Trans>Menu 2</Trans></a></li>
                     <li><a href="/">Menu 3</a></li>
                     <li><a href="/">Menu 4</a></li>
                     <li><a href="/">SubMenu 1</a></li>

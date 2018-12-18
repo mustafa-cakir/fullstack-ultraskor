@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import Link from "react-router-dom/es/Link";
+import {Trans} from "react-i18next";
 
 class Event extends Component {
     isInProgress() {
@@ -26,30 +27,33 @@ class Event extends Component {
             case "canceled":
                 text =
                     <div className="red small-text line-clamp">
-                        Cancelled
+                        <Trans>Cancelled</Trans>
                     </div>;
                 break;
             case "postponed":
                 text =
                     <div className="red small-text line-clamp">
-                        Postponed
+                        <Trans>Postponed</Trans>
                     </div>;
                 break;
             default:
                 text =
                     <div className="full-time font-weight-bold">
-                        FT
+                        <Trans>FT</Trans>
                     </div>
         }
         return text;
     }
 
     favClickHandler() {
+        console.log('heyoo');
         const event = this.props.event,
             eventId = this.props.event.id;
 
         let favEvents = this.props.favEvents,
             favEventsList = this.props.favEventsList;
+
+        favEvents = (typeof favEvents.indexOf === "undefined") ? favEvents.favEvents : favEvents; // patch for safari
 
         if (favEvents.indexOf(eventId) < 0) {
             favEvents.push(eventId);
@@ -69,7 +73,9 @@ class Event extends Component {
 
     render() {
         const { event } = this.props;
-        const favActive = this.props.favEvents.indexOf(event.id) > -1;
+        let favEvents = this.props.favEvents;
+        favEvents = (typeof favEvents.indexOf === "undefined") ? favEvents.favEvents : favEvents; // patch for safari
+        const favActive = favEvents.indexOf(event.id) > -1;
         return (
             <div className={favActive ? "fav-active event-container " : "event-container"}>
                 <div className="container">
