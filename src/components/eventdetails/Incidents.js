@@ -3,6 +3,12 @@ import iconWhistle from "../../assets/images/icon-whistle.png";
 import Icon from "../Icon";
 
 class Incidents extends Component {
+    constructor(props) {
+        super(props);
+        const {eventData} = this.props;
+        this.incidents = eventData.incidents.reverse();
+    }
+
     static typesHandler(item, type, isHome) {
         if (type === "period") {
             if (item.text === "Second half" || item.text === "First half") return false;
@@ -142,9 +148,7 @@ class Incidents extends Component {
     };
 
     render() {
-        const {eventData} = this.props;
-        if (!eventData.incidents || eventData.incidents.length === 0) return false;
-        eventData.incidents.reverse();
+        //if (!this.incidents || this.incidents.length === 0) return false;
         return (
             <div>
                 <div className="title">Match Incidents</div>
@@ -155,7 +159,7 @@ class Incidents extends Component {
                                 <img src={iconWhistle} alt="whistle" className="icon-whistle"/> Kick off
                             </div>
                         </div>
-                        {eventData.incidents.map((item, index) => {
+                        {this.incidents.map((item, index) => {
                             return (
                                 <div key={index} className={"match-incidents-row"}>
                                     {Incidents.typesHandler(item, item.incidentType, item.isHome === true)}

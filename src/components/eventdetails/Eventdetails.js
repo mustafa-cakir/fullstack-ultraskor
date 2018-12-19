@@ -105,7 +105,7 @@ class Eventdetails extends Component {
             .then(
                 (result) => {
                     jsonData = result;
-                    this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
+
                 },
                 (error) => {
                     jsonData = {error: error.toString()};
@@ -116,6 +116,7 @@ class Eventdetails extends Component {
                     eventData: jsonData,
                     loading: false
                 });
+                this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
             })
     };
 
@@ -163,7 +164,7 @@ class Eventdetails extends Component {
 
     render() {
         let eventData = this.state.eventData;
-        if (!eventData) return (<Loading/>);
+        if (!eventData) return <Loading/>;
         this.tabs = [
             'Summary',
             ...(eventData.event.hasStatistics ? ["Stats"] : []),
