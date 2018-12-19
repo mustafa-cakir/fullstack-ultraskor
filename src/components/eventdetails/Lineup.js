@@ -270,7 +270,7 @@ class Lineup extends Component {
                                                         return <span key={index}
                                                                      className={"mx-1 lineup-icon " + item.incidentClass}/>
                                                     }) : ""}
-
+                                                {(item.substitute && item.rating !== "–") ? <span key={index} className={"mx-1 lineup-icon substitutionin"}/> : ""}
                                                 </div>
                                             <div className="text-gray">{item.positionName}</div>
                                         </div>
