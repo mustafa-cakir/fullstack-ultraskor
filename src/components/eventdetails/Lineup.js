@@ -79,6 +79,28 @@ class Lineup extends Component {
         const homeFormation = lineupData.homeTeam.formation,
             awayFormation = lineupData.awayTeam.formation;
 
+        // let yellowCards = [],
+        //     goals = [],
+        //     redCards = [],
+        //     playersIn = [],
+        //     playersOut = [];
+        //
+        // console.log(typeof activeTeam.incidents, activeTeam.incidents);
+        // Object.keys(activeTeam.incidents).forEach((item) => {
+        //     console.log(item);
+        //     item.forEach((incident) => {
+        //         if (incident.incidentType === "card") {
+        //             if (incident.type === "Yellow") yellowCards.push(incident.player.id);
+        //             else if (incident.type === "Red") redCards.push(incident.player.id);
+        //         } else if (incident.incidentType === "substitution") {
+        //             playersIn.push(incident.playerIn.id);
+        //             playersOut.push(incident.playerOut.id);
+        //         } else if (incident.incidentType === "goal") {
+        //             goals.push(incident.player.id);
+        //         }
+        //     });
+        // });
+
         const formationReverse = [...activeTeam.formation].reverse();
         let iteration = 11;
 
@@ -122,22 +144,35 @@ class Lineup extends Component {
                                             <div className="row">
                                                 {[...Array(parseInt(item))].map((x, i) => {
                                                         iteration--;
+                                                        let player = activeTeam.lineupsSorted[iteration].player,
+                                                            rating = activeTeam.lineupsSorted[iteration].rating,
+                                                            incidents = activeTeam.incidents && activeTeam.incidents[player.id] ? activeTeam.incidents[player.id] : null;
+
                                                         return (
                                                             <div key={i} className="col text-center">
                                                                 <div className="player-container">
                                                                     <div className="picture">
                                                                         <img
-                                                                            alt={activeTeam.lineupsSorted[iteration].player.name}
-                                                                            src={"https://www.sofascore.com/images/player/image_" + activeTeam.lineupsSorted[iteration].player.id + ".png"}/>
-                                                                        {activeTeam.lineupsSorted[iteration].rating ? <span
-                                                                            className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[iteration].rating)}>{activeTeam.lineupsSorted[iteration].rating}</span> : ""}
+                                                                            alt={player.name}
+                                                                            src={"https://www.sofascore.com/images/player/image_" + player.id + ".png"}/>
+                                                                        {rating ? (
+                                                                            <span
+                                                                                className={"text-bold rating " + Lineup.ratingClass(rating)}>{rating}</span>
+                                                                        ) : ""}
+
+                                                                        {incidents ?
+                                                                            incidents.map((item, index) => {
+                                                                                return <span key={index}
+                                                                                             className={"lineup-icon " + item.incidentClass}/>
+                                                                            }) : ""}
+
                                                                     </div>
                                                                     <div className="clearfix"/>
                                                                     <div className="name" style={{
                                                                         background: '#' + activeTeam.color.player.outline,
                                                                         color: '#' + activeTeam.color.player.number
                                                                     }}>
-                                                                        <span>{activeTeam.lineupsSorted[iteration].player.shortName}</span>
+                                                                        <span>{player.shortName}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -159,6 +194,11 @@ class Lineup extends Component {
                                                     {activeTeam.lineupsSorted[0].rating ? <span
                                                         className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
 
+                                                    {activeTeam.incidents && activeTeam.incidents[activeTeam.lineupsSorted[0].player.id] ?
+                                                        activeTeam.incidents[activeTeam.lineupsSorted[0].player.id].map((item, index) => {
+                                                            return <span key={index}
+                                                                         className={"lineup-icon " + item.incidentClass}/>
+                                                        }) : ""}
                                                 </div>
                                                 <div className="clearfix"/>
                                                 <div className="name" style={{
@@ -222,7 +262,16 @@ class Lineup extends Component {
                                         </div>
 
                                         <div className="col list-text">
-                                            <div className="f-700">{item.shirtNumber} - {item.player.name} {item.captain ? <span className="captain">C</span> : ""} </div>
+                                            <div
+                                                className="f-700">{item.shirtNumber} - {item.player.name} {item.captain ?
+                                                <span className="captain">C</span> : ""}
+                                                {activeTeam.incidents && activeTeam.incidents[item.player.id] ?
+                                                    activeTeam.incidents[item.player.id].map((item, index) => {
+                                                        return <span key={index}
+                                                                     className={"mx-1 lineup-icon " + item.incidentClass}/>
+                                                    }) : ""}
+
+                                                </div>
                                             <div className="text-gray">{item.positionName}</div>
                                         </div>
                                         {item.rating ? <div className="col list-rating"><span

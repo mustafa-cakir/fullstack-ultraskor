@@ -901,6 +901,65 @@
                     @include line-clamp(1);
                 }
             }
+            .lineup-icon {
+                position: absolute;
+                &.yellowcard {
+
+                }
+                &.redcard {
+
+                }
+                &.regulargoal {
+
+                }
+            }
+        }
+        .lineup-icon {
+            display: inline-block;
+            left: -5px;
+            top: 5px;
+            width: 10px;
+            height: 15px;
+            &.yellowcard {
+                background: #f6c825;
+                box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                z-index: 1;
+            }
+            &.redcard {
+                background: red;
+                box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                z-index: 2;
+            }
+            &.regulargoal {
+                font-family: "Font Awesome 5 Free";
+                font-weight: 400;
+                height: 17px;
+                line-height: 17px;
+                width: 17px;
+                font-size: .9rem;
+                color: #000;
+                top: 0;
+                left: auto;
+                text-align: center;
+                right: -14px;
+                &:before {
+                    content: "\f1e3";
+                    border-radius: 100%;
+                    background: #fff;
+                    border: 2px solid #fff;
+                    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                }
+            }
+            &.substitutionin{
+                background: url(../images/icon-subs.png) center center no-repeat #fff;
+                background-size: 10px 10px;
+                width: 16px;
+                height: 16px;
+                top: 24px;
+                border-radius: 100%;
+                box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                left: -7px;
+            }
         }
         .right-info {
             font-size: .8rem;
