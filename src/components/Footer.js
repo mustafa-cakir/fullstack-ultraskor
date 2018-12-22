@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Trans} from "react-i18next";
 
 class Footer extends Component {
     render() {
@@ -7,13 +8,13 @@ class Footer extends Component {
                 <footer className="text-center">
                     <p>
                         <code>
-                            Built with React by Mustafa Cakir<br/>(mc@flexiblewebdesign.com)
+                            <Trans>Built with React by Mustafa Cakir</Trans><br/>(mc@flexiblewebdesign.com)
                         </code>
                     </p>
                     <p>
-                        This app has no commercial intents.<br />Developed just for fun ;)
+                        <Trans>This app has no commercial intents.</Trans><br /><Trans>Developed just for fun</Trans> ;)
                     </p>
-                    <small className="gray">Copyright © 2019. All rights reserved</small>
+                    <small className="gray">Copyright © 2019. <Trans>All rights reserved.</Trans></small>
                 </footer>
             </div>
         )

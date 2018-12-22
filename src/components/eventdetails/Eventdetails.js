@@ -10,6 +10,7 @@ import Standings from "./Standings";
 import Stats from "./Stats";
 import Lineup from "./Lineup";
 import Footer from "../Footer";
+import {withNamespaces} from "react-i18next";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -165,13 +166,14 @@ class Eventdetails extends Component {
     render() {
         let eventData = this.state.eventData;
         if (!eventData) return <Loading/>;
+        const { t} = this.props;
         this.tabs = [
-            'Summary',
-            ...(eventData.event.hasStatistics ? ["Stats"] : []),
-            ...(eventData.event.hasLineups ? ["Lineup"] : []),
-            ...(eventData.standingsAvailable ? ["Standing"] : []),
-            'Media',
-            'Forum'
+            t('Summary'),
+            ...(eventData.event.hasStatistics ? [t("Stats")] : []),
+            ...(eventData.event.hasLineups ? [t("Lineup")] : []),
+            ...(eventData.standingsAvailable ? [t("Standing")] : []),
+            t('Media'),
+            t('Forum')
         ];
         return (
             <div className="event-details">
@@ -268,4 +270,4 @@ class Eventdetails extends Component {
     }
 }
 
-export default Eventdetails
+export default withNamespaces('translations')(Eventdetails)

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Trans} from "react-i18next";
 
 class PressureGraph extends Component {
     render() {
@@ -6,7 +7,7 @@ class PressureGraph extends Component {
         if (!eventData.liveForm || eventData.liveForm.length === 0) return false;
         return (
             <div>
-                <div className="title">Pressure</div>
+                <div className="title"><Trans>Pressure</Trans></div>
                 <div className="body">
                     <div className="pressure-graph-container mt-2">
                         <div className="row mx-0">
@@ -44,7 +45,7 @@ class PressureGraph extends Component {
                         </div>
                     </div>
                     <div className="minute-measure row flex-nowrap mt-0 mb-2">
-                        <div className="col label">Min.</div>
+                        <div className="col label"><Trans>Minutes</Trans></div>
                         <div className="col empty-space"/>
                         <div className="col">15'</div>
                         <div className="col">30'</div>

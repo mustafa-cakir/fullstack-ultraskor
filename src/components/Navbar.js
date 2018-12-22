@@ -3,7 +3,7 @@ import logo from "../logo.png"
 import Icon from "./Icon";
 import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
-import {Trans} from "react-i18next";
+import {Trans, withNamespaces} from "react-i18next";
 
 class Navbar extends Component {
 
@@ -84,6 +84,7 @@ class Navbar extends Component {
     }
 
     render() {
+        const {t} = this.props;
         const isPrev = ((this.props.history.location.state) ? this.props.history.location.state.isPrev === true : false);
         return (
             <header className={"header" + (isPrev ? " goback-active" : "")} ref={this.headerEl}>
@@ -98,7 +99,7 @@ class Navbar extends Component {
                                 <span className="ham-border ham-border-bottom">
                                         <span className="ham-border-inner ham-border-inner-bottom"/>
                                     </span>
-                                <span className={"goback-text" + (isPrev ? " show" : "")}>Back</span>
+                                <span className={"goback-text" + (isPrev ? " show" : "")}><Trans>Back</Trans></span>
                             </div>
                         </div>
                         <div className="col text-center">
@@ -129,7 +130,7 @@ class Navbar extends Component {
                             ref={(input) => {
                                 this.searchInput = input;
                             }}
-                            placeholder="Search..."
+                            placeholder={t("Search...")}
                             className="search-input"
                             onChange={this.onChangeHandler}
                         />
@@ -143,4 +144,4 @@ class Navbar extends Component {
     }
 }
 
-export default withRouter(Navbar)
+export default withNamespaces('translations')(withRouter(Navbar))

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
+import {Trans} from "react-i18next";
 
 class Lineup extends Component {
     constructor(props) {
@@ -225,29 +226,29 @@ class Lineup extends Component {
                                     </div>
                                     <div className="col">
                                         <div className="coach-name f-700">{activeTeam.manager.name}</div>
-                                        <div className="text-gray">Coach</div>
+                                        <div className="text-gray"><Trans>Coach</Trans></div>
                                     </div>
                                 </div>
                             </div>
                             <div className="col col-5 text-right right-info">
                                 {!activeTeam.confirmedLineups ?
-                                    <div className="possible-lineup">Possible Lineup!</div> : ""}
+                                    <div className="possible-lineup"><Trans>Possible Lineup</Trans>!</div> : ""}
                                 {activeTeam.rating ?
-                                    <div className="team-rating">Team Avg. Rating: <span
+                                    <div className="team-rating"><Trans>Team Avg. Rating</Trans>: <span
                                         className={"text-bold rating " + Lineup.ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>
                                     </div> : ""}
 
                                 {activeTeam.averageAge.startersAverageAge ?
-                                    <div className="mt-1">Avg. Age: <span
+                                    <div className="mt-1"><Trans>Avg. Age</Trans>: <span
                                         className="f-500"> {activeTeam.averageAge.startersAverageAge}</span></div> : ""}
                             </div>
                         </div>
                         <div className="body list">
                             <ul className="horizontal-tab">
                                 <li className={this.state.listTab === 0 ? "active" : ""}
-                                    onClick={() => this.listTabHandler(0)}><span>Lineup</span></li>
+                                    onClick={() => this.listTabHandler(0)}><span><Trans>Lineup</Trans></span></li>
                                 <li className={this.state.listTab === 1 ? "active" : ""}
-                                    onClick={() => this.listTabHandler(1)}><span>Substitues</span></li>
+                                    onClick={() => this.listTabHandler(1)}><span><Trans>Substitues</Trans></span></li>
                             </ul>
                             {activeTeam.lineupsSorted.map((item, index) => {
                                 if (this.state.listTab === 0 && item.substitute) return false;
@@ -272,7 +273,7 @@ class Lineup extends Component {
                                                     }) : ""}
                                                 {(item.substitute && item.rating !== "–") ? <span key={index} className={"mx-1 lineup-icon substitutionin"}/> : ""}
                                                 </div>
-                                            <div className="text-gray">{item.positionName}</div>
+                                            <div className="text-gray"><Trans>{item.positionName}</Trans></div>
                                         </div>
                                         {item.rating ? <div className="col list-rating"><span
                                             className={"text-bold rating " + Lineup.ratingClass(item.rating)}>{item.rating}</span>

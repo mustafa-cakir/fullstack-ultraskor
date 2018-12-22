@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import moment from "moment";
+import {Trans} from "react-i18next";
 
 class MatchInfo extends Component {
     render() {
@@ -18,34 +19,34 @@ class MatchInfo extends Component {
         }
         return (
             <div className="white-box mt-3">
-                <div className="title">Match Information</div>
+                <div className="title"><Trans>Match Information</Trans></div>
                 <div className="body">
                     <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Date</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Date</Trans></div>
                         <div className="col col-7">{date}</div>
                     </div>
                     {tournament ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Tournament</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Tournament</Trans></div>
                         <div className="col col-7">{tournament}</div>
                     </div> : ''}
                     {(country || city) ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Location</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Location</Trans></div>
                         <div className="col col-7">{country || ""}, {city || ""}</div>
                     </div> : ''}
                     {stadium ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Stadium</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Stadium</Trans></div>
                         <div className="col col-7">{stadium}</div>
                     </div> : ''}
                     {capacity ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Capacity</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Capacity</Trans></div>
                         <div className="col col-7">{capacity}</div>
                     </div> : ''}
                     {attendance ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Attendance</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Attendance</Trans></div>
                         <div className="col col-7">{attendance}</div>
                     </div> : ''}
                     {referee ? <div className="row">
-                        <div className="col col-3 f-500 text-right pr-0">Referee</div>
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Referee</Trans></div>
                         <div className="col col-7">{referee}</div>
                     </div> : ''}
                 </div>

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Trans, withNamespaces} from "react-i18next";
 
 class Stats extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class Stats extends Component {
     }
 
     render() {
+        const { t } = this.props;
         const periods = this.props.eventData.statistics.periods;
         if (!periods[this.state.period]) return;
         const customSorting = ["Possession", "Shots", "Shots extra", "Passes", "TVData", "Duels", "Defending"];
@@ -33,11 +35,11 @@ class Stats extends Component {
                         {periods[1] && periods[2] ? (
                             <ul className="horizontal-tab">
                                 <li className={this.state.period === 0 ? "active" : ""}
-                                    onClick={() => this.periodChangeHandler(0)}><span>Overal</span></li>
+                                    onClick={() => this.periodChangeHandler(0)}><span><Trans>Overal</Trans></span></li>
                                 <li className={this.state.period === 1 ? "active" : ""}
-                                    onClick={() => this.periodChangeHandler(1)}><span>1st Half</span></li>
+                                    onClick={() => this.periodChangeHandler(1)}><span><Trans>1st Half</Trans></span></li>
                                 <li className={this.state.period === 2 ? "active" : ""}
-                                    onClick={() => this.periodChangeHandler(2)}><span>2nd Half</span></li>
+                                    onClick={() => this.periodChangeHandler(2)}><span><Trans>2nd Half</Trans></span></li>
                             </ul>
                         ) : ""}
                         {groups.map((group, index) => {
@@ -45,7 +47,7 @@ class Stats extends Component {
                                 return (
                                     <div key={index}>
                                         <div className="group-title" key={index}>
-                                            {group.groupName}
+                                            <Trans>{group.groupName}</Trans>
                                         </div>
                                         {group.statisticsItems.map((item, index) => {
                                             return (
@@ -69,7 +71,7 @@ class Stats extends Component {
                                 return (
                                     <div key={index}>
                                         <div className="group-title" key={index}>
-                                            {group.groupName === "TVData" ? "Discipline" : group.groupName}
+                                            {group.groupName === "TVData" ? t("Discipline") : <Trans>{group.groupName}</Trans>}
                                         </div>
                                         {group.statisticsItems.map((item, index) => {
                                             let homeNum = parseInt(item.home, 10),
@@ -82,7 +84,7 @@ class Stats extends Component {
                                                         <div className="col text-left f-700"><span
                                                             className={"num home-num " + (homeNum > awayNum ? "higher" : "")}>{item.home}</span>
                                                         </div>
-                                                        <div className="col f-300">{item.name}</div>
+                                                        <div className="col f-300"><Trans>{item.name}</Trans></div>
                                                         <div className="col text-right f-700"><span
                                                             className={"num away-num " + (awayNum > homeNum ? "higher" : "")}>{item.away}</span>
                                                         </div>
@@ -121,4 +123,4 @@ class Stats extends Component {
     }
 }
 
-export default Stats
+export default withNamespaces('translations')(Stats)

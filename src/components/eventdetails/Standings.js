@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
+import {Trans} from "react-i18next";
 
 class Standings extends Component {
     constructor(props) {
@@ -54,9 +55,9 @@ class Standings extends Component {
                             </div>
                             <div className="col">
                                 <div className="name">{standingsTables.tournament.name}</div>
-                                <div className="country">{standingsTables.category.name}</div>
+                                <div className="country"><Trans>{standingsTables.category.name}</Trans></div>
                             </div>
-                            {standingsTables.isLive ? <div className="col text-right live-label pr-4">Live Table!</div> : ""}
+                            {standingsTables.isLive ? <div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!</div> : ""}
                         </div>
                         <div className="body">
                             <table className="table">
@@ -64,11 +65,11 @@ class Standings extends Component {
                                 <tr>
                                     <th className="order" scope="col"/>
                                     <th className="team" scope="col"/>
-                                    <th scope="col">P</th>
-                                    <th scope="col">W</th>
-                                    <th scope="col">D</th>
-                                    <th scope="col">L</th>
-                                    <th scope="col">Pts</th>
+                                    <th scope="col"><Trans>P</Trans></th>
+                                    <th scope="col"><Trans>W</Trans></th>
+                                    <th scope="col"><Trans>D</Trans></th>
+                                    <th scope="col"><Trans>L</Trans></th>
+                                    <th scope="col"><Trans>Pts</Trans></th>
                                 </tr>
                                 </thead>
                                 <tbody>

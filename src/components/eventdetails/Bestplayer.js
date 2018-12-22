@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Icon from "../Icon";
+import {Trans, withNamespaces} from "react-i18next";
 
 class Bestplayer extends Component {
     static ratingClass(value) {
@@ -20,7 +21,7 @@ class Bestplayer extends Component {
     }
 
     render() {
-        const {eventData, swipeByTabName} = this.props;
+        const {eventData, swipeByTabName, t} = this.props;
         if (
             !eventData.event
             || !eventData.event.bestAwayTeamPlayer
@@ -28,7 +29,7 @@ class Bestplayer extends Component {
         ) return false;
         return (
             <div className="best-player">
-                <div className="best-player-title text-center">Best Players</div>
+                <div className="best-player-title text-center"><Trans>Best Players</Trans></div>
                 <div className="best-player-container mt-2 mb-2">
                     <div className="row m-0 align-items-center">
                         <div className="p-0 col col-img"><img
@@ -49,7 +50,7 @@ class Bestplayer extends Component {
                             alt={eventData.event.bestAwayTeamPlayer.player.name}/></div>
                     </div>
                 </div>
-                <div className={"best-player-link text-center mb-4"} onClick={() => swipeByTabName('Lineup')}><span>See all <Icon
+                <div className={"best-player-link text-center mb-4"} onClick={() => swipeByTabName(t('Lineup'))}><span><Trans>See all</Trans> <Icon
                     name="fas fa-angle-right"/></span>
                 </div>
             </div>
@@ -57,4 +58,4 @@ class Bestplayer extends Component {
     }
 }
 
-export default Bestplayer
+export default withNamespaces('translations')(Bestplayer)
