@@ -11,6 +11,7 @@ import Stats from "./Stats";
 import Lineup from "./Lineup";
 import Footer from "../Footer";
 import {withNamespaces} from "react-i18next";
+import Iddaa from "./Iddaa";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -166,11 +167,12 @@ class Eventdetails extends Component {
     render() {
         let eventData = this.state.eventData;
         if (!eventData) return <Loading/>;
-        const { t} = this.props;
+        const {t} = this.props;
         this.tabs = [
             t('Summary'),
             ...(eventData.event.hasStatistics ? [t("Stats")] : []),
             ...(eventData.event.hasLineups ? [t("Lineup")] : []),
+            t('Iddaa'),
             ...(eventData.standingsAvailable ? [t("Standing")] : []),
             t('Media'),
             t('Forum')
@@ -196,6 +198,11 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping,
                                 disableScroll: false
                             }} ref={this.swipeEl}>
+                    <div className="swipe-content lineup" data-tab="iddaa">
+                        <Iddaa eventData={eventData} srMatchData={this.state.srMatchData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                    </div>
+
+
                     <div className="swipe-content summary">
                         <div className="event-details-summary">
                             <div className="container">
@@ -223,6 +230,10 @@ class Eventdetails extends Component {
                                 : ""}
                         </div>
                     ) : ""}
+
+                    <div className="swipe-content lineup" data-tab="iddaa">
+                        <Iddaa eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                    </div>
 
                     {eventData.standingsAvailable ? (
                         <div className="swipe-content standing" data-tab="standing">
