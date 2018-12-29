@@ -118,27 +118,26 @@ class Homepage extends Component {
         if (options.loading) this.setState({loading: true});
         let jsonData = {};
 
-        fetch('/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    if (options.interval) {
-                        clearInterval(this.interval);
-                        this.interval = setInterval(() => {
-                            this.getData({
-                                api: options.api,
-                                loading: false
-                            });
-                        }, options.intervaltime || 10000);
-                    }
-                    jsonData = this.preprocessData(result);
-                    if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
-                },
-                (error) => {
-                    jsonData = {error: error.toString()};
+        fetch('/api/?api=2' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
-            )
-            .then(() => {
+            })
+            .then(res => {
+                if (options.interval) {
+                    clearInterval(this.interval);
+                    this.interval = setInterval(() => {
+                        this.getData({
+                            api: options.api,
+                            loading: false
+                        });
+                    }, options.intervaltime || 10000);
+                }
+                jsonData = this.preprocessData(res);
+                if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
                 this.setState({
                     orjData: jsonData,
                     mainData: jsonData,
@@ -151,6 +150,14 @@ class Homepage extends Component {
                     });
                 }
             })
+            .catch(err => {
+                jsonData = {error: err.toString()};
+                this.setState({
+                    orjData: jsonData,
+                    mainData: jsonData,
+                    loading: false
+                });
+            });
     };
 
     flagImg(tournament) {
@@ -171,7 +178,7 @@ class Homepage extends Component {
     };
 
     render() {
-        const { i18n } = this.props;
+        const {i18n} = this.props;
 
         const changeLanguageHandler = lng => {
             i18n.changeLanguage(lng);
@@ -231,9 +238,10 @@ class Homepage extends Component {
                     {mainContent}
                 </div>
                 <div className="m-3">
-                Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button onClick={() => changeLanguageHandler('en')}>English</button>
+                    Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button
+                    onClick={() => changeLanguageHandler('en')}>English</button>
                 </div>
-                    <Footer/>
+                <Footer/>
             </div>
         )
     }

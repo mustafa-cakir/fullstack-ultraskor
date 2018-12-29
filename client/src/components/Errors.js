@@ -62,11 +62,11 @@ const Error = props => {
     };
     return (
             <div className="error fetch-alert">
-                <strong>Error!</strong>
-                <p>Something went wrong :( </p>
+                <strong><Trans>Error</Trans>! :(</strong>
+                <p><Trans>Something went wrong</Trans></p>
                 <div className={"error-refresh-wrapper mt-3 mb-5 d-inline-block"} onClick={refresh}>
                     <p className="error-refresh-btn mb-0"><Icon name="fas fa-redo"/></p>
-                    <p className={"error-refresh-text"}>Refresh!</p>
+                    <p className={"error-refresh-text"}><Trans>Refresh the Page</Trans></p>
                 </div>
                 <p className="small-text">
                     <code>{ props.message || ""}</code>

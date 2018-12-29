@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
+import Errors from "../Errors";
 
 class Lineup extends Component {
     constructor(props) {
@@ -23,23 +24,25 @@ class Lineup extends Component {
     }
 
     getData = api => {
-        let jsonData = {};
         fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    jsonData = result;
-                },
-                (error) => {
-                    jsonData = {error: error.toString()};
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
-            )
-            .then(() => {
+            })
+            .then(res => {
                 this.setState({
-                    lineupData: jsonData,
-                    activeTeam: jsonData.homeTeam
+                    lineupData: res,
+                    activeTeam: res.homeTeam
                 });
             })
+            .catch(err => {
+                this.setState({
+                    lineupData: {error: err.toString()},
+                });
+            });
     };
 
     listTabHandler(selection) {
@@ -74,9 +77,10 @@ class Lineup extends Component {
 
     render() {
         const {lineupData, activeTeam} = this.state;
-        const {eventData} = this.props;
         if (!lineupData) return <Loading type="inside"/>;
+        if (lineupData.error) return <Errors type="error" message={lineupData.error}/>;
 
+        const {eventData} = this.props;
         const homeFormation = lineupData.homeTeam.formation,
             awayFormation = lineupData.awayTeam.formation;
 
@@ -271,8 +275,9 @@ class Lineup extends Component {
                                                         return <span key={index}
                                                                      className={"mx-1 lineup-icon " + item.incidentClass}/>
                                                     }) : ""}
-                                                {(item.substitute && item.rating !== "–") ? <span key={index} className={"mx-1 lineup-icon substitutionin"}/> : ""}
-                                                </div>
+                                                {(item.substitute && item.rating !== "–") ? <span key={index}
+                                                                                                  className={"mx-1 lineup-icon substitutionin"}/> : ""}
+                                            </div>
                                             <div className="text-gray"><Trans>{item.positionName}</Trans></div>
                                         </div>
                                         {item.rating ? <div className="col list-rating"><span

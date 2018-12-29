@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
+import Errors from "../Errors";
 
 class Standings extends Component {
     constructor(props) {
@@ -20,28 +21,32 @@ class Standings extends Component {
     }
 
     getData = api => {
-        let jsonData = {};
         fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    jsonData = result;
-                },
-                (error) => {
-                    jsonData = {error: error.toString()};
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
-            )
-            .then(() => {
+            })
+            .then(res => {
                 this.setState({
-                    standingData: jsonData,
+                    standingData: res,
                 });
             })
+            .catch(err => {
+                this.setState({
+                    standingData: {error: err.toString()},
+                });
+            });
     };
 
     render() {
         const {standingData} = this.state;
-        const {eventData} = this.props;
         if (!standingData) return <Loading type="inside"/>;
+        if (standingData.error) return <Errors type="error" message={standingData.error}/>;
+
+        const {eventData} = this.props;
         const standingsTables = standingData.standingsTables[0];
         return (
             <div>
@@ -57,7 +62,8 @@ class Standings extends Component {
                                 <div className="name">{standingsTables.tournament.name}</div>
                                 <div className="country"><Trans>{standingsTables.category.name}</Trans></div>
                             </div>
-                            {standingsTables.isLive ? <div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!</div> : ""}
+                            {standingsTables.isLive ?
+                                <div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!</div> : ""}
                         </div>
                         <div className="body">
                             <table className="table">
@@ -77,7 +83,8 @@ class Standings extends Component {
                                     return (
                                         <tr key={index}
                                             className={(item.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (item.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (item.isLive ? ("live-game " + item.liveMatchStatus) : "")}>
-                                            <td className={"order " + (item.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[item.promotion.id].class : "")}><span>{item.position}</span></td>
+                                            <td className={"order " + (item.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[item.promotion.id].class : "")}>
+                                                <span>{item.position}</span></td>
                                             <td className="team">{item.team.shortName}<span className="live-pulse"/>
                                             </td>
                                             <td className="matches">{item.totalFields.matchesTotal}</td>

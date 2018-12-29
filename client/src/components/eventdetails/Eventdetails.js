@@ -12,6 +12,7 @@ import Lineup from "./Lineup";
 import Footer from "../Footer";
 import {withNamespaces} from "react-i18next";
 import Iddaa from "./Iddaa";
+import Errors from "../Errors";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -103,29 +104,40 @@ class Eventdetails extends Component {
         this.setState({loading: true});
         let jsonData = {};
         fetch('/api/?api=' + api, {cache: "no-store"})
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    jsonData = result;
-
-                },
-                (error) => {
-                    jsonData = {error: error.toString()};
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
-            )
-            .then(() => {
+            })
+            .then(result => {
+                jsonData = result;
                 this.setState({
                     eventData: jsonData,
                     loading: false
                 });
                 this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
             })
+            .catch(err => {
+                jsonData = {error: err.toString()};
+                this.setState({
+                    eventData: jsonData,
+                    loading: false
+                });
+            });
     };
 
     getSRdata(homeTeamId, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
         fetch('/api/sr/1/' + date, {cache: "reload"})
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
+                }
+            })
             .then(res => {
                 res.data.forEach(item => {
                     let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
@@ -138,6 +150,9 @@ class Eventdetails extends Component {
                 //     });
                 // });
                 // console.log(srJsonData);
+            })
+            .catch(err => {
+                console.log(err);
             });
     }
 
@@ -167,6 +182,8 @@ class Eventdetails extends Component {
     render() {
         let eventData = this.state.eventData;
         if (!eventData) return <Loading/>;
+        if (eventData.error) return <Errors type="error" message={eventData.error}/>;
+
         const {t} = this.props;
         this.tabs = [
             t('Summary'),
@@ -227,7 +244,8 @@ class Eventdetails extends Component {
                     ) : ""}
 
                     <div className="swipe-content iddaa" data-tab="iddaa">
-                        <Iddaa eventData={eventData} srMatchData={this.state.srMatchData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                        <Iddaa eventData={eventData} srMatchData={this.state.srMatchData}
+                               swipeAdjustHeight={this.swipeAdjustHeight}/>
                     </div>
 
                     {eventData.standingsAvailable ? (

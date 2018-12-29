@@ -34,7 +34,7 @@ app.get('/api/sr/:sportId/:date', (req, res) => {
         if (!error && response.statusCode === 200) {
             res.send(body);
         } else {
-            res.status(500).send({ error: 'Error while retrieving information from server' })
+            res.status(500).send({ status: "error", message: 'Error while retrieving information from server' })
         }
     });
 });
@@ -44,7 +44,7 @@ app.get('/api/', (req, res) => {
         if (!error && response.statusCode === 200) {
             res.send(body);
         } else {
-            res.status(500).send({ error: 'Error while retrieving information from server' })
+            res.status(500).send({ status: "error", message: 'Error while retrieving information from server' })
         }
     });
 });
