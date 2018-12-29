@@ -118,7 +118,7 @@ class Homepage extends Component {
         if (options.loading) this.setState({loading: true});
         let jsonData = {};
 
-        fetch('/api2/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
