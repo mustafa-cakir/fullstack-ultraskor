@@ -51,13 +51,7 @@ class Navbar extends Component {
     };
 
     clearSearch = () => {
-        if (this.searchInput.value.length > 3) {
-            this.props.getData({
-                api: '/trending/movie/week',
-                data: null,
-                scrollToTop: true
-            });
-        }
+
         this.searchInput.value = '';
         this.bodyClassList.remove('searchbar-opened');
     };
@@ -68,15 +62,7 @@ class Navbar extends Component {
     };
 
     searchHandler = searchTerm => {
-        if (searchTerm.length > 3) {
-            this.props.getData({
-                api: '/search/movie',
-                data: {
-                    query: searchTerm
-                },
-                scrollToTop: true
-            });
-        }
+
     };
 
     goBack() {

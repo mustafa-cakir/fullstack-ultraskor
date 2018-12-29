@@ -10,9 +10,11 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "concurrently": "^4.1.0",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "nodemon": "^1.18.9",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "request": "^2.88.0"
   },
   "scripts": {
     "client": "cd client && yarn start",

@@ -21,7 +21,7 @@ class Standings extends Component {
 
     getData = api => {
         let jsonData = {};
-        fetch('http://host.flexiblewebdesign.com/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {

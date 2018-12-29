@@ -102,7 +102,7 @@ class Eventdetails extends Component {
     getData = api => {
         this.setState({loading: true});
         let jsonData = {};
-        fetch('http://host.flexiblewebdesign.com/api/?api=' + api, {cache: "no-store"})
+        fetch('/api/?api=' + api, {cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {
@@ -124,7 +124,7 @@ class Eventdetails extends Component {
 
     getSRdata(homeTeamId, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-        fetch('http://host.flexiblewebdesign.com/api/?sr=1&sportId=1&date=' + date, {cache: "reload"})
+        fetch('/api/sr/1/' + date, {cache: "reload"})
             .then(res => res.json())
             .then(res => {
                 res.data.forEach(item => {

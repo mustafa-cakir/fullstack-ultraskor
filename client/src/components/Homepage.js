@@ -118,7 +118,7 @@ class Homepage extends Component {
         if (options.loading) this.setState({loading: true});
         let jsonData = {};
 
-        fetch('http://host.flexiblewebdesign.com/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        fetch('/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
             .then(res => res.json())
             .then(
                 (result) => {
