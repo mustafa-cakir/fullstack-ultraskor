@@ -19,7 +19,7 @@ class Errors extends Component {
 }
 
 const NoLiveGame = () => {
-    return(
+    return (
         <div className="error error-no-game">
             <p>No live games at the moment</p>
             <p className="gray">Please check again later.<br/>
@@ -29,7 +29,7 @@ const NoLiveGame = () => {
 };
 
 const NothingFound = () => {
-    return(
+    return (
         <div className="error error-no-game">
             <h3>Nothing found.</h3>
             <p className="gray">Please try different filter or date<br/></p>
@@ -49,7 +49,7 @@ const PageNotFound = () => {
                     <Trans>We couldn't find the page you are looking for</Trans>
                 </p>
                 <Link to="/" className="btn">
-                    <Trans>Back to Homepage</Trans> <Icon name="fas fa-arrow-right"/>
+                    <Trans>Back to Homepage</Trans> <Icon name="fas fa-arrow-right ml-2"/>
                 </Link>
             </div>
         </div>
@@ -61,17 +61,24 @@ const Error = props => {
         window.location.reload();
     };
     return (
-            <div className="error fetch-alert">
-                <strong><Trans>Error</Trans>! :(</strong>
-                <p><Trans>Something went wrong</Trans></p>
-                <div className={"error-refresh-wrapper mt-3 mb-5 d-inline-block"} onClick={refresh}>
-                    <p className="error-refresh-btn mb-0"><Icon name="fas fa-redo"/></p>
-                    <p className={"error-refresh-text"}><Trans>Refresh the Page</Trans></p>
+        <div className="not-found error">
+            <div className="container text-center">
+                <div className="title">
+                    Whoops!
                 </div>
-                <p className="small-text">
-                    <code>{ props.message || ""}</code>
+                <img className="picture mb-4" src={"/static/media/not-found.png"} alt="Page Not Found"/>
+                <p className="mb-4 subtitle">
+                    <Trans>{props.message || ""}</Trans>
                 </p>
+                <span to="/" className="btn mb-2" onClick={refresh}>
+                    <Trans>Refresh the Page</Trans> <Icon name="fas fa-redo ml-1"/>
+                </span>
+                <div className="my-4"/>
+                <Link to="/" className="btn2 simple">
+                    <Trans>Back to Homepage</Trans> <Icon name="fas fa-arrow-right ml-1"/>
+                </Link>
             </div>
+        </div>
     )
 };
 
