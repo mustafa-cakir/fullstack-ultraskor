@@ -33,6 +33,8 @@ app.get('/api/sr/:sportId/:date', (req, res) => {
     request(`http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=${req.params.sportId}&date=${req.params.date}`, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             res.send(body);
+        } else {
+            res.status(500).send({ error: 'Error while retrieving information from server' })
         }
     });
 });
@@ -41,6 +43,8 @@ app.get('/api/', (req, res) => {
     request(`https://www.sofascore.com${req.query.api}`, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             res.send(body);
+        } else {
+            res.status(500).send({ error: 'Error while retrieving information from server' })
         }
     });
 });

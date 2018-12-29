@@ -382,6 +382,10 @@ code {
         margin-bottom: 20px;
         color: #777;
     }
+    .subtitle {
+        max-width: 225px;
+        margin: 0 auto;
+    }
     p {
         font-size: 1.2rem;
     }
@@ -392,7 +396,7 @@ code {
         padding: 10px 20px;
     }
     .picture {
-        max-width: 50%;
+        max-width: 200px;
     }
 }
 

@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import {Route, Switch, withRouter} from "react-router-dom";
 import Eventdetails from "./components/eventdetails/Eventdetails";
-import NotFound from "./components/NotFound";
+import Errors from "./components/Errors";
 
 class App extends Component {
 
@@ -24,7 +24,7 @@ class App extends Component {
                     <Switch>
                         <Route exact path='/' component={Homepage}/>
                         <Route path='/eventdetails/:eventid' component={Eventdetails}/>
-                        <Route component={NotFound}/>
+                        <Route render={() => <Errors type="page-not-found"/>}/>
                     </Switch>
                 </main>
             </div>
