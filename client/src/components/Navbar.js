@@ -89,8 +89,8 @@ class Navbar extends Component {
                             </div>
                         </div>
                         <div className="col text-center">
-                            <img src={logo} className="logo" alt="Live Scores"/>
-                            <h1 className="header-title pl-0"><Link to="/" title="Movie Search"><strong>LIVE</strong>SCORES</Link></h1>
+                            <img src={logo} className="logo" alt="Canli Skor"/>
+                            <h1 className="header-title pl-0"><Link to="/" title="Canli Skor"><strong>CANLI</strong>SKOR.io</Link></h1>
                         </div>
                         <div className="col col-search px-0">
                             <button className="header-btn" onClick={this.toggleSearchBar}>

@@ -159,7 +159,7 @@ class Homepage extends Component {
             return (
                 <div className="col flag-img">
                     <img
-                        src={(process.env.NODE_ENV === 'production' ? '/livescore/' : '/') + "static/media/" + tournament.tournament.uniqueId + ".png"}
+                        src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
                         alt={tournament.tournament.name}/>
                 </div>
             )

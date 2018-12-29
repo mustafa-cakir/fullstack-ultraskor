@@ -370,6 +370,32 @@ code {
 
 }
 
+.not-found {
+    margin: 5vh auto;
+    font-weight: 300;
+    .bold {
+        font-weight: 900;
+
+    }
+    .title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #777;
+    }
+    p {
+        font-size: 1.2rem;
+    }
+    .btn {
+        border: 1px solid $premier-leage-2;
+        border-radius: 20px;
+        color: $premier-leage-2;
+        padding: 10px 20px;
+    }
+    .picture {
+        max-width: 50%;
+    }
+}
+
 @keyframes fadeInUp {
     0% {
         opacity: 0;

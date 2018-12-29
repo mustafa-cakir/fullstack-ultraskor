@@ -3,8 +3,8 @@ import './assets/style/app.scss';
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import {Route, Switch, withRouter} from "react-router-dom";
-import TestComp from "./components/TestComp";
 import Eventdetails from "./components/eventdetails/Eventdetails";
+import NotFound from "./components/NotFound";
 
 class App extends Component {
 
@@ -24,7 +24,7 @@ class App extends Component {
                     <Switch>
                         <Route exact path='/' component={Homepage}/>
                         <Route path='/eventdetails/:eventid' component={Eventdetails}/>
-                        <Route component={TestComp}/>
+                        <Route component={NotFound}/>
                     </Switch>
                 </main>
             </div>
