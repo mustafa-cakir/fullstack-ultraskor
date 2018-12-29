@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './translations';
 
 ReactDOM.render((
-        <BrowserRouter basename={process.env.NODE_ENV === 'production' ? '/livescore' : '/'}>
+        <BrowserRouter basename='/'>
             <App />
         </BrowserRouter>
 ), document.getElementById('root'));

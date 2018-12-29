@@ -198,11 +198,6 @@ class Eventdetails extends Component {
                                 swiping: this.swipeSwiping,
                                 disableScroll: false
                             }} ref={this.swipeEl}>
-                    <div className="swipe-content lineup" data-tab="iddaa">
-                        <Iddaa eventData={eventData} srMatchData={this.state.srMatchData} swipeAdjustHeight={this.swipeAdjustHeight}/>
-                    </div>
-
-
                     <div className="swipe-content summary">
                         <div className="event-details-summary">
                             <div className="container">
@@ -231,8 +226,8 @@ class Eventdetails extends Component {
                         </div>
                     ) : ""}
 
-                    <div className="swipe-content lineup" data-tab="iddaa">
-                        <Iddaa eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                    <div className="swipe-content iddaa" data-tab="iddaa">
+                        <Iddaa eventData={eventData} srMatchData={this.state.srMatchData} swipeAdjustHeight={this.swipeAdjustHeight}/>
                     </div>
 
                     {eventData.standingsAvailable ? (
