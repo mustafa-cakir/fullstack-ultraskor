@@ -1,0 +1,20 @@
+{
+    "name": "CANLISKOR.io",
+    "short_name": "CANLISKOR.io",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png?v=2",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-256x256.png?v=2",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#0656bf",
+    "background_color": "#0656bf",
+    "start_url": "https://www.canliskor.io",
+    "display": "standalone"
+}
