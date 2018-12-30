@@ -5,6 +5,8 @@ import Homepage from "./components/Homepage";
 import {Route, Switch, withRouter} from "react-router-dom";
 import Eventdetails from "./components/eventdetails/Eventdetails";
 import Errors from "./components/Errors";
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-131421305-1');
 
 class App extends Component {
 

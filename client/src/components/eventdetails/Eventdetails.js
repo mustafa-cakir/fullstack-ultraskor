@@ -13,6 +13,9 @@ import Footer from "../Footer";
 import {withNamespaces} from "react-i18next";
 import Iddaa from "./Iddaa";
 import Errors from "../Errors";
+import ReactGA from 'react-ga';
+
+
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -37,6 +40,15 @@ class Eventdetails extends Component {
         const eventid = this.props.match.params.eventid;
         this.getData('/event/' + eventid + '/json');
         this.tabs = [];
+        const page = this.props.location.pathname;
+        this.trackPage(page);
+    };
+
+    trackPage(page) {
+        ReactGA.set({
+            page
+        });
+        ReactGA.pageview(page);
     };
 
     componentDidUpdate() {

@@ -8,6 +8,8 @@ import Footer from "./Footer";
 import Event from "./Event";
 import Icon from "./Icon";
 import {withNamespaces} from "react-i18next";
+import ReactGA from "react-ga";
+
 
 class Homepage extends Component {
     constructor(props) {
@@ -54,7 +56,17 @@ class Homepage extends Component {
         //         loading: false
         //     });
         // }, 10000);
+
+        const page = this.props.location.pathname;
+        this.trackPage(page);
     }
+
+    trackPage(page) {
+        ReactGA.set({
+            page
+        });
+        ReactGA.pageview(page);
+    };
 
     updateParentState = (state) => {
         return new Promise((resolve) => {
