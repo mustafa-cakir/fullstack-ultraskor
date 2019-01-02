@@ -24,16 +24,20 @@ class Homepage extends Component {
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
         this.interval = null;
+        this.todaysDate = null;
+        this.refreshData = true;
     };
 
     componentDidMount() {
-        let todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD'),
-            storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
+        this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
+        this.refreshData = true;
+
+        let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
             storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
 
         if (storageHeadertabsState) {
             if (storageHeadertabsState.selectedDay) {
-                todaysDate = storageHeadertabsState.selectedDay;
+                this.todaysDate = storageHeadertabsState.selectedDay;
             }
         }
 
@@ -44,21 +48,16 @@ class Homepage extends Component {
         }
 
         this.getData({
-            api: '/football//' + todaysDate + '/json',
-            loading: true,
-            interval: false
+            api: '/football//' + this.todaysDate + '/json',
+            loading: true
         });
-
-        // retrieve fresh data in every 10 seconds without displaying loading
-        // setInterval(()=>{
-        //     this.getData({
-        //         api: '/football//' + todaysDate + '/json',
-        //         loading: false
-        //     });
-        // }, 10000);
 
         const page = this.props.location.pathname;
         this.trackPage(page);
+    }
+
+    componentWillUnmount() {
+        this.refreshData = false;
     }
 
     trackPage(page) {
@@ -139,15 +138,6 @@ class Homepage extends Component {
                 }
             })
             .then(res => {
-                if (options.interval) {
-                    clearInterval(this.interval);
-                    this.interval = setInterval(() => {
-                        this.getData({
-                            api: options.api,
-                            loading: false
-                        });
-                    }, options.intervaltime || 10000);
-                }
                 jsonData = this.preprocessData(res);
                 if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
                 this.setState({
@@ -155,6 +145,14 @@ class Homepage extends Component {
                     mainData: jsonData,
                     loading: false
                 });
+                if (this.refreshData) {
+                    setTimeout(()=>{
+                        this.getData({
+                            api: '/football//' + this.todaysDate + '/json',
+                            loading: false,
+                        });
+                    }, 10000);
+                }
                 if (options.scrollToTop) {
                     window.scrollTo({
                         top: 0,
@@ -163,12 +161,14 @@ class Homepage extends Component {
                 }
             })
             .catch(err => {
-                jsonData = {error: err.toString()};
-                this.setState({
-                    orjData: jsonData,
-                    mainData: jsonData,
-                    loading: false
-                });
+                if (options.loading) {
+                    jsonData = {error: err.toString()};
+                    this.setState({
+                        orjData: jsonData,
+                        mainData: jsonData,
+                        loading: false
+                    });
+                }
             });
     };
 

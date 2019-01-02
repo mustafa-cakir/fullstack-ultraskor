@@ -14,7 +14,7 @@ import {withNamespaces} from "react-i18next";
 import Iddaa from "./Iddaa";
 import Errors from "../Errors";
 import ReactGA from 'react-ga';
-
+import moment from "moment";
 
 
 class Eventdetails extends Component {
@@ -34,15 +34,23 @@ class Eventdetails extends Component {
             isTabLineup: false,
             srMatchData: null
         };
+        this.refreshData = true;
+        this.eventid = this.props.match.params.eventid;
     };
 
     componentDidMount() {
-        const eventid = this.props.match.params.eventid;
-        this.getData('/event/' + eventid + '/json');
+        this.getData({
+            api: '/event/' + this.eventid + '/json',
+            loading: true
+        });
         this.tabs = [];
         const page = this.props.location.pathname;
         this.trackPage(page);
     };
+
+    componentWillUnmount() {
+        this.refreshData = false;
+    }
 
     trackPage(page) {
         ReactGA.set({
@@ -112,10 +120,10 @@ class Eventdetails extends Component {
         if (this.swipeEl) this.swipeEl.current.slide(index);
     }
 
-    getData = api => {
-        this.setState({loading: true});
+    getData = options => {
+        if (options.loading) this.setState({loading: true});
         let jsonData = {};
-        fetch('/api/?api=' + api, {cache: "no-store"})
+        fetch('/api/?api=' + options.api, {cache: "no-store"})
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -129,14 +137,27 @@ class Eventdetails extends Component {
                     eventData: jsonData,
                     loading: false
                 });
-                this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
+                if (this.refreshData) {
+                    setTimeout(() => {
+                        this.getData({
+                            api: '/event/' + this.eventid + '/json',
+                            loading: false
+                        });
+                    }, 10000);
+                }
+                if (options.loading) {
+                    this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
+                    //this.getBAdata(null, jsonData.event.formatedStartDate);
+                }
             })
             .catch(err => {
-                jsonData = {error: err.toString()};
-                this.setState({
-                    eventData: jsonData,
-                    loading: false
-                });
+                if (options.loading) {
+                    jsonData = {error: err.toString()};
+                    this.setState({
+                        eventData: jsonData,
+                        loading: false
+                    });
+                }
             });
     };
 
@@ -155,6 +176,36 @@ class Eventdetails extends Component {
                     let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
                     if (found.length > 0) this.setState({srMatchData: found[0]})
                 });
+                // let srJsonData;
+                // res.data.forEach(item => {
+                //     item.Matches.forEach(match=> {
+                //         if (match.HomeTeam.Id === homeTeamId) srJsonData = match;
+                //     });
+                // });
+                // console.log(srJsonData);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    getBAdata(homeTeamId, date) {
+        date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
+        date = moment(date, 'dd.mm.yyyy').format('MM.DD.YYYY');
+        fetch('/api/ba/1/' + date, {cache: "reload"})
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
+                }
+            })
+            .then(res => {
+                console.log(res);
+                // res.data.forEach(item => {
+                //     let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
+                //     if (found.length > 0) this.setState({srMatchData: found[0]})
+                // });
                 // let srJsonData;
                 // res.data.forEach(item => {
                 //     item.Matches.forEach(match=> {
