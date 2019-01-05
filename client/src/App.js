@@ -6,6 +6,7 @@ import {Route, Switch, withRouter} from "react-router-dom";
 import Eventdetails from "./components/eventdetails/Eventdetails";
 import Errors from "./components/Errors";
 import ReactGA from 'react-ga';
+import TestComp from "./components/TestComp";
 ReactGA.initialize('UA-131421305-1');
 
 class App extends Component {
@@ -26,6 +27,7 @@ class App extends Component {
                     <Switch>
                         <Route exact path='/' component={Homepage}/>
                         <Route path='/eventdetails/:eventid' component={Eventdetails}/>
+                        <Route exact path='/test' component={TestComp}/>
                         <Route render={() => <Errors type="page-not-found"/>}/>
                     </Switch>
                 </main>

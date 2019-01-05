@@ -15,6 +15,7 @@ import Iddaa from "./Iddaa";
 import Errors from "../Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
+import Injuries from "./Injuries";
 
 
 class Eventdetails extends Component {
@@ -32,9 +33,10 @@ class Eventdetails extends Component {
             index: 0,
             isTabStanding: false,
             isTabLineup: false,
-            srMatchData: null
+            srMatchData: null,
+            baMatchData: null
         };
-        this.refreshData = true;
+        this.refreshData = false;
         this.eventid = this.props.match.params.eventid;
     };
 
@@ -147,7 +149,7 @@ class Eventdetails extends Component {
                 }
                 if (options.loading) {
                     this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
-                    //this.getBAdata(null, jsonData.event.formatedStartDate);
+                    this.getBAdata(jsonData.event.homeTeam.shortName, jsonData.event.awayTeam.shortName, jsonData.event.formatedStartDate);
                 }
             })
             .catch(err => {
@@ -189,9 +191,9 @@ class Eventdetails extends Component {
             });
     }
 
-    getBAdata(homeTeamId, date) {
+    getBAdata(homeTeam, awayTeam, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-        date = moment(date, 'dd.mm.yyyy').format('MM.DD.YYYY');
+        date = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
         fetch('/api/ba/1/' + date, {cache: "reload"})
             .then(res => {
                 if (res.status === 200) {
@@ -202,17 +204,13 @@ class Eventdetails extends Component {
             })
             .then(res => {
                 console.log(res);
-                // res.data.forEach(item => {
-                //     let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
-                //     if (found.length > 0) this.setState({srMatchData: found[0]})
-                // });
-                // let srJsonData;
-                // res.data.forEach(item => {
-                //     item.Matches.forEach(match=> {
-                //         if (match.HomeTeam.Id === homeTeamId) srJsonData = match;
-                //     });
-                // });
-                // console.log(srJsonData);
+                res.initialData.forEach(item => {
+                    let found = item.matches.filter(match => match.homeTeam.middleName === homeTeam || match.awayTeam.middleName === awayTeam);
+                    if (found.length > 0) {
+                        console.log(found[0]);
+                        this.setState({baMatchData: found[0]})
+                    }
+                });
             })
             .catch(err => {
                 console.log(err);
@@ -248,10 +246,11 @@ class Eventdetails extends Component {
         if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
         const {t} = this.props;
-        this.tabs = [
+        const tabs = [
             t('Summary'),
             ...(eventData.event.hasStatistics ? [t("Stats")] : []),
             ...(eventData.event.hasLineups ? [t("Lineup")] : []),
+            ...(this.state.baMatchData ? [t('Injuries & Susp.')] : []),
             t('Iddaa'),
             ...(eventData.standingsAvailable ? [t("Standing")] : []),
             t('Media'),
@@ -262,7 +261,7 @@ class Eventdetails extends Component {
                 {this.state.loading ? <Loading/> : null}
                 <Scoreboard eventData={eventData}/>
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
-                    {this.tabs.map((tab, index) => {
+                    {tabs.map((tab, index) => {
                         return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                    className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
                     })}
@@ -270,6 +269,7 @@ class Eventdetails extends Component {
                 </ul>
                 <div className="swipe-shadows"/>
                 <ReactSwipe className="swipe-contents"
+                            childCount={tabs.length}
                             swipeOptions={{
                                 speed: 200,
                                 continuous: true,
@@ -287,7 +287,8 @@ class Eventdetails extends Component {
                                     <Incidents eventData={eventData}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
-                                SR Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}
+                                SR Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}<br/>
+                                SA Match ID: {this.state.baMatchData ? this.state.baMatchData.id : ""}
                             </div>
                         </div>
                     </div>
@@ -303,6 +304,12 @@ class Eventdetails extends Component {
                             {this.state.isTabLineup ?
                                 <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
                                 : ""}
+                        </div>
+                    ) : ""}
+
+                    {this.state.baMatchData ? (
+                        <div className="swipe-content injuries" data-tab="injuries">
+                            <Injuries eventData={eventData} matchid={this.state.baMatchData.id} swipeAdjustHeight={this.swipeAdjustHeight}/>
                         </div>
                     ) : ""}
 

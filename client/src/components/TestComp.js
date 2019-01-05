@@ -1,26 +1,25 @@
 import React, {Component} from 'react';
-import Loading from "./Loading";
-import {Trans, withNamespaces} from "react-i18next";
 
 class TestComp extends Component {
-    // constructor(props) {
-    //     super(props);
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+            index: 0,
+        }
+    }
 
     render() {
-        const { t } = this.props;
+        const {index} = this.state;
+
         return (
             <div>
-                <Loading/>
                 test comp content goes here
                 <p>
-                    {t('feed_no_change')}
-                </p>
-                <p>
-                    <Trans>Menu 1</Trans>
+                    {index}
                 </p>
             </div>
         )
     }
 }
-export default withNamespaces('translations')(TestComp)
+
+export default TestComp

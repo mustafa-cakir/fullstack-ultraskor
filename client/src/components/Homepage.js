@@ -26,26 +26,14 @@ class Homepage extends Component {
         this.interval = null;
         this.todaysDate = null;
         this.refreshData = true;
+        this.refreshDataTimeout = null;
     };
 
     componentDidMount() {
         this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
-        this.refreshData = true;
 
-        let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
-            storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
-
-        if (storageHeadertabsState) {
-            if (storageHeadertabsState.selectedDay) {
-                this.todaysDate = storageHeadertabsState.selectedDay;
-            }
-        }
-
-        if (storageFavEvents) {
-            this.setState({
-                favEvents: storageFavEvents
-            });
-        }
+        this.analyzeSessionStorage();
+        console.log(this.todaysDate);
 
         this.getData({
             api: '/football//' + this.todaysDate + '/json',
@@ -54,6 +42,21 @@ class Homepage extends Component {
 
         const page = this.props.location.pathname;
         this.trackPage(page);
+    }
+
+    analyzeSessionStorage() {
+        let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
+            storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
+
+        if (storageHeadertabsState && storageHeadertabsState.selectedDay) {
+            this.todaysDate = storageHeadertabsState.selectedDay;
+        }
+
+        if (storageFavEvents) {
+            this.setState({
+                favEvents: storageFavEvents
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -146,7 +149,9 @@ class Homepage extends Component {
                     loading: false
                 });
                 if (this.refreshData) {
-                    setTimeout(()=>{
+                    clearTimeout(this.refreshDataTimeout);
+                    this.refreshDataTimeout = setTimeout(() => {
+                        this.analyzeSessionStorage();
                         this.getData({
                             api: '/football//' + this.todaysDate + '/json',
                             loading: false,

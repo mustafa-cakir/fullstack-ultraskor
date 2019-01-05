@@ -38,7 +38,7 @@ class Iddaa extends Component {
                                 <div className="col"><img src={IddaLogo2} className="idda-logo" alt="Iddaa Logo"/> 212</div>
                                 <div className="col text-right">MBS: 2</div>
                             </div>
-                            <div>This section is currently under construction</div>
+                            <div className="p-4">This section is currently under construction</div>
                         </div>
                     </div>
                 </div>

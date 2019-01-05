@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const whitelist = [
+    'http://localhost:5000',
     'http://localhost:3000',
     'https://www.canliskor.io',
     'http://www.canliskor.io',
@@ -77,6 +78,25 @@ app.get('/api/sr/:sportId/:date', (req, res) => {
     });
 });
 
+// API calls
+app.get('/api/ol/match/:type/1/:id', (req, res) => {
+    const options = {
+        method: 'GET',
+        url: `https://widget.oley.com/match/${req.params.type}/1/${req.params.id}`,
+        headers: {
+            'Host' : 'widget.oley.com',
+            'Origin': 'https://oley.com'
+        }
+    };
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            res.send(body);
+        } else {
+            res.status(500).send({status: "error", message: 'Error while retrieving information from server'})
+        }
+    });
+});
+
 app.get('/api/', (req, res) => {
     request(`https://www.sofascore.com${req.query.api}?_=${Math.floor(Math.random() * 10e8)}`, function (error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -87,10 +107,10 @@ app.get('/api/', (req, res) => {
     });
 });
 
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'client/build')));
     app.get('*', function (req, res) {
-        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+        res.sendFile(path.join(__dirname,'client/build','index.html'));
     });
-}
+//}
 app.listen(port, () => console.log(`Listening on port ${port}`));

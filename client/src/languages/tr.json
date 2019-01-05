@@ -165,6 +165,17 @@
   "Aerials won": "Kafa Topu Kazanma",
   "Tackles": "Top Kazanma",
   "Interceptions":"Araya Girme",
-  "Clearances":"Uzaklaştırma"
-
+  "Clearances":"Uzaklaştırma",
+  "No injured or suspended player": "Maç kadrosunda sakat yada cezalı oyuncu bulunmamaktadır.",
+  "Injuries & Susp.": "Sakat & Cezalılar",
+  "Injured": "Sakat",
+  "Suspended": "Cezalı",
+  "Suspicious": "Şüpheli",
+  "Out Of Squad": "Kadro Dışı",
+  "Other": "Diğer",
+  "Match": "Maç",
+  "defender": "Defans",
+  "midfielder": "Orta Saha",
+  "goalkeeper": "Kaleci",
+  "attacker": "Forvet"
 }
