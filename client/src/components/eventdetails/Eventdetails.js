@@ -149,7 +149,7 @@ class Eventdetails extends Component {
                 }
                 if (options.loading) {
                     this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
-                    this.getBAdata(jsonData.event.homeTeam.shortName, jsonData.event.awayTeam.shortName, jsonData.event.formatedStartDate);
+                    //this.getBAdata(jsonData.event.homeTeam.shortName, jsonData.event.awayTeam.shortName, jsonData.event.formatedStartDate);
                 }
             })
             .catch(err => {
@@ -165,7 +165,7 @@ class Eventdetails extends Component {
 
     getSRdata(homeTeamId, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-        fetch('/api/sr/1/' + date, {cache: "reload"})
+        fetch('/api/sr/1/' + date, {cache: "force-cache"})
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -176,7 +176,11 @@ class Eventdetails extends Component {
             .then(res => {
                 res.data.forEach(item => {
                     let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
-                    if (found.length > 0) this.setState({srMatchData: found[0]})
+                    if (found.length > 0) {
+                        this.setState({srMatchData: found[0]});
+                        let code = found[0].IddaaMatchId.split('.');
+                        this.getBAdata(code[1], date);
+                    }
                 });
                 // let srJsonData;
                 // res.data.forEach(item => {
@@ -191,10 +195,10 @@ class Eventdetails extends Component {
             });
     }
 
-    getBAdata(homeTeam, awayTeam, date) {
+    getBAdata(code, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
         date = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
-        fetch('/api/ba/1/' + date, {cache: "reload"})
+        fetch('/api/ba/1/' + date, {cache: "force-cache"})
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -203,11 +207,9 @@ class Eventdetails extends Component {
                 }
             })
             .then(res => {
-                console.log(res);
                 res.initialData.forEach(item => {
-                    let found = item.matches.filter(match => match.homeTeam.middleName === homeTeam || match.awayTeam.middleName === awayTeam);
+                    let found = item.matches.filter(match => match.code === parseFloat(code));
                     if (found.length > 0) {
-                        console.log(found[0]);
                         this.setState({baMatchData: found[0]})
                     }
                 });

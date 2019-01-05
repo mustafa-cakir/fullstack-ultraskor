@@ -22,7 +22,6 @@ class Iddaa extends Component {
     render() {
         const {srMatchData} = this.props;
         if (!srMatchData) return <Loading type="inside"/>;
-        console.log(srMatchData);
         return (
             <div>
                 <div className="iddaa container">
