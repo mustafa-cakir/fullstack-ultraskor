@@ -12,7 +12,6 @@
     "concurrently": "^4.1.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "forever": "^0.15.3",
     "nodemon": "^1.18.9",
     "path": "^0.12.7",
     "request": "^2.88.0"
@@ -22,6 +21,6 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "dev:server": "cd client && yarn build && cd .. && yarn start",
-    "start": "concurrently \"yarn install && forever start server.js\" \"cd client && yarn install && yarn build\""
+    "start": "concurrently \"yarn install && node server.js\" \"cd client && yarn install && yarn build\""
   }
 }
