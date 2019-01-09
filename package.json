@@ -1,27 +1,28 @@
 {
-  "name": "canliskor.io",
-  "version": "1.0.0",
-  "description": "canliskor.io - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
-  "author": "Mustafa Cakir",
-  "license": "MIT",
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "concurrently": "^4.1.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "mongodb": "^3.1.10",
-    "nodemon": "^1.18.9",
-    "path": "^0.12.7",
-    "request": "^2.88.0"
-  },
-  "scripts": {
-    "client": "cd client && yarn start",
-    "server": "nodemon server.js",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-    "dev:server": "cd client && yarn build && cd .. && yarn start",
-    "start": "concurrently \"yarn install && node server.js\" \"cd client && yarn install && yarn build\""
-  }
+	"name": "canliskor.io",
+	"version": "1.0.0",
+	"description": "canliskor.io - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
+	"author": "Mustafa Cakir",
+	"license": "MIT",
+	"engines": {
+		"node": ">=8.0.0"
+	},
+	"dependencies": {
+		"body-parser": "^1.18.3",
+		"concurrently": "^4.1.0",
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"mongodb": "^3.1.10",
+		"nodemon": "^1.18.9",
+		"path": "^0.12.7",
+		"request": "^2.88.0"
+	},
+	"scripts": {
+		"dev-client": "cd client && yarn install && yarn start",
+		"dev-server": "yarn install && nodemon server.js",
+		"prod-client": "cd client && yarn install && yarn build",
+		"prod-server": "yarn install && pm2 restart server.js",
+		"dev": "concurrently --kill-others \"yarn dev-client\" \"yarn dev-server\" ",
+		"start": "concurrently --kill-others \"yarn prod-server\" \"yarn prod-client\""
+	}
 }
