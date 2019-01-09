@@ -289,8 +289,8 @@ class Eventdetails extends Component {
                                     <Incidents eventData={eventData}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
-                                SR Match ID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}<br/>
-                                SA Match ID: {this.state.baMatchData ? this.state.baMatchData.id : ""}
+                                SR MatchID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}<br/>
+                                SA MatchID: {this.state.baMatchData ? this.state.baMatchData.id : ""}
                             </div>
                         </div>
                     </div>

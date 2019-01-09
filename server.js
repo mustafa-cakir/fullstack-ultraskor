@@ -1,10 +1,14 @@
+
 const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const app = express();
+
 const request = require('request');
 const port = process.env.PORT || 5000;
+const MongoClient = require('mongodb').MongoClient;
+let db;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -28,6 +32,18 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+const { MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
+
+// Initialize connection once
+MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, { useNewUrlParser: true }, function(err, client) {
+    if(err) throw err;
+    db = client.db('canliskor');
+    // Start the application after the database connection is ready
+    app.listen(port, () => console.log(`Listening on port ${port}`));
+});
+
+
 
 // API calls
 app.get('/api/ba/:sportId/:date', (req, res) => {
@@ -72,6 +88,26 @@ app.get('/api/sr/:sportId/:date', (req, res) => {
     request(`http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=${req.params.sportId}&date=${req.params.date}`, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             res.send(body);
+
+            // db.collection('test').insertOne(body, function (err, result) {
+            //     console.log('err: ' + err, 'result: ' + result );
+            // });
+            var demoPerson = { name:'John', lastName:'Smyth' };
+            var collection = db.collection('test');
+            collection.insertOne(JSON.parse(body), function(err, docs) {
+                console.log('Inserted');
+
+                // collection.find(findKey).toArray(function(err, results) {
+                //     console.log('Found results:', results);
+                //
+                //     collection.remove(findKey, function(err, results) {
+                //         console.log('Deleted person');
+                //
+                //         db.close();
+                //     });
+                // });
+            });
+            //
         } else {
             res.status(500).send({status: "error", message: 'Error while retrieving information from server'})
         }
@@ -113,4 +149,3 @@ app.get('/api/', (req, res) => {
         res.sendFile(path.join(__dirname,'client/build','index.html'));
     });
 //}
-app.listen(port, () => console.log(`Listening on port ${port}`));
