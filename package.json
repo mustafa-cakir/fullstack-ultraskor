@@ -19,10 +19,10 @@
 	},
 	"scripts": {
 		"dev-client": "cd client && yarn install && yarn start",
-		"prod-client": "cd client && yarn install && yarn build",
 		"dev-server": "yarn install && nodemon server.js",
-		"prod-server": "yarn install && pm2 restart server.js",
-		"dev": "yarn dev-server && yarn dev-client",
-		"start": "yarn prod-server && yarn prod-client"
+		"prod-client": "cd client && yarn install && yarn build",
+		"prod-server": "yarn install && pm2 start server.js",
+		"dev": "concurrently --kill-others \"yarn dev-client\" \"yarn dev-server\" ",
+		"start": "concurrently --kill-others \"yarn prod-server\" \"yarn prod-client\""
 	}
 }
