@@ -22,7 +22,7 @@
 		"dev-server": "yarn install && nodemon server.js",
 		"prod-client": "cd client && yarn install && yarn build",
 		"prod-server": "yarn install && pm2 restart server.js",
-		"dev": "concurrently --kill-others \"yarn dev-client\" \"yarn dev-server\" ",
-		"start": "concurrently --kill-others \"yarn prod-server\" \"yarn prod-client\""
+		"dev": "concurrently \"yarn dev-client\" \"yarn dev-server\"",
+		"start": "concurrently \"yarn prod-server\" \"yarn prod-client\""
 	}
 }
