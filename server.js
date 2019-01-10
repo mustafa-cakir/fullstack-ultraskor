@@ -64,17 +64,16 @@ app.get('/api/', (req, res) => {
 });
 
 app.get('/api/helper/:date1/:date2', (req, res) => {
-	if (db) {
-		let collection = db.collection('matchlistbydate');
-		collection.findOne({"date": req.params.date1}).then(result => {
-			if (result && result.data) {
-				res.send(result.data);
-			} else {
-				initRemoteRequests()
-			}
-		})
-	} else {
-		initRemoteRequests();
+	const insertDb = (data) => {
+		if (db) {
+			let dbData = {};
+			dbData["date"] = req.params.date1;
+			dbData["data"] = data;
+			let collection = db.collection('matchlistbydate');
+			collection.insertOne(dbData, function () {
+				console.log('Inserted');
+			});
+		}
 	}
 
 	const initRemoteRequests = () => {
@@ -138,16 +137,17 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 			});
 	};
 
-	const insertDb = (data) => {
-		if (db) {
-			let dbData = {};
-			dbData["date"] = req.params.date1;
-			dbData["data"] = data;
-			let collection = db.collection('matchlistbydate');
-			collection.insertOne(dbData, function () {
-				console.log('Inserted');
-			});
-		}
+	if (db) {
+		let collection = db.collection('matchlistbydate');
+		collection.findOne({"date": req.params.date1}).then(result => {
+			if (result && result.data) {
+				res.send(result.data);
+			} else {
+				initRemoteRequests()
+			}
+		})
+	} else {
+		initRemoteRequests();
 	}
 });
 
