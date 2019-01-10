@@ -148,7 +148,8 @@ class Eventdetails extends Component {
                     }, 10000);
                 }
                 if (options.loading) {
-                    this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
+                    this.getHelperData(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
+                	//this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
                     //this.getBAdata(jsonData.event.homeTeam.shortName, jsonData.event.awayTeam.shortName, jsonData.event.formatedStartDate);
                 }
             })
@@ -163,6 +164,29 @@ class Eventdetails extends Component {
             });
     };
 
+	getHelperData(homeTeamId, date) {
+		date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
+		let date2 = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
+		fetch(`/api/helper/${date}/${date2}`, {cache: "force-cache"})
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					baMatchData: '1',
+					srMatchData: '2'
+				})
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
+
+	/*
     getSRdata(homeTeamId, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
         fetch('/api/sr/1/' + date, {cache: "force-cache"})
@@ -194,7 +218,6 @@ class Eventdetails extends Component {
                 console.log(err);
             });
     }
-
     getBAdata(code, date) {
         date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
         date = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
@@ -218,6 +241,7 @@ class Eventdetails extends Component {
                 console.log(err);
             });
     }
+    */
 
     rippleEffectHandler(e) {
         let el = e.target,
