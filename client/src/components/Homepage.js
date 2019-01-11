@@ -33,7 +33,6 @@ class Homepage extends Component {
         this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
 
         this.analyzeSessionStorage();
-        console.log(this.todaysDate);
 
         this.getData({
             api: '/football//' + this.todaysDate + '/json',
