@@ -1,7 +1,7 @@
 {
-  "name": "canliskor.io",
+  "name": "ultraskor.com",
   "version": "1.0.0",
-  "description": "canliskor.io - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
+  "description": "ultraskor.com - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
   "author": "Mustafa Cakir",
   "license": "MIT",
   "engines": {

@@ -1,6 +1,6 @@
 {
-    "name": "CANLISKOR.io",
-    "short_name": "CANLISKOR.io",
+    "name": "UltraSkor",
+    "short_name": "UltraSkor"
     "icons": [
         {
             "src": "/android-chrome-192x192.png?v=2",
@@ -15,6 +15,6 @@
     ],
     "theme_color": "#0656bf",
     "background_color": "#0656bf",
-    "start_url": "https://www.canliskor.io",
+    "start_url": "https://www.ultraskor.com",
     "display": "standalone"
 }

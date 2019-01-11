@@ -16,6 +16,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 const whitelist = [
 	'http://localhost:5000',
 	'http://localhost:3000',
+	'https://www.ultraskor.com',
+	'http://www.ultraskor.com',
+	'https://ultraskor.com',
+	'http://ultraskor.com',
 	'https://www.canliskor.io',
 	'http://www.canliskor.io',
 	'https://canliskor.io',
@@ -45,7 +49,7 @@ const mongoOptions = {
 // Initialize connection once
 MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
 	if (!err) {
-		db = client.db('canliskor');
+		db = client.db('ultraskor');
 	}
 	// Start the application after the database connection is ready
 	app.listen(port, () => console.log(`Listening on port ${port}`));
