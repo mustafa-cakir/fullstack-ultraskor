@@ -151,8 +151,6 @@ class Eventdetails extends Component {
 				}
 				if (options.loading) {
 					this.getHelperData(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
-					//this.getSRdata(jsonData.event.homeTeam.id, jsonData.event.formatedStartDate);
-					//this.getBAdata(jsonData.event.homeTeam.shortName, jsonData.event.awayTeam.shortName, jsonData.event.formatedStartDate);
 				}
 			})
 			.catch(err => {
@@ -178,70 +176,41 @@ class Eventdetails extends Component {
 				}
 			})
 			.then(res => {
-				console.log(res);
-				this.setState({
-					srMatchData: "heyoo1",
-					baMatchData: "heyoo2",
-				})
+				if (res.provider1) this.getDataFromProviderOne(res, homeTeamId);
 			})
 			.catch(err => {
 				console.log(err);
 			});
 	}
 
-	getSRdata(homeTeamId, date) {
-		date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-		fetch('/api/sr/1/' + date, {cache: "force-cache"})
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
-				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
-				}
-			})
-			.then(res => {
-				res.data.forEach(item => {
-					let found = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
-					if (found.length > 0) {
-						this.setState({srMatchData: found[0]});
-						let code = found[0].IddaaMatchId.split('.');
-						this.getBAdata(code[1], date);
-					}
-				});
-				// let srJsonData;
-				// res.data.forEach(item => {
-				//     item.Matches.forEach(match=> {
-				//         if (match.HomeTeam.Id === homeTeamId) srJsonData = match;
-				//     });
-				// });
-				// console.log(srJsonData);
-			})
-			.catch(err => {
-				console.log(err);
-			});
+	getDataFromProviderOne(data, homeTeamId) {
+		data.provider1.forEach(item => {
+			let matchData = item.Matches.filter(match => match.HomeTeam.Id === homeTeamId);
+			if (matchData.length > 0) {
+				this.setState({srMatchData: matchData[0]});
+				let arg = {};
+				arg.iddaaCode = matchData[0].IddaaMatchId.split('.')[1];
+				//arg.homeTeam =
+				if (data.provider2) this.getDataFromProviderTwo(data, arg);
+			}
+		});
 	}
-	getBAdata(code, date) {
-		date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-		date = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
-		fetch('/api/ba/1/' + date, {cache: "force-cache"})
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
+
+	getDataFromProviderTwo(data, arg) {
+		data.provider2.forEach(item => {
+			let matchData = item.matches.filter(match => {
+				if (arg.iddaaCode) {
+					return match.code === parseFloat(arg.iddaaCode)
 				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
+
 				}
-			})
-			.then(res => {
-				res.initialData.forEach(item => {
-					let found = item.matches.filter(match => match.code === parseFloat(code));
-					if (found.length > 0) {
-						this.setState({baMatchData: found[0]})
-					}
-				});
-			})
-			.catch(err => {
-				console.log(err);
 			});
+
+			if (matchData.length > 0) {
+				this.setState({baMatchData: matchData[0]})
+			}
+
+		});
 	}
 
 	rippleEffectHandler(e) {
@@ -314,8 +283,8 @@ class Eventdetails extends Component {
 									<Incidents eventData={eventData}/>
 								</div>
 								<MatchInfo eventData={eventData}/>
-								SR MatchID: {this.state.srMatchData ? this.state.srMatchData : ""}<br/>
-								SA MatchID: {this.state.baMatchData ? this.state.baMatchData : ""}
+								SR MatchID: {this.state.srMatchData ? this.state.srMatchData.Id : ""}<br/>
+								SA MatchID: {this.state.baMatchData ? this.state.baMatchData.id : ""}
 							</div>
 						</div>
 					</div>
@@ -337,9 +306,9 @@ class Eventdetails extends Component {
 					{this.state.baMatchData ? (
 						<div className="swipe-content injuries" data-tab="injuries">
 							{this.state.isTabInjury ?
-							<Injuries eventData={eventData} matchid={this.state.baMatchData.id}
-							          swipeAdjustHeight={this.swipeAdjustHeight}/>
-								: "" }
+								<Injuries eventData={eventData} matchid={this.state.baMatchData.id}
+								          swipeAdjustHeight={this.swipeAdjustHeight}/>
+								: ""}
 						</div>
 					) : ""}
 
