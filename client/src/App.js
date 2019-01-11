@@ -7,7 +7,7 @@ import Eventdetails from "./components/eventdetails/Eventdetails";
 import Errors from "./components/Errors";
 import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
-ReactGA.initialize('UA-131421305-1');
+ReactGA.initialize('UA-132328627-1');
 
 class App extends Component {
 
