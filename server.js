@@ -8,6 +8,9 @@ const request = require('request');
 const requestPromise = require('request-promise-native');
 const port = process.env.PORT || 5000;
 const MongoClient = require('mongodb').MongoClient;
+const cacheService = require('./cache.service');
+const cacheDuration = 60 * 60 * 24; // Cache duration, 24 hours
+
 let db;
 
 app.use(bodyParser.json());
@@ -37,6 +40,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+cacheService.start(function (err) {
+	if (err) console.error('cache service failed to start', err);
+});
+
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
 
 const mongoOptions = {
@@ -55,8 +62,6 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 	app.listen(port, () => console.log(`Listening on port ${port}`));
 });
 
-let dailyData = [];
-
 app.get('/api/', (req, res) => {
 	request(`https://www.sofascore.com${req.query.api}?_=${Math.floor(Math.random() * 10e8)}`, function (error, response, body) {
 		if (!error && response.statusCode === 200) {
@@ -68,7 +73,9 @@ app.get('/api/', (req, res) => {
 });
 
 app.get('/api/helper/:date1/:date2', (req, res) => {
-	const insertDb = (data) => {
+	let cacheKey = 'helperData-' + req.params.date1;
+
+	const insertDb = data => {
 		if (db) {
 			let dbData = {};
 			dbData["date"] = req.params.date1;
@@ -78,7 +85,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 				console.log('Inserted');
 			});
 		}
-	}
+	};
 
 	const initRemoteRequests = () => {
 		const provider1options = {
@@ -121,17 +128,20 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 				requestPromise(provider2options)
 					.then(body => {
 						jsonData.provider2 = (body && body.initialData) ? body.initialData : null;
-						if (jsonData.provider1 && jsonData.provider2 && db) insertDb(jsonData); // insert to DB only if both providers return data
-						res.send(jsonData);
+						if (jsonData.provider1 && jsonData.provider2) { // check if both providers return data
+							cacheService.instance().set(cacheKey, jsonData, cacheDuration); // cache the data!
+							if (db) insertDb(jsonData); // insert to db!
+						}
+						res.send(jsonData); // serve the data
 					})
-					.catch(() => {
+					.catch(() => { // provider2 failed
 						if (jsonData.provider1) {
-							res.send(jsonData);
+							res.send(jsonData); // in case provider1 returned something, serve it at least
 						} else {
-							res.status(500).send({
+							res.status(500).send({  // neight provider1 nor provider2 returned anything, serve 500 error message
 								status: "error",
-								message: 'Error while retrieving information from server',
-								reason: 'Bpth data Providers (No.1 and No.2) are broken',
+								message: 'Error while retrieving information from servers',
+								reason: 'Both data Providers (No.1 and No.2) are broken',
 							})
 						}
 					})
@@ -141,18 +151,31 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 			});
 	};
 
-	if (db) {
-		let collection = db.collection('matchlistbydate');
-		collection.findOne({"date": req.params.date1}).then(result => {
-			if (result && result.data) {
-				res.send(result.data);
+	cacheService.instance().get(cacheKey, (err, value) => {
+		if (err) console.error(err);
+
+		if (typeof value !== "undefined") { // Cache is found, serve the data from cache
+			res.send(value);
+		} else { // Cache is not found
+			if (db) {
+				let collection = db.collection('matchlistbydate');
+				collection
+					.findOne({"date": req.params.date1})
+					.then(result => {
+						if (result && result.data) {
+							cacheService.instance().set(cacheKey, result.data, cacheDuration, () => {
+								res.send(result.data); // Data is found in the db, now caching and serving!
+							});
+						} else {
+							initRemoteRequests(); // data can't be found in db, get it from remote servers
+						}
+					})
 			} else {
-				initRemoteRequests()
+				initRemoteRequests();  // db is not initalized, get data from remote servers
 			}
-		})
-	} else {
-		initRemoteRequests();
-	}
+		}
+	});
+
 });
 
 // API calls
