@@ -82,7 +82,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 			dbData["data"] = data;
 			let collection = db.collection('matchlistbydate');
 			collection.insertOne(dbData, function () {
-				console.log('Inserted');
+				//console.log('Inserted');
 			});
 		}
 	};
@@ -129,7 +129,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 					.then(body => {
 						jsonData.provider2 = (body && body.initialData) ? body.initialData : null;
 						if (jsonData.provider1 && jsonData.provider2) { // check if both providers return data
-						    console.log('checkpoint 1');
+						    //console.log('checkpoint 1');
 							cacheService.instance().set(cacheKey, jsonData, cacheDuration); // cache the data!
 							if (db) insertDb(jsonData); // insert to db!
 						}
@@ -157,7 +157,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 
 		if (typeof value !== "undefined") { // Cache is found, serve the data from cache
 			res.send(value);
-            console.log('checkpoint 2');
+            //console.log('checkpoint 2');
 		} else { // Cache is not found
 			if (db) {
 				let collection = db.collection('matchlistbydate');
@@ -167,16 +167,16 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 						if (result && result.data) {
 							cacheService.instance().set(cacheKey, result.data, cacheDuration, () => {
 								res.send(result.data); // Data is found in the db, now caching and serving!
-                                console.log('checkpoint 4');
+                                //console.log('checkpoint 4');
 							});
 						} else {
-                            console.log('checkpoint 3');
+                            //console.log('checkpoint 3');
 							initRemoteRequests(); // data can't be found in db, get it from remote servers
 						}
 					})
 			} else {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
-                console.log('checkpoint 5');
+                //console.log('checkpoint 5');
 			}
 		}
 	});
