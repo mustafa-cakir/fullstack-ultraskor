@@ -371,7 +371,7 @@ code {
 }
 
 .not-found {
-    margin: 5vh auto;
+    padding: 5vh 0;
     font-weight: 300;
     .bold {
         font-weight: 900;
@@ -398,6 +398,10 @@ code {
     .picture {
         max-width: 200px;
     }
+}
+
+.white-bg {
+    background: #fff;
 }
 
 @keyframes fadeInUp {

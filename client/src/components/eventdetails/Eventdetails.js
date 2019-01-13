@@ -196,8 +196,14 @@ class Eventdetails extends Component {
     }
 
     getDataFromProviderTwo(data, jsonData, iddaaCode = null) {
+        let homeName2_1 = jsonData.event.homeTeam.name,
+            homeName2_2 = jsonData.event.homeTeam.shortName,
+            awayName2_1 = jsonData.event.awayTeam.name,
+            awayName2_2 = jsonData.event.awayTeam.shortName;
+
+        let matchData = [];
         data.provider2.forEach(item => {
-            let matchData = item.matches.filter(match => {
+            let found = item.matches.filter(match => {
                 if (iddaaCode) {
                     return match.code === parseFloat(iddaaCode)
                 } else {
@@ -206,23 +212,30 @@ class Eventdetails extends Component {
                         awayName1_1 = match.awayTeam.middleName,
                         awayName1_2 = match.awayTeam.name;
 
-                    let homeName2_1 = jsonData.event.homeTeam.name,
-                        homeName2_2 = jsonData.event.homeTeam.shortName,
-                        awayName2_1 = jsonData.event.awayTeam.name,
-                        awayName2_2 = jsonData.event.awayTeam.shortName;
-
-                    return (homeName1_1 === homeName2_1 || homeName2_2) ||
-                    (homeName1_2 === homeName2_1 || homeName2_2) ||
-                    (awayName1_1 === awayName2_1 || awayName2_2) ||
-                    (awayName1_2 === awayName2_1 || awayName2_2)
+                    return homeName1_1 === homeName2_1 ||
+                        homeName1_1 === homeName2_2 ||
+                        homeName1_2 === homeName2_1 ||
+                        homeName1_2 === homeName2_2 ||
+                        awayName1_1 === awayName2_1 ||
+                        awayName1_1 === awayName2_2 ||
+                        awayName1_2 === awayName2_1 ||
+                        awayName1_2 === awayName2_2
                 }
             });
-            if (matchData.length > 0) {
-                this.setState({
-                    provider2MatchData: matchData[0]
-                })
-            }
+
+            if (found.length > 0) matchData = found;
         });
+        if (matchData.length > 0) {
+            this.setState({
+                provider2MatchData: matchData[0]
+            })
+        } else {
+            this.setState({
+                provider2MatchData: {
+                    id: 'not found'
+                }
+            })
+        }
     }
 
     rippleEffectHandler(e) {
@@ -258,7 +271,7 @@ class Eventdetails extends Component {
             t('Summary'),
             ...(eventData.event.hasStatistics ? [t("Stats")] : []),
             ...(eventData.event.hasLineups ? [t("Lineup")] : []),
-            ...(this.state.provider2MatchData ? [t('Injuries & Susp.')] : []),
+            t('Injuries & Susp.'),
             t('Iddaa'),
             ...(eventData.standingsAvailable ? [t("Standing")] : []),
             t('Media'),
@@ -315,14 +328,13 @@ class Eventdetails extends Component {
                         </div>
                     ) : ""}
 
-                    {this.state.provider2MatchData ? (
-                        <div className="swipe-content injuries" data-tab="injuries">
-                            {this.state.isTabInjury ?
-                                <Injuries eventData={eventData} matchid={this.state.provider2MatchData.id}
-                                          swipeAdjustHeight={this.swipeAdjustHeight}/>
-                                : ""}
-                        </div>
-                    ) : ""}
+                    <div className="swipe-content injuries" data-tab="injuries">
+                        {this.state.isTabInjury ?
+                            <Injuries eventData={eventData}
+                                      matchid={this.state.provider2MatchData ? this.state.provider2MatchData.id : null}
+                                      swipeAdjustHeight={this.swipeAdjustHeight}/>
+                            : ""}
+                    </div>
 
                     <div className="swipe-content iddaa" data-tab="iddaa">
                         <Iddaa eventData={eventData} provider1MatchData={this.state.provider1MatchData}

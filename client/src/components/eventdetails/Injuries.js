@@ -8,44 +8,65 @@ class Injuries extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            injuriesData: null
+            injuriesData: null,
         };
     }
 
     componentDidMount() {
-        const { matchid} = this.props;
-        this.getData("/api/ol/match/missings/1/" + matchid);
+
     };
 
     componentDidUpdate() {
-        this.props.swipeAdjustHeight()
+        setTimeout(() => {
+            this.props.swipeAdjustHeight();
+        }, 100);
     }
 
-    getData = api => {
-        fetch(api, {referrerPolicy: "no-referrer", cache: "force-cache"})
-            .then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    throw Error(`Can't retrieve information from server, ${res.status}`);
-                }
-            })
-            .then(res => {
-                this.setState({
-                    injuriesData: res,
-                });
-            })
-            .catch(err => {
-                this.setState({
-                    injuriesData: {error: err.toString()},
-                });
+    getData = matchid => {
+        if (matchid === "not found") {
+            this.setState({
+                injuriesData: "not found",
             });
+        } else {
+            fetch("/api/ol/match/missings/1/" + matchid, {referrerPolicy: "no-referrer", cache: "force-cache"})
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.json();
+                    } else {
+                        throw Error(`Can't retrieve information from server, ${res.status}`);
+                    }
+                })
+                .then(res => {
+                    this.setState({
+                        injuriesData: res,
+                    });
+                })
+                .catch(err => {
+                    this.setState({
+                        injuriesData: {error: err.toString()},
+                    });
+                });
+        }
     };
 
     render() {
+        const { matchid } = this.props;
         const {injuriesData} = this.state;
-        if (!injuriesData) return <Loading type="inside"/>;
-        if (injuriesData.error) return <Errors type="error" message={injuriesData.error}/>;
+
+        if (!injuriesData && matchid) this.getData(matchid);
+        if (!matchid || !injuriesData) return <Loading type="inside"/>;
+
+        if (matchid === "not found") return (
+            <div>
+                <div className="injuries container">
+                    <div className="white-box mt-2">
+                        <div className="body p-4 text-center"><Trans>Injuries & suspension information cannot be gathered for this match</Trans> :(</div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        if (injuriesData.error) return <div className="white-bg mt-2"><Errors type="error" message={injuriesData.error}/></div>;
 
         const {eventData, t} = this.props;
 
