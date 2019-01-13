@@ -95,20 +95,17 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
 		};
 		const provider2options = {
 			method: 'POST',
-			uri: 'https://brdg-ae03a315-b8e3-454d-8985-0f59b1c8f86b.azureedge.net/livescore/matchlist',
+			uri: 'https://brdg-c1884f68-d545-4103-bee0-fbcf3d58c850.azureedge.net/livescore/matchlist',
 			headers: {
 				'Content-Type': 'application/json',
-				'Origin': 'https://oley.com',
+				'Origin': 'https://www.broadage.com',
 			},
 			body: JSON.stringify({
 				"coverageId": "6bf0cf44-e13a-44e1-8008-ff17ba6c2128",
 				"options": {
-					"lang": "tr-TR",
-					"grouping": "date",
-					"betCode": true,
 					"sportId": 1,
 					"day": req.params.date2.replace(/\./g, "/"),
-					"origin": "https://mobil.oley.com",
+					"origin": "broadage.com",
 					"timeZone": 3
 				}
 			}),
