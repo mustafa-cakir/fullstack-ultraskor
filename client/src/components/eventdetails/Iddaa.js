@@ -20,8 +20,8 @@ class Iddaa extends Component {
     }
 
     render() {
-        const {srMatchData} = this.props;
-        if (!srMatchData) return <Loading type="inside"/>;
+        const {provider1MatchData} = this.props;
+        if (!provider1MatchData) return <Loading type="inside"/>;
         return (
             <div>
                 <div className="iddaa container">

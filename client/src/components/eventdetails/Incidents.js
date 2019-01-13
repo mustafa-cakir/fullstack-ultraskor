@@ -10,6 +10,12 @@ class Incidents extends Component {
         this.incidents = eventData.incidents.reverse();
     }
 
+    componentDidUpdate() {
+        setTimeout(() => {
+            this.props.swipeAdjustHeight();
+        }, 100);
+    }
+
     static typesHandler(item, type, isHome, t) {
         if (type === "period") {
             if (item.text === "Second half" || item.text === "First half") return false;

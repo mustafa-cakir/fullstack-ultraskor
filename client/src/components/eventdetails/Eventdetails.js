@@ -37,6 +37,7 @@ class Eventdetails extends Component {
             provider1MatchData: null,
             provider2MatchData: null
         };
+        this.tabs = [];
         this.refreshData = false;
         this.eventid = this.props.match.params.eventid;
     };
@@ -267,7 +268,7 @@ class Eventdetails extends Component {
         if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
         const {t} = this.props;
-        const tabs = [
+        this.tabs = [
             t('Summary'),
             ...(eventData.event.hasStatistics ? [t("Stats")] : []),
             ...(eventData.event.hasLineups ? [t("Lineup")] : []),
@@ -282,7 +283,7 @@ class Eventdetails extends Component {
                 {this.state.loading ? <Loading/> : null}
                 <Scoreboard eventData={eventData}/>
                 <ul className="swipe-tabs" ref={this.swipeTabsEl}>
-                    {tabs.map((tab, index) => {
+                    {this.tabs.map((tab, index) => {
                         return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                    className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
                     })}
@@ -290,7 +291,7 @@ class Eventdetails extends Component {
                 </ul>
                 <div className="swipe-shadows"/>
                 <ReactSwipe className="swipe-contents"
-                            childCount={tabs.length}
+                            childCount={this.tabs.length}
                             swipeOptions={{
                                 speed: 200,
                                 continuous: true,
@@ -305,7 +306,7 @@ class Eventdetails extends Component {
                                 <div className="white-box mt-2 pb-2">
                                     <PressureGraph eventData={eventData}/>
                                     <Bestplayer eventData={eventData} swipeByTabName={this.swipeByTabName}/>
-                                    <Incidents eventData={eventData}/>
+                                    <Incidents eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
                                 SR MatchID: {this.state.provider1MatchData ? this.state.provider1MatchData.Id : ""}<br/>

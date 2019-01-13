@@ -28,7 +28,7 @@ class Bestplayer extends Component {
             || !eventData.event.bestHomeTeamPlayer
         ) return false;
         return (
-            <div className="best-player">
+            <div className="best-player" onClick={() => swipeByTabName(t('Lineup'))}>
                 <div className="best-player-title text-center"><Trans>Best Players</Trans></div>
                 <div className="best-player-container mt-2 mb-2">
                     <div className="row m-0 align-items-center">
@@ -50,7 +50,7 @@ class Bestplayer extends Component {
                             alt={eventData.event.bestAwayTeamPlayer.player.name}/></div>
                     </div>
                 </div>
-                <div className={"best-player-link text-center mb-4"} onClick={() => swipeByTabName(t('Lineup'))}><span><Trans>See all</Trans> <Icon
+                <div className={"best-player-link text-center mb-4"}><span><Trans>See all</Trans> <Icon
                     name="fas fa-angle-right"/></span>
                 </div>
             </div>
