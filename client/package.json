@@ -8,6 +8,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.2.1",
     "i18next": "^13.1.2",
     "i18next-browser-languagedetector": "^2.2.4",
