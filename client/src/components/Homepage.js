@@ -20,6 +20,7 @@ class Homepage extends Component {
             orjData: null,
             favEvents: [],
             favEventsList: [],
+	        refreshBtn: false
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
@@ -146,7 +147,8 @@ class Homepage extends Component {
                 this.setState({
                     orjData: jsonData,
                     mainData: jsonData,
-                    loading: false
+                    loading: false,
+	                refreshBtn: false
                 });
                 if (this.refreshData) {
                     clearTimeout(this.refreshDataTimeout);
@@ -165,7 +167,8 @@ class Homepage extends Component {
                     this.setState({
                         orjData: jsonData,
                         mainData: jsonData,
-                        loading: false
+                        loading: false,
+	                    refreshBtn: true
                     });
                 }
             });
@@ -252,6 +255,7 @@ class Homepage extends Component {
                     Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button
                     onClick={() => changeLanguageHandler('en')}>English</button>
                 </div>
+	            {this.state.refreshBtn ? <div className="refresh-btn" onClick={() => window.location.reload()}><Icon name="fas fa-sync"/> Refresh</div> : ""}
                 <Footer/>
             </div>
         )
