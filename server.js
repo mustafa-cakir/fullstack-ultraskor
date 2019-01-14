@@ -228,7 +228,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
                 initRemoteRequests();  // db is not initalized, get data from remote servers
                 //console.log('checkpoint 5');
             }
-        //}
+        }
     });
 
 });
