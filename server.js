@@ -199,6 +199,20 @@ app.get('/api/ol/match/:type/1/:id', (req, res) => {
 	});
 });
 
+// Log Errors
+app.post('/api/logerrors', (req, res) => {
+	if (db) {
+		let collection = db.collection('console_errors');
+		try {
+			collection.insertOne(req.body, () => {
+				res.send('OK!');
+			});
+		} catch (e) {
+			// do nothing
+		}
+	}
+});
+
 // //if (process.env.NODE_ENV === 'production') {
 // app.use(express.static(path.join(__dirname, 'client/build')));
 // app.get('*', function (req, res) {

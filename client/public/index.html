@@ -28,5 +28,26 @@
     You need to enable JavaScript to run this app.
 </noscript>
 <div id="root"></div>
+<script>
+    (function logErrors() {
+	    window.addEventListener('error', function(e) {
+		    var client = new XMLHttpRequest();
+		    client.open('POST', '/api/logerrors');
+		    client.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+		    client.send(
+			    JSON.stringify({
+				    date: (new Date()).toLocaleString(),
+				    error: e.message || "no message",
+				    filename: e.filename || "unknown",
+				    linenumber: e.lineno || "unknown",
+				    url: window.location.href,
+				    userAgent: (window.navigator) ? window.navigator.userAgent ? window.navigator.userAgent : "unknown" : "unknown",
+				    platform: (window.navigator) ? window.navigator.platform ? window.navigator.platform : "unknown" : "unknown",
+				    vendor: (window.navigator) ? window.navigator.vendor ? window.navigator.vendor : "unknown" : "unknown"
+			    })
+		    );
+	    });
+	})();
+</script>
 </body>
 </html>
