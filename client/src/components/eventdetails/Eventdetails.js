@@ -16,6 +16,7 @@ import Errors from "../Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
 import Injuries from "./Injuries";
+import RefreshBtn from "../RefreshBtn";
 
 
 class Eventdetails extends Component {
@@ -35,11 +36,13 @@ class Eventdetails extends Component {
             isTabLineup: false,
             isTabInjury: false,
             provider1MatchData: null,
-            provider2MatchData: null
+            provider2MatchData: null,
+            refreshBtn: true
         };
         this.tabs = [];
         this.refreshData = true;
-        this.refreshInterval = 10000;
+        this.refreshInterval = 20000;
+        this.refreshDataTimeout = null;
         this.eventid = this.props.match.params.eventid;
     };
 
@@ -140,7 +143,8 @@ class Eventdetails extends Component {
             .then(jsonData => {
                 this.setState({
                     eventData: jsonData,
-                    loading: false
+                    loading: false,
+                    refreshBtn: false
                 });
                 if (this.refreshData) {
 	                clearTimeout(this.refreshDataTimeout);
@@ -161,6 +165,10 @@ class Eventdetails extends Component {
                         eventData: {error: err.toString()},
                         loading: false
                     });
+                } else {
+                    this.setState({
+                        refreshBtn: true
+                    });
                 }
             });
     };
@@ -178,8 +186,8 @@ class Eventdetails extends Component {
                 }
             })
             .then(res => {
-                if (res.provider1) this.getDataFromProviderOne(res, jsonData);
                 if (res.provider2) this.getDataFromProviderTwo(res, jsonData);
+                if (res.provider1) this.getDataFromProviderOne(res, jsonData);
             })
             .catch(err => {
                 console.log(err);
@@ -194,7 +202,7 @@ class Eventdetails extends Component {
                     provider1MatchData: matchData[0]
                 });
                 let iddaaCode = matchData[0].IddaaMatchId.split('.')[1];
-                if (data.provider2 && iddaaCode) this.getDataFromProviderTwo(data, jsonData, iddaaCode);
+                if (data.provider2 && iddaaCode && !this.state.provider2MatchData) this.getDataFromProviderTwo(data, jsonData, iddaaCode);
             }
         });
     }
@@ -230,6 +238,7 @@ class Eventdetails extends Component {
             if (found.length > 0) matchData = found;
         });
         if (matchData.length > 0) {
+            console.log(matchData[0]);
             this.setState({
                 provider2MatchData: matchData[0]
             })
@@ -385,6 +394,7 @@ class Eventdetails extends Component {
                         </div>
                     </div>
                 </ReactSwipe>
+                {this.state.refreshBtn ? <RefreshBtn/> : ""}
                 <Footer/>
             </div>
         )

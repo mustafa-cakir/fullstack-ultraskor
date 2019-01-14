@@ -63,13 +63,24 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 });
 
 app.get('/api/', (req, res) => {
-	request(`https://www.sofascore.com${req.query.api}?_=${Math.floor(Math.random() * 10e8)}`, function (error, response, body) {
-		if (!error && response.statusCode === 200) {
-			res.send(body);
-		} else {
-			res.status(500).send({status: "error", message: 'Error while retrieving information from server'})
-		}
-	});
+    const sofaScoreOptions = {
+        method: 'GET',
+        uri: `https://www.sofascore.com${req.query.api}?_=${Math.floor(Math.random() * 10e8)}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Origin': 'https://www.sofascore.com',
+            'referer': 'https://www.sofascore.com/',
+            'x-requested-with': 'XMLHttpRequest'
+        }
+    };
+
+    requestPromise(sofaScoreOptions)
+        .then(body => {
+            res.send(body);
+        })
+        .catch(err => {
+            res.status(500).send({status: "error", message: 'Error while retrieving information from server' + err.message})
+        });
 });
 
 app.get('/api/helper/:date1/:date2', (req, res) => {

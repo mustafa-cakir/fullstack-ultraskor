@@ -9,6 +9,7 @@ import Event from "./Event";
 import Icon from "./Icon";
 import {withNamespaces} from "react-i18next";
 import ReactGA from "react-ga";
+import RefreshBtn from "./RefreshBtn";
 
 
 class Homepage extends Component {
@@ -24,7 +25,7 @@ class Homepage extends Component {
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
-        this.refreshInterval = 10000;
+        this.refreshInterval = 20000;
         this.todaysDate = null;
         this.refreshData = true;
         this.refreshDataTimeout = null;
@@ -170,6 +171,10 @@ class Homepage extends Component {
                         loading: false,
 	                    refreshBtn: true
                     });
+                } else {
+                    this.setState({
+                        refreshBtn: true
+                    });
                 }
             });
     };
@@ -255,7 +260,7 @@ class Homepage extends Component {
                     Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button
                     onClick={() => changeLanguageHandler('en')}>English</button>
                 </div>
-	            {this.state.refreshBtn ? <div className="refresh-btn" onClick={() => window.location.reload()}><Icon name="fas fa-sync"/> Refresh</div> : ""}
+	            {this.state.refreshBtn ? <RefreshBtn/> : ""}
                 <Footer/>
             </div>
         )
