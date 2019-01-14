@@ -40,7 +40,7 @@ class Eventdetails extends Component {
             refreshBtn: true
         };
         this.tabs = [];
-        this.refreshData = true;
+        this.refreshData = false;
         this.refreshInterval = 20000;
         this.refreshDataTimeout = null;
         this.eventid = this.props.match.params.eventid;

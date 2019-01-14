@@ -27,7 +27,7 @@ class Homepage extends Component {
         this.getData = this.getData.bind(this);
         this.refreshInterval = 20000;
         this.todaysDate = null;
-        this.refreshData = true;
+        this.refreshData = false;
         this.refreshDataTimeout = null;
     };
 
