@@ -108,18 +108,6 @@ app.get('/api/', (req, res) => {
 app.get('/api/helper/:date1/:date2', (req, res) => {
     let cacheKey = 'helperData-' + req.params.date1;
 
-    // const insertDb = data => {
-    //     if (db) {
-    //         let dbData = {};
-    //         dbData["date"] = req.params.date1;
-    //         dbData["data"] = data;
-    //         let collection = db.collection('matchlistbydate');
-    //         collection.insertOne(dbData, function () {
-    //             //console.log('Inserted');
-    //         });
-    //     }
-    // };
-
     const initRemoteRequests = () => {
         const provider1options = {
             method: 'GET',
@@ -165,7 +153,6 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
             .then(() => {
                 return requestPromise(provider2options)
                     .then(body => {
-                        console.log(typeof body.initialData);
                         jsonData.provider2 = (body && body.initialData) ? body.initialData : null;
                     })
                     .catch(() => {
@@ -194,14 +181,14 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
                             let collection = db.collection('matchlistbydate');
                             try {
                                 collection.insertOne(dbData, (error, result) => {
-                                    console.log(error);
+                                    //console.log(error);
                                     res.send(jsonData); // serve the data
                                 })
                             } catch (e) {
-                                console.log('errorr');
+                                //console.log('errorr');
                             }
                         } else {
-                            console.log('can not connected to db, but serve it anyway');
+                            //console.log('can not connected to db, but serve it anyway');
                             res.send(jsonData);
                         }
                     }
@@ -218,10 +205,10 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
     cacheService.instance().get(cacheKey, (err, value) => {
         if (err) console.error(err);
 
-        // if (typeof value !== "undefined") { // Cache is found, serve the data from cache
-        //     res.send(value);
-        //     //console.log('checkpoint 2');
-        // } else { // Cache is not found
+        if (typeof value !== "undefined") { // Cache is found, serve the data from cache
+            res.send(value);
+            //console.log('checkpoint 2');
+        } else { // Cache is not found
             if (db) {
                 let collection = db.collection('matchlistbydate');
                 collection
