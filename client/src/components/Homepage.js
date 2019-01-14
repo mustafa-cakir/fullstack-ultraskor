@@ -59,7 +59,8 @@ class Homepage extends Component {
     }
 
     componentWillUnmount() {
-        this.refreshData = false;
+	    clearTimeout(this.refreshDataTimeout);
+	    this.refreshData = false;
     }
 
     trackPage(page) {

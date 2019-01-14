@@ -54,7 +54,8 @@ class Eventdetails extends Component {
     };
 
     componentWillUnmount() {
-        this.refreshData = false;
+	    clearTimeout(this.refreshDataTimeout);
+	    this.refreshData = false;
     }
 
     trackPage(page) {
@@ -142,7 +143,8 @@ class Eventdetails extends Component {
                     loading: false
                 });
                 if (this.refreshData) {
-                    setTimeout(() => {
+	                clearTimeout(this.refreshDataTimeout);
+                    this.refreshDataTimeout = setTimeout(() => {
                         this.getData({
                             api: '/event/' + this.eventid + '/json',
                             loading: false
