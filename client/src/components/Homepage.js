@@ -23,7 +23,7 @@ class Homepage extends Component {
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.getData = this.getData.bind(this);
-        this.interval = null;
+        this.refreshInterval = 10000;
         this.todaysDate = null;
         this.refreshData = true;
         this.refreshDataTimeout = null;
@@ -155,13 +155,7 @@ class Homepage extends Component {
                             api: '/football//' + this.todaysDate + '/json',
                             loading: false,
                         });
-                    }, 10000);
-                }
-                if (options.scrollToTop) {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
+                    }, this.refreshInterval);
                 }
             })
             .catch(err => {

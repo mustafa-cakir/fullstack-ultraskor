@@ -38,7 +38,8 @@ class Eventdetails extends Component {
             provider2MatchData: null
         };
         this.tabs = [];
-        this.refreshData = false;
+        this.refreshData = true;
+        this.refreshInterval = 10000;
         this.eventid = this.props.match.params.eventid;
     };
 
@@ -146,7 +147,7 @@ class Eventdetails extends Component {
                             api: '/event/' + this.eventid + '/json',
                             loading: false
                         });
-                    }, 10000);
+                    }, this.refreshInterval);
                 }
                 if (options.loading) {
                     this.getHelperData(jsonData);
