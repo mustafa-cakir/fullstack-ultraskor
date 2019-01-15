@@ -815,15 +815,65 @@
 
         }
     }
-    .iddaa {
-        .idda-logo {
+    .bets {
+        .tab-logo {
             height: 20px;
             margin-right: 4px;
         }
         .iddaa-bar {
-            background: green;
+            background: $color-iddaa;
             color: #fff;
-            padding: 4px 0;
+            padding: 10px 0;
+        }
+        .iddaa-body {
+            padding: 0 10px;
+        }
+        .bets-container {
+            border-bottom: 1px solid rgba($color-iddaa, .5);
+            .right-bets {
+                .col {
+                    padding: 25px 0 5px 0;
+                }
+                .row {
+                    margin: 0;
+                }
+            }
+            .left-label {
+                background: rgba($color-iddaa, .2);
+                color: $color-iddaa;
+                font-weight: 700;
+                padding: 15px 10px;
+            }
+            .right-bets {
+                //background: rgba($color-iddaa, .05);
+                .row:nth-child(even) {
+                    border-top: 1px solid rgba($color-iddaa, .2);
+                }
+            }
+            .bets-values {
+                .col {
+                    border-right:1px solid rgba($color-iddaa, .2);
+                    border-bottom:1px solid rgba($color-iddaa, .2);
+                    background: rgba($color-iddaa, .05);
+                    margin-bottom: -1px;
+                    color: $color-iddaa;
+                    font-weight: 700;
+                    span {
+                        position: absolute;
+                        left: 0;
+                        top:0;
+                        width: 100%;
+                        background: $color-iddaa-2;
+                        text-align: center;
+                        font-size: .7rem;
+                        line-height: 15px;
+                        font-weight: 300;
+                        margin-right: 7px;
+                        color: $color-iddaa;
+                    }
+                }
+
+            }
         }
     }
     .horizontal-tab {

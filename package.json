@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"dev-client": "cd client && yarn install && yarn start",
-		"dev-server": "yarn install && nodemon server.js",
+		"dev-server": "yarn install && nodemon --watch ./server.js server.js",
 		"prod-client": "cd client && yarn install && yarn build",
 		"prod-server": "yarn install && pm2 restart server.js",
 		"dev": "concurrently \"yarn dev-client\" \"yarn dev-server\"",
