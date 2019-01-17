@@ -17,6 +17,7 @@ import ReactGA from 'react-ga';
 import moment from "moment";
 import Injuries from "./Injuries";
 import RefreshBtn from "../RefreshBtn";
+import smoothscroll from 'smoothscroll-polyfill';
 
 
 class Eventdetails extends Component {
@@ -45,6 +46,7 @@ class Eventdetails extends Component {
         this.refreshInterval = 20000;
         this.refreshDataTimeout = null;
         this.eventid = this.props.match.params.eventid;
+        smoothscroll.polyfill();
     };
 
     componentDidMount() {
@@ -116,10 +118,14 @@ class Eventdetails extends Component {
 
         marker.style.width = active.offsetWidth + 'px';
         marker.style.left = active.offsetLeft + 'px';
-        tabs.scrollTo({
-            left: active.offsetLeft - ((window.outerWidth - active.offsetWidth) / 2) + 7,
-            behavior: 'smooth'
-        });
+
+        //active.scrollIntoView({ behavior: 'smooth' });
+        //if (typeof tabs.scrollTo !== "undefined") {
+            tabs.scrollTo({
+                left: active.offsetLeft - ((window.innerWidth - active.offsetWidth) / 2) + 7,
+                behavior: 'smooth'
+            });
+        //}
     };
 
     swipeByIndex(index) {
