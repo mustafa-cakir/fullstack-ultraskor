@@ -150,6 +150,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
             json: true,
             timeout: 1500
         };
+
         const provider3options = {
             method: 'GET',
             uri: `https://www.tuttur.com/draw/events/type/football`,
@@ -188,7 +189,7 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
             })
             .then(() => {
                 if (jsonData.provider1 || jsonData.provider2 || jsonData.provider3) { // check if any provider return anything
-                    if (jsonData.provider1 && jsonData.provider2) { // check if all providers return data
+                    if (jsonData.provider1 && jsonData.provider2 && jsonData.provider2) { // check if all providers return data
                         cacheService.instance().set(cacheKey, jsonData, cacheDuration); // cache the data!
                         if (db) {  // insert into db!
                             let dbData = {};
@@ -207,6 +208,8 @@ app.get('/api/helper/:date1/:date2', (req, res) => {
                             //console.log('can not connected to db, but serve it anyway');
                             res.send(jsonData);
                         }
+                    } else {
+                        res.send(jsonData);
                     }
                 } else {
                     res.status(500).send({ // none of them return anything, so serve 500 error message

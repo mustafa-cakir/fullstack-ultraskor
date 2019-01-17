@@ -11,7 +11,7 @@ import Stats from "./Stats";
 import Lineup from "./Lineup";
 import Footer from "../Footer";
 import {withNamespaces} from "react-i18next";
-import Bets from "./Bets";
+import Iddaa from "./Iddaa";
 import Errors from "../Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
@@ -209,10 +209,15 @@ class Eventdetails extends Component {
     }
 
     getDataFromProviderTwo(data, jsonData, iddaaCode = null) {
-        let homeName2_1 = jsonData.event.homeTeam.name,
-            homeName2_2 = jsonData.event.homeTeam.shortName,
-            awayName2_1 = jsonData.event.awayTeam.name,
-            awayName2_2 = jsonData.event.awayTeam.shortName;
+        let jsonDataTeamNames = [];
+        jsonDataTeamNames.push(
+            jsonData.event.homeTeam.name.toLowerCase(),
+            jsonData.event.homeTeam.shortName.toLowerCase(),
+            jsonData.event.homeTeam.slug.toLowerCase(),
+            jsonData.event.awayTeam.name.toLowerCase(),
+            jsonData.event.awayTeam.shortName.toLowerCase(),
+            jsonData.event.awayTeam.slug.toLowerCase()
+        );
 
         let provider2Data = [];
         data.provider2.forEach(item => {
@@ -220,19 +225,15 @@ class Eventdetails extends Component {
                 if (iddaaCode) {
                     return match.code === parseFloat(iddaaCode)
                 } else {
-                    let homeName1_1 = match.homeTeam.middleName,
-                        homeName1_2 = match.homeTeam.name,
-                        awayName1_1 = match.awayTeam.middleName,
-                        awayName1_2 = match.awayTeam.name;
+                    let homeName1_1 = match.homeTeam.middleName.toLowerCase(),
+                        homeName1_2 = match.homeTeam.name.toLowerCase(),
+                        awayName1_1 = match.awayTeam.middleName.toLowerCase(),
+                        awayName1_2 = match.awayTeam.name.toLowerCase();
 
-                    return homeName1_1 === homeName2_1 ||
-                        homeName1_1 === homeName2_2 ||
-                        homeName1_2 === homeName2_1 ||
-                        homeName1_2 === homeName2_2 ||
-                        awayName1_1 === awayName2_1 ||
-                        awayName1_1 === awayName2_2 ||
-                        awayName1_2 === awayName2_1 ||
-                        awayName1_2 === awayName2_2
+                    return jsonDataTeamNames.indexOf(homeName1_1) > -1 ||
+                        jsonDataTeamNames.indexOf(homeName1_2) > -1 ||
+                        jsonDataTeamNames.indexOf(awayName1_1) > -1 ||
+                        jsonDataTeamNames.indexOf(awayName1_2) > -1;
                 }
             });
 
@@ -315,11 +316,6 @@ class Eventdetails extends Component {
                                 disableScroll: false
                             }} ref={this.swipeEl}>
 
-                    <div className="swipe-content iddaa" data-tab="iddaa">
-                        <Bets eventData={eventData} provider2MatchData={this.state.provider2MatchData} provider3MatchData={this.state.provider3MatchData}
-                               swipeAdjustHeight={this.swipeAdjustHeight}/>
-                    </div>
-
                     <div className="swipe-content summary">
                         <div className="event-details-summary">
                             <div className="container">
@@ -329,9 +325,9 @@ class Eventdetails extends Component {
                                     <Incidents eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
                                 </div>
                                 <MatchInfo eventData={eventData}/>
-                                SR MatchID: {this.state.provider1MatchData ? this.state.provider1MatchData.Id : ""}<br/>
-                                SA MatchID: {this.state.provider2MatchData ? "OK" : ""}
-                                OL MatchID: {this.state.provider3MatchData ? "OK" : ""}
+                                <small>1: {this.state.provider1MatchData ? "y" : "n"} -
+                                2: {this.state.provider2MatchData ? "y" : "n"} -
+                                    3: {this.state.provider3MatchData ? "y" : "n"}</small>
                             </div>
                         </div>
                     </div>
@@ -358,7 +354,10 @@ class Eventdetails extends Component {
                             : ""}
                     </div>
 
-                   {/*iddaa goes here*/}
+                    <div className="swipe-content iddaa" data-tab="iddaa">
+                        <Iddaa eventData={eventData} provider2MatchData={this.state.provider2MatchData} provider3MatchData={this.state.provider3MatchData}
+                              swipeAdjustHeight={this.swipeAdjustHeight}/>
+                    </div>
 
                     {eventData.standingsAvailable ? (
                         <div className="swipe-content standing" data-tab="standing">

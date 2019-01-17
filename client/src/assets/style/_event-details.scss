@@ -815,7 +815,12 @@
 
         }
     }
-    .bets {
+    .iddaa {
+        .iddaa-notfound {
+            text-align: center;
+            padding: 8vh 0;
+            font-weight: 300;
+        }
         .tab-logo {
             height: 20px;
             margin-right: 4px;
@@ -828,34 +833,40 @@
         .iddaa-body {
             padding: 0 10px;
         }
-        .bets-container {
-            border-bottom: 1px solid rgba($color-iddaa, .5);
-            .right-bets {
+        .iddaa-container {
+            .col-right {
                 .col {
                     padding: 25px 0 5px 0;
                 }
                 .row {
                     margin: 0;
+                    &:nth-child(even) {
+                        border-top: 1px solid rgba($color-iddaa, .5);
+                    }
                 }
             }
-            .left-label {
+            .col-mbs {
+                padding: 0;
+                background: rgba($color-iddaa, .2);
+                max-width: 20px;
+                text-align: center;
+                align-self: center;
+                height: 50px;
+                border-bottom: 1px solid rgba($color-iddaa, .5);
+            }
+            .col-labels {
                 background: rgba($color-iddaa, .2);
                 color: $color-iddaa;
                 font-weight: 700;
                 padding: 15px 10px;
-            }
-            .right-bets {
-                //background: rgba($color-iddaa, .05);
-                .row:nth-child(even) {
-                    border-top: 1px solid rgba($color-iddaa, .2);
-                }
+                border-bottom: 1px solid rgba($color-iddaa, .5);
+                @include line-clamp(1);
             }
             .bets-values {
                 .col {
                     border-right:1px solid rgba($color-iddaa, .2);
-                    border-bottom:1px solid rgba($color-iddaa, .2);
+                    border-bottom:1px solid rgba($color-iddaa, .5);
                     background: rgba($color-iddaa, .05);
-                    margin-bottom: -1px;
                     color: $color-iddaa;
                     font-weight: 700;
                     span {
@@ -870,6 +881,24 @@
                         font-weight: 300;
                         margin-right: 7px;
                         color: $color-iddaa;
+                    }
+                    .handicap {
+                        display: inline-block;
+                        background: $color-iddaa;
+                        color: $color-iddaa-2;
+                        padding: 0;
+                        line-height: 11px;
+                        border-radius: 3px;
+                        text-align: center;
+                        font-style: normal;
+                        margin-left: 5px;
+                        font-size: .6rem;
+                        margin-top: 2px;
+                        vertical-align: top;
+                        width: 15px;
+                        &:empty {
+                            display: none;
+                        }
                     }
                 }
 

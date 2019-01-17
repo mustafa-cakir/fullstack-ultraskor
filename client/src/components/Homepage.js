@@ -197,12 +197,6 @@ class Homepage extends Component {
     };
 
     render() {
-        const {i18n} = this.props;
-
-        const changeLanguageHandler = lng => {
-            i18n.changeLanguage(lng);
-        };
-
         const dataObj = this.state.mainData;
         let mainContent = [],
             favEventContainer = [];
@@ -255,10 +249,6 @@ class Homepage extends Component {
                 <div className="container px-0 homepage-list">
                     {favEventContainer}
                     {mainContent}
-                </div>
-                <div className="m-3">
-                    Language: <button onClick={() => changeLanguageHandler('tr')}>Türkçe</button> - <button
-                    onClick={() => changeLanguageHandler('en')}>English</button>
                 </div>
 	            {this.state.refreshBtn ? <RefreshBtn/> : ""}
                 <Footer/>
