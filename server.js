@@ -54,7 +54,7 @@ const mongoOptions = {
     socketTimeoutMS: 1000,
 };
 
-const replaceDotWithUnderscore  = (obj) => {
+const replaceDotWithUnderscore = (obj) => {
     _.forOwn(obj, (value, key) => {
 
         // if key has a period, replace all occurences with an underscore
@@ -82,7 +82,6 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 });
 
 
-
 app.get('/api/', (req, res) => {
     const sofaScoreOptions = {
         method: 'GET',
@@ -94,31 +93,17 @@ app.get('/api/', (req, res) => {
             'x-requested-with': 'XMLHttpRequest'
         }
     };
-
-    let cacheKey = `cacheKey-${req.query.api}`;
-
-    cacheService.instance().get(cacheKey, (err, value) => {
-        if (err) console.error(err);
-
-        if (typeof value !== "undefined") { // Cache is found, serve the data from cache
-            res.send(value);
-            //console.log('checkpoint 2');
-        } else { // Cache is not found
-            requestPromise(sofaScoreOptions)
-                .then(body => {
-                    cacheService.instance().set(cacheKey, body, cacheDuration);
-                    res.send(body);
-                })
-                .catch(err => {
-                    res.status(500).send({
-                        status: "error",
-                        message: 'Error while retrieving information from server' + err.message
-                    })
-                });
-        }
-    });
-
-
+    
+    requestPromise(sofaScoreOptions)
+        .then(body => {
+            res.send(body);
+        })
+        .catch(err => {
+            res.status(500).send({
+                status: "error",
+                message: 'Error while retrieving information from server' + err.message
+            })
+        });
 });
 
 app.get('/api/helper/:date1/:date2', (req, res) => {
