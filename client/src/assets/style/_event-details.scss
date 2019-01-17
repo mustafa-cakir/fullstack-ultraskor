@@ -638,6 +638,12 @@
         }
     }
     .injuries {
+        .white-box {
+            padding-top: 25px;
+        }
+        .body {
+            padding: 0;
+        }
         .heading {
             .col-img {
                 max-width: 50px;
@@ -657,9 +663,10 @@
             }
         }
         .no-injury {
-            margin: 15px auto 25px;
+            margin: 15px auto 40px;
             text-align: center;
             max-width: 75%;
+            font-weight: 300;
         }
         .injury-table {
             th {
@@ -720,9 +727,6 @@
                     background-image: url(../images/icon-doubtful.png);
                 }
             }
-        }
-        .body {
-            padding: 12px 0 0 0;
         }
     }
     .stats {
@@ -1161,6 +1165,9 @@
         }
         .possible-lineup {
             color: $premier-leage-2
+        }
+        .confirmed-lineup {
+            color: green;
         }
         .confirmed {
             color: #009d0b;

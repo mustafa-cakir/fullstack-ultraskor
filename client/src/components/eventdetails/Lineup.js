@@ -236,7 +236,8 @@ class Lineup extends Component {
                             </div>
                             <div className="col col-5 text-right right-info">
                                 {!activeTeam.confirmedLineups ?
-                                    <div className="possible-lineup"><Trans>Possible Lineup</Trans>!</div> : ""}
+                                    <div className="possible-lineup"><Trans>Possible Lineup</Trans>!</div> :
+                                    <div className="confirmed-lineup"><Trans>Confirmed Lineup</Trans></div>}
                                 {activeTeam.rating ?
                                     <div className="team-rating"><Trans>Team Avg. Rating</Trans>: <span
                                         className={"text-bold rating " + Lineup.ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>

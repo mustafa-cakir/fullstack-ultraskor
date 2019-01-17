@@ -93,7 +93,7 @@ app.get('/api/', (req, res) => {
             'x-requested-with': 'XMLHttpRequest'
         }
     };
-    
+
     requestPromise(sofaScoreOptions)
         .then(body => {
             res.send(body);

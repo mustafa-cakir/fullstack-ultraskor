@@ -51,7 +51,7 @@ class Iddaa extends Component {
 											<div className="col text-bold">
 												<img src={IddaLogoBig} className="tab-logo" alt="Iddaa Logo"/> {provider3MatchData.code}
 											</div>
-											<div className="col text-right text-bold">"MBS: {provider3MatchData.mbc}</div>
+											<div className="col text-right text-bold">MBS: {provider3MatchData.mbc}</div>
 										</div>
 										<IddaaContainer provider3MatchData={provider3MatchData} t={t}/>
 									</div>
