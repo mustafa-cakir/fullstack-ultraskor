@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import Link from "react-router-dom/es/Link";
-import {Trans} from "react-i18next";
+import {Trans, withNamespaces} from "react-i18next";
+//import {withRouter} from "react-router-dom";
 
 class Event extends Component {
     isInProgress() {
@@ -71,8 +72,24 @@ class Event extends Component {
         })
     }
 
+	generateSlug(text) {
+		const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
+		const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'
+		const p = new RegExp(a.split('').join('|'), 'g')
+
+		return text.toString().toLowerCase()
+			.replace(/\s+/g, '-')           // Replace spaces with -
+			.replace(p, c =>
+				b.charAt(a.indexOf(c)))     // Replace special chars
+			.replace(/&/g, '-and-')         // Replace & with 'and'
+			.replace(/[^\w-]+/g, '')       // Remove all non-word chars
+			.replace(/--+/g, '-')         // Replace multiple - with single -
+			.replace(/^-+/, '')             // Trim - from start of text
+			.replace(/-+$/, '')             // Trim - from end of text
+	}
+
     render() {
-        const { event } = this.props;
+        const { event, t } = this.props;
         let favEvents = this.props.favEvents;
         favEvents = (typeof favEvents.indexOf === "undefined") ? favEvents.favEvents : favEvents; // patch for safari
         const favActive = favEvents.indexOf(event.id) > -1;
@@ -82,7 +99,7 @@ class Event extends Component {
 
                     <div className="row">
                         <Link to={{
-                            pathname: "/eventdetails/" + event.id,
+                            pathname: `/${t('match')}/${this.generateSlug(event.name)}-${t('live-score')}-${event.id}`,
                             state: {isPrev: true}
                         }} className="event-link col">
                             <div className="row">
@@ -114,4 +131,4 @@ class Event extends Component {
     }
 }
 
-export default Event
+export default withNamespaces('translations')(Event)

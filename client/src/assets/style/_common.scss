@@ -431,6 +431,13 @@ code {
 	}
 }
 
+.language-switcher {
+	margin-bottom: 25px;
+	.active {
+		border: 1px solid #007bff;
+	}
+}
+
 @keyframes showUp {
     0% {
         bottom: -50px;
