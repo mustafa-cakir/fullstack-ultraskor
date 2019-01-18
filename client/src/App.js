@@ -9,6 +9,7 @@ import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
 import i18n from "i18next";
 import MetaTags from "react-meta-tags";
+import {LanguageUrlHandler} from "./components/LanguageSwitcher";
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -27,9 +28,9 @@ class App extends Component {
 
 	render() {
 		if (i18n.language === "en") document.documentElement.lang = "en";
-		let metaAlternateEl = document.querySelector('link[rel="alternate"]');
-		metaAlternateEl.href = (i18n.language === "en" ? "https://www.ultraskor.com" : "https://www.ultraskor.com/tr");
-		metaAlternateEl.hreflang = (i18n.language === "en" ? "tr" : "en");
+		// let metaAlternateEl = document.querySelector('link[rel="alternate"]');
+		// metaAlternateEl.href = (i18n.language === "en" ? "https://www.ultraskor.com" : "https://www.ultraskor.com/tr");
+		// metaAlternateEl.hreflang = (i18n.language === "en" ? "tr" : "en");
 
 		return (
 			<div className="App">
