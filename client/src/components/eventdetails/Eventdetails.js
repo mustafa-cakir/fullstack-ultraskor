@@ -19,9 +19,7 @@ import Injuries from "./Injuries";
 import RefreshBtn from "../RefreshBtn";
 import smoothscroll from 'smoothscroll-polyfill';
 import i18n from "i18next";
-import {LanguageUrlHandler} from "../LanguageSwitcher";
-import Metatags from "../Metatags";
-
+import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 
 class Eventdetails extends Component {
 	constructor(props) {
@@ -160,6 +158,7 @@ class Eventdetails extends Component {
 					loading: false,
 					refreshBtn: false
 				});
+				this.updateMeta();
 				if (this.refreshData) {
 					clearTimeout(this.refreshDataTimeout);
 					this.refreshDataTimeout = setTimeout(() => {
@@ -290,8 +289,31 @@ class Eventdetails extends Component {
 		}, 600);
 	};
 
+	updateMeta() {
+		const eventData = this.state.eventData;
+		if (i18n.language === "en") {
+			HelperUpdateMeta({
+				title: `Live: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`,
+				canonical: window.location.href,
+				description: `${ eventData.event.tournament.name} Match Report and Live Scores for ${ eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`,
+				keywords: `${eventData.event.homeTeam.slug} match results, ${eventData.event.awayTeam.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`,
+				alternate: HelperTranslateUrlTo('tr'),
+				hrefLang: "tr"
+			})
+		} else if (i18n.language === "tr") {
+			HelperUpdateMeta({
+				title: `Canlı: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`,
+				canonical: window.location.href,
+				description: `${ eventData.event.tournament.name}, ${ eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`,
+				keywords: `${eventData.event.homeTeam.slug} mac sonuclari, ${eventData.event.awayTeam.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`,
+				alternate: HelperTranslateUrlTo('en'),
+				hrefLang: "en"
+			})
+		}
+	};
+
 	render() {
-		let eventData = this.state.eventData;
+		const eventData = this.state.eventData;
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
@@ -309,25 +331,6 @@ class Eventdetails extends Component {
 
 		return (
 			<div className="event-details">
-				{i18n.language === "en" ? (
-					<Metatags
-						title={`Live: ${eventData.event.homeScore.current || ""} - ${eventData.event.awayScore.current || ""} | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`}
-						canonical={window.location.href}
-						description={`${ eventData.event.tournament.name} Match Report and Live Scores for ${ eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`}
-						keywords={`${eventData.event.homeTeam.slug} match results, ${eventData.event.awayTeam.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`}
-						alternate={LanguageUrlHandler('tr')}
-						hrefLang="tr"
-					/>
-				) : i18n.language === "tr" ? (
-						<Metatags
-							title={`Canlı: ${eventData.event.homeScore.current || ""} - ${eventData.event.awayScore.current || ""} | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`}
-							canonical={window.location.href}
-							description={`${ eventData.event.tournament.name}, ${ eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`}
-							keywords={`${eventData.event.homeTeam.slug} mac sonuclari, ${eventData.event.awayTeam.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`}
-							alternate={LanguageUrlHandler('en')}
-							hrefLang="en"
-						/>
-				) : ""}
 				{this.state.loading ? <Loading/> : null}
 				<Scoreboard eventData={eventData}/>
 				<ul className="swipe-tabs" ref={this.swipeTabsEl}>

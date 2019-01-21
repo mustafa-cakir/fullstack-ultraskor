@@ -11,7 +11,7 @@ import {withNamespaces} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
-import Metatags from "./Metatags";
+import {HelperUpdateMeta} from "../Helper";
 
 
 class Homepage extends Component {
@@ -153,6 +153,7 @@ class Homepage extends Component {
 					loading: false,
 					refreshBtn: false
 				});
+				Homepage.updateMeta();
 				if (this.refreshData) {
 					clearTimeout(this.refreshDataTimeout);
 					this.refreshDataTimeout = setTimeout(() => {
@@ -198,6 +199,28 @@ class Homepage extends Component {
 		}
 	};
 
+	static updateMeta() {
+		if (i18n.language === "en") {
+			HelperUpdateMeta({
+				title: "UltraSkor - (No Ads) Live Score, Match Results and League Fixtures",
+				canonical: "https://www.ultraskor.com/en",
+				description: "No Ads. Get the live football scores update, see football match results & match fixtures from across the world",
+				keywords: "live scores, live football results, match results, football fixtures, eufa champions league results",
+				alternate: "https://www.ultraskor.com",
+				hrefLang: "tr"
+			});
+		} else if (i18n.language === "tr") {
+			HelperUpdateMeta({
+				title: "UltraSkor - (Reklamsız) Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları",
+				canonical: "https://www.ultraskor.com",
+				description: "Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.",
+				keywords: "canli skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari",
+				alternate: "https://www.ultraskor.com/en",
+				hrefLang: "en"
+			});
+		}
+	};
+
 	render() {
 		const dataObj = this.state.mainData;
 		let mainContent = [],
@@ -240,25 +263,6 @@ class Homepage extends Component {
 		}
 		return (
 			<div>
-				{i18n.language === "en" ? (
-					<Metatags
-						title="UltraSkor - (No Ads) Live Score, Match Results and League Fixtures"
-						canonical="https://www.ultraskor.com/en"
-						description="No Ads. Get the live football scores update, see football match results & match fixtures from across the world"
-						keywords="live scores, live football results, match results, football fixtures, eufa champions league results"
-						alternate="https://www.ultraskor.com"
-						hrefLang="tr"
-					/>
-				) : i18n.language === "tr" ? (
-					<Metatags
-						title="UltraSkor - (Reklamsız) Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları"
-						canonical="https://www.ultraskor.com"
-						description="Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz."
-						keywords="canli skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari"
-						alternate="https://www.ultraskor.com/en"
-						hrefLang="en"
-					/>
-				) : ""}
 				<Headertabs
 					{...this.state}
 					updateParentState={this.updateParentState}

@@ -7,7 +7,6 @@ import Eventdetails from "./components/eventdetails/Eventdetails";
 import Errors from "./components/Errors";
 import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
-import i18n from "i18next";
 ReactGA.initialize('UA-132328627-1');
 
 class App extends Component {
@@ -19,7 +18,6 @@ class App extends Component {
 		});
 	};
 	render() {
-		if (i18n.language === "en") document.documentElement.lang = "en";
 		return (
 			<div className="App">
 				<Navbar getData={this.getData}/>
