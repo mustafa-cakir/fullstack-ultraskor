@@ -151,6 +151,10 @@ class Eventdetails extends Component {
 				}
 			})
 			.then(jsonData => {
+				if (window.location.pathname.split('/')[1] === "eventdetails") {
+					window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
+					return;
+				}
 				this.setState({
 					eventData: jsonData,
 					loading: false,
