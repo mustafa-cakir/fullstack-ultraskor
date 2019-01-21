@@ -20,7 +20,7 @@ import RefreshBtn from "../RefreshBtn";
 import smoothscroll from 'smoothscroll-polyfill';
 import i18n from "i18next";
 import {LanguageUrlHandler} from "../LanguageSwitcher";
-import MetaTags from "react-meta-tags";
+import Metatags from "../Metatags";
 
 
 class Eventdetails extends Component {
@@ -306,31 +306,27 @@ class Eventdetails extends Component {
 			t('Media'),
 			t('Forum')
 		];
+
 		return (
 			<div className="event-details">
 				{i18n.language === "en" ? (
-					<MetaTags>
-						<title>Live: {eventData.event.homeScore.current} - {eventData.event.awayScore.current} | {eventData.event.name} Live
-							Scores Coverage - See highlights and match statistics</title>
-						<link rel="canonical" href={window.location.href}/>
-						<link rel="alternate" href={LanguageUrlHandler('tr')} hrefLang="tr"/>
-						<meta name="description"
-						      content={`${ eventData.event.tournament.name} Match Report and Live Scores for ${ eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`}/>
-
-						<meta name="keywords"
-						      content={`${eventData.event.homeTeam.slug} match results, ${eventData.event.awayTeam.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`}/>
-					</MetaTags>
+					<Metatags
+						title={`Live: ${eventData.event.homeScore.current || ""} - ${eventData.event.awayScore.current || ""} | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`}
+						canonical={window.location.href}
+						description={`${ eventData.event.tournament.name} Match Report and Live Scores for ${ eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`}
+						keywords={`${eventData.event.homeTeam.slug} match results, ${eventData.event.awayTeam.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`}
+						alternate={LanguageUrlHandler('tr')}
+						hrefLang="tr"
+					/>
 				) : i18n.language === "tr" ? (
-					<MetaTags>
-						<title>Canlı: {eventData.event.homeScore.current} - {eventData.event.awayScore.current} | {eventData.event.name} Maçı
-							canlı skor burada - Maç özeti ve goller için tıklayın</title>
-						<link rel="canonical" href={window.location.href}/>
-						<link rel="alternate" href={LanguageUrlHandler('en')} hrefLang="en"/>
-						<meta name="description"
-						      content={`${ eventData.event.tournament.name}, ${ eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`}/>
-						<meta name="keywords"
-						      content={`${eventData.event.homeTeam.slug} mac sonuclari, ${eventData.event.awayTeam.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`}/>
-					</MetaTags>
+						<Metatags
+							title={`Canlı: ${eventData.event.homeScore.current || ""} - ${eventData.event.awayScore.current || ""} | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`}
+							canonical={window.location.href}
+							description={`${ eventData.event.tournament.name}, ${ eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`}
+							keywords={`${eventData.event.homeTeam.slug} mac sonuclari, ${eventData.event.awayTeam.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`}
+							alternate={LanguageUrlHandler('en')}
+							hrefLang="en"
+						/>
 				) : ""}
 				{this.state.loading ? <Loading/> : null}
 				<Scoreboard eventData={eventData}/>
