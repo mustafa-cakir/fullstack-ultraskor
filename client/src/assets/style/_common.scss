@@ -433,6 +433,9 @@ code {
 
 .language-switcher {
 	margin-bottom: 25px;
+	.btn {
+		display: inline-block;
+	}
 	.active {
 		border: 1px solid #007bff;
 	}

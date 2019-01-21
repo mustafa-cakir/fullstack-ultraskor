@@ -31,6 +31,9 @@ class Headertabs extends Component {
 
     setSessionStorage() {
         const {...obj} = this.state;
+        obj.isSportDropdown = false;
+        obj.isFilterDropdown = false;
+        obj.isDateDropdown = false;
         sessionStorage.setItem('HeadertabsState', JSON.stringify(obj));
     }
 
@@ -212,22 +215,22 @@ class Headertabs extends Component {
                     </div>
                     <div className={"dropdown-menu sports left" + (this.state.isSportDropdown ? ' show' : '')}
                          aria-labelledby="dropdownMenuButton">
-                        <a className="dropdown-item" href="/test"><Icon name={"far fa-futbol"}/> Futbol</a>
+                        <a className="dropdown-item" href="/"><Icon name={"far fa-futbol"}/> Futbol</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-basketball-ball"}/> Basketball</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-basketball-ball"}/> Basketball</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-table-tennis"}/> Tennis</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-table-tennis"}/> Tennis</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-baseball-ball"}/> Baseball</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-baseball-ball"}/> Baseball</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-football-ball"}/> Amr.
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-football-ball"}/> Amr.
                             Football</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-football-ball"}/> Rugby</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-football-ball"}/> Rugby</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-hockey-puck"}/> Hokey</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-hockey-puck"}/> Hokey</a>
                         <hr className="separator"/>
-                        <a className="dropdown-item" href="/test"><Icon name={"fas fa-volleyball-ball"}/> Voleyball</a>
+                        <a className="dropdown-item" href="/"><Icon name={"fas fa-volleyball-ball"}/> Voleyball</a>
                     </div>
                 </li>
 

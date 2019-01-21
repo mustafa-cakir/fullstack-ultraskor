@@ -4,6 +4,7 @@ import Icon from "./Icon";
 import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
 import {Trans, withNamespaces} from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 class Navbar extends Component {
 
@@ -101,13 +102,13 @@ class Navbar extends Component {
                 </div>
                 <ul className="nav-list">
                     <li className="logo"><a href="/">LOGO</a></li>
-                    <li><a href="/"><Trans>Menu 1</Trans></a></li>
-                    <li><a href="/"><Trans>Menu 2</Trans></a></li>
+                    <li><a href="/">Menu 1</a></li>
+                    <li><a href="/">Menu 2</a></li>
                     <li><a href="/">Menu 3</a></li>
                     <li><a href="/">Menu 4</a></li>
                     <li><a href="/">SubMenu 1</a></li>
                     <li><a href="/">SubMenu 2</a></li>
-                    <li><a href="/">SubMenu 3</a></li>
+                    <li><LanguageSwitcher/></li>
                 </ul>
                 <section className="searchbar">
                     <div className="container px-0 position-relative">
