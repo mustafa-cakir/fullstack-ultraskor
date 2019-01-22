@@ -51,9 +51,11 @@ class Eventdetails extends Component {
 	};
 
 	componentDidMount() {
+		console.log(this.props);
 		this.getData({
 			api: '/event/' + this.eventid + '/json',
-			loading: true
+			loading: true,
+			page: "eventdetails"
 		});
 		this.tabs = [];
 		const page = this.props.location.pathname;
@@ -140,50 +142,93 @@ class Eventdetails extends Component {
 
 	getData = options => {
 		if (options.loading) this.setState({loading: true});
-		fetch('/api/?api=' + options.api, {cache: "no-store"})
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
-				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
-				}
-			})
-			.then(jsonData => {
-				if (window.location.pathname.split('/')[1] === "eventdetails") {
-					window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
-					return;
-				}
-				this.setState({
-					eventData: jsonData,
-					loading: false,
-					refreshBtn: false
-				});
-				this.updateMeta();
-				if (this.refreshData) {
-					clearTimeout(this.refreshDataTimeout);
-					this.refreshDataTimeout = setTimeout(() => {
-						this.getData({
-							api: '/event/' + this.eventid + '/json',
-							loading: false
-						});
-					}, this.refreshInterval);
-				}
-				if (options.loading) {
-					this.getHelperData(jsonData);
-				}
-			})
-			.catch(err => {
-				if (options.loading) {
-					this.setState({
-						eventData: {error: err.toString()},
-						loading: false
-					});
-				} else {
-					this.setState({
-						refreshBtn: true
-					});
-				}
+		const {socket} = this.props;
+
+		socket.emit('current page', "eventdetails");
+
+		socket.emit('get data from main', options);
+		socket.on('return data from main for eventdetails', res => {
+			const jsonData = JSON.parse(res);
+			if (window.location.pathname.split('/')[1] === "eventdetails") {
+				window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
+				return;
+			}
+			this.setState({
+				eventData: jsonData,
+				loading: false,
+				refreshBtn: false
 			});
+			this.updateMeta();
+			if (this.refreshData) {
+				clearTimeout(this.refreshDataTimeout);
+				this.refreshDataTimeout = setTimeout(() => {
+					socket.emit('get data from main', options);
+				}, this.refreshInterval);
+			}
+			if (options.loading) {
+				this.getHelperData(jsonData);
+			}
+		});
+
+		// socket.on('my error', err => {
+		// 	if (options.loading) {
+		// 		this.setState({
+		// 			eventData: {error: err.toString()},
+		// 			loading: false
+		// 		});
+		// 	} else {
+		// 		this.setState({
+		// 			refreshBtn: true
+		// 		});
+		// 	}
+		// });
+
+
+		// fetch('/api/?api=' + options.api, {cache: "no-store"})
+		// 	.then(res => {
+		// 		if (res.status === 200) {
+		// 			return res.json();
+		// 		} else {
+		// 			throw Error(`Can't retrieve information from server, ${res.status}`);
+		// 		}
+		// 	})
+		// 	.then(jsonData => {
+		// 		if (window.location.pathname.split('/')[1] === "eventdetails") {
+		// 			window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
+		// 			return;
+		// 		}
+		// 		this.setState({
+		// 			eventData: jsonData,
+		// 			loading: false,
+		// 			refreshBtn: false
+		// 		});
+		// 		this.updateMeta();
+		// 		if (this.refreshData) {
+		// 			clearTimeout(this.refreshDataTimeout);
+		// 			this.refreshDataTimeout = setTimeout(() => {
+		// 				this.getData({
+		// 					api: '/event/' + this.eventid + '/json',
+		// 					loading: false,
+		// 					page: "eventdetails"
+		// 				});
+		// 			}, this.refreshInterval);
+		// 		}
+		// 		if (options.loading) {
+		// 			this.getHelperData(jsonData);
+		// 		}
+		// 	})
+		// 	.catch(err => {
+		// 		if (options.loading) {
+		// 			this.setState({
+		// 				eventData: {error: err.toString()},
+		// 				loading: false
+		// 			});
+		// 		} else {
+		// 			this.setState({
+		// 				refreshBtn: true
+		// 			});
+		// 		}
+		// 	});
 	};
 
 	getHelperData(jsonData) {

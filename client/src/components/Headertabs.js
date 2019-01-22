@@ -163,7 +163,7 @@ class Headertabs extends Component {
             this.props.getData({
                 api: '/football//' + selectedDay + '/json',
                 loading: true,
-                interval: false
+	            page: "homepage"
             });
         }
         this.setState({

@@ -13,7 +13,6 @@ import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
 
-
 class Homepage extends Component {
 	constructor(props) {
 		super(props);
@@ -35,12 +34,12 @@ class Homepage extends Component {
 
 	componentDidMount() {
 		this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
-
 		this.analyzeSessionStorage();
 
 		this.getData({
 			api: '/football//' + this.todaysDate + '/json',
-			loading: true
+			loading: true,
+			page: "homepage"
 		});
 
 		const page = this.props.location.pathname;
@@ -134,52 +133,52 @@ class Homepage extends Component {
 
 	getData = options => {
 		if (options.loading) this.setState({loading: true});
+		const {socket} = this.props;
 		let jsonData = {};
 
-		fetch('/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
-				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
-				}
-			})
-			.then(res => {
-				jsonData = this.preprocessData(res);
-				if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
+		socket.emit('current page', "homepage");
+
+		socket.emit('check for updates on homepage', options);
+
+		socket.on('return differences on homepage', res => {
+			console.log(res);
+		});
+		socket.emit('get data from main', options);
+		socket.on('return data from main for homepage', res => {
+			res = JSON.parse(res);
+			jsonData = this.preprocessData(res);
+			if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
+			this.setState({
+				orjData: jsonData,
+				mainData: jsonData,
+				loading: false,
+				refreshBtn: false
+			});
+			this.updateMeta();
+			if (this.refreshData) {
+				clearTimeout(this.refreshDataTimeout);
+				this.refreshDataTimeout = setTimeout(() => {
+					this.analyzeSessionStorage();
+					socket.emit('get data from main', options);
+				}, this.refreshInterval);
+			}
+		});
+
+		socket.on('my error', err => {
+			if (options.loading) {
+				jsonData = {error: err.toString()};
 				this.setState({
 					orjData: jsonData,
 					mainData: jsonData,
 					loading: false,
-					refreshBtn: false
+					refreshBtn: true
 				});
-				Homepage.updateMeta();
-				if (this.refreshData) {
-					clearTimeout(this.refreshDataTimeout);
-					this.refreshDataTimeout = setTimeout(() => {
-						this.analyzeSessionStorage();
-						this.getData({
-							api: '/football//' + this.todaysDate + '/json',
-							loading: false,
-						});
-					}, this.refreshInterval);
-				}
-			})
-			.catch(err => {
-				if (options.loading) {
-					jsonData = {error: err.toString()};
-					this.setState({
-						orjData: jsonData,
-						mainData: jsonData,
-						loading: false,
-						refreshBtn: true
-					});
-				} else {
-					this.setState({
-						refreshBtn: true
-					});
-				}
-			});
+			} else {
+				this.setState({
+					refreshBtn: true
+				});
+			}
+		})
 	};
 
 	flagImg(tournament) {
@@ -199,7 +198,7 @@ class Homepage extends Component {
 		}
 	};
 
-	static updateMeta() {
+	updateMeta() {
 		if (i18n.language === "en") {
 			HelperUpdateMeta({
 				title: "UltraSkor - (No Ads) Live Score, Match Results and League Fixtures",

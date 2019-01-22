@@ -24,10 +24,10 @@ const whitelist = [
     'http://www.ultraskor.com',
     'https://ultraskor.com',
     'http://ultraskor.com',
-    'https://www.canliskor.io',
-    'http://www.canliskor.io',
-    'https://canliskor.io',
-    'http://canliskor.io'
+    'https://www.canliskor.socket',
+    'http://www.canliskor.socket',
+    'https://canliskor.socket',
+    'http://canliskor.socket'
 ];
 const corsOptions = {
     origin: function (origin, callback) {
