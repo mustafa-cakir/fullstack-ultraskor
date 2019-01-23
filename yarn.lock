@@ -335,14 +335,6 @@ chalk@^2.4.1:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-changeset@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/changeset/-/changeset-0.2.4.tgz#7ad43bd93d4073fd31010c9bf6d6f02a50d181da"
-  integrity sha512-hrsKawXIepXL6Pr11Hbtkp/hCVEyCD2Mm6EM80bgvR2L+9GBgMORQxMTAm+eEHSDVDhUHqZU9/7haCG2/zM3zw==
-  dependencies:
-    udc "^1.0.0"
-    underscore "^1.8.3"
-
 chokidar@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.0.4.tgz#356ff4e2b0e8e43e322d18a372460bbcf3accd26"
@@ -2798,22 +2790,12 @@ type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-udc@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/udc/-/udc-1.0.1.tgz#c5e62448acf35eaa524d5c3698c863a5bac46bfc"
-  integrity sha1-xeYkSKzzXqpSTVw2mMhjpbrEa/w=
-
 undefsafe@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/undefsafe/-/undefsafe-2.0.2.tgz#225f6b9e0337663e0d8e7cfd686fc2836ccace76"
   integrity sha1-Il9rngM3Zj4Njnz9aG/Cg2zKznY=
   dependencies:
     debug "^2.2.0"
-
-underscore@^1.8.3:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
-  integrity sha512-5/4etnCkd9c8gwgowi5/om/mYO5ajCaOgdzj/oW+0eQV9WxKBDZw5+ycmKmeaTXjInS/W0BzpGLo2xR2aBwZdg==
 
 union-value@^1.0.0:
   version "1.0.0"

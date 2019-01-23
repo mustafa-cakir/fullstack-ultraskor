@@ -28,6 +28,7 @@ io.on('connection', socket => {
 	let homepageChangesIntervalHandeler = null;
 
 	socket.on('check for updates on homepage', (params) => {
+		console.log('triggered: check for updates on homepage');
 		const sofaOptions = {
 			method: 'GET',
 			uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
@@ -39,6 +40,7 @@ io.on('connection', socket => {
 			}
 		};
 		let previousData;
+
 		clearInterval(homepageChangesIntervalHandeler);
 		homepageChangesIntervalHandeler = setInterval(() => {
 			if (currentPage !== "homepage") {
@@ -77,20 +79,21 @@ io.on('connection', socket => {
 						const differences = diff(previousData, events);
 						if (differences && differences.length > 0) {
 							differences.forEach((item,index) => {
-								differences[index].event = events[item.path[0]]
+								if (item.path && item.path.length > 0 ) differences[index].event = events[item.path[0]]
 							});
 							socket.emit('return differences on homepage', differences);
 						}
 					}
 					previousData = events;
 				})
-				.catch(() => {
-					console.log('error returning data from main for ' + params.page);
+				.catch((err) => {
+					console.log('error returning differences on ' + params.page + ' Error: ' + err );
 				});
-		}, 5000);
+		}, 15000);
 	});
 
 	socket.on('get data from main', (params) => {
+		console.log('triggered: get data from main');
 		const sofaOptions = {
 			method: 'GET',
 			uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,

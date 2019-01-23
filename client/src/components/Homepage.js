@@ -22,14 +22,12 @@ class Homepage extends Component {
 			orjData: null,
 			favEvents: [],
 			favEventsList: [],
-			refreshBtn: false
+			refreshBtn: false,
+			flashData: null
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.getData = this.getData.bind(this);
-		this.refreshInterval = 20000;
 		this.todaysDate = null;
-		this.refreshData = false;
-		this.refreshDataTimeout = null;
 	};
 
 	componentDidMount() {
@@ -59,11 +57,6 @@ class Homepage extends Component {
 				favEvents: storageFavEvents
 			});
 		}
-	}
-
-	componentWillUnmount() {
-		clearTimeout(this.refreshDataTimeout);
-		this.refreshData = false;
 	}
 
 	trackPage(page) {
@@ -131,45 +124,77 @@ class Homepage extends Component {
 		})
 	};
 
+	triggerFlashBoard(options) {
+		console.log(options);
+	}
+
+	handleSocketChanges(res) {
+		let {mainData} = this.state;
+		console.log(res);
+		res.forEach(change => {
+			if (change.kind === "E" && change.event && change.event.id) {
+				mainData.sportItem.tournaments.forEach(tournament => {
+					tournament.events.forEach(event => {
+						if (event.id === change.event.id) {
+							if (change.path[1] === "statusDescription") { // minute change
+								event.statusDescription = change.rhs;
+								event.flashStatusDescription = true;
+							} else if (change.path[1] === "homeScore" || change.path[1] === "awayScore") { // home scored
+								event[change.path[1]].current = change.rhs;
+								this.triggerFlashBoard({
+									event: change.event,
+									type: change.path[1],
+									previous: change.lhs,
+									new: change.rhs
+								})
+							}
+						}
+					});
+				});
+			}
+		});
+		this.setState({
+			mainData: mainData,
+			orjData: mainData
+		});
+	}
+
+	handleSocketGetData(res, socket, options) {
+		res = JSON.parse(res);
+		res = this.preprocessData(res);
+		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
+		this.setState({
+			orjData: res,
+			mainData: res,
+			loading: false,
+			refreshBtn: false
+		});
+		this.updateMeta();
+		this.analyzeSessionStorage();
+		socket.emit('check for updates on homepage', options);
+	}
+
 	getData = options => {
 		if (options.loading) this.setState({loading: true});
 		const {socket} = this.props;
-		let jsonData = {};
 
 		socket.emit('current page', "homepage");
 
-		socket.emit('check for updates on homepage', options);
-
 		socket.on('return differences on homepage', res => {
-			console.log(res);
+			this.handleSocketChanges(res);
 		});
+
 		socket.emit('get data from main', options);
+
 		socket.on('return data from main for homepage', res => {
-			res = JSON.parse(res);
-			jsonData = this.preprocessData(res);
-			if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
-			this.setState({
-				orjData: jsonData,
-				mainData: jsonData,
-				loading: false,
-				refreshBtn: false
-			});
-			this.updateMeta();
-			if (this.refreshData) {
-				clearTimeout(this.refreshDataTimeout);
-				this.refreshDataTimeout = setTimeout(() => {
-					this.analyzeSessionStorage();
-					socket.emit('get data from main', options);
-				}, this.refreshInterval);
-			}
+			this.handleSocketGetData(res, socket, options);
 		});
 
 		socket.on('my error', err => {
 			if (options.loading) {
-				jsonData = {error: err.toString()};
 				this.setState({
-					orjData: jsonData,
-					mainData: jsonData,
+					orjData: {error: err.toString()},
+					mainData: {error: err.toString()},
 					loading: false,
 					refreshBtn: true
 				});
@@ -276,6 +301,7 @@ class Homepage extends Component {
 				</div>
 				{this.state.refreshBtn ? <RefreshBtn/> : ""}
 				<Footer/>
+				{/*<Flashscore flashData={this.state.flashData}/>*/}
 			</div>
 		)
 	}
