@@ -96,13 +96,24 @@
 }
 
 .live-blinker {
-
-}
-
-.live-blinker {
     animation: blink-animation 1s linear infinite;
     color: red;
     margin-left: 1px;
+}
+
+.flash-blinker-1 {
+	animation: blink-animation 0.5s linear;
+	animation-iteration-count: 1;
+}
+
+.flash-blinker-3 {
+	animation: blink-animation 0.5s linear;
+	animation-iteration-count: 3;
+}
+
+.flash-blinker-5 {
+	animation: blink-animation 0.5s linear;
+	animation-iteration-count: 5;
 }
 
 .red-card {

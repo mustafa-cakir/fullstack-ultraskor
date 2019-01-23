@@ -12,19 +12,19 @@ class Event extends Component {
 			statusDescription: null
 		}
 	}
-	componentWillReceiveProps(nextProps) {
 
-		//console.log('componentWillReceiveProps', this.state.statusDescription, nextProps.event.statusDescription);
-		if (this.state.statusDescription !== nextProps.event.statusDescription) {
-			this.setState({
-				isStatusDescriptionUpdated: true
-			});
-		} else {
+	componentWillReceiveProps(nextProps) {
+		if (this.state.statusDescription) { // todo: find an alternative way
+			console.log('trigger');
+			if (this.state.statusDescription !== nextProps.event.statusDescription) {
+				this.setState({
+					isStatusDescriptionUpdated: true
+				});
+			}
 			this.setState({
 				statusDescription: nextProps.event.statusDescription
 			});
 		}
-
 	}
 
 	isInProgress() {
@@ -33,8 +33,8 @@ class Event extends Component {
 		switch (this.props.event.status.type) {
 			case "inprogress":
 				text =
-					<div className={"red font-weight-bold " + (this.state.isStatusDescriptionUpdated ? "flash": "")}>
-						{this.props.event.flashStatusDescription ? "heyooo" : ""}
+					<div
+						className={"red font-weight-bold " + (this.state.isStatusDescriptionUpdated ? "flash-blinker-3" : "")}>
 						{this.props.event.statusDescription}
 						{(this.props.event.status.code === 6) ? '' : ''}
 						{(liveBlinkerCodes.indexOf(this.props.event.status.code) > -1) ?
