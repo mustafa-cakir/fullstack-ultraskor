@@ -43,16 +43,12 @@ class Eventdetails extends Component {
 			refreshBtn: true
 		};
 		this.tabs = [];
-		this.refreshData = false;
-		this.refreshInterval = 20000;
-		this.refreshDataTimeout = null;
 		this.eventid = this.props.match.params.eventid;
 		smoothscroll.polyfill();
 	};
 
 	componentDidMount() {
-		console.log(this.props);
-		this.getData({
+		this.initSocket({
 			api: '/event/' + this.eventid + '/json',
 			loading: true,
 			page: "eventdetails"
@@ -61,11 +57,6 @@ class Eventdetails extends Component {
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 	};
-
-	componentWillUnmount() {
-		clearTimeout(this.refreshDataTimeout);
-		this.refreshData = false;
-	}
 
 	trackPage(page) {
 		ReactGA.set({
@@ -140,95 +131,31 @@ class Eventdetails extends Component {
 		if (this.swipeEl) this.swipeEl.current.slide(index);
 	}
 
-	getData = options => {
+	handleSocketData(res) {
+		const jsonData = JSON.parse(res);
+		if (window.location.pathname.split('/')[1] === "eventdetails") {
+			window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
+			return;
+		}
+		this.setState({
+			eventData: jsonData,
+			loading: false,
+			refreshBtn: false
+		});
+		this.updateMeta();
+	}
+
+	initSocket = options => {
 		if (options.loading) this.setState({loading: true});
 		const {socket} = this.props;
 
-		socket.emit('current page', "eventdetails");
+		socket.emit('current-page', "eventdetails");
+		socket.emit('get-main', options);
+		socket.once('return-main-eventdetails', this.handleSocketData.bind(this));
 
-		socket.emit('get data from main', options);
-		socket.on('return data from main for eventdetails', res => {
-			const jsonData = JSON.parse(res);
-			if (window.location.pathname.split('/')[1] === "eventdetails") {
-				window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
-				return;
-			}
-			this.setState({
-				eventData: jsonData,
-				loading: false,
-				refreshBtn: false
-			});
-			this.updateMeta();
-			if (this.refreshData) {
-				clearTimeout(this.refreshDataTimeout);
-				this.refreshDataTimeout = setTimeout(() => {
-					socket.emit('get data from main', options);
-				}, this.refreshInterval);
-			}
-			if (options.loading) {
-				this.getHelperData(jsonData);
-			}
-		});
-
-		// socket.on('my error', err => {
-		// 	if (options.loading) {
-		// 		this.setState({
-		// 			eventData: {error: err.toString()},
-		// 			loading: false
-		// 		});
-		// 	} else {
-		// 		this.setState({
-		// 			refreshBtn: true
-		// 		});
-		// 	}
-		// });
-
-
-		// fetch('/api/?api=' + options.api, {cache: "no-store"})
-		// 	.then(res => {
-		// 		if (res.status === 200) {
-		// 			return res.json();
-		// 		} else {
-		// 			throw Error(`Can't retrieve information from server, ${res.status}`);
-		// 		}
-		// 	})
-		// 	.then(jsonData => {
-		// 		if (window.location.pathname.split('/')[1] === "eventdetails") {
-		// 			window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
-		// 			return;
-		// 		}
-		// 		this.setState({
-		// 			eventData: jsonData,
-		// 			loading: false,
-		// 			refreshBtn: false
-		// 		});
-		// 		this.updateMeta();
-		// 		if (this.refreshData) {
-		// 			clearTimeout(this.refreshDataTimeout);
-		// 			this.refreshDataTimeout = setTimeout(() => {
-		// 				this.getData({
-		// 					api: '/event/' + this.eventid + '/json',
-		// 					loading: false,
-		// 					page: "eventdetails"
-		// 				});
-		// 			}, this.refreshInterval);
-		// 		}
-		// 		if (options.loading) {
-		// 			this.getHelperData(jsonData);
-		// 		}
-		// 	})
-		// 	.catch(err => {
-		// 		if (options.loading) {
-		// 			this.setState({
-		// 				eventData: {error: err.toString()},
-		// 				loading: false
-		// 			});
-		// 		} else {
-		// 			this.setState({
-		// 				refreshBtn: true
-		// 			});
-		// 		}
-		// 	});
+		// if (options.loading) {  // get helper data's
+		// 	this.getHelperData(jsonData);
+		// }
 	};
 
 	getHelperData(jsonData) {

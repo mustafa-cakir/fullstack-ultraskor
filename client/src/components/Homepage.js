@@ -26,7 +26,9 @@ class Homepage extends Component {
 			flashData: null
 		};
 		this.updateParentState = this.updateParentState.bind(this);
-		this.getData = this.getData.bind(this);
+		this.initSocket = this.initSocket.bind(this);
+		this.handleSocketChanges = this.handleSocketChanges.bind(this);
+		this.handleSocketData = this.handleSocketData.bind(this);
 		this.todaysDate = null;
 	};
 
@@ -34,7 +36,7 @@ class Homepage extends Component {
 		this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
 		this.analyzeSessionStorage();
 
-		this.getData({
+		this.initSocket({
 			api: '/football//' + this.todaysDate + '/json',
 			loading: true,
 			page: "homepage"
@@ -131,35 +133,55 @@ class Homepage extends Component {
 	handleSocketChanges(res) {
 		let {mainData} = this.state;
 		console.log(res);
-		res.forEach(change => {
-			if (change.kind === "E" && change.event && change.event.id) {
-				mainData.sportItem.tournaments.forEach(tournament => {
-					tournament.events.forEach(event => {
-						if (event.id === change.event.id) {
-							if (change.path[1] === "statusDescription") { // minute change
-								event.statusDescription = change.rhs;
-								event.flashStatusDescription = true;
-							} else if (change.path[1] === "homeScore" || change.path[1] === "awayScore") { // home scored
-								event[change.path[1]].current = change.rhs;
-								this.triggerFlashBoard({
-									event: change.event,
-									type: change.path[1],
-									previous: change.lhs,
-									new: change.rhs
-								})
+		if (res && res.length > 0) {
+			res.forEach(x => {
+				x.forEach(change => {
+					if (change.kind === "E" && change.event && change.event.id) {
+						mainData.sportItem.tournaments.forEach(tournament => {
+							let index = tournament.events.findIndex((x => x.id === change.event.id));
+							if (index > -1) {
+								let oldEvent = tournament.events[index];
+								if (change.path[0] === "statusDescription") { // minute change
+									//console.log(oldEvent, change.event);
+									oldEvent.status = change.event.status;
+									oldEvent.statusDescription = change.event.statusDescription;
+								} else if (change.path[0] === "homeScore" || change.path[0] === "awayScore") { // home or away scored!!
+									oldEvent[change.path[0]] = change.event[change.path[0]];
+									this.triggerFlashBoard({
+										event: change.event,
+										type: change.path[0],
+										previous: change.lhs,
+										new: change.rhs
+									})
+								}
 							}
-						}
-					});
+						});
+					}
 				});
-			}
-		});
-		this.setState({
-			mainData: mainData,
-			orjData: mainData
-		});
+			});
+			this.setState({
+				mainData: mainData,
+				orjData: mainData
+			});
+		}
 	}
 
-	handleSocketGetData(res, socket, options) {
+	handleSocketError(err, options) {
+		if (options.loading) {
+			this.setState({
+				orjData: {error: err.toString()},
+				mainData: {error: err.toString()},
+				loading: false,
+				refreshBtn: true
+			});
+		} else {
+			this.setState({
+				refreshBtn: true
+			});
+		}
+	}
+
+	handleSocketData(res) {
 		res = JSON.parse(res);
 		res = this.preprocessData(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
@@ -171,39 +193,21 @@ class Homepage extends Component {
 		});
 		this.updateMeta();
 		this.analyzeSessionStorage();
-		socket.emit('check for updates on homepage', options);
 	}
 
-	getData = options => {
+	initSocket = options => {
 		if (options.loading) this.setState({loading: true});
 		const {socket} = this.props;
 
-		socket.emit('current page', "homepage");
+		socket.emit('current-page', "homepage");
+		socket.emit('get-main', options);
+		socket.emit('get-updates-homepage', options);
 
-		socket.on('return differences on homepage', res => {
-			this.handleSocketChanges(res);
+		socket.on('return-updates-homepage', this.handleSocketChanges.bind(this));
+		socket.once('return-main-homepage', this.handleSocketData);
+		socket.on('my-error', res => {
+			this.handleSocketError(res, options)
 		});
-
-		socket.emit('get data from main', options);
-
-		socket.on('return data from main for homepage', res => {
-			this.handleSocketGetData(res, socket, options);
-		});
-
-		socket.on('my error', err => {
-			if (options.loading) {
-				this.setState({
-					orjData: {error: err.toString()},
-					mainData: {error: err.toString()},
-					loading: false,
-					refreshBtn: true
-				});
-			} else {
-				this.setState({
-					refreshBtn: true
-				});
-			}
-		})
 	};
 
 	flagImg(tournament) {
@@ -290,7 +294,7 @@ class Homepage extends Component {
 				<Headertabs
 					{...this.state}
 					updateParentState={this.updateParentState}
-					getData={this.getData}
+					initSocket={this.initSocket}
 					flagImg={this.flagImg}
 				/>
 

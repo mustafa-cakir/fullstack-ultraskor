@@ -17,18 +17,15 @@ const io = socketIO(server);
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-	console.log('User connected');
-	let currentPage = null;
+	let currentPage = null,
+		IntervalUpdatesHomepage = null;
 
-	socket.on('current page', (page) => {
+	socket.on('current-page', (page) => {
 		currentPage = page;
-		console.log('current page: ' + page);
+		clearTimeout(IntervalUpdatesHomepage);
 	});
 
-	let homepageChangesIntervalHandeler = null;
-
-	socket.on('check for updates on homepage', (params) => {
-		console.log('triggered: check for updates on homepage');
+	socket.on('get-updates-homepage', params => {
 		const sofaOptions = {
 			method: 'GET',
 			uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
@@ -40,13 +37,8 @@ io.on('connection', socket => {
 			}
 		};
 		let previousData;
-
-		clearInterval(homepageChangesIntervalHandeler);
-		homepageChangesIntervalHandeler = setInterval(() => {
-			if (currentPage !== "homepage") {
-				clearInterval(homepageChangesIntervalHandeler);
-				return false;
-			}
+		const getUpdatesHandler = () => {
+			if (currentPage !== "homepage") return false;
 			request(sofaOptions)
 				.then(res => JSON.parse(res))
 				.then(res => {
@@ -74,26 +66,47 @@ io.on('connection', socket => {
 							events.push(newEvents)
 						});
 					});
-					console.log('triggered');
-					if (previousData) {
-						const differences = diff(previousData, events);
-						if (differences && differences.length > 0) {
-							differences.forEach((item,index) => {
-								if (item.path && item.path.length > 0 ) differences[index].event = events[item.path[0]]
-							});
-							socket.emit('return differences on homepage', differences);
+					if (previousData && previousData.length > 0) {
+						let diffArr = [];
+
+						previousData.forEach(eventPrev => {
+							let eventNew = events.filter(item => item.id === eventPrev.id)[0];
+							let eventDiff = diff(eventPrev, eventNew);
+							if (eventDiff) {
+								eventDiff.forEach(x => {
+									x.event = eventNew;
+								});
+								diffArr.push(eventDiff);
+							}
+						});
+
+						if (diffArr.length > 0) {
+							socket.emit('return-updates-homepage', diffArr);
 						}
+
+						// let differences = diff(previousData, events);
+						// if (differences && differences.length > 0) {
+						// 	differences.forEach((item, index) => {
+						// 		if (item.path && item.path.length > 0) differences[index].event = events[item.path[0]]
+						// 	});
+						// 	//socket.emit('return-updates-homepage', differences);
+						// }
 					}
 					previousData = events;
+					IntervalUpdatesHomepage = setTimeout(() => {
+						getUpdatesHandler(); // keep checking in every 15 seconds
+					}, 15000);
 				})
 				.catch((err) => {
-					console.log('error returning differences on ' + params.page + ' Error: ' + err );
+					console.log('error returning differences on ' + params.page + ' Error: ' + err);
 				});
-		}, 15000);
+		};
+		setTimeout(() => {
+			getUpdatesHandler(); // start the 1st check after 5 seconds.
+		}, 5000)
 	});
 
-	socket.on('get data from main', (params) => {
-		console.log('triggered: get data from main');
+	socket.on('get-main', (params) => {
 		const sofaOptions = {
 			method: 'GET',
 			uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
@@ -106,17 +119,16 @@ io.on('connection', socket => {
 		};
 		request(sofaOptions)
 			.then(res => {
-				console.log('return data from main for ' + params.page);
-				socket.emit('return data from main for ' + params.page, res);
+				socket.emit('return-main-' + params.page, res);  // return-main-homepage, return-main-eventdetails
 			})
 			.catch(() => {
 				console.log('error returning data from main for ' + params.page);
-				socket.emit('my error', 'Error while retrieving information from server');
+				socket.emit('my-error', 'Error while retrieving information from server');
 			});
 	});
 
 	socket.on('disconnect', () => {
-		console.log('user disconnected')
+		clearTimeout(IntervalUpdatesHomepage);
 	})
 });
 

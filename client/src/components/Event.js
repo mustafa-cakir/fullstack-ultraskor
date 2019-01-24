@@ -5,28 +5,6 @@ import Link from "react-router-dom/es/Link";
 import {Trans, withNamespaces} from "react-i18next";
 
 class Event extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isStatusDescriptionUpdated: false,
-			statusDescription: null
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (this.state.statusDescription) { // todo: find an alternative way
-			console.log('trigger');
-			if (this.state.statusDescription !== nextProps.event.statusDescription) {
-				this.setState({
-					isStatusDescriptionUpdated: true
-				});
-			}
-			this.setState({
-				statusDescription: nextProps.event.statusDescription
-			});
-		}
-	}
-
 	isInProgress() {
 		let text;
 		let liveBlinkerCodes = [6, 7];
@@ -34,7 +12,7 @@ class Event extends Component {
 			case "inprogress":
 				text =
 					<div
-						className={"red font-weight-bold " + (this.state.isStatusDescriptionUpdated ? "flash-blinker-3" : "")}>
+						className="red font-weight-bold">
 						{this.props.event.statusDescription}
 						{(this.props.event.status.code === 6) ? '' : ''}
 						{(liveBlinkerCodes.indexOf(this.props.event.status.code) > -1) ?
