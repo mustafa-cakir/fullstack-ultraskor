@@ -5,6 +5,46 @@ import Link from "react-router-dom/es/Link";
 import {Trans, withNamespaces} from "react-i18next";
 
 class Event extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			homeScore: null,
+			awayScore: null
+		};
+		this.statusEl = React.createRef();
+		this.homeScoreEl = React.createRef();
+		this.awayScoreEl = React.createRef();
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		if (props.event.homeScore.current !== state.homeScore
+			|| props.event.awayScore.current !== state.awayScore
+		) {
+			return {
+				statusDescription: props.event.statusDescription,
+				homeScore: props.event.homeScore.current,
+				awayScore: props.event.awayScore.current
+			};
+		} else {
+			return null
+		}
+	}
+
+	componentDidUpdate(props, state) {
+		if (typeof state.homeScore !== "undefined" && state.homeScore !== this.state.homeScore && this.homeScoreEl.current) {
+			this.homeScoreEl.current.classList.add('flash-blinker-5');
+			setTimeout(() => {
+				//this.homeScoreEl.current.classList.remove('flash-blinker-5');
+			}, 2000);
+		}
+		if (typeof state.awayScore !== "undefined" && state.awayScore !== this.state.awayScore && this.awayScoreEl.current) {
+			this.awayScoreEl.current.classList.add('flash-blinker-5');
+			setTimeout(() => {
+				//this.awayScoreEl.current.classList.remove('flash-blinker-5');
+			}, 2000);
+		}
+	}
+
 	isInProgress() {
 		let text;
 		let liveBlinkerCodes = [6, 7];
@@ -47,7 +87,6 @@ class Event extends Component {
 	}
 
 	favClickHandler() {
-		console.log('heyoo');
 		const event = this.props.event,
 			eventId = this.props.event.id;
 
@@ -102,7 +141,7 @@ class Event extends Component {
 							state: {isPrev: true}
 						}} className="event-link col">
 							<div className="row">
-								<div className="col event-time pr-0 pl-2">
+								<div className="col event-time pr-0 pl-2" ref={this.statusEl}>
 									{this.isInProgress()}
 								</div>
 								<div className="col event-team home text-right pr-0 pl-2">
@@ -111,7 +150,14 @@ class Event extends Component {
 								</div>
 								<div
 									className={"col event-score text-center font-weight-bold px-0" + (event.status.type === 'inprogress' ? ' live' : '')}>
-									{(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ? event.homeScore.current + ':' + event.awayScore.current : " - "}
+									{(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ?
+										(
+											<React.Fragment>
+												<span ref={this.homeScoreEl}>{event.homeScore.current}</span><span className="score-separator">:</span><span ref={this.awayScoreEl}>{event.awayScore.current}</span>
+											</React.Fragment>
+										)
+										: (" - ")
+									}
 								</div>
 								<div className="col event-team away text-left pl-0 pr-2">
 									{event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}

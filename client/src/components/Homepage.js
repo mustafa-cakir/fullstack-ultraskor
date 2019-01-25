@@ -12,6 +12,7 @@ import ReactGA from "react-ga";
 import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
+import FlashScoreBoard from "./FlashScoreBoard";
 
 class Homepage extends Component {
 	constructor(props) {
@@ -23,7 +24,7 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshBtn: false,
-			flashData: null
+			flashScoreBoardData: null
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initSocket = this.initSocket.bind(this);
@@ -126,10 +127,6 @@ class Homepage extends Component {
 		})
 	};
 
-	triggerFlashBoard(options) {
-		console.log(options);
-	}
-
 	handleSocketChanges(res) {
 		let {mainData} = this.state;
 		console.log(res);
@@ -141,18 +138,20 @@ class Homepage extends Component {
 							let index = tournament.events.findIndex((x => x.id === change.event.id));
 							if (index > -1) {
 								let oldEvent = tournament.events[index];
+								oldEvent.status = change.event.status;
 								if (change.path[0] === "statusDescription") { // minute change
-									//console.log(oldEvent, change.event);
-									oldEvent.status = change.event.status;
 									oldEvent.statusDescription = change.event.statusDescription;
-								} else if (change.path[0] === "homeScore" || change.path[0] === "awayScore") { // home or away scored!!
+								} else if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
 									oldEvent[change.path[0]] = change.event[change.path[0]];
-									this.triggerFlashBoard({
-										event: change.event,
-										type: change.path[0],
-										previous: change.lhs,
-										new: change.rhs
-									})
+									this.setState({
+										flashScoreBoardData: {
+											event: change.event,
+											type: change.path[0],
+											previous: change.lhs,
+											new: change.rhs
+										}
+									});
+
 								}
 							}
 						});
@@ -304,8 +303,8 @@ class Homepage extends Component {
 					{mainContent}
 				</div>
 				{this.state.refreshBtn ? <RefreshBtn/> : ""}
+				{this.state.flashScoreBoardData ? <FlashScoreBoard flashData={this.state.flashScoreBoardData}/> : ""}
 				<Footer/>
-				{/*<Flashscore flashData={this.state.flashData}/>*/}
 			</div>
 		)
 	}

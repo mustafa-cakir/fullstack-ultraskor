@@ -66,7 +66,59 @@ io.on('connection', socket => {
 							events.push(newEvents)
 						});
 					});
-					if (previousData && previousData.length > 0) {
+
+					//test case away Score
+					setTimeout(() => {
+						socket.emit('return-updates-homepage', [[
+							{
+								kind: "E",
+								lhs: "1",
+								rhs: "2",
+								path: [
+									"awayScore",
+									"current"
+								],
+								event: {
+									awayRedCards: 0,
+									awayScore: {current: 2},
+									awayTeam: {name: "Malmö FF", id: 1892, subTeams: Array(0)},
+									homeRedCards: 0,
+									homeScore: {current: 0},
+									homeTeam: {name: "Lyngby BK", id: 1756, subTeams: Array(0)},
+									id: 8114504,
+									status: {code: 6, type: "inprogress"},
+									statusDescription: "30"
+								}
+							}
+						]]);
+					}, 1000);
+					setTimeout(() => {
+						socket.emit('return-updates-homepage', [[
+							{
+								kind: "E",
+								lhs: "2",
+								rhs: "3",
+								path: [
+									"awayScore",
+									"current"
+								],
+								event: {
+									awayRedCards: 0,
+									awayScore: {current: 3},
+									awayTeam: {name: "Malmö FF", id: 1892, subTeams: Array(0)},
+									homeRedCards: 0,
+									homeScore: {current: 0},
+									homeTeam: {name: "Lyngby BK", id: 1756, subTeams: Array(0)},
+									id: 8114504,
+									status: {code: 6, type: "inprogress"},
+									statusDescription: "30"
+								}
+							}
+						]]);
+					}, 2000);
+					//test case
+
+					if (previousData && previousData.length > 0 && false) {
 						let diffArr = [];
 
 						previousData.forEach(eventPrev => {
@@ -95,7 +147,7 @@ io.on('connection', socket => {
 					previousData = events;
 					IntervalUpdatesHomepage = setTimeout(() => {
 						getUpdatesHandler(); // keep checking in every 15 seconds
-					}, 15000);
+					}, 10000);
 				})
 				.catch((err) => {
 					console.log('error returning differences on ' + params.page + ' Error: ' + err);
@@ -103,7 +155,7 @@ io.on('connection', socket => {
 		};
 		setTimeout(() => {
 			getUpdatesHandler(); // start the 1st check after 5 seconds.
-		}, 5000)
+		}, 1000)
 	});
 
 	socket.on('get-main', (params) => {
