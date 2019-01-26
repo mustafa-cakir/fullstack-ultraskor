@@ -134,8 +134,7 @@ class Eventdetails extends Component {
 
         socket.emit('current-page', "eventdetails");
         socket.emit('get-main', options);
-        socket.once('return-main-eventdetails', res => {
-            const jsonData = JSON.parse(res);
+        socket.once('return-main-eventdetails', jsonData => {
             this.handleSocketDataMain(jsonData);
 
             // init helperData socket emit
@@ -337,7 +336,7 @@ class Eventdetails extends Component {
                     {eventData.event.hasLineups ? (
                         <div className="swipe-content lineup" data-tab="lineup">
                             {this.state.isTabLineup ?
-                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+                                <Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight} socket={this.props.socket}/>
                                 : ""}
                         </div>
                     ) : ""}

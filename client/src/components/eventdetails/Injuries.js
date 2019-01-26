@@ -32,7 +32,7 @@ class Injuries extends Component {
 
             socket.emit("get-eventdetails-missing", matchid);
 
-            socket.on('return-eventdetails-missing', res => {
+            socket.once('return-eventdetails-missing', res => {
                 this.setState({
                     injuriesData: res,
                 });

@@ -198,7 +198,6 @@ class Homepage extends Component {
 	}
 
 	handleSocketData(res) {
-		res = JSON.parse(res);
 		res = this.preprocessData(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
 		this.setState({

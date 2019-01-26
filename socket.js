@@ -83,6 +83,7 @@ io.on('connection', socket => {
         const sofaOptions = {
             method: 'GET',
             uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
+            json: true,
             headers: {
                 'Content-Type': 'application/json',
                 'Origin': 'https://www.sofascore.com',
@@ -94,7 +95,6 @@ io.on('connection', socket => {
         const getUpdatesHandler = () => {
             if (currentPage !== "homepage") return false;
             request(sofaOptions)
-                .then(res => JSON.parse(res))
                 .then(res => {
                     let events = [];
                     const neededProperties = [
@@ -207,6 +207,7 @@ io.on('connection', socket => {
         const sofaOptions = {
             method: 'GET',
             uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
+            json: true,
             headers: {
                 'Content-Type': 'application/json',
                 'Origin': 'https://www.sofascore.com',
