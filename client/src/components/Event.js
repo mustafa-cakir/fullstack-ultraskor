@@ -32,16 +32,17 @@ class Event extends Component {
 
 	componentDidUpdate(props, state) {
 		if (typeof state.homeScore !== "undefined" && state.homeScore !== this.state.homeScore && this.homeScoreEl.current) {
-			this.homeScoreEl.current.classList.add('flash-blinker-5');
+			console.log(state, this.state);
+		    this.homeScoreEl.current.classList.add('flash-blinker-5');
 			setTimeout(() => {
-				//this.homeScoreEl.current.classList.remove('flash-blinker-5');
-			}, 2000);
+				this.homeScoreEl.current.classList.remove('flash-blinker-5');
+			}, 10000);
 		}
 		if (typeof state.awayScore !== "undefined" && state.awayScore !== this.state.awayScore && this.awayScoreEl.current) {
 			this.awayScoreEl.current.classList.add('flash-blinker-5');
 			setTimeout(() => {
-				//this.awayScoreEl.current.classList.remove('flash-blinker-5');
-			}, 2000);
+				this.awayScoreEl.current.classList.remove('flash-blinker-5');
+			}, 10000);
 		}
 	}
 

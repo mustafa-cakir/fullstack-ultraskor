@@ -127,7 +127,7 @@
 
 .flash-blinker-5 {
 	animation: blink-animation 0.5s linear;
-	animation-iteration-count: 5;
+	animation-iteration-count: 20;
 }
 
 .red-card {
@@ -163,7 +163,10 @@
 	z-index: 10;
 	animation: move-top .6s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
 	transition: transform .6s cubic-bezier(0.32, 0.08, 0.24, 1), box-shadow .6s cubic-bezier(0.32, 0.08, 0.24, 1);
-	&.shrink {
+	&.hidden {
+        display: none;
+    }
+    &.shrink {
 		transform: translateY(84px);
 		box-shadow: none;
 		.content {
@@ -204,6 +207,11 @@
 			line-height: 40px;
 			border-radius: 4px;
 		}
+        &.muted {
+            i {
+                background: rgba(255, 255, 255, .2);
+            }
+        }
 	}
 	.team-logo {
 		max-height: 35px;

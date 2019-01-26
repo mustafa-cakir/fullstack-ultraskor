@@ -2,47 +2,28 @@ import React, {Component} from 'react';
 import Icon from "./Icon";
 
 class FlashScoreBoard extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			index: 0,
-			shrink: false,
-			hidden: false
-		};
-		this.containerEl = React.createRef();
-		this.timer = null;
-		this.hidden = false;
-	}
-
-	componentDidMount() {
-		this.startTimer()
-	}
-
-	componentDidUpdate() {
-		this.containerEl.current.classList.remove('hidden');
-		clearTimeout(this.timer);
-		this.startTimer();
-	}
-
 	shrinkToggle() {
-		this.setState({
-			shrink: !this.state.shrink
-		})
-	}
+        this.props.updateParentState({
+            flashScoreShrink: !this.props.flashScoreShrink
+        }).then(()=> {
+            localStorage.setItem('FlashScoreShrink', JSON.stringify(this.props.flashScoreShrink));
+        });
+    }
 
-	startTimer() {
-		this.timer = setTimeout(()=> {
-			this.containerEl.current.classList.add('hidden');
-		}, 10000);
-	}
+	muteToggle() {
+	    this.props.updateParentState({
+            flashScoreMuted: !this.props.flashScoreMuted
+        }).then(()=>{
+            localStorage.setItem('FlashScoreMuted', JSON.stringify(this.props.flashScoreMuted));
+        });
+    }
 
 	render() {
-		const {flashData} = this.props;
-		if (this.hidden) return null;
+		const {flashData, flashScoreShrink, flashScoreMuted} = this.props;
 		return (
-			<div className={"flash-score-board " + (this.state.shrink ? "shrink" : "")} ref={this.containerEl}>
-				<div className="container">
-					<div className="shrink-btn" onClick={this.shrinkToggle.bind(this)}><Icon name={"fas fa-chevron-" + (this.state.shrink ? "up" : "down")}/></div>
+			<div className={"flash-score-board " + (flashScoreShrink ? "shrink" : "")}>
+                <div className="container">
+					<div className="shrink-btn" onClick={this.shrinkToggle.bind(this)}><Icon name={"fas fa-chevron-" + (flashScoreShrink ? "up" : "down")}/></div>
 					<div className="row align-items-center content">
 						<div className="col col-minute">{flashData.event.statusDescription}'</div>
 						<div className="col home-team text-center">
@@ -62,7 +43,7 @@ class FlashScoreBoard extends Component {
 							     alt={flashData.event.awayTeam.name}/>
 							<div className="team-name">{flashData.event.awayTeam.name}</div>
 							</div>
-						<div className="col col-sound"><Icon name="fas fa-volume-up"/></div>
+						<div className={"col col-sound " + (flashScoreMuted ? "muted" : "")}  onClick={this.muteToggle.bind(this)}><Icon name={"fas fa-volume-" + (flashScoreMuted ? "off" : "up")}/></div>
 					</div>
 				</div>
 			</div>

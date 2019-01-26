@@ -13,6 +13,7 @@ import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
 import FlashScoreBoard from "./FlashScoreBoard";
+import GoalMp3 from "../assets/goal.mp3"
 
 class Homepage extends Component {
 	constructor(props) {
@@ -24,13 +25,17 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshBtn: false,
-			flashScoreBoardData: null
+			flashScoreBoardData: null,
+            flashScoreMuted: false,
+            flashScoreShrink: false
 		};
+        this.goalSound = React.createRef();
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initSocket = this.initSocket.bind(this);
 		this.handleSocketChanges = this.handleSocketChanges.bind(this);
 		this.handleSocketData = this.handleSocketData.bind(this);
 		this.todaysDate = null;
+		this.flashScoreTimer = null;
 	};
 
 	componentDidMount() {
@@ -49,17 +54,21 @@ class Homepage extends Component {
 
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
-			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
+			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents')),
+            storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
+            storageFlashScoreShrink = JSON.parse(localStorage.getItem('FlashScoreShrink'));
 
 		if (storageHeadertabsState && storageHeadertabsState.selectedDay) {
 			this.todaysDate = storageHeadertabsState.selectedDay;
 		}
 
-		if (storageFavEvents) {
-			this.setState({
-				favEvents: storageFavEvents
-			});
-		}
+        if (storageFlashScoreShrink || storageFlashScoreMuted || storageFavEvents) {
+            this.setState({
+                flashScoreMuted: storageFlashScoreMuted,
+                flashScoreShrink: storageFlashScoreShrink,
+                favEvents: storageFavEvents
+            });
+        }
 	}
 
 	trackPage(page) {
@@ -127,6 +136,22 @@ class Homepage extends Component {
 		})
 	};
 
+	handleFlashScore(change) {
+        this.setState({
+            flashScoreBoardData: {
+                event: change.event,
+                type: change.path[0],
+                previous: change.lhs,
+                new: change.rhs
+            }
+        });
+        if (!this.state.flashScoreMuted) this.goalSound.current.play();
+        clearTimeout(this.flashScoreTimer);
+        this.flashScoreTimer = setTimeout(()=>{
+            this.setState({flashScoreBoardData: null})
+        }, 10000);
+    };
+
 	handleSocketChanges(res) {
 		let {mainData} = this.state;
 		console.log(res);
@@ -143,15 +168,7 @@ class Homepage extends Component {
 									oldEvent.statusDescription = change.event.statusDescription;
 								} else if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
 									oldEvent[change.path[0]] = change.event[change.path[0]];
-									this.setState({
-										flashScoreBoardData: {
-											event: change.event,
-											type: change.path[0],
-											previous: change.lhs,
-											new: change.rhs
-										}
-									});
-
+									this.handleFlashScore(change);
 								}
 							}
 						});
@@ -288,6 +305,7 @@ class Homepage extends Component {
 				}
 			}
 		}
+
 		return (
 			<div>
 				<Headertabs
@@ -303,7 +321,10 @@ class Homepage extends Component {
 					{mainContent}
 				</div>
 				{this.state.refreshBtn ? <RefreshBtn/> : ""}
-				{this.state.flashScoreBoardData ? <FlashScoreBoard flashData={this.state.flashScoreBoardData}/> : ""}
+				{this.state.flashScoreBoardData ? <FlashScoreBoard flashData={this.state.flashScoreBoardData} flashScoreMuted={this.state.flashScoreMuted} flashScoreShrink={this.state.flashScoreShrink} updateParentState={this.updateParentState}/> : ""}
+                <audio ref={this.goalSound} preload="auto">
+                    <source src={GoalMp3} type="audio/mpeg"/>
+                </audio>
 				<Footer/>
 			</div>
 		)
