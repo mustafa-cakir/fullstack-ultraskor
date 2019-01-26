@@ -9,7 +9,8 @@ const cacheService = require('./cache.service');
 const cacheDuration = {
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
-    provider3: 60 * 60 * 24 // 24 hours
+    provider3: 60 * 60 * 24, // 24 hours
+    missing: 60 * 60 * 24 // 24 hours
 };
 
 // our localhost port
@@ -108,9 +109,9 @@ io.on('connection', socket => {
                         'homeTeam'
                     ];
                     res.sportItem.tournaments.forEach(tournament => {
-                        tournament.events = tournament.events.filter(event => {
-                            return event.status.type !== "finished"
-                        });
+                        // tournament.events = tournament.events.filter(event => {
+                        //     return event.status.type !== "finished"
+                        // });
                         tournament.events.forEach(event => {
                             let newEvents = {};
                             neededProperties.forEach(property => {
@@ -400,29 +401,64 @@ io.on('connection', socket => {
         });
     });
 
-    socket.on('get-eventdetails-helper-3', date => {
-        const cacheKey = `helperData-${date}-provider3`;
-        const provider3options = {
-            method: 'GET',
-            uri: `https://www.tuttur.com/draw/events/type/football`,
-            json: true,
-            timeout: 1500
+    socket.on('get-eventdetails-missing', matchid => {
+        const cacheKey = `helperData-${matchid}-missing`;
+        const initRemoteRequests = () => {
+            const missingOptions = {
+                method: 'GET',
+                uri: `https://widget.oley.com/match/missings/1/${matchid}`,
+                json: true,
+                timeout: 1500
+            };
+            request(missingOptions)
+                .then(res => {
+                    if (res) {
+                        cacheService.instance().set(cacheKey, res, cacheDuration.missing, () => {
+                            if (matchlistbydateCollection) {
+                                matchlistbydateCollection.insertOne({
+                                    matchid: matchid,
+                                    type: "missing",
+                                    data: res
+                                });
+                            }
+                        });
+                    }
+                    socket.emit('return-eventdetails-missing', res); // return missings
+                })
+                .catch(() => {
+                    console.log(`error returning data for missing`);
+                    socket.emit('my-error', 'Error while retrieving information from server');
+                });
         };
 
-        request(provider3options)
-            .then(res => {
-                res = replaceDotWithUnderscore(res.events);
-                socket.emit('return-eventdetails-prodiver3', res); // return provider3
-            })
-            .catch(() => {
-                console.log(`error returning data from main for provider3`);
-                socket.emit('my-error', 'Error while retrieving information from server');
-            });
+        cacheService.instance().get(cacheKey, (err, cachedData) => {
+            if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+                socket.emit('return-eventdetails-missing', cachedData);
+            } else { // Cache is not found
+                if (matchlistbydateCollection) {
+                    matchlistbydateCollection
+                        .findOne({matchid: matchid, type: "missing"})
+                        .then(result => {
+                            if (result) {
+                                cacheService.instance().set(cacheKey, result.data, cacheDuration.missing, () => {
+                                    socket.emit('return-eventdetails-missing', result.data); // Data is found in the db, now caching and serving!
+                                });
+                            } else {
+                                initRemoteRequests(); // data can't be found in db, get it from remote servers
+                            }
+                        })
+                } else {
+                    initRemoteRequests();  // db is not initalized, get data from remote servers
+                }
+            }
+        });
     });
+
+
 
     socket.on('disconnect', () => {
         clearTimeout(IntervalUpdatesHomepage);
-    })
+    });
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

@@ -226,87 +226,6 @@ class Eventdetails extends Component {
         }
     }
 
-    /*
-    getHelperData(jsonData) {
-        let date = jsonData.event.formatedStartDate;
-        date = (date.slice(-1) === ".") ? date.slice(0, -1) : date;
-        let date2 = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
-        fetch(`/api/helper/${date}/${date2}`, {cache: "force-cache"})
-            .then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    throw Error(`Can't retrieve information from server, ${res.status}`);
-                }
-            })
-            .then(res => {
-                //if (res.provider2) this.getDataFromProviderTwo(res, jsonData);
-                //if (res.provider1) this.getDataFromProviderOne(res, jsonData);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    }
-
-    getDataFromProviderOne(data, jsonData) {
-        data.provider1.forEach(item => {
-            let provider1Data = item.Matches.filter(match => match.HomeTeam.Id === jsonData.event.homeTeam.id);
-            if (provider1Data.length > 0) {
-                this.setState({
-                    provider1MatchData: provider1Data[0]
-                });
-                let iddaaCode = provider1Data[0].IddaaMatchId.split('.')[1];
-                //if (data.provider2 && iddaaCode && !this.state.provider2MatchData) this.getDataFromProviderTwo(data, jsonData, iddaaCode);
-            }
-        });
-    }
-
-    getDataFromProviderTwo(data, jsonData, iddaaCode = null) {
-        let jsonDataTeamNames = [];
-        jsonDataTeamNames.push(
-            jsonData.event.homeTeam.name.toLowerCase(),
-            jsonData.event.homeTeam.shortName.toLowerCase(),
-            jsonData.event.homeTeam.slug.toLowerCase(),
-            jsonData.event.awayTeam.name.toLowerCase(),
-            jsonData.event.awayTeam.shortName.toLowerCase(),
-            jsonData.event.awayTeam.slug.toLowerCase()
-        );
-
-        let provider2Data = [];
-        data.provider2.forEach(item => {
-            let found = item.matches.filter(match => {
-                if (iddaaCode) {
-                    return match.code === parseFloat(iddaaCode)
-                } else {
-                    let homeName1_1 = match.homeTeam.middleName.toLowerCase(),
-                        homeName1_2 = match.homeTeam.name.toLowerCase(),
-                        awayName1_1 = match.awayTeam.middleName.toLowerCase(),
-                        awayName1_2 = match.awayTeam.name.toLowerCase();
-
-                    return jsonDataTeamNames.indexOf(homeName1_1) > -1 ||
-                        jsonDataTeamNames.indexOf(homeName1_2) > -1 ||
-                        jsonDataTeamNames.indexOf(awayName1_1) > -1 ||
-                        jsonDataTeamNames.indexOf(awayName1_2) > -1;
-                }
-            });
-
-            if (found.length > 0) provider2Data = found;
-        });
-        if (provider2Data.length > 0) {
-            if (data.provider3) {
-                const provider3Data = data.provider3[provider2Data[0].code];
-                if (provider3Data && provider3Data.startDate && moment(provider3Data.startDate * 1e3).format('MM/DD/YYYY HH:mm:ss') === provider2Data[0].date) {
-                    this.setState({
-                        provider3MatchData: provider3Data
-                    });
-                }
-            }
-            this.setState({
-                provider2MatchData: provider2Data[0]
-            })
-        }
-    } */
-
     rippleEffectHandler(e) {
         let el = e.target,
             rippleEl = document.createElement("span"),
@@ -427,7 +346,8 @@ class Eventdetails extends Component {
                         {this.state.isTabInjury ?
                             <Injuries eventData={eventData}
                                       matchid={this.state.provider2MatchData ? this.state.provider2MatchData.id : null}
-                                      swipeAdjustHeight={this.swipeAdjustHeight}/>
+                                      swipeAdjustHeight={this.swipeAdjustHeight}
+                                      socket={this.props.socket}/>
                             : ""}
                     </div>
 

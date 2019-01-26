@@ -145,7 +145,7 @@ class Homepage extends Component {
                 new: change.rhs
             }
         });
-        if (!this.state.flashScoreMuted) this.goalSound.current.play();
+        if (!this.state.flashScoreMuted && this.goalSound.current) this.goalSound.current.play();
         clearTimeout(this.flashScoreTimer);
         this.flashScoreTimer = setTimeout(()=>{
             this.setState({flashScoreBoardData: null})
