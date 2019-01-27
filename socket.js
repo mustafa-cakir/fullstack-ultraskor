@@ -20,7 +20,7 @@ const cacheDuration = {
 };
 
 // our localhost port
-const port = process.env.PORT || 5000;
+const port = 5001;
 const app = express();
 
 // our server instance
