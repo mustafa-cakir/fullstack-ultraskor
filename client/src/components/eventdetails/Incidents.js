@@ -23,7 +23,7 @@ class Incidents extends Component {
                 <div className="row align-items-center">
                     <div className="col period-time text-center text-bold">
                         <img src={iconWhistle} alt="whistle"
-                             className="icon-whistle"/> {item.text.replace("HT", t("HT")).replace("FT", t("MS"))}
+                             className="icon-whistle"/> {item.text.replace("HT", t("HT")).replace("FT", t("FT"))}
                     </div>
                 </div>
             )

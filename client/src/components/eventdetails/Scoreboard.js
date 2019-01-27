@@ -93,7 +93,7 @@ const IsInProgress = props => {
 const TeamForm = props => {
     let result = [];
     props.data.forEach((status, index) => {
-        result.push(<span key={index} className={"team-form team-form-" + status}>{status}</span>)
+        result.push(<span key={index} className={"team-form team-form-" + status}><Trans>{status}</Trans></span>)
     });
     return result;
 };
