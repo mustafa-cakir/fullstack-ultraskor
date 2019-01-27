@@ -30,10 +30,17 @@ const NoLiveGame = () => {
 
 const NothingFound = () => {
     return (
-        <div className="error error-no-game">
-            <h3>Nothing found.</h3>
-            <p className="gray">Please try different filter or date<br/></p>
-        </div>
+	    <div className="not-found error">
+		    <div className="container text-center">
+			    <div className="title">
+				    <div className="bold">Whoops!</div><Trans>No Match Found</Trans>
+			    </div>
+			    <img className="picture mb-4 pt-3" src={"/static/media/not-found.png"} alt="Page Not Found"/>
+			    <div className="mb-4 subtitle">
+				    <Trans>Please use a different filter</Trans>.
+			    </div>
+		    </div>
+	    </div>
     )
 };
 

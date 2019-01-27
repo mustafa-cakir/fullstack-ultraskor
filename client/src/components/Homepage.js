@@ -12,7 +12,8 @@ import ReactGA from "react-ga";
 import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
-
+import FlashScoreBoard from "./FlashScoreBoard";
+import GoalMp3 from "../assets/goal.mp3"
 
 class Homepage extends Component {
 	constructor(props) {
@@ -23,24 +24,28 @@ class Homepage extends Component {
 			orjData: null,
 			favEvents: [],
 			favEventsList: [],
-			refreshBtn: false
+			refreshBtn: false,
+			flashScoreBoardData: null,
+            flashScoreMuted: false,
+            flashScoreShrink: false
 		};
+        this.goalSound = React.createRef();
 		this.updateParentState = this.updateParentState.bind(this);
-		this.getData = this.getData.bind(this);
-		this.refreshInterval = 20000;
+		this.initSocket = this.initSocket.bind(this);
+		this.handleSocketChanges = this.handleSocketChanges.bind(this);
+		this.handleSocketData = this.handleSocketData.bind(this);
 		this.todaysDate = null;
-		this.refreshData = false;
-		this.refreshDataTimeout = null;
+		this.flashScoreTimer = null;
 	};
 
 	componentDidMount() {
 		this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
-
 		this.analyzeSessionStorage();
 
-		this.getData({
+		this.initSocket({
 			api: '/football//' + this.todaysDate + '/json',
-			loading: true
+			loading: true,
+			page: "homepage"
 		});
 
 		const page = this.props.location.pathname;
@@ -49,22 +54,21 @@ class Homepage extends Component {
 
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
-			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents'));
+			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents')),
+            storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
+            storageFlashScoreShrink = JSON.parse(localStorage.getItem('FlashScoreShrink'));
 
 		if (storageHeadertabsState && storageHeadertabsState.selectedDay) {
 			this.todaysDate = storageHeadertabsState.selectedDay;
 		}
 
-		if (storageFavEvents) {
-			this.setState({
-				favEvents: storageFavEvents
-			});
-		}
-	}
-
-	componentWillUnmount() {
-		clearTimeout(this.refreshDataTimeout);
-		this.refreshData = false;
+        if (storageFlashScoreShrink || storageFlashScoreMuted || storageFavEvents) {
+            this.setState({
+                flashScoreMuted: storageFlashScoreMuted,
+                flashScoreShrink: storageFlashScoreShrink,
+                favEvents: storageFavEvents
+            });
+        }
 	}
 
 	trackPage(page) {
@@ -132,54 +136,93 @@ class Homepage extends Component {
 		})
 	};
 
-	getData = options => {
-		if (options.loading) this.setState({loading: true});
-		let jsonData = {};
+	handleFlashScore(change) {
+        this.setState({
+            flashScoreBoardData: {
+                event: change.event,
+                type: change.path[0],
+                previous: change.lhs,
+                new: change.rhs
+            }
+        });
+        if (!this.state.flashScoreMuted && this.goalSound.current) this.goalSound.current.play();
+        clearTimeout(this.flashScoreTimer);
+        this.flashScoreTimer = setTimeout(()=>{
+            this.setState({flashScoreBoardData: null})
+        }, 10000);
+    };
 
-		fetch('/api/?api=' + options.api, {referrerPolicy: "no-referrer", cache: "no-store"})
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
-				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
-				}
-			})
-			.then(res => {
-				jsonData = this.preprocessData(res);
-				if (this.state.favEvents.length > 0) this.moveFavEventsToTop(jsonData);
-				this.setState({
-					orjData: jsonData,
-					mainData: jsonData,
-					loading: false,
-					refreshBtn: false
-				});
-				Homepage.updateMeta();
-				if (this.refreshData) {
-					clearTimeout(this.refreshDataTimeout);
-					this.refreshDataTimeout = setTimeout(() => {
-						this.analyzeSessionStorage();
-						this.getData({
-							api: '/football//' + this.todaysDate + '/json',
-							loading: false,
+	handleSocketChanges(res) {
+		let {mainData} = this.state;
+		console.log(res);
+		if (res && res.length > 0) {
+			res.forEach(x => {
+				x.forEach(change => {
+					if (change.kind === "E" && change.event && change.event.id) {
+						mainData.sportItem.tournaments.forEach(tournament => {
+							let index = tournament.events.findIndex((x => x.id === change.event.id));
+							if (index > -1) {
+								let oldEvent = tournament.events[index];
+								oldEvent.status = change.event.status;
+								if (change.path[0] === "statusDescription") { // minute change
+									oldEvent.statusDescription = change.event.statusDescription;
+								} else if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
+									oldEvent[change.path[0]] = change.event[change.path[0]];
+									this.handleFlashScore(change);
+								}
+							}
 						});
-					}, this.refreshInterval);
-				}
-			})
-			.catch(err => {
-				if (options.loading) {
-					jsonData = {error: err.toString()};
-					this.setState({
-						orjData: jsonData,
-						mainData: jsonData,
-						loading: false,
-						refreshBtn: true
-					});
-				} else {
-					this.setState({
-						refreshBtn: true
-					});
-				}
+					}
+				});
 			});
+			this.setState({
+				mainData: mainData,
+				orjData: mainData
+			});
+		}
+	}
+
+	handleSocketError(err, options) {
+		if (options.loading) {
+			this.setState({
+				orjData: {error: err.toString()},
+				mainData: {error: err.toString()},
+				loading: false,
+				refreshBtn: true
+			});
+		} else {
+			this.setState({
+				refreshBtn: true
+			});
+		}
+	}
+
+	handleSocketData(res) {
+		res = this.preprocessData(res);
+		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
+		this.setState({
+			orjData: res,
+			mainData: res,
+			loading: false,
+			refreshBtn: false
+		});
+		this.updateMeta();
+		this.analyzeSessionStorage();
+	}
+
+	initSocket = options => {
+		if (options.loading) this.setState({loading: true});
+		const {socket} = this.props;
+
+		socket.emit('current-page', "homepage");
+		socket.emit('get-main', options);
+		socket.emit('get-updates-homepage', options);
+
+		socket.on('return-updates-homepage', this.handleSocketChanges.bind(this));
+		socket.once('return-main-homepage', this.handleSocketData);
+		socket.on('my-error', res => {
+			this.handleSocketError(res, options)
+		});
 	};
 
 	flagImg(tournament) {
@@ -199,7 +242,7 @@ class Homepage extends Component {
 		}
 	};
 
-	static updateMeta() {
+	updateMeta() {
 		if (i18n.language === "en") {
 			HelperUpdateMeta({
 				title: "UltraSkor - (No Ads) Live Score, Match Results and League Fixtures",
@@ -261,12 +304,13 @@ class Homepage extends Component {
 				}
 			}
 		}
+
 		return (
 			<div>
 				<Headertabs
 					{...this.state}
 					updateParentState={this.updateParentState}
-					getData={this.getData}
+					initSocket={this.initSocket}
 					flagImg={this.flagImg}
 				/>
 
@@ -276,6 +320,10 @@ class Homepage extends Component {
 					{mainContent}
 				</div>
 				{this.state.refreshBtn ? <RefreshBtn/> : ""}
+				{this.state.flashScoreBoardData ? <FlashScoreBoard flashData={this.state.flashScoreBoardData} flashScoreMuted={this.state.flashScoreMuted} flashScoreShrink={this.state.flashScoreShrink} updateParentState={this.updateParentState}/> : ""}
+                <audio ref={this.goalSound} preload="auto">
+                    <source src={GoalMp3} type="audio/mpeg"/>
+                </audio>
 				<Footer/>
 			</div>
 		)

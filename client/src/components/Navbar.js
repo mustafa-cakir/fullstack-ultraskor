@@ -52,7 +52,6 @@ class Navbar extends Component {
     };
 
     clearSearch = () => {
-
         this.searchInput.value = '';
         this.bodyClassList.remove('searchbar-opened');
     };

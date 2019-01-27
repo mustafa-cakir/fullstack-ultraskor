@@ -28,24 +28,21 @@ class Injuries extends Component {
                 injuriesData: "not found",
             });
         } else {
-            fetch("/api/ol/match/missings/1/" + matchid, {referrerPolicy: "no-referrer", cache: "force-cache"})
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.json();
-                    } else {
-                        throw Error(`Can't retrieve information from server, ${res.status}`);
-                    }
-                })
-                .then(res => {
-                    this.setState({
-                        injuriesData: res,
-                    });
-                })
-                .catch(err => {
-                    this.setState({
-                        injuriesData: {error: err.toString()},
-                    });
+            const {socket} = this.props;
+
+            socket.emit("get-eventdetails-missing", matchid);
+
+            socket.once('return-eventdetails-missing', res => {
+                this.setState({
+                    injuriesData: res,
                 });
+            });
+
+            socket.on('return-error-missing', err => {
+                this.setState({
+                    injuriesData: {error: err.toString()},
+                });
+            });
         }
     };
 
