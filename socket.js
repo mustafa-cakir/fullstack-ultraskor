@@ -10,7 +10,13 @@ const cacheDuration = {
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
     provider3: 60 * 60 * 24, // 24 hours
-    missing: 60 * 60 * 24 // 24 hours
+    missing: 60 * 60 * 24, // 24 hours
+    main: {
+        homepage: 5, // 5 seconds
+        eventdetails: 5, // 5 seconds
+        lineup: 60 * 30, // 30 min
+        standing: 60, // 1 min.
+    }
 };
 
 // our localhost port
@@ -59,7 +65,7 @@ io.on('connection', socket => {
         if (!err) {
             try {
                 db = client.db('ultraskor');
-                matchlistbydateCollection = db.collection('matchlistbydate');
+                matchlistbydateCollection = db.collection('helperdata_bydate');
             } catch (err) {
                 // do nothing, just proceed
             }
@@ -204,26 +210,50 @@ io.on('connection', socket => {
     });
 
     socket.on('get-main', (params) => {
-        const sofaOptions = {
-            method: 'GET',
-            uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'Origin': 'https://www.sofascore.com',
-                'referer': 'https://www.sofascore.com/',
-                'x-requested-with': 'XMLHttpRequest'
-            }
+        const cacheKey = `mainData-${params.api}`;
+
+        const initRemoteRequests = () => {
+            const sofaOptions = {
+                method: 'GET',
+                uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
+                json: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': 'https://www.sofascore.com',
+                    'referer': 'https://www.sofascore.com/',
+                    'x-requested-with': 'XMLHttpRequest'
+                }
+            };
+
+            request(sofaOptions)
+                .then(res => {
+                    console.log('checkpoint 1', cacheDuration.main[params.page]);
+                    cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
+                        console.log('checkpoint 2');
+                        socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
+                    });
+                })
+                .catch(() => {
+                    console.log(`error returning data from main for ${params.page}`);
+                    socket.emit(`return-error-${params.page}`, 'Error while retrieving information from server');
+                });
         };
 
-        request(sofaOptions)
-            .then(res => {
-                socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
-            })
-            .catch(() => {
-                console.log(`error returning data from main for ${params.page}`);
-                socket.emit('my-error', 'Error while retrieving information from server');
-            });
+        cacheService.instance().get(cacheKey, (err, cachedData) => {
+            if (err) {
+                initRemoteRequests()
+            } else {
+                if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+                    console.log('checkpoint 3');
+                    socket.emit(`return-main-${params.page}`, cachedData);
+                } else {
+                    console.log('checkpoint 4');
+                    initRemoteRequests();
+
+                }
+            }
+        });
+
     });
 
     socket.on('get-eventdetails-helper-1', date => {
@@ -320,7 +350,7 @@ io.on('connection', socket => {
                 })
                 .catch(() => {
                     console.log(`error returning data from main for provider1`);
-                    socket.emit('my-error', 'Error while retrieving information from server');
+                    //socket.emit('my-error', 'Error while retrieving information from server');
                 });
         };
 
@@ -357,6 +387,7 @@ io.on('connection', socket => {
                 json: true,
                 timeout: 1500
             };
+
             request(provider3options)
                 .then(res => {
                     res = replaceDotWithUnderscore(res.events);
@@ -375,7 +406,7 @@ io.on('connection', socket => {
                 })
                 .catch(() => {
                     console.log(`error returning data from main for provider1`);
-                    socket.emit('my-error', 'Error while retrieving information from server');
+                    //socket.emit('my-error', 'Error while retrieving information from server');
                 });
         };
 
@@ -428,7 +459,7 @@ io.on('connection', socket => {
                 })
                 .catch(() => {
                     console.log(`error returning data for missing`);
-                    socket.emit('my-error', 'Error while retrieving information from server');
+                    socket.emit('return-error-missing', 'Error while retrieving information from server');
                 });
         };
 
@@ -455,11 +486,23 @@ io.on('connection', socket => {
         });
     });
 
-
-
     socket.on('disconnect', () => {
         clearTimeout(IntervalUpdatesHomepage);
     });
+});
+
+// Log Errors
+app.post('/api/logerrors', (req, res) => {
+    if (db) {
+        let collection = db.collection('console_errors');
+        try {
+            collection.insertOne(req.body, () => {
+                res.send('OK!');
+            });
+        } catch (e) {
+            // do nothing
+        }
+    }
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

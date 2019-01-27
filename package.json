@@ -27,7 +27,7 @@
 		"dev-client": "cd client && yarn install && yarn start",
 		"dev-server": "yarn install && nodemon --watch ./socket.js socket.js",
 		"prod-client": "cd client && yarn install && yarn build",
-		"prod-server": "yarn install && pm2 restart server.js",
+		"prod-server": "yarn install && pm2 restart socket.js",
 		"dev": "concurrently \"yarn dev-client\" \"yarn dev-server\"",
 		"start": "concurrently \"yarn prod-server\" \"yarn prod-client\""
 	}

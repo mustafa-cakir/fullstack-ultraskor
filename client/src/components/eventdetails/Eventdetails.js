@@ -97,7 +97,7 @@ class Eventdetails extends Component {
     };
 
     swipeAdjustHeight(index) {
-        if (this.swipeEl.current.containerEl) {
+        if (this.swipeEl.current && this.swipeEl.current.containerEl) {
             index = index || this.swipeEl.current.getPos();
             let container = this.swipeEl.current.containerEl.firstChild;
             let active = container.childNodes[index];
@@ -143,6 +143,19 @@ class Eventdetails extends Component {
 
             socket.emit('get-eventdetails-helper-1', date1);
             socket.emit('get-eventdetails-helper-2', date2);
+        });
+
+        socket.on('return-error-eventdetails', err => {
+            if (options.loading) {
+                this.setState({
+                    eventData: {error: err.toString()},
+                    loading: false
+                });
+            } else {
+                this.setState({
+                    refreshBtn: true
+                });
+            }
         });
 
         socket.on('return-eventdetails-prodiver1', this.handleSocketDataProvider1.bind(this));
@@ -210,7 +223,7 @@ class Eventdetails extends Component {
                 this.setState({
                     provider2MatchData: provider2Data[0]
                 });
-                this.props.socket.emit('get-eventdetails-helper-3', provider2Data[0].startDate);
+                this.props.socket.emit('get-eventdetails-helper-3', moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'));
             }
         }
     }
@@ -359,7 +372,7 @@ class Eventdetails extends Component {
                     {eventData.standingsAvailable ? (
                         <div className="swipe-content standing" data-tab="standing">
                             {this.state.isTabStanding ?
-                                <Standings eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+                                <Standings eventData={eventData} socket={this.props.socket} swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
                         </div>
                     ) : ""}
 

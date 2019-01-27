@@ -37,6 +37,12 @@ class Injuries extends Component {
                     injuriesData: res,
                 });
             });
+
+            socket.on('return-error-missing', err => {
+                this.setState({
+                    injuriesData: {error: err.toString()},
+                });
+            });
         }
     };
 

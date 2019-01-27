@@ -38,6 +38,12 @@ class Lineup extends Component {
                 activeTeam: res.homeTeam
             });
         });
+
+        socket.on('return-error-lineup', err => {
+            this.setState({
+                lineupData: {error: err.toString()},
+            });
+        })
     };
 
     listTabHandler(selection) {

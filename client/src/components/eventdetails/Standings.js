@@ -21,24 +21,45 @@ class Standings extends Component {
     }
 
     getData = api => {
-        fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
-            .then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    throw Error(`Can't retrieve information from server, ${res.status}`);
-                }
-            })
-            .then(res => {
-                this.setState({
-                    standingData: res,
-                });
-            })
-            .catch(err => {
-                this.setState({
-                    standingData: {error: err.toString()},
-                });
+
+        const {socket} = this.props;
+        const options = {
+            api: api,
+            page: 'standing'
+        };
+
+        socket.emit('get-main', options);
+
+        socket.once('return-main-standing', res => {
+            this.setState({
+                standingData: res,
             });
+        });
+
+        socket.on('return-error-standing', err => {
+            this.setState({
+                standingData: {error: err.toString()},
+            });
+        });
+
+        // fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
+        //     .then(res => {
+        //         if (res.status === 200) {
+        //             return res.json();
+        //         } else {
+        //             throw Error(`Can't retrieve information from server, ${res.status}`);
+        //         }
+        //     })
+        //     .then(res => {
+        //         this.setState({
+        //             standingData: res,
+        //         });
+        //     })
+        //     .catch(err => {
+        //         this.setState({
+        //             standingData: {error: err.toString()},
+        //         });
+        //     });
     };
 
     render() {
