@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import moment from "moment";
+import {Trans, withNamespaces} from "react-i18next";
 
 class Scoreboard extends Component {
     render() {
@@ -28,7 +29,7 @@ class Scoreboard extends Component {
                             </div>
                             {(eventData.event.hasHalfTimeScore) ?
                                 <div
-                                    className="score-halftime">(HT: {eventData.event.homeScore.period1} - {eventData.event.awayScore.period1})</div> : ""}
+                                    className="score-halftime">(<Trans>HT</Trans>: {eventData.event.homeScore.period1} - {eventData.event.awayScore.period1})</div> : ""}
                         </div>
                         <div className="col-4 pl-0">
                             <div className="team-logo mb-2">
@@ -71,19 +72,19 @@ const IsInProgress = props => {
         case "canceled":
             text =
                 <div className="red small-text line-clamp">
-                    Cancelled
+                    <Trans>Cancelled</Trans>
                 </div>;
             break;
         case "postponed":
             text =
                 <div className="red small-text line-clamp">
-                    Postponed
+                    <Trans>Postponed</Trans>
                 </div>;
             break;
         default:
             text =
                 <div className="full-time font-weight-bold">
-                    FT
+                    <Trans>FT</Trans>
                 </div>
     }
     return text;
@@ -98,4 +99,4 @@ const TeamForm = props => {
 };
 
 
-export default Scoreboard
+export default withNamespaces('translations')(Scoreboard)
