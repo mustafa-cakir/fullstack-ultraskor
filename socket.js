@@ -227,9 +227,7 @@ io.on('connection', socket => {
 
             request(sofaOptions)
                 .then(res => {
-                    console.log('checkpoint 1', cacheDuration.main[params.page]);
                     cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
-                        console.log('checkpoint 2');
                         socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
                     });
                 })
@@ -244,10 +242,8 @@ io.on('connection', socket => {
                 initRemoteRequests()
             } else {
                 if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-                    console.log('checkpoint 3');
                     socket.emit(`return-main-${params.page}`, cachedData);
                 } else {
-                    console.log('checkpoint 4');
                     initRemoteRequests();
 
                 }
