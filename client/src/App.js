@@ -15,7 +15,7 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			socket: socketIOClient(`${window.location.protocol}//${window.location.hostname}:5000`)
+			socket: socketIOClient('http://localhost:5000')
 		}
 	}
 
