@@ -10,7 +10,7 @@ app.get('*', (req, res) => {
 	path = path.substring(11, path.length);
 	console.log(path);
 
-	const options = {
+	let options = {
         url: 'https://widgets.sir.sportradar.com/' + path,
         headers: {
             'Referer': 'https://www.aspor.com.tr',
@@ -19,12 +19,15 @@ app.get('*', (req, res) => {
         }
     };
 
+	options.url.replace('tsx', 'js');
+
     if (path.indexOf('common_widgets') > -1) {
         options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js';
     }
 	if (path.indexOf('widgetloader') > -1) {
 		options.url = 'https://www.ultraskor.com/static/live-match/widgetloader.js';
 	}
+
     //console.log(options.url);
     request(options, function (error, response, body) {
         res.header('Access-Control-Allow-Origin', '*');
