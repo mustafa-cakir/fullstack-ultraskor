@@ -27,9 +27,11 @@
 	"scripts": {
 		"dev-client": "cd client && yarn install && yarn start",
 		"dev-server": "yarn install && nodemon --watch ./socket.js socket.js",
+		"dev-server-proxy": "nodemon --watch ./serverProxy.js serverProxy.js",
 		"prod-client": "cd client && yarn install && yarn build",
 		"prod-server": "yarn install && pm2 restart socket.js",
-		"dev": "concurrently \"yarn dev-client\" \"yarn dev-server\"",
-		"start": "concurrently \"yarn prod-server\" \"yarn prod-client\""
+		"prod-server-proxy": "pm2 start serverProxy.js",
+		"dev": "concurrently \"yarn dev-server\" \"yarn dev-server-proxy\" \"yarn dev-client\"",
+		"start": "concurrently \"yarn prod-server\" \"yarn prod-server-proxy\" \"yarn prod-client\""
 	}
 }
