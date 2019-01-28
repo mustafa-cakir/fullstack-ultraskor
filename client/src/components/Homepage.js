@@ -220,7 +220,7 @@ class Homepage extends Component {
 
 		socket.on('return-updates-homepage', this.handleSocketChanges.bind(this));
 		socket.once('return-main-homepage', this.handleSocketData);
-		socket.on('my-error', res => {
+		socket.once('return-error-homepage', res => {
 			this.handleSocketError(res, options)
 		});
 	};

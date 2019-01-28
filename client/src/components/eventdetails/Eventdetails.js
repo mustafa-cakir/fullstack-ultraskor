@@ -216,14 +216,20 @@ class Eventdetails extends Component {
                         jsonDataTeamNames.indexOf(awayName1_1) > -1 ||
                         jsonDataTeamNames.indexOf(awayName1_2) > -1;
                 });
-
                 if (found.length > 0) provider2Data = found;
             });
             if (provider2Data.length > 0) {
                 this.setState({
                     provider2MatchData: provider2Data[0]
                 });
-                this.props.socket.emit('get-eventdetails-helper-3', moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'));
+                console.log(provider2Data[0]);
+                if (provider2Data[0].code) {
+	                let provider3Options = {
+		                date: moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'),
+		                code: provider2Data[0].code
+	                };
+	                this.props.socket.emit('get-eventdetails-helper-3', provider3Options);
+                }
             }
         }
     }

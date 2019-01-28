@@ -5,6 +5,7 @@ const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const diff = require('deep-diff');
 const _ = require('lodash');
+const moment = require('moment');
 const cacheService = require('./cache.service');
 const cacheDuration = {
     provider1: 60 * 60 * 24, // 24 hours
@@ -279,7 +280,7 @@ io.on('connection', socket => {
                 })
                 .catch(() => {
                     console.log(`error returning data from main for provider1`);
-                    socket.emit('my-error', 'Error while retrieving information from server');
+                    //socket.emit('my-error', 'Error while retrieving information from server');
                 });
         };
 
@@ -345,7 +346,7 @@ io.on('connection', socket => {
                     socket.emit('return-eventdetails-prodiver2', res); // return provider2
                 })
                 .catch(() => {
-                    console.log(`error returning data from main for provider1`);
+                    console.log(`error returning data from main for provider2`);
                     //socket.emit('my-error', 'Error while retrieving information from server');
                 });
         };
@@ -373,8 +374,9 @@ io.on('connection', socket => {
         });
     });
 
-    socket.on('get-eventdetails-helper-3', date => {
-        const cacheKey = `helperData-${date}-provider3`;
+
+    socket.on('get-eventdetails-helper-3', params => {
+        const cacheKey = `helperData-${params.date}-provider3`;
 
         const initRemoteRequests = () => {
             const provider3options = {
@@ -387,34 +389,38 @@ io.on('connection', socket => {
             request(provider3options)
                 .then(res => {
                     res = replaceDotWithUnderscore(res.events);
-                    if (res) {
+	                console.log('checkpoint 3', params.code);
+                    if (res && res[params.code] && params.date === moment(res[params.code].startDate * 1e3).format('DD.MM.YYYY')) {
+	                    console.log('checkpoint 4', params.date);
                         cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
                             if (matchlistbydateCollection) {
                                 matchlistbydateCollection.insertOne({
-                                    date: date,
+                                    date: params.date,
                                     provider: "provider3",
                                     data: res
                                 });
                             }
                         });
+	                    socket.emit('return-eventdetails-prodiver3', res); // return provider3
                     }
-                    socket.emit('return-eventdetails-prodiver3', res); // return provider3
                 })
                 .catch(() => {
-                    console.log(`error returning data from main for provider1`);
+                    console.log(`error returning data from main for provider3`);
                     //socket.emit('my-error', 'Error while retrieving information from server');
                 });
         };
 
         cacheService.instance().get(cacheKey, (err, cachedData) => {
             if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-                socket.emit('return-eventdetails-prodiver3', cachedData);
+                console.log('checkpoint 1');
+            	socket.emit('return-eventdetails-prodiver3', cachedData);
             } else { // Cache is not found
                 if (matchlistbydateCollection) {
                     matchlistbydateCollection
-                        .findOne({"date": date, "provider": "provider3"})
+                        .findOne({"date": params.date, "provider": "provider3"})
                         .then(result => {
                             if (result) {
+	                            console.log('checkpoint 2');
                                 cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3, () => {
                                     socket.emit('return-eventdetails-prodiver3', result.data); // Data is found in the db, now caching and serving!
                                 });
@@ -428,6 +434,7 @@ io.on('connection', socket => {
             }
         });
     });
+
 
     socket.on('get-eventdetails-missing', matchid => {
         const cacheKey = `helperData-${matchid}-missing`;
