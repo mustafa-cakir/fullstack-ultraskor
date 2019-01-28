@@ -7834,7 +7834,7 @@ __SIRP([2], {
 
                         var i = (c = JSON.parse(r)).packages;
                         //console.log(JSON.stringify(i));
-                        i[0].domains.push("local.flexible","local.flexible:8888");
+                        i[0].domains.push("ultraskor.com",);
                         // let asdasd = [{
                         //     "orderId": "3259",
                         //     "state": "active",

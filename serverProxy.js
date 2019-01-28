@@ -16,7 +16,7 @@ app.get('*', (req, res) => {
     };
 
     if (req.originalUrl.indexOf('common_widgets') > -1) {
-        options.url = 'http://local.flexible:8888/live-match/common_widgets.js';
+        options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js';
     }
     //console.log(options.url);
     request(options, function (error, response, body) {
