@@ -7,7 +7,7 @@ const app = express();
 app.get('*', (req, res) => {
 
     let path = req.originalUrl;
-	path = path.substring(6, path.length);
+	path = path.substring(11, path.length);
 	console.log(path);
 
 	const options = {
