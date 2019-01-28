@@ -15,7 +15,7 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			socket: socketIOClient(`${window.location.protocol}//${window.location.hostname}`)
+			socket: socketIOClient(window.location.origin.replace("3000", "5001"))
 		}
 	}
 
@@ -38,8 +38,10 @@ class App extends Component {
 						       render={() => <Homepage socket={socket} {...this.props}/>}/>
 						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
-						<Route exact path='/test' component={TestComp}/>
-						<Route path="/eventdetails/:eventid" component={Eventdetails}/>
+
+                        <Route exact path='/test' component={TestComp}/>
+						<Route path="/eventdetails/:eventid" socket={socket}
+                               render={props => <Eventdetails socket={socket} {...props}/>}/>
 						<Route render={() => <Errors type="page-not-found"/>}/>
 					</Switch>
 				</main>
