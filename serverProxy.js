@@ -22,6 +22,9 @@ app.get('*', (req, res) => {
     if (path.indexOf('common_widgets') > -1) {
         options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js';
     }
+	if (path.indexOf('widgetloader') > -1) {
+		options.url = 'https://www.ultraskor.com/static/live-match/widgetloader.js';
+	}
     //console.log(options.url);
     request(options, function (error, response, body) {
         res.header('Access-Control-Allow-Origin', '*');
