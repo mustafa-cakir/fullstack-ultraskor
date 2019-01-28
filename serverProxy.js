@@ -6,7 +6,7 @@ const app = express();
 // define a simple route
 app.get('*', (req, res) => {
 
-    // let path = req.originalUrl;
+    let path = req.originalUrl;
 	// path = path.substring(11, path.length);
 	// console.log(path);
 
