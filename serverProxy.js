@@ -4,10 +4,10 @@ const request = require('request');
 const app = express();
 
 // define a simple route
-app.get('*', (req, res) => {
+app.get('/live-match/:path', (req, res) => {
     console.log(req);
     const options = {
-        url: 'https://widgets.sir.sportradar.com/' + req.originalUrl,
+        url: 'https://widgets.sir.sportradar.com/' + req.params.path,
         headers: {
             'Referer': 'https://www.aspor.com.tr',
             'Origin': 'https://www.aspor.com.tr',
