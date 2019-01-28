@@ -6,9 +6,9 @@ const app = express();
 // define a simple route
 app.get('*', (req, res) => {
 
-    let path = req.originalUrl;
-	path = path.substring(11, path.length);
-	console.log(path);
+    // let path = req.originalUrl;
+	// path = path.substring(11, path.length);
+	// console.log(path);
 
 	let options = {
         url: 'https://widgets.sir.sportradar.com/' + path,
