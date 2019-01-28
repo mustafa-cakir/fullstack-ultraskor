@@ -30,7 +30,7 @@
 		"dev-server-proxy": "nodemon --watch ./serverProxy.js serverProxy.js",
 		"prod-client": "cd client && yarn install && yarn build",
 		"prod-server": "yarn install && pm2 restart socket.js",
-		"prod-server-proxy": "pm2 start serverProxy.js",
+		"prod-server-proxy": "pm2 restart serverProxy.js",
 		"dev": "concurrently \"yarn dev-server\" \"yarn dev-server-proxy\" \"yarn dev-client\"",
 		"start": "concurrently \"yarn prod-server\" \"yarn prod-server-proxy\" \"yarn prod-client\""
 	}
