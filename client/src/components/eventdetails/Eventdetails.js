@@ -38,6 +38,7 @@ class Eventdetails extends Component {
 			isTabStanding: false,
 			isTabLineup: false,
 			isTabInjury: false,
+			isTabLiveTracker: false,
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
@@ -87,6 +88,8 @@ class Eventdetails extends Component {
 			this.setState({isTabLineup: true})
 		} else if (tab === "injuries") {
 			this.setState({isTabInjury: true})
+		} else if (tab === "live-tracker") {
+			this.setState({isTabLiveTracker: true})
 		}
 	};
 	swipeSwiping = (percentage) => {
@@ -223,7 +226,6 @@ class Eventdetails extends Component {
 				this.setState({
 					provider2MatchData: provider2Data[0]
 				});
-				console.log(provider2Data[0]);
 				if (provider2Data[0].code) {
 					let provider3Options = {
 						date: moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'),
@@ -293,7 +295,6 @@ class Eventdetails extends Component {
 
 	render() {
 		const {eventData, provider1MatchData} = this.state;
-		console.log(provider1MatchData);
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
@@ -348,8 +349,8 @@ class Eventdetails extends Component {
 					</div>
 
 					{provider1MatchData ? (
-						<div className="swipe-content live-tracking" data-tab="live-tracking">
-							<LiveTracker matchid={provider1MatchData.Id}/>
+						<div className="swipe-content live-tracker" data-tab="live-tracker">
+							<LiveTracker matchid={provider1MatchData.Id} isTabLiveTracker={this.state.isTabLiveTracker}/>
 						</div>
 					) : ""}
 
