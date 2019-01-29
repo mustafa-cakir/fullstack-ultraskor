@@ -239,11 +239,13 @@ class Eventdetails extends Component {
 
 	handleSocketDataProvider3(res) {
 		const provider2Data = this.state.provider2MatchData;
-		const provider3Data = res[provider2Data.code];
-		if (provider3Data && provider3Data.startDate && moment(provider3Data.startDate * 1e3).format('MM/DD/YYYY HH:mm:ss') === provider2Data.date) {
-			this.setState({
-				provider3MatchData: provider3Data
-			});
+		if (provider2Data && provider2Data.code) {
+			const provider3Data = res[provider2Data.code] ? res[provider2Data.code] : null;
+			if (provider3Data && provider3Data.startDate && moment(provider3Data.startDate * 1e3).format('MM/DD/YYYY HH:mm:ss') === provider2Data.date) {
+				this.setState({
+					provider3MatchData: provider3Data
+				});
+			}
 		}
 	}
 
