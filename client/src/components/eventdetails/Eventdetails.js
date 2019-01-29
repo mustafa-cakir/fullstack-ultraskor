@@ -294,7 +294,7 @@ class Eventdetails extends Component {
 	};
 
 	render() {
-		const {eventData, provider1MatchData} = this.state;
+		const {eventData, provider1MatchData, provider2MatchData, provider3MatchData} = this.state;
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
@@ -304,7 +304,7 @@ class Eventdetails extends Component {
 			...(provider1MatchData ? [t("Live Tracker")] : []),
 			...(eventData.event.hasStatistics ? [t("Stats")] : []),
 			...(eventData.event.hasLineups ? [t("Lineup")] : []),
-			t('Injuries & Susp.'),
+			...(provider2MatchData ? [t('Injuries & Susp.')] : []),
 			t('Iddaa'),
 			...(eventData.standingsAvailable ? [t("Standing")] : []),
 			t('Media'),
@@ -315,14 +315,17 @@ class Eventdetails extends Component {
 			<div className="event-details">
 				{this.state.loading ? <Loading/> : null}
 				<Scoreboard eventData={eventData}/>
-				<ul className="swipe-tabs" ref={this.swipeTabsEl}>
-					{this.tabs.map((tab, index) => {
-						return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-						           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>{tab}</li>;
-					})}
-					<li className="marker" ref={this.swipeMarkerEl}/>
-				</ul>
-				<div className="swipe-shadows"/>
+				<div className="middle-tabs">
+					<ul className="swipe-tabs" ref={this.swipeTabsEl}>
+						{this.tabs.map((tab, index) => {
+							return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
+							           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
+								<span>{tab}</span></li>;
+						})}
+						<li className="marker" ref={this.swipeMarkerEl}/>
+					</ul>
+					<div className="swipe-shadows"/>
+				</div>
 				<ReactSwipe className="swipe-contents"
 				            childCount={this.tabs.length}
 				            swipeOptions={{
@@ -350,7 +353,8 @@ class Eventdetails extends Component {
 
 					{provider1MatchData ? (
 						<div className="swipe-content live-tracker" data-tab="live-tracker">
-							<LiveTracker matchid={provider1MatchData.Id} isTabLiveTracker={this.state.isTabLiveTracker}/>
+							<LiveTracker matchid={provider1MatchData.Id}
+							             isTabLiveTracker={this.state.isTabLiveTracker}/>
 						</div>
 					) : ""}
 
@@ -369,18 +373,20 @@ class Eventdetails extends Component {
 						</div>
 					) : ""}
 
-					<div className="swipe-content injuries" data-tab="injuries">
-						{this.state.isTabInjury ?
-							<Injuries eventData={eventData}
-							          matchid={this.state.provider2MatchData ? this.state.provider2MatchData.id : null}
-							          swipeAdjustHeight={this.swipeAdjustHeight}
-							          socket={this.props.socket}/>
-							: ""}
-					</div>
+					{provider2MatchData ? (
+						<div className="swipe-content injuries" data-tab="injuries">
+							{this.state.isTabInjury ?
+								<Injuries eventData={eventData}
+								          matchid={provider2MatchData ? provider2MatchData.id : null}
+								          swipeAdjustHeight={this.swipeAdjustHeight}
+								          socket={this.props.socket}/>
+								: ""}
+						</div>
+					) : ""}
 
 					<div className="swipe-content iddaa" data-tab="iddaa">
-						<Iddaa eventData={eventData} provider2MatchData={this.state.provider2MatchData}
-						       provider3MatchData={this.state.provider3MatchData}
+						<Iddaa eventData={eventData} provider2MatchData={provider2MatchData}
+						       provider3MatchData={provider3MatchData}
 						       swipeAdjustHeight={this.swipeAdjustHeight}/>
 					</div>
 
