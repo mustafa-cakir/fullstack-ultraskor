@@ -203,5 +203,9 @@
 	"Unfortunately Iddaa odds info can't be gathered": "Malesef Iddaa oranları bilgisi bulunamadı",
 	"No Match Found": "Maç Bulunamadı",
 	"Please use a different filter": "Lütfen farklı bir filtre deneyin",
-	"Live Tracker": "Canlı Maç Anlatımı"
+	"Live Tracker": "Canlı Maç Anlatımı",
+	"league": "lig",
+	"-standing-": "-puan-durumu-",
+	"-season-": "-sezon-",
+	"Premier League": "Premier Lig"
 }

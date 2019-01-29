@@ -3,6 +3,7 @@ import Icon from "./Icon";
 import moment from "moment";
 import Link from "react-router-dom/es/Link";
 import {Trans, withNamespaces} from "react-i18next";
+import {generateSlug} from "../Helper";
 
 class Event extends Component {
 	isInProgress() {
@@ -71,22 +72,6 @@ class Event extends Component {
 		})
 	}
 
-	generateSlug(text) {
-		const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
-		const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'
-		const p = new RegExp(a.split('').join('|'), 'g')
-
-		return text.toString().toLowerCase()
-			.replace(/\s+/g, '-')           // Replace spaces with -
-			.replace(p, c =>
-				b.charAt(a.indexOf(c)))     // Replace special chars
-			.replace(/&/g, '-and-')         // Replace & with 'and'
-			.replace(/[^\w-]+/g, '')       // Remove all non-word chars
-			.replace(/--+/g, '-')         // Replace multiple - with single -
-			.replace(/^-+/, '')             // Trim - from start of text
-			.replace(/-+$/, '')             // Trim - from end of text
-	}
-
 	render() {
 		const {event, t} = this.props;
 		let favEvents = this.props.favEvents;
@@ -97,7 +82,7 @@ class Event extends Component {
 				<div className="container">
 					<div className="row">
 						<Link to={{
-							pathname: `/${t('match')}/${this.generateSlug(event.name)}-${t('live-score')}-${event.id}`,
+							pathname: `/${t('match')}/${generateSlug(event.name)}-${t('live-score')}-${event.id}`,
 							state: {isPrev: true}
 						}} className="event-link col">
 							<div className="row">
