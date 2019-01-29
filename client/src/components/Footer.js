@@ -4,10 +4,6 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 class Footer extends Component {
     render() {
-        // const changeLanguageHandler = lng => {
-        //     i18n.changeLanguage(lng);
-        // };
-
         return (
             <div>
                 <footer className="text-center">

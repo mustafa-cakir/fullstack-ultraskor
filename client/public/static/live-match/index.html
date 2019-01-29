@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>UltraSkor Live Match Tracker</title>
     <link rel="stylesheet" type="text/css" href="theme.css">
     <style>
@@ -19,6 +20,10 @@
 </head>
 <body>
 <script>
+	function getParameterByName(name) {
+		var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+	}
 	(function (a, b, c, d, e, f, g, h, i) {
 		a[e] || (i = a[e] = function () {
 				(a[e].q = a[e].q || []).push(arguments)
@@ -27,7 +32,7 @@
 		)
 	})(window, document, "script", "https://live-match.ultraskor.com/522df9fac763233bd0edc75881b1c82a/widgetloader", "SIR", {
 		theme: false, // using custom theme
-		language: "tr"
+		language: getParameterByName('lang')
 	});
 	SIR("addWidget", ".sr-widget", "match.lmtExtended", {
 		pitchBgImage: "https://www.ultraskor.com/static/live-match/pitch.png",
@@ -37,8 +42,8 @@
 		goalBannerImage: "https://www.ultraskor.com/static/live-match/pitch-h.png",
 		goalBannerCustomBgColor: "#FFFFFF",
 		logo: ["https://www.ultraskor.com/static/live-match/pitch-h.png"],
-		language: "en",
-		matchId: 17147187
+		language: getParameterByName('lang'),
+		matchId: getParameterByName('matchid')
 	});
 </script>
 <div class="sr-widget"></div>

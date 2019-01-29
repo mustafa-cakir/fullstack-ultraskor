@@ -1,3 +1,31 @@
+//--Breakpoints------------------------------
+@mixin media($point) {
+	@if $point == mobile {
+		@media (max-width: 767px) {
+			@content;
+		}
+	}
+	@else if $point == tablet {
+		@media (min-width: 768px) {
+			@content;
+		}
+	}
+	@else if $point == tablet-only {
+		@media (min-width: 768px) and (max-width: 992px) {
+			@content;
+		}
+	}
+	@else if $point == web {
+		@media (min-width: 992px) {
+			@content;
+		}
+	}
+	@else if $point == wide {
+		@media (min-width:1200px) {
+			@content;
+		}
+	}
+}
 
 html {
     font-size: 14px;

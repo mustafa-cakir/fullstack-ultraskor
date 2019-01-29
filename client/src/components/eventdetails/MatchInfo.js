@@ -18,7 +18,7 @@ class MatchInfo extends Component {
             capacity = (eventData.event.venue.stadium && eventData.event.venue.stadium.capacity) ? eventData.event.venue.stadium.capacity.toLocaleString() : null;
         }
         return (
-            <div className="white-box mt-3">
+            <div className="white-box mt-2">
                 <div className="title"><Trans>Match Information</Trans></div>
                 <div className="body">
                     <div className="row">
