@@ -50,11 +50,10 @@ class FlashScoreBoard extends Component {
 				x.forEach(change => {
 					if (change.kind === "E" && change.event && change.event.id) {
 						if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
-							console.log(change);
 							this.setState({
 								flashData: change
 							}, () => {
-								this.goalSoundAudio.play();
+								if (!this.state.flashScoreMuted) this.goalSoundAudio.play();
 								clearTimeout(this.flashScoreTimer);
 								this.flashScoreTimer = setTimeout(() => {
 									this.setState({flashData: null})
