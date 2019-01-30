@@ -63,14 +63,15 @@ const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
     MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
-        if (!err) {
-            try {
-                db = client.db('ultraskor');
-                matchlistbydateCollection = db.collection('helperdata_bydate');
-            } catch (err) {
-                // do nothing, just proceed
-            }
-
+        if (err) {
+	        // do nothing, just proceed
+        } else {
+	        try {
+		        db = client.db('ultraskor');
+		        matchlistbydateCollection = db.collection('helperdata_bydate');
+	        } catch (err) {
+		        // do nothing, just proceed
+	        }
         }
     });
 
@@ -79,17 +80,29 @@ io.on('connection', socket => {
     });
 
     let currentPage = null,
-        IntervalUpdatesHomepage = null;
+	    isFlashScoreActive = false,
+	    isHomepageGetUpdates = false,
+        intervalUpdates = null;
+
+    socket.on('is-flashscore-active', status => {
+	    isFlashScoreActive = status;
+	    console.log('isFlashScoreActive', status);
+    });
+
+	socket.on('is-homepage-getupdates', status => {
+		isHomepageGetUpdates = status;
+		console.log('isHomepageActive', status);
+	});
+
 
     socket.on('current-page', (page) => {
         currentPage = page;
-        clearTimeout(IntervalUpdatesHomepage);
     });
 
-    socket.on('get-updates-homepage', params => {
+    socket.once('get-updates', params => {
         const sofaOptions = {
             method: 'GET',
-            uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
+            uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
             json: true,
             headers: {
                 'Content-Type': 'application/json',
@@ -100,10 +113,13 @@ io.on('connection', socket => {
         };
         let previousData;
         const getUpdatesHandler = () => {
-            if (currentPage !== "homepage") return false;
+            if (!isFlashScoreActive) return false;
             request(sofaOptions)
                 .then(res => {
-                    let events = [];
+	                if (isHomepageGetUpdates) socket.emit('return-updates-homepage', res);
+					console.log('triggered 1');
+	                const resFlash = _.clone(res, true);
+	                let events = [];
                     const neededProperties = [
                         'awayRedCards',
                         'awayScore',
@@ -115,10 +131,11 @@ io.on('connection', socket => {
                         'awayTeam',
                         'homeTeam'
                     ];
-                    res.sportItem.tournaments.forEach(tournament => {
-                        // tournament.events = tournament.events.filter(event => {
-                        //     return event.status.type !== "finished"
-                        // });
+
+	                resFlash.sportItem.tournaments.forEach(tournament => {
+                        tournament.events = tournament.events.filter(event => {
+                            return event.status.type !== "finished"
+                        });
                         tournament.events.forEach(event => {
                             let newEvents = {};
                             neededProperties.forEach(property => {
@@ -193,21 +210,18 @@ io.on('connection', socket => {
                             }
                         });
 
-                        if (diffArr.length > 0) socket.emit('return-updates-homepage', diffArr);
+                        if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
                     }
-
                     previousData = events;
-                    IntervalUpdatesHomepage = setTimeout(() => {
-                        getUpdatesHandler(); // keep checking in every 15 seconds
-                    }, 10000);
                 })
                 .catch((err) => {
-                    console.log(`Error returning differences on ${params.page}. Error: ${err}`);
+                    console.log(`Error returning differences. Error: ${err}`);
+                    socket.emit('return-error-homepage')
                 });
         };
-        setTimeout(() => {
+	    intervalUpdates = setInterval(() => {
             getUpdatesHandler(); // start the 1st check after 5 seconds.
-        }, 5000)
+        }, 15000);
     });
 
     socket.on('get-main', (params) => {
@@ -374,7 +388,6 @@ io.on('connection', socket => {
         });
     });
 
-
     socket.on('get-eventdetails-helper-3', params => {
         const cacheKey = `helperData-${params.date}-provider3`;
 
@@ -435,7 +448,6 @@ io.on('connection', socket => {
         });
     });
 
-
     socket.on('get-eventdetails-missing', matchid => {
         const cacheKey = `helperData-${matchid}-missing`;
         const initRemoteRequests = () => {
@@ -490,7 +502,8 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-        clearTimeout(IntervalUpdatesHomepage);
+    	console.log('user disconnected');
+        clearInterval(intervalUpdates);
     });
 });
 

@@ -57,7 +57,7 @@ const IsInProgress = props => {
         case "inprogress":
             text =
                 <div className="red font-weight-bold">
-                    {eventData.event.statusDescription}
+	                <Trans>{eventData.event.statusDescription}</Trans>
                     {(eventData.event.status.code === 6) ? '' : ''}
                     {(liveBlinkerCodes.indexOf(eventData.event.status.code) > -1) ?
                         <span className="live-blinker">'</span> : ''}
