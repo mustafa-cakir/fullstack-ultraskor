@@ -200,8 +200,9 @@ class Homepage extends Component {
 	}
 
 	handleSocketUpdatesData(res) {
-		if (this.state.mainData && this.state.mainData.params.date !== res.params.date) return false;
-		else this.handleSocketData(res, true);
+		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date)
+			this.handleSocketData(res, true);
+		else return false;
 	}
 
 	handleSocketData(res, updated) {
