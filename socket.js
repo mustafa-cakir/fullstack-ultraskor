@@ -58,22 +58,24 @@ const mongoOptions = {
     socketTimeoutMS: 1000,
 };
 
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
+const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, isDEV} = process.env;
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-    MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
-        if (err) {
-	        // do nothing, just proceed
-        } else {
-	        try {
-		        db = client.db('ultraskor');
-		        matchlistbydateCollection = db.collection('helperdata_bydate');
-	        } catch (err) {
-		        // do nothing, just proceed
-	        }
-        }
-    });
+	if (!isDEV) {
+		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
+			if (err) {
+				// do nothing, just proceed
+			} else {
+				try {
+					db = client.db('ultraskor');
+					matchlistbydateCollection = db.collection('helperdata_bydate');
+				} catch (err) {
+					// do nothing, just proceed
+				}
+			}
+		});
+	}
 
     cacheService.start(function (err) {
         if (err) console.error('cache service failed to start', err);
