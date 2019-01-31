@@ -200,7 +200,7 @@ class Homepage extends Component {
 	}
 
 	handleSocketUpdatesData(res) {
-		if (this.state.mainData.params.date !== res.params.date) return false;
+		if (this.state.mainData && this.state.mainData.params.date !== res.params.date) return false;
 		else this.handleSocketData(res, true);
 	}
 
@@ -234,8 +234,17 @@ class Homepage extends Component {
 		this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
 		this.socket.on('return-updates-homepage', this.handleSocketUpdatesData);
 		this.socket.once('return-main-homepage', this.handleSocketData);
-		this.socket.once('return-error-homepage', res => {
-			this.handleSocketError(res, options)
+		this.socket.once('return-error-homepage', err => {
+			this.handleSocketError(err, options)
+		});
+		this.socket.on('disconnect', () => {
+			this.setState({
+				refreshBtn: true
+			})
+		});
+
+		this.socket.on('close', () => {
+			console.log('socket is disconnected');
 		});
 	};
 

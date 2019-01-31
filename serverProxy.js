@@ -15,7 +15,8 @@ app.get('*', (req, res) => {
         headers: {
             'Referer': 'https://www.aspor.com.tr',
             'Origin': 'https://www.aspor.com.tr',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+	        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
         }
     };
 
@@ -26,7 +27,6 @@ app.get('*', (req, res) => {
     //console.log(options.url);
     request(options, function (error, response, body) {
         res.header('Access-Control-Allow-Origin', '*');
-
         if (path.indexOf('translations') > -1) {
             res.header("Content-Type", "application/json; charset=utf-8");
         } else if (path.indexOf('licensing') > -1) {

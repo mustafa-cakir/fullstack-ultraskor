@@ -154,7 +154,7 @@
 	background: $premier-leage-2;
 	color: #fff;
 	width: 100%;
-	padding: 15px 0;
+	padding: 7px 0;
 	font-weight: 700;
 	font-size: .9rem;
 	position: fixed;
@@ -166,6 +166,15 @@
 	&.hidden {
         display: none;
     }
+	.desc {
+		font-size: .7rem;
+		background: rgba(255,255,255,.4);
+		border-radius: 7px;
+		line-height: 14px;
+		&:empty {
+			display: none;
+		}
+	}
     &.shrink {
 		transform: translateY(84px);
 		box-shadow: none;
@@ -218,6 +227,8 @@
 	}
 	.team-name {
 		@include line-clamp(1);
+		max-width: 22vw;
+		margin: 0 auto;
 	}
 	.col-score {
 		max-width: 85px;

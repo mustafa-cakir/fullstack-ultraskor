@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
-import GoalMp3 from "../assets/goal.mp3";
+import Mp3Goal from "../assets/sound/goal.mp3";
+import Mp3HighLow from "../assets/sound/whistle_high_low.mp3";
+import Mp3Finished from "../assets/sound/finish.mp3";
+import Mp3Short from "../assets/sound/whistle_short.mp3";
+import {Trans, withNamespaces} from "react-i18next";
 
 class FlashScoreBoard extends Component {
 	constructor(props) {
 		super(props);
-		this.goalSound = React.createRef();
 		this.state = {
 			flashScoreBoardData: null,
 			flashScoreMuted: false,
@@ -15,7 +18,8 @@ class FlashScoreBoard extends Component {
 		this.handleSocketFlashScoreChanges = this.handleSocketFlashScoreChanges.bind(this);
 		this.flashScoreTimer = null;
 		this.socket = this.props.socket;
-		this.goalSoundAudio = new Audio(GoalMp3);
+		this.sound = new Audio(Mp3Goal);
+		this.goalCancelledSoundAudio = new Audio(Mp3Finished);
 	}
 
 	componentWillUnmount() {
@@ -29,6 +33,16 @@ class FlashScoreBoard extends Component {
 
 		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 		this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+	}
+
+	playSound(type) {
+		if (!this.state.flashScoreMuted) {
+			setTimeout(() => {
+				if (type === "goal")  new Audio(Mp3Goal).play();
+				else if (type === "goal-cancelled") new Audio(Mp3HighLow).play();
+				else if (type === "red-card") new Audio(Mp3Short).play();
+			}, 500);
+		}
 	}
 
 	analyzeSessionStorage() {
@@ -48,19 +62,36 @@ class FlashScoreBoard extends Component {
 		if (res && res.length > 0) {
 			res.forEach(x => {
 				x.forEach(change => {
+					console.log(change);
 					if (change.kind === "E" && change.event && change.event.id) {
 						if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
-							this.setState({
-								flashData: change
-							}, () => {
-								if (!this.state.flashScoreMuted) this.goalSoundAudio.play();
-								clearTimeout(this.flashScoreTimer);
-								this.flashScoreTimer = setTimeout(() => {
-									this.setState({flashData: null})
-								}, 10000);
-							});
-
+							if (parseInt(change.rhs) > parseInt(change.lhs)) {
+								change.desc = <Trans>GOOAL!</Trans>;
+								this.playSound('goal');
+							} else {
+								change.desc = <Trans>Goal Cancelled</Trans>;
+								this.playSound('goal-cancelled');
+							}
 						}
+						if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
+							change.desc = <Trans>Red Card</Trans>;
+							this.playSound('red-card');
+						}
+						if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
+							change.desc = <Trans>Red Card</Trans>;
+							this.playSound('red-card');
+						}
+						if (change.path[0] === "status") { // status changed, HT or FT
+							// 
+						}
+						this.setState({
+							flashData: change
+						}, () => {
+							clearTimeout(this.flashScoreTimer);
+							this.flashScoreTimer = setTimeout(() => {
+								this.setState({flashData: null})
+							}, 150000);
+						});
 					}
 				});
 			});
@@ -101,11 +132,12 @@ class FlashScoreBoard extends Component {
 							<div className="team-name">{flashData.event.homeTeam.name}</div>
 						</div>
 						<div className="col col-score">
+							<div className="desc">{flashData.desc ? flashData.desc : ""}</div>
 							<span
-								className={"home " + (flashData.type === "homeScore" ? "flash-blinker-5" : "")}>{flashData.event.homeScore.current}</span>
+								className={"home " + (flashData.path[0] === "homeScore" ? "flash-blinker-5" : "")}>{flashData.event.homeScore.current}</span>
 							<span className="separator">:</span>
 							<span
-								className={"away " + (flashData.type === "awayScore" ? "flash-blinker-5" : "")}>{flashData.event.awayScore.current}</span>
+								className={"away " + (flashData.path[0] === "awayScore" ? "flash-blinker-5" : "")}>{flashData.event.awayScore.current}</span>
 						</div>
 						<div className="col away-team text-center">
 							<img
@@ -124,4 +156,4 @@ class FlashScoreBoard extends Component {
 	}
 }
 
-export default FlashScoreBoard
+export default withNamespaces('translations')(FlashScoreBoard)
