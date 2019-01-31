@@ -82,7 +82,7 @@ class FlashScoreBoard extends Component {
 							this.playSound('red-card');
 						}
 						if (change.path[0] === "status") { // status changed, HT or FT
-							// 
+							//
 						}
 						this.setState({
 							flashData: change

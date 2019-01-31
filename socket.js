@@ -151,53 +151,53 @@ io.on('connection', socket => {
                     });
 
                     //test case away Score
-                    setTimeout(() => {
-                    	socket.emit('return-flashcore-changes', [[
-                    		{
-                    			kind: "E",
-                    			lhs: "1",
-                    			rhs: "2",
-                    			path: [
-                    				"awayScore",
-                    				"current"
-                    			],
-                    			event: {
-                    				awayRedCards: 0,
-                    				awayScore: {current: 2},
-                    				awayTeam: {name: "Malmö FF", id: 1892, subTeams: Array(0)},
-                    				homeRedCards: 0,
-                    				homeScore: {current: 0},
-                    				homeTeam: {name: "Lyngby BK", id: 1756, subTeams: Array(0)},
-                    				id: 8114504,
-                    				status: {code: 6, type: "inprogress"},
-                    				statusDescription: "30"
-                    			}
-                    		}
-                    	]]);
-                    }, 1000);
-                    setTimeout(() => {
-                    	socket.emit('return-flashcore-changes', [[
-                    		{
-                    			kind: "E",
-                    			lhs: "0",
-                    			rhs: "1",
-                    			path: [
-                    				"homeRedCards",
-                    			],
-                    			event: {
-                    				awayRedCards: 0,
-                    				awayScore: {current: 1},
-                    				awayTeam: {name: "BB Erzurumspor", id: 55603, subTeams: Array(0)},
-                    				homeRedCards: 1,
-                    				homeScore: {current: 2},
-                    				homeTeam: {name: "Beşiktaş", id: 3050, subTeams: Array(0)},
-                    				id: 7870231,
-                    				status: {code: 6, type: "inprogress"},
-                    				statusDescription: "89"
-                    			}
-                    		}
-                    	]]);
-                    }, 6000);
+                    // setTimeout(() => {
+                    // 	socket.emit('return-flashcore-changes', [[
+                    // 		{
+                    // 			kind: "E",
+                    // 			lhs: "1",
+                    // 			rhs: "2",
+                    // 			path: [
+                    // 				"awayScore",
+                    // 				"current"
+                    // 			],
+                    // 			event: {
+                    // 				awayRedCards: 0,
+                    // 				awayScore: {current: 2},
+                    // 				awayTeam: {name: "Malmö FF", id: 1892, subTeams: Array(0)},
+                    // 				homeRedCards: 0,
+                    // 				homeScore: {current: 0},
+                    // 				homeTeam: {name: "Lyngby BK", id: 1756, subTeams: Array(0)},
+                    // 				id: 8114504,
+                    // 				status: {code: 6, type: "inprogress"},
+                    // 				statusDescription: "30"
+                    // 			}
+                    // 		}
+                    // 	]]);
+                    // }, 1000);
+                    // setTimeout(() => {
+                    // 	socket.emit('return-flashcore-changes', [[
+                    // 		{
+                    // 			kind: "E",
+                    // 			lhs: "0",
+                    // 			rhs: "1",
+                    // 			path: [
+                    // 				"homeRedCards",
+                    // 			],
+                    // 			event: {
+                    // 				awayRedCards: 0,
+                    // 				awayScore: {current: 1},
+                    // 				awayTeam: {name: "BB Erzurumspor", id: 55603, subTeams: Array(0)},
+                    // 				homeRedCards: 1,
+                    // 				homeScore: {current: 2},
+                    // 				homeTeam: {name: "Beşiktaş", id: 3050, subTeams: Array(0)},
+                    // 				id: 7870231,
+                    // 				status: {code: 6, type: "inprogress"},
+                    // 				statusDescription: "89"
+                    // 			}
+                    // 		}
+                    // 	]]);
+                    // }, 6000);
                     //test case
 
                     if (previousData && previousData.length > 0) {
@@ -214,7 +214,7 @@ io.on('connection', socket => {
                             }
                         });
 
-                        //if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
+                        if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
                     }
                     previousData = events;
                 })
@@ -223,10 +223,10 @@ io.on('connection', socket => {
                     socket.emit('return-error-homepage', "Error while retrieving information from server")
                 });
         };
-	    getUpdatesHandler();
-	    // intervalUpdates = setInterval(() => {
-        //     getUpdatesHandler(); // start the 1st check after 5 seconds.
-        // }, 15000);
+	    //getUpdatesHandler();
+	    intervalUpdates = setInterval(() => {
+            getUpdatesHandler(); // start the 1st check after 5 seconds.
+        }, 15000);
     });
 
     socket.on('get-main', (params) => {
