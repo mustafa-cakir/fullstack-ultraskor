@@ -238,6 +238,12 @@ class Homepage extends Component {
 		this.socket.once('return-error-homepage', err => {
 			this.handleSocketError(err, options)
 		});
+
+		this.socket.once('return-error-updates', () => {
+			this.setState({
+				refreshBtn: true
+			})
+		});
 		this.socket.on('disconnect', () => {
 			this.setState({
 				refreshBtn: true

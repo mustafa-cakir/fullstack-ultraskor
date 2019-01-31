@@ -218,7 +218,7 @@ io.on('connection', socket => {
                 })
                 .catch((err) => {
                     console.log(`Error returning differences. Error: ${err}`);
-                    socket.emit('return-error-homepage', "Error while retrieving information from server")
+                    socket.emit('return-error-updates', "Error while retrieving information from server")
                 });
         };
 	    // getUpdatesHandler();
