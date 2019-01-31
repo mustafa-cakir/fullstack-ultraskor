@@ -20,7 +20,7 @@ app.get('*', (req, res) => {
     };
 
     if (path.indexOf('common_widgets') > -1) {
-        options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js';
+        options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js?v=2';
     }
 
     //console.log(options.url);
