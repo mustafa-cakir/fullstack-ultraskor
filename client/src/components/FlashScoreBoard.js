@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import Mp3Goal from "../assets/sound/goal.mp3";
-import Mp3HighLow from "../assets/sound/whistle_high_low.mp3";
-import Mp3Finished from "../assets/sound/finish.mp3";
-import Mp3Short from "../assets/sound/whistle_short.mp3";
-import {Trans, withNamespaces} from "react-i18next";
+import Mp3Cancel from "../assets/sound/cancel.mp3";
+import Mp3Finish from "../assets/sound/finish.mp3";
+import Mp3HalfTime from "../assets/sound/half-time.mp3";
+import Mp3Start from "../assets/sound/start.mp3";
+import Mp3RedCard from "../assets/sound/red-card.mp3";
+import {withNamespaces} from "react-i18next";
 
 class FlashScoreBoard extends Component {
 	constructor(props) {
@@ -18,8 +20,6 @@ class FlashScoreBoard extends Component {
 		this.handleSocketFlashScoreChanges = this.handleSocketFlashScoreChanges.bind(this);
 		this.flashScoreTimer = null;
 		this.socket = this.props.socket;
-		this.sound = new Audio(Mp3Goal);
-		this.goalCancelledSoundAudio = new Audio(Mp3Finished);
 	}
 
 	componentWillUnmount() {
@@ -39,8 +39,11 @@ class FlashScoreBoard extends Component {
 		if (!this.state.flashScoreMuted) {
 			setTimeout(() => {
 				if (type === "goal")  new Audio(Mp3Goal).play();
-				else if (type === "goal-cancelled") new Audio(Mp3HighLow).play();
-				else if (type === "red-card") new Audio(Mp3Short).play();
+				else if (type === "cancel") new Audio(Mp3Cancel).play();
+				else if (type === "finish") new Audio(Mp3Finish).play();
+				else if (type === "red-card") new Audio(Mp3RedCard).play();
+				else if (type === "half-time") new Audio(Mp3HalfTime).play();
+				else if (type === "start") new Audio(Mp3Start).play();
 			}, 500);
 		}
 	}
@@ -59,6 +62,7 @@ class FlashScoreBoard extends Component {
 
 
 	handleSocketFlashScoreChanges(res) {
+		const {t} = this.props;
 		if (res && res.length > 0) {
 			res.forEach(x => {
 				x.forEach(change => {
@@ -66,32 +70,40 @@ class FlashScoreBoard extends Component {
 					if (change.kind === "E" && change.event && change.event.id) {
 						if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
 							if (parseInt(change.rhs) > parseInt(change.lhs)) {
-								change.desc = <Trans>GOOAL!</Trans>;
+								change.desc = t("GOOAL!");
 								this.playSound('goal');
 							} else {
-								change.desc = <Trans>Goal Cancelled</Trans>;
+								change.desc = t("Goal Cancelled");
 								this.playSound('goal-cancelled');
 							}
 						}
 						if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
-							change.desc = <Trans>Red Card</Trans>;
+							change.desc = t("Red Card");
 							this.playSound('red-card');
 						}
-						if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
-							change.desc = <Trans>Red Card</Trans>;
-							this.playSound('red-card');
+						if (change.path[0] === "status" && change.path[1] === "code") { // status update
+							if (change.lhs === 0 && change.rhs === 6) { // game started
+								change.desc = t("Game Started")
+								this.playSound('red-card');
+							} else if (change.lhs === 6 && change.rhs === 31) { // half time
+								change.desc = t("Half Time Result")
+								this.playSound('half-time');
+							} else if ((change.lhs === 6 || change.lhs === 7) && change.rhs === 100) { // full time
+								change.desc = t("Full Time Result");
+								this.playSound('finished');
+							}
 						}
-						if (change.path[0] === "status") { // status changed, HT or FT
-							//
+
+						if (change.desc) {
+							this.setState({
+								flashData: change
+							}, () => {
+								clearTimeout(this.flashScoreTimer);
+								this.flashScoreTimer = setTimeout(() => {
+									this.setState({flashData: null})
+								}, 15000);
+							});
 						}
-						this.setState({
-							flashData: change
-						}, () => {
-							clearTimeout(this.flashScoreTimer);
-							this.flashScoreTimer = setTimeout(() => {
-								this.setState({flashData: null})
-							}, 150000);
-						});
 					}
 				});
 			});
@@ -132,6 +144,8 @@ class FlashScoreBoard extends Component {
 							<div className="team-name">{flashData.event.homeTeam.name}</div>
 						</div>
 						<div className="col col-score">
+							{flashData.path[0] === "homeRedCards" ? <div className="red-card home flash-blinker-5">{flashData.event.homeRedCards}</div> : ""}
+							{flashData.path[0] === "awayRedCards" ? <div className="red-card away flash-blinker-5">{flashData.event.awayRedCards}</div> : ""}
 							<div className="desc">{flashData.desc ? flashData.desc : ""}</div>
 							<span
 								className={"home " + (flashData.path[0] === "homeScore" ? "flash-blinker-5" : "")}>{flashData.event.homeScore.current}</span>

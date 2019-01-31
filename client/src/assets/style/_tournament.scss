@@ -166,6 +166,19 @@
 	&.hidden {
         display: none;
     }
+	.red-card {
+		position: absolute;
+		top: 27px;
+		height: 21px;
+		line-height: 21px;
+		width: 15px;
+		&.home {
+			left: -7px;
+		}
+		&.away {
+			right: -7px;
+		}
+	}
 	.desc {
 		font-size: .7rem;
 		background: rgba(255,255,255,.4);

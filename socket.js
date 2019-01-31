@@ -91,12 +91,10 @@ io.on('connection', socket => {
 
     socket.on('is-flashscore-active', status => {
 	    isFlashScoreActive = status;
-	    console.log('isFlashScoreActive', status);
     });
 
 	socket.on('is-homepage-getupdates', status => {
 		isHomepageGetUpdates = status;
-		console.log('isHomepageActive', status);
 	});
 
 
@@ -138,9 +136,9 @@ io.on('connection', socket => {
                     ];
 
 	                resFlash.sportItem.tournaments.forEach(tournament => {
-                        tournament.events = tournament.events.filter(event => {
-                            return event.status.type !== "finished"
-                        });
+                        // tournament.events = tournament.events.filter(event => {
+                        //     return event.status.type !== "finished"
+                        // });
                         tournament.events.forEach(event => {
                             let newEvents = {};
                             neededProperties.forEach(property => {
@@ -179,13 +177,13 @@ io.on('connection', socket => {
                     // 	socket.emit('return-flashcore-changes', [[
                     // 		{
                     // 			kind: "E",
-                    // 			lhs: "0",
-                    // 			rhs: "1",
+                    // 			lhs: "1",
+                    // 			rhs: "2",
                     // 			path: [
-                    // 				"homeRedCards",
+                    // 				"awayRedCards",
                     // 			],
                     // 			event: {
-                    // 				awayRedCards: 0,
+                    // 				awayRedCards: 2,
                     // 				awayScore: {current: 1},
                     // 				awayTeam: {name: "BB Erzurumspor", id: 55603, subTeams: Array(0)},
                     // 				homeRedCards: 1,
@@ -223,7 +221,7 @@ io.on('connection', socket => {
                     socket.emit('return-error-homepage', "Error while retrieving information from server")
                 });
         };
-	    //getUpdatesHandler();
+	    // getUpdatesHandler();
 	    intervalUpdates = setInterval(() => {
             getUpdatesHandler(); // start the 1st check after 5 seconds.
         }, 15000);

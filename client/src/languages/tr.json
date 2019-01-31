@@ -205,5 +205,9 @@
 	"Please use a different filter": "Lütfen farklı bir filtre deneyin",
 	"Live Tracker": "Canlı Maç Anlatımı",
 	"Goal Cancelled": "Gol İptal",
-	"GOOAL!": "GOOOOL!"
+	"GOOAL!": "GOOOOL!",
+	"Red Card": "Kırmızı Kart",
+	"Game Started": "Maç Başladı",
+	"Half Time Result": "İlk Yarı Sonucu",
+	"Full Time Result": "Maç Sonucu"
 }
