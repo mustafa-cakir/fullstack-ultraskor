@@ -16,7 +16,7 @@ import Errors from "../Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
 import Injuries from "./Injuries";
-import RefreshBtn from "../RefreshBtn";
+import RefreshButton from "../RefreshButton";
 import smoothscroll from 'smoothscroll-polyfill';
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
@@ -42,7 +42,7 @@ class Eventdetails extends Component {
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
-			refreshBtn: true
+			refreshButton: true
 		};
 		this.tabs = [];
 		this.eventid = this.props.match.params.eventid;
@@ -157,7 +157,7 @@ class Eventdetails extends Component {
 				});
 			} else {
 				this.setState({
-					refreshBtn: true
+					refreshButton: true
 				});
 			}
 		});
@@ -175,7 +175,7 @@ class Eventdetails extends Component {
 		this.setState({
 			eventData: jsonData,
 			loading: false,
-			refreshBtn: false
+			refreshButton: false
 		});
 		this.updateMeta();
 	}
@@ -433,7 +433,7 @@ class Eventdetails extends Component {
 						</div>
 					</div>
 				</ReactSwipe>
-				{this.state.refreshBtn ? <RefreshBtn/> : ""}
+				{this.state.refreshButton ? <RefreshButton/> : ""}
 				<Footer/>
 			</div>
 		)

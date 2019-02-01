@@ -9,7 +9,7 @@ import Event from "./Event";
 import Icon from "./Icon";
 import {withNamespaces} from "react-i18next";
 import ReactGA from "react-ga";
-import RefreshBtn from "./RefreshBtn";
+import RefreshButton from "./RefreshButton";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
 import FlashScoreBoard from "./FlashScoreBoard";
@@ -23,7 +23,7 @@ class Homepage extends Component {
 			orjData: null,
 			favEvents: [],
 			favEventsList: [],
-			refreshBtn: false,
+			refreshButton: false,
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initSocket = this.initSocket.bind(this);
@@ -190,11 +190,11 @@ class Homepage extends Component {
 				orjData: {error: err.toString()},
 				mainData: {error: err.toString()},
 				loading: false,
-				refreshBtn: true
+				refreshButton: true
 			});
 		} else {
 			this.setState({
-				refreshBtn: true
+				refreshButton: true
 			});
 		}
 	}
@@ -217,7 +217,7 @@ class Homepage extends Component {
 			orjData: res,
 			mainData: res,
 			loading: false,
-			refreshBtn: false
+			refreshButton: false
 		});
 		this.updateMeta();
 		this.analyzeSessionStorage();
@@ -241,12 +241,12 @@ class Homepage extends Component {
 
 		this.socket.once('return-error-updates', () => {
 			this.setState({
-				refreshBtn: true
+				refreshButton: true
 			})
 		});
 		this.socket.on('disconnect', () => {
 			this.setState({
-				refreshBtn: true
+				refreshButton: true
 			})
 		});
 
@@ -349,7 +349,7 @@ class Homepage extends Component {
 					{favEventContainer}
 					{mainContent}
 				</div>
-				{this.state.refreshBtn ? <RefreshBtn/> : ""}
+				{this.state.refreshButton ? <RefreshButton/> : ""}
 
 				<FlashScoreBoard socket={this.socket}/>
 				<Footer/>
