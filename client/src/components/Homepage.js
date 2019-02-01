@@ -13,7 +13,6 @@ import RefreshBtn from "./RefreshBtn";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
 import FlashScoreBoard from "./FlashScoreBoard";
-import GoalMp3 from "../assets/goal.mp3"
 
 class Homepage extends Component {
 	constructor(props) {
@@ -25,23 +24,18 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshBtn: false,
-			flashScoreBoardData: null,
-            flashScoreMuted: false,
-            flashScoreShrink: false
 		};
-        this.goalSound = React.createRef();
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initSocket = this.initSocket.bind(this);
-		this.handleSocketChanges = this.handleSocketChanges.bind(this);
+		this.handleSocketUpdatesData = this.handleSocketUpdatesData.bind(this);
 		this.handleSocketData = this.handleSocketData.bind(this);
 		this.todaysDate = null;
-		this.flashScoreTimer = null;
+		this.socket = this.props.socket;
 	};
 
 	componentDidMount() {
 		this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
 		this.analyzeSessionStorage();
-
 		this.initSocket({
 			api: '/football//' + this.todaysDate + '/json',
 			loading: true,
@@ -52,23 +46,27 @@ class Homepage extends Component {
 		this.trackPage(page);
 	}
 
+	componentWillUnmount() {
+		this.socket.emit('is-homepage-getupdates', false);
+	}
+
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
 			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents')),
-            storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
-            storageFlashScoreShrink = JSON.parse(localStorage.getItem('FlashScoreShrink'));
+			storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
+			storageFlashScoreShrink = JSON.parse(localStorage.getItem('FlashScoreShrink'));
 
 		if (storageHeadertabsState && storageHeadertabsState.selectedDay) {
 			this.todaysDate = storageHeadertabsState.selectedDay;
 		}
 
-        if (storageFlashScoreShrink || storageFlashScoreMuted || storageFavEvents) {
-            this.setState({
-                flashScoreMuted: storageFlashScoreMuted,
-                flashScoreShrink: storageFlashScoreShrink,
-                favEvents: storageFavEvents
-            });
-        }
+		if (storageFlashScoreShrink || storageFlashScoreMuted || storageFavEvents) {
+			this.setState({
+				flashScoreMuted: storageFlashScoreMuted,
+				flashScoreShrinked: storageFlashScoreShrink,
+				favEvents: storageFavEvents
+			});
+		}
 	}
 
 	trackPage(page) {
@@ -86,7 +84,7 @@ class Homepage extends Component {
 		});
 	};
 
-	preprocessData = data => {
+	prepareData = data => {
 		// Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
 		let moveToTop = [62, 63]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
 		let moveToBottom = [309]; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
@@ -136,6 +134,7 @@ class Homepage extends Component {
 		})
 	};
 
+	/*
 	handleFlashScore(change) {
         this.setState({
             flashScoreBoardData: {
@@ -151,7 +150,9 @@ class Homepage extends Component {
             this.setState({flashScoreBoardData: null})
         }, 10000);
     };
+    */
 
+	/*
 	handleSocketChanges(res) {
 		let {mainData} = this.state;
 		console.log(res);
@@ -168,7 +169,7 @@ class Homepage extends Component {
 									oldEvent.statusDescription = change.event.statusDescription;
 								} else if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
 									oldEvent[change.path[0]] = change.event[change.path[0]];
-									this.handleFlashScore(change);
+									//this.handleFlashScore(change);
 								}
 							}
 						});
@@ -181,6 +182,7 @@ class Homepage extends Component {
 			});
 		}
 	}
+	*/
 
 	handleSocketError(err, options) {
 		if (options.loading) {
@@ -197,8 +199,19 @@ class Homepage extends Component {
 		}
 	}
 
-	handleSocketData(res) {
-		res = this.preprocessData(res);
+	handleSocketUpdatesData(res) {
+		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date)
+			this.handleSocketData(res, true);
+		else return false;
+	}
+
+	handleSocketData(res, updated) {
+		if (!updated) {
+			setTimeout(()=>{
+				document.body.classList.add('initial-load');
+			}, 0);
+		}
+		res = this.prepareData(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
 		this.setState({
 			orjData: res,
@@ -211,17 +224,34 @@ class Homepage extends Component {
 	}
 
 	initSocket = options => {
-		if (options.loading) this.setState({loading: true});
-		const {socket} = this.props;
+		if (options.loading) {
+			this.setState({loading: true});
+			document.body.classList.remove('initial-load');
+		}
+		this.socket.emit('current-page', "homepage");
+		this.socket.emit('is-homepage-getupdates', true);
+		this.socket.emit('get-main', options);
 
-		socket.emit('current-page', "homepage");
-		socket.emit('get-main', options);
-		socket.emit('get-updates-homepage', options);
+		this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
+		this.socket.on('return-updates-homepage', this.handleSocketUpdatesData);
+		this.socket.once('return-main-homepage', this.handleSocketData);
+		this.socket.once('return-error-homepage', err => {
+			this.handleSocketError(err, options)
+		});
 
-		socket.on('return-updates-homepage', this.handleSocketChanges.bind(this));
-		socket.once('return-main-homepage', this.handleSocketData);
-		socket.once('return-error-homepage', res => {
-			this.handleSocketError(res, options)
+		this.socket.once('return-error-updates', () => {
+			this.setState({
+				refreshBtn: true
+			})
+		});
+		this.socket.on('disconnect', () => {
+			this.setState({
+				refreshBtn: true
+			})
+		});
+
+		this.socket.on('close', () => {
+			console.log('socket is disconnected');
 		});
 	};
 
@@ -320,10 +350,8 @@ class Homepage extends Component {
 					{mainContent}
 				</div>
 				{this.state.refreshBtn ? <RefreshBtn/> : ""}
-				{this.state.flashScoreBoardData ? <FlashScoreBoard flashData={this.state.flashScoreBoardData} flashScoreMuted={this.state.flashScoreMuted} flashScoreShrink={this.state.flashScoreShrink} updateParentState={this.updateParentState}/> : ""}
-                <audio ref={this.goalSound} preload="auto">
-                    <source src={GoalMp3} type="audio/mpeg"/>
-                </audio>
+
+				<FlashScoreBoard socket={this.socket}/>
 				<Footer/>
 			</div>
 		)

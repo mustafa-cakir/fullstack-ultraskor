@@ -28,7 +28,10 @@ const app = express();
 const server = http.createServer(app);
 
 // This creates our socket using the instance of the server
-const io = socketIO(server);
+const io = socketIO(server, {
+	pingInterval: 25000,
+	pingTimeout: 120000,
+});
 
 const replaceDotWithUnderscore = (obj) => {
     _.forOwn(obj, (value, key) => {
@@ -58,38 +61,51 @@ const mongoOptions = {
     socketTimeoutMS: 1000,
 };
 
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
+const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-    MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
-        if (!err) {
-            try {
-                db = client.db('ultraskor');
-                matchlistbydateCollection = db.collection('helperdata_bydate');
-            } catch (err) {
-                // do nothing, just proceed
-            }
-
-        }
-    });
+	if (NODE_ENV !== "dev") {
+		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
+			if (err) {
+				// do nothing, just proceed
+			} else {
+				try {
+					db = client.db('ultraskor');
+					matchlistbydateCollection = db.collection('helperdata_bydate');
+				} catch (err) {
+					// do nothing, just proceed
+				}
+			}
+		});
+	}
 
     cacheService.start(function (err) {
         if (err) console.error('cache service failed to start', err);
     });
 
     let currentPage = null,
-        IntervalUpdatesHomepage = null;
+	    isFlashScoreActive = false,
+	    isHomepageGetUpdates = false,
+        intervalUpdates = null;
+
+    socket.on('is-flashscore-active', status => {
+	    isFlashScoreActive = status;
+    });
+
+	socket.on('is-homepage-getupdates', status => {
+		isHomepageGetUpdates = status;
+	});
+
 
     socket.on('current-page', (page) => {
         currentPage = page;
-        clearTimeout(IntervalUpdatesHomepage);
     });
 
-    socket.on('get-updates-homepage', params => {
+    socket.once('get-updates', params => {
         const sofaOptions = {
             method: 'GET',
-            uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
+            uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
             json: true,
             headers: {
                 'Content-Type': 'application/json',
@@ -100,10 +116,13 @@ io.on('connection', socket => {
         };
         let previousData;
         const getUpdatesHandler = () => {
-            if (currentPage !== "homepage") return false;
+            if (!isFlashScoreActive) return false;
             request(sofaOptions)
                 .then(res => {
-                    let events = [];
+	                if (isHomepageGetUpdates) socket.emit('return-updates-homepage', res);
+					console.log('triggered 1');
+	                const resFlash = _.clone(res, true);
+	                let events = [];
                     const neededProperties = [
                         'awayRedCards',
                         'awayScore',
@@ -115,7 +134,8 @@ io.on('connection', socket => {
                         'awayTeam',
                         'homeTeam'
                     ];
-                    res.sportItem.tournaments.forEach(tournament => {
+
+	                resFlash.sportItem.tournaments.forEach(tournament => {
                         // tournament.events = tournament.events.filter(event => {
                         //     return event.status.type !== "finished"
                         // });
@@ -128,9 +148,9 @@ io.on('connection', socket => {
                         });
                     });
 
-                    // //test case away Score
+                    //test case away Score
                     // setTimeout(() => {
-                    // 	socket.emit('return-updates-homepage', [[
+                    // 	socket.emit('return-flashcore-changes', [[
                     // 		{
                     // 			kind: "E",
                     // 			lhs: "1",
@@ -154,20 +174,19 @@ io.on('connection', socket => {
                     // 	]]);
                     // }, 1000);
                     // setTimeout(() => {
-                    // 	socket.emit('return-updates-homepage', [[
+                    // 	socket.emit('return-flashcore-changes', [[
                     // 		{
                     // 			kind: "E",
                     // 			lhs: "1",
                     // 			rhs: "2",
                     // 			path: [
-                    // 				"homeScore",
-                    // 				"current"
+                    // 				"awayRedCards",
                     // 			],
                     // 			event: {
-                    // 				awayRedCards: 0,
+                    // 				awayRedCards: 2,
                     // 				awayScore: {current: 1},
                     // 				awayTeam: {name: "BB Erzurumspor", id: 55603, subTeams: Array(0)},
-                    // 				homeRedCards: 0,
+                    // 				homeRedCards: 1,
                     // 				homeScore: {current: 2},
                     // 				homeTeam: {name: "Beşiktaş", id: 3050, subTeams: Array(0)},
                     // 				id: 7870231,
@@ -177,7 +196,7 @@ io.on('connection', socket => {
                     // 		}
                     // 	]]);
                     // }, 6000);
-                    // //test case
+                    //test case
 
                     if (previousData && previousData.length > 0) {
                         let diffArr = [];
@@ -193,21 +212,19 @@ io.on('connection', socket => {
                             }
                         });
 
-                        if (diffArr.length > 0) socket.emit('return-updates-homepage', diffArr);
+                        if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
                     }
-
                     previousData = events;
-                    IntervalUpdatesHomepage = setTimeout(() => {
-                        getUpdatesHandler(); // keep checking in every 15 seconds
-                    }, 10000);
                 })
                 .catch((err) => {
-                    console.log(`Error returning differences on ${params.page}. Error: ${err}`);
+                    console.log(`Error returning differences. Error: ${err}`);
+                    socket.emit('return-error-updates', "Error while retrieving information from server")
                 });
         };
-        setTimeout(() => {
+	    // getUpdatesHandler();
+	    intervalUpdates = setInterval(() => {
             getUpdatesHandler(); // start the 1st check after 5 seconds.
-        }, 5000)
+        }, 15000);
     });
 
     socket.on('get-main', (params) => {
@@ -374,7 +391,6 @@ io.on('connection', socket => {
         });
     });
 
-
     socket.on('get-eventdetails-helper-3', params => {
         const cacheKey = `helperData-${params.date}-provider3`;
 
@@ -435,7 +451,6 @@ io.on('connection', socket => {
         });
     });
 
-
     socket.on('get-eventdetails-missing', matchid => {
         const cacheKey = `helperData-${matchid}-missing`;
         const initRemoteRequests = () => {
@@ -490,7 +505,8 @@ io.on('connection', socket => {
     });
 
     socket.on('disconnect', () => {
-        clearTimeout(IntervalUpdatesHomepage);
+    	console.log('user disconnected');
+        clearInterval(intervalUpdates);
     });
 });
 

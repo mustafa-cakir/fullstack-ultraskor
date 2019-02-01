@@ -14,7 +14,7 @@ class Event extends Component {
 				text =
 					<div
 						className="red font-weight-bold">
-						{this.props.event.statusDescription}
+						<Trans>{this.props.event.statusDescription}</Trans>
 						{(this.props.event.status.code === 6) ? '' : ''}
 						{(liveBlinkerCodes.indexOf(this.props.event.status.code) > -1) ?
 							<span className="live-blinker">'</span> : ''}

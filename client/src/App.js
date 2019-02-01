@@ -20,6 +20,10 @@ class App extends Component {
 		}
 	}
 
+	componentDidMount() {
+		this.state.socket.emit('get-updates');
+	}
+
 	updateParentState = (state) => {
 		return new Promise((resolve) => {
 			this.setState(state, () => {
