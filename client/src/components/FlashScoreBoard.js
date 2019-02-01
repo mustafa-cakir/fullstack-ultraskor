@@ -83,12 +83,15 @@ class FlashScoreBoard extends Component {
 						}
 						if (change.path[0] === "status" && change.path[1] === "code") { // status update
 							if (change.lhs === 0 && change.rhs === 6) { // game started
-								change.desc = t("Game Started")
+								change.desc = t("Game Started");
 								this.playSound('red-card');
 							} else if (change.lhs === 6 && change.rhs === 31) { // half time
-								change.desc = t("Half Time Result")
+								change.desc = t("Half Time Result");
 								this.playSound('half-time');
-							} else if ((change.lhs === 6 || change.lhs === 7) && change.rhs === 100) { // full time
+							} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
+								change.desc = t("2nd Half Started");
+								this.playSound('half-time');
+							} else if (change.rhs === 100) { // full time
 								change.desc = t("Full Time Result");
 								this.playSound('finished');
 							}
