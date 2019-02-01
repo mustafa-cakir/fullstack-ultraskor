@@ -42,7 +42,7 @@ class Eventdetails extends Component {
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
-			refreshBtn: false
+			refreshButton: false
 		};
 		this.tabs = [];
 		this.eventid = this.props.match.params.eventid;
