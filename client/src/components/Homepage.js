@@ -87,21 +87,25 @@ class Homepage extends Component {
 	prepareData = data => {
 		// Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
 		let moveToTop = [62, 63]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
-		let moveToBottom = [309]; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
+		let moveToBottom = []; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
 		let tournaments = data.sportItem.tournaments;
 		for (let i = 0; i < tournaments.length; i++) {
-			for (let k = 0; k < moveToTop.length; k++) {
-				if (tournaments[i].tournament.id === moveToTop[k]) {
-					let a = tournaments.splice(i, 1); // removes the item
-					tournaments.unshift(a[0]); // adds it back to the beginning
-					break;
+			if (moveToTop.length > 0) {
+				for (let k = 0; k < moveToTop.length; k++) {
+					if (tournaments[i].tournament.id === moveToTop[k]) {
+						let a = tournaments.splice(i, 1); // removes the item
+						tournaments.unshift(a[0]); // adds it back to the beginning
+						break;
+					}
 				}
 			}
-			for (let k = 0; k < moveToBottom.length; k++) {
-				if (tournaments[i].tournament.id === moveToBottom[k]) {
-					let a = tournaments.splice(i, 1); // removes the item
-					tournaments.push(a[0]); // adds it back to the end
-					break;
+			if (moveToBottom.length > 0) {
+				for (let k = 0; k < moveToBottom.length; k++) {
+					if (tournaments[i].tournament.id === moveToBottom[k]) {
+						let a = tournaments.splice(i, 1); // removes the item
+						tournaments.push(a[0]); // adds it back to the end
+						break;
+					}
 				}
 			}
 		}
@@ -133,56 +137,6 @@ class Homepage extends Component {
 			favEventsList: favEventsList
 		})
 	};
-
-	/*
-	handleFlashScore(change) {
-        this.setState({
-            flashScoreBoardData: {
-                event: change.event,
-                type: change.path[0],
-                previous: change.lhs,
-                new: change.rhs
-            }
-        });
-        if (!this.state.flashScoreMuted && this.goalSound.current) this.goalSound.current.play();
-        clearTimeout(this.flashScoreTimer);
-        this.flashScoreTimer = setTimeout(()=>{
-            this.setState({flashScoreBoardData: null})
-        }, 10000);
-    };
-    */
-
-	/*
-	handleSocketChanges(res) {
-		let {mainData} = this.state;
-		console.log(res);
-		if (res && res.length > 0) {
-			res.forEach(x => {
-				x.forEach(change => {
-					if (change.kind === "E" && change.event && change.event.id) {
-						mainData.sportItem.tournaments.forEach(tournament => {
-							let index = tournament.events.findIndex((x => x.id === change.event.id));
-							if (index > -1) {
-								let oldEvent = tournament.events[index];
-								oldEvent.status = change.event.status;
-								if (change.path[0] === "statusDescription") { // minute change
-									oldEvent.statusDescription = change.event.statusDescription;
-								} else if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
-									oldEvent[change.path[0]] = change.event[change.path[0]];
-									//this.handleFlashScore(change);
-								}
-							}
-						});
-					}
-				});
-			});
-			this.setState({
-				mainData: mainData,
-				orjData: mainData
-			});
-		}
-	}
-	*/
 
 	handleSocketError(err, options) {
 		if (options.loading) {

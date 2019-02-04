@@ -13,7 +13,7 @@ const cacheDuration = {
     provider3: 60 * 60 * 24, // 24 hours
     missing: 60 * 60 * 24, // 24 hours
     main: {
-        homepage: 5, // 5 seconds
+        homepage: 15, // 5 seconds
         eventdetails: 5, // 5 seconds
         lineup: 60 * 30, // 30 min
         standing: 60, // 1 min.
@@ -69,7 +69,7 @@ const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-	if (NODE_ENV !== "dev" && false) { // MongoDB connection disabled!!!!
+	if (NODE_ENV !== "dev") { // MongoDB connection disabled!!!!
  		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
 			if (err) {
 				// do nothing, just proceed
@@ -107,7 +107,6 @@ io.on('connection', socket => {
     });
 
     socket.once('get-updates', () => {
-	    console.log('triggered 0.5');
         const sofaOptions = {
             method: 'GET',
             uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
@@ -250,9 +249,11 @@ io.on('connection', socket => {
 
             request(sofaOptions)
                 .then(res => {
-                    cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
-                        socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
-                    });
+                	if (res) {
+		                cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
+			                socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
+		                });
+	                }
                 })
                 .catch(() => {
                     console.log(`error returning data from main for ${params.page}`);
@@ -262,13 +263,15 @@ io.on('connection', socket => {
 
         cacheService.instance().get(cacheKey, (err, cachedData) => {
             if (err) {
-                initRemoteRequests()
+                initRemoteRequests();
+	            console.log('cache server is broken');
             } else {
                 if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
                     socket.emit(`return-main-${params.page}`, cachedData);
+                    console.log('served from cache');
                 } else {
                     initRemoteRequests();
-
+	                console.log('cache not exist, get from remote');
                 }
             }
         });
@@ -410,9 +413,7 @@ io.on('connection', socket => {
             request(provider3options)
                 .then(res => {
                     res = replaceDotWithUnderscore(res.events);
-	                console.log('checkpoint 3', params.code);
                     if (res && res[params.code] && params.date === moment(res[params.code].startDate * 1e3).format('DD.MM.YYYY')) {
-	                    console.log('checkpoint 4', params.date);
                         cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
                             if (matchlistbydateCollection) {
                                 matchlistbydateCollection.insertOne({
@@ -433,7 +434,6 @@ io.on('connection', socket => {
 
         cacheService.instance().get(cacheKey, (err, cachedData) => {
             if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-                console.log('checkpoint 1');
             	socket.emit('return-eventdetails-prodiver3', cachedData);
             } else { // Cache is not found
                 if (matchlistbydateCollection) {
@@ -441,7 +441,6 @@ io.on('connection', socket => {
                         .findOne({"date": params.date, "provider": "provider3"})
                         .then(result => {
                             if (result) {
-	                            console.log('checkpoint 2');
                                 cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3, () => {
                                     socket.emit('return-eventdetails-prodiver3', result.data); // Data is found in the db, now caching and serving!
                                 });
