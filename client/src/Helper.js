@@ -9,11 +9,17 @@ class TranslateUrlHandler {
 			toEnglish: {
 				"mac": "match",
 				"canli-skor": "live-score",
+				"lig": "league",
+				"-puan-durumu-": "-standing-",
+				"-sezon-": "-season-"
 			},
 			toTurkish: {
 				"/en": "",
 				"match/": "mac/",
 				"live-score-": "canli-skor-",
+				"league": "lig",
+				"-standing-": "-puan-durumu-",
+				"-season-": "-sezon-",
 			}
 		}
 	}

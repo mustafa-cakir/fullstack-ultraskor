@@ -6,6 +6,9 @@ import ReactSwipe from "react-swipe";
 import smoothscroll from "smoothscroll-polyfill";
 import Footer from "../Footer";
 import Tournament from "../Tournament";
+import i18n from "i18next";
+import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
+import moment from "moment";
 
 class Leaguedetails extends Component {
 	constructor(props) {
@@ -52,9 +55,33 @@ class Leaguedetails extends Component {
 		socket.once('return-main-leaguedetails', res => {
 			this.setState({
 				leagueData: res
-			})
+			});
+			this.updateMeta(res);
 		});
 	}
+
+	updateMeta(leagueData) {
+		const { t } = this.props;
+		if (i18n.language === "en") {
+			HelperUpdateMeta({
+				title: `${leagueData.uniqueTournament.name} Standings, League Fixtures, ${leagueData.uniqueTournament.name} Weekly Highlights - UltraSkor`,
+				canonical: window.location.href,
+				description: `Follow live results for ${t(leagueData.category.name)} - ${t(leagueData.uniqueTournament.name)}, see the team of the week, watch weekly highlights and see the upcoming weeks' league fixtures.`,
+				keywords: `${t(leagueData.uniqueTournament.name)} weekly results, league fixture, weekly fixtures, ${t(leagueData.uniqueTournament.name)} highlights, ${t(leagueData.uniqueTournament.name)} team of the week, ${t(leagueData.uniqueTournament.name)} top scorers, league stats`,
+				alternate: HelperTranslateUrlTo('tr'),
+				hrefLang: "tr"
+			})
+		} else if (i18n.language === "tr") {
+			HelperUpdateMeta({
+				title: `${t(leagueData.uniqueTournament.name)} Puan Durumu, Lig Fikstürü, ${t(leagueData.uniqueTournament.name)} Maç Özetleri - UltraSkor.com`,
+				canonical: window.location.href,
+				description: `${t(leagueData.category.name)} - ${t(leagueData.uniqueTournament.name)} canlı puan durumunu kontrol edebilir, haftanin takmini görebilir, maç özetlerini izleyebilirsiniz ve gelecek haftalarin fikstürlerine göz gezdirebilirsiniz.`,
+				keywords: `${t(leagueData.uniqueTournament.name)} haftalık sonuclar, lig fikstürü, haftalık lıg fikstürü, ${t(leagueData.uniqueTournament.name)} özetleri, ${t(leagueData.uniqueTournament.name)} haftanın takımı, ${t(leagueData.uniqueTournament.name)} gol krallığı`,
+				alternate: HelperTranslateUrlTo('en'),
+				hrefLang: "en"
+			})
+		}
+	};
 
 	swipeByIndex(index) {
 		if (this.swipeEl) this.swipeEl.current.slide(index);
