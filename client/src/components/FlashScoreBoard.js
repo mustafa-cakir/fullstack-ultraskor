@@ -29,7 +29,9 @@ class FlashScoreBoard extends Component {
 
 	componentDidMount() {
 		this.analyzeSessionStorage();
-		this.socket.emit('is-flashscore-active', true);
+		this.socket.on('connect', () => {
+			this.socket.emit('is-flashscore-active', true);
+		});
 
 		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 		this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);

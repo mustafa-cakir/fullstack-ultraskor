@@ -228,8 +228,6 @@ class Homepage extends Component {
 			this.setState({loading: true});
 			document.body.classList.remove('initial-load');
 		}
-		this.socket.emit('current-page', "homepage");
-		this.socket.emit('is-homepage-getupdates', true);
 		this.socket.emit('get-main', options);
 
 		this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
@@ -247,7 +245,15 @@ class Homepage extends Component {
 		this.socket.on('disconnect', () => {
 			this.setState({
 				refreshButton: true
-			})
+			});
+		});
+
+		this.socket.on('connect', () => {
+			this.socket.emit('current-page', "homepage");
+			this.socket.emit('is-homepage-getupdates', true);
+			this.setState({
+				refreshButton: false
+			});
 		});
 
 		this.socket.on('close', () => {

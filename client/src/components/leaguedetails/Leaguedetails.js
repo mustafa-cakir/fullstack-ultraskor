@@ -158,7 +158,7 @@ class Leaguedetails extends Component {
 					</div>
 
 					<div className="swipe-content fixture" data-tab="fixture">
-						<div class="coming-soon"><Trans>Fixture</Trans> - <Trans>Coming soon</Trans></div>
+						<div className="coming-soon"><Trans>Fixture</Trans> - <Trans>Coming soon</Trans></div>
 					</div>
 
 					<div className="swipe-content player-stats" data-tab="player-stats">

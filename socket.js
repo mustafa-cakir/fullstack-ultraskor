@@ -27,11 +27,15 @@ const app = express();
 // our server instance
 const server = http.createServer(app);
 
+
+
 // This creates our socket using the instance of the server
-const io = socketIO(server, {
-	pingInterval: 25000,
-	pingTimeout: 120000,
-});
+// const io = socketIO(server, {
+// 	pingInterval: 25000,
+// 	pingTimeout: 120000,
+// });
+
+const io = socketIO(server);
 
 const replaceDotWithUnderscore = (obj) => {
     _.forOwn(obj, (value, key) => {
@@ -65,8 +69,8 @@ const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-	if (NODE_ENV !== "dev") {
-		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
+	if (NODE_ENV !== "dev" && false) { // MongoDB connection disabled!!!!
+ 		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
 			if (err) {
 				// do nothing, just proceed
 			} else {
@@ -102,7 +106,8 @@ io.on('connection', socket => {
         currentPage = page;
     });
 
-    socket.once('get-updates', params => {
+    socket.once('get-updates', () => {
+	    console.log('triggered 0.5');
         const sofaOptions = {
             method: 'GET',
             uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,

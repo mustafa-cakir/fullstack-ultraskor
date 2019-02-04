@@ -16,12 +16,47 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			socket: socketIOClient(window.location.origin.replace("3000", "5001"))
-		}
+			socket: socketIOClient.connect(window.location.origin.replace("3000", "5001"), {
+				reconnection: false,
+				autoConnect: false
+			})
+		};
+		this.reconnectSocket = this.reconnectSocket.bind(this);
 	}
 
 	componentDidMount() {
-		this.state.socket.emit('get-updates');
+		this.state.socket.open();
+		this.state.socket.on('connect', () => {
+			this.state.socket.emit('get-updates');
+		});
+
+		setTimeout(() => {
+			this.state.socket.open()
+		}, 1000);
+
+		setTimeout(() => {
+			this.state.socket.open()
+		}, 5000);
+
+		// setTimeout(() => {
+		// 	this.state.socket.open();
+		// 	console.log('reconnection triggered now');
+		// }, 5000);
+		this.state.socket.on('disconnect', () => {
+			setTimeout(() => {
+				this.state.socket.open()
+			}, 1000);
+		});
+
+		this.state.socket.on('connect_error', function (data) {
+			console.log('connection_error', data);
+		});
+	}
+
+	reconnectSocket() {
+		this.setState({
+			socket: this.state.socket.open()
+		});
 	}
 
 	updateParentState = (state) => {
@@ -40,7 +75,7 @@ class App extends Component {
 				<main className="main">
 					<Switch>
 						<Route exact path='/'
-						       render={() => <Homepage socket={socket} {...this.props}/>}/>
+						       render={() => <Homepage socket={socket} reconnectSocket={this.reconnectSocket} {...this.props}/>}/>
 
 						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
