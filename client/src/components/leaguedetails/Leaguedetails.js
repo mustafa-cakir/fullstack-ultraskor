@@ -5,6 +5,7 @@ import Standings from "./Standings";
 import ReactSwipe from "react-swipe";
 import smoothscroll from "smoothscroll-polyfill";
 import Footer from "../Footer";
+import Tournament from "../Tournament";
 
 class Leaguedetails extends Component {
 	constructor(props) {
@@ -121,14 +122,13 @@ class Leaguedetails extends Component {
 		if (!leagueData) return <Loading/>;
 
 		this.tabs = [
-			t('LANG_Standing'),
+			...(leagueData.standingsTables.length > 0 ? [t('LANG_Standing')] : []),
 			t('Fixture'),
 			t('Player Stats'),
 			t('Top Scorers'),
 			t('Team Of The Week'),
 			t('Weekly Highlights'),
 		];
-
 		return (
 			<div className="league-details">
 				<div className="middle-tabs">
@@ -153,12 +153,14 @@ class Leaguedetails extends Component {
 					            disableScroll: false
 				            }} ref={this.swipeEl}>
 
-					<div className="swipe-content standing" data-tab="standing">
-						<Standings leagueData={leagueData} swipeAdjustHeight={this.swipeAdjustHeight}/>
-					</div>
+					{leagueData.standingsTables.length > 0 ? (
+						<div className="swipe-content standing" data-tab="standing">
+							<Standings standingsTables={leagueData.standingsTables} swipeAdjustHeight={this.swipeAdjustHeight}/>
+						</div>
+					) : ""}
 
 					<div className="swipe-content fixture" data-tab="fixture">
-						<div className="coming-soon"><Trans>Fixture</Trans> - <Trans>Coming soon</Trans></div>
+						<Tournament tournaments={leagueData.events.roundMatches.tournaments}/>
 					</div>
 
 					<div className="swipe-content player-stats" data-tab="player-stats">

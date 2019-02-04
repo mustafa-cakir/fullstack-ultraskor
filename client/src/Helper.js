@@ -1,6 +1,8 @@
 //import React, {Component} from 'react';
 //import i18n from "i18next";
 
+import React from "react";
+
 class TranslateUrlHandler {
 	constructor() {
 		this.regEx = {
@@ -77,6 +79,23 @@ export function HelperTranslateUrlTo(to) {
 export function HelperUpdateMeta(props) {
 	const updateMetaInstance = new UpdateMetaHandler();
 	updateMetaInstance.update(props);
+}
+
+export function flagImg(tournament) {
+	let uniqueTournamentImages = [7, 11, 384, 480, 679];
+	if (uniqueTournamentImages.indexOf(tournament.tournament.uniqueId) > -1) {
+		return (
+			<div className="col flag-img">
+				<img
+					src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
+					alt={tournament.tournament.name}/>
+			</div>
+		)
+	} else {
+		return (
+			<div className={"col flag flag-" + tournament.category.flag}/>
+		)
+	}
 }
 
 export function generateSlug(text) {

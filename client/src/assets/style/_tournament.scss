@@ -65,6 +65,20 @@
 	font-size: .9rem;
 	max-width: 50px;
 	@include line-clamp(1);
+	.full-time {
+		position: relative;
+		text-align: center;
+		.day {
+			display: none;
+			position: absolute;
+			top: 7px;
+			font-size: .7rem;
+			line-height: 10px;
+			color: rgba(0, 0, 0, .4);
+			width: 100%;
+			text-align: center;
+		}
+	}
 }
 
 .event-link,

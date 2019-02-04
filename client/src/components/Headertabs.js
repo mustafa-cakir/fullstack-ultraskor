@@ -4,6 +4,7 @@ import DayPicker from "react-day-picker";
 import moment from "moment";
 import {Trans, withNamespaces} from "react-i18next";
 import 'moment/locale/tr';
+import {flagImg} from "../Helper";
 
 class Headertabs extends Component {
     constructor(props) {
@@ -301,7 +302,7 @@ const FilterItems = props => {
                         data-id={tournament.tournament.id}
                         onClick={props.filterItemClickHandler}>
                         <span className="checkbox"/>
-                        {props.flagImg(tournament)}
+                        {flagImg(tournament)}
                         <div className="col tournament-name px-2">
                             <strong><Trans>{tournament.category.name}</Trans></strong> - {tournament.tournament.name}</div>
                     </div>

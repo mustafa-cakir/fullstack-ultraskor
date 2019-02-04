@@ -215,23 +215,6 @@ class Homepage extends Component {
 		});
 	};
 
-	flagImg(tournament) {
-		let uniqueTournamentImages = [7, 11, 384, 480, 679];
-		if (uniqueTournamentImages.indexOf(tournament.tournament.uniqueId) > -1) {
-			return (
-				<div className="col flag-img">
-					<img
-						src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
-						alt={tournament.tournament.name}/>
-				</div>
-			)
-		} else {
-			return (
-				<div className={"col flag flag-" + tournament.category.flag}/>
-			)
-		}
-	};
-
 	updateMeta() {
 		if (i18n.language === "en") {
 			HelperUpdateMeta({
@@ -284,8 +267,8 @@ class Homepage extends Component {
 			} else {
 				if (dataObj.sportItem) {
 					if (dataObj.sportItem.tournaments.length > 0) {
-						mainContent.push(<Tournament key={1} data={dataObj} updateParentState={this.updateParentState}
-						                             flagImg={this.flagImg} {...this.state}/>)
+						mainContent.push(<Tournament key={1} tournaments={dataObj.sportItem.tournaments} updateParentState={this.updateParentState}
+						                              {...this.state}/>)
 					} else {
 						mainContent.push(<Errors key={1} type="no-matched-game"/>)
 					}
@@ -301,7 +284,6 @@ class Homepage extends Component {
 					{...this.state}
 					updateParentState={this.updateParentState}
 					initSocket={this.initSocket}
-					flagImg={this.flagImg}
 				/>
 
 				{this.state.loading ? <Loading/> : null}

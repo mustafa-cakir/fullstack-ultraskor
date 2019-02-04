@@ -23,6 +23,7 @@ class Event extends Component {
 			case "notstarted":
 				text =
 					<div className="full-time font-weight-bold">
+						{moment(this.props.event.startTimestamp * 1000).isSame(moment(), 'day') ? "" : <div className="day">{moment(this.props.event.startTimestamp * 1000).format('D MMM')}</div>}
 						{moment(this.props.event.startTimestamp * 1000).format('HH:mm')}
 					</div>;
 				break;
@@ -51,10 +52,8 @@ class Event extends Component {
 		const event = this.props.event,
 			eventId = this.props.event.id;
 
-		let favEvents = this.props.favEvents,
-			favEventsList = this.props.favEventsList;
-
-		favEvents = (typeof favEvents.indexOf === "undefined") ? favEvents.favEvents : favEvents; // patch for safari
+		let favEvents = this.props.favEvents || [],
+			favEventsList = this.props.favEventsList || [];
 
 		if (favEvents.indexOf(eventId) < 0) {
 			favEvents.push(eventId);
@@ -66,16 +65,17 @@ class Event extends Component {
 
 		localStorage.setItem('FavEvents', JSON.stringify(favEvents));
 
-		this.props.updateParentState({
-			favEvents: favEvents,
-			favEventsList: favEventsList
-		})
+		if (this.props.updateParentState) {
+			this.props.updateParentState({
+				favEvents: favEvents,
+				favEventsList: favEventsList
+			})
+		}
 	}
 
 	render() {
 		const {event, t} = this.props;
-		let favEvents = this.props.favEvents;
-		favEvents = (typeof favEvents.indexOf === "undefined") ? favEvents.favEvents : favEvents; // patch for safari
+		let favEvents = this.props.favEvents || [];
 		const favActive = favEvents.indexOf(event.id) > -1;
 		return (
 			<div className={favActive ? "fav-active event-container " : "event-container"}>

@@ -1,4 +1,23 @@
 .league-details {
 	background: #f1f2f3;
 	min-height: calc(100vh - 212px);
+	.tournament-title {
+		top: 0;
+	}
+	.event-fav {
+		display: none;
+	}
+	.fixture {
+		background: #fff;
+		margin-top: .5rem;
+	}
+	.event-container:nth-child(odd) {
+		background: rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid #eee;
+	}
+	.event-time {
+		.day {
+			display: block;
+		}
+	}
 }
