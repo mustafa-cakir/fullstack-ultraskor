@@ -30,27 +30,42 @@ class App extends Component {
 			this.state.socket.emit('get-updates');
 		});
 
-		setTimeout(() => {
-			this.state.socket.open()
-		}, 1000);
-
-		setTimeout(() => {
-			this.state.socket.open()
-		}, 5000);
-
-		// setTimeout(() => {
-		// 	this.state.socket.open();
-		// 	console.log('reconnection triggered now');
-		// }, 5000);
 		this.state.socket.on('disconnect', () => {
 			setTimeout(() => {
-				this.state.socket.open()
+				this.state.socket.open() // Try reconnecting, just once
 			}, 1000);
 		});
 
 		this.state.socket.on('connect_error', function (data) {
 			console.log('connection_error', data);
 		});
+		this.pageVisibilityAPI();
+	}
+
+	pageVisibilityAPI() {
+		let hidden, visibilityChange;
+		if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later
+			hidden = "hidden";
+			visibilityChange = "visibilitychange";
+		} else if (typeof document.msHidden !== "undefined") {
+			hidden = "msHidden";
+			visibilityChange = "msvisibilitychange";
+		} else if (typeof document.webkitHidden !== "undefined") {
+			hidden = "webkitHidden";
+			visibilityChange = "webkitvisibilitychange";
+		}
+
+		const handleVisibilityChange = () => {
+			if (document[hidden]) {
+				// page inactive do nothing
+			} else {
+				this.state.socket.open() // page active again, connect socket
+			}
+		};
+
+		if (typeof document.addEventListener !== "undefined" || hidden !== undefined) {
+			document.addEventListener(visibilityChange, handleVisibilityChange, false);
+		}
 	}
 
 	reconnectSocket() {
