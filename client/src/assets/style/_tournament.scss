@@ -64,6 +64,7 @@
 .event-time {
 	font-size: .9rem;
 	max-width: 50px;
+	text-align: center;
 	@include line-clamp(1);
 	.full-time {
 		position: relative;
