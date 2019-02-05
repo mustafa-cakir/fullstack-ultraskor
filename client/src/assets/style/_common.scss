@@ -828,6 +828,15 @@ code {
 	}
 }
 
+.middle-tabs {
+	border-bottom: 1px solid #e8e8e8;
+	background: #fff;
+	display: flex;
+	.container {
+		padding: 0;
+	}
+}
+
 .swipe-tabs {
 	list-style: none;
 	display: flex;
@@ -837,8 +846,6 @@ code {
 	overflow-x: scroll;
 	-webkit-overflow-scrolling: touch;
 	color: rgba(0, 0, 0, 0.87);
-	background: #fff;
-	border-bottom: 1px solid #e8e8e8;
 	z-index: 2;
 	&::-webkit-scrollbar {
 		display: none;

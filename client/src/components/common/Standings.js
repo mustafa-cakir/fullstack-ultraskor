@@ -19,7 +19,6 @@ class Standings extends Component {
 
 	render() {
 		const {standingsTables, tab} = this.state;
-		console.log(standingsTables);
 		if (!standingsTables) return <Loading/>;
 		const tabLower = tab.toLowerCase();
 		let positionLabel = tab === "Home" ? "homePosition" : tab === "Away" ? "awayPosition" : "position";
@@ -27,7 +26,6 @@ class Standings extends Component {
 			<div>
 				{standingsTables.map((standingsTable, index) => {
 					standingsTable.tableRows.sort((a, b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel]));
-					console.log(positionLabel);
 					return (
 						<div className="standing-table container" key={index}>
 							<div className="white-box mt-2 pt-3">

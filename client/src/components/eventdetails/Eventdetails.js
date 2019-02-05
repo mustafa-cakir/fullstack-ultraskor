@@ -318,15 +318,17 @@ class Eventdetails extends Component {
 				{this.state.loading ? <Loading/> : null}
 				<Scoreboard eventData={eventData}/>
 				<div className="middle-tabs">
-					<ul className="swipe-tabs" ref={this.swipeTabsEl}>
-						{this.tabs.map((tab, index) => {
-							return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-							           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-								<span>{tab}</span></li>;
-						})}
-						<li className="marker" ref={this.swipeMarkerEl}/>
-					</ul>
-					<div className="swipe-shadows"/>
+					<div className="container">
+						<ul className="swipe-tabs" ref={this.swipeTabsEl}>
+							{this.tabs.map((tab, index) => {
+								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
+								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
+									<span>{tab}</span></li>;
+							})}
+							<li className="marker" ref={this.swipeMarkerEl}/>
+						</ul>
+						<div className="swipe-shadows"/>
+					</div>
 				</div>
 				<ReactSwipe className="swipe-contents"
 				            childCount={this.tabs.length}

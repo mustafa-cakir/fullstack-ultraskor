@@ -5,9 +5,9 @@ import Standings from "../common/Standings";
 import ReactSwipe from "react-swipe";
 import smoothscroll from "smoothscroll-polyfill";
 import Footer from "../Footer";
-import Tournament from "../common/Tournament";
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
+import Fixture from "./Fixture";
 
 class Leaguedetails extends Component {
 	constructor(props) {
@@ -60,7 +60,7 @@ class Leaguedetails extends Component {
 	}
 
 	updateMeta(leagueData) {
-		const { t } = this.props;
+		const {t} = this.props;
 		if (i18n.language === "en") {
 			HelperUpdateMeta({
 				title: `${leagueData.uniqueTournament.name} Standings, League Fixtures, ${leagueData.uniqueTournament.name} Weekly Highlights - UltraSkor`,
@@ -158,15 +158,17 @@ class Leaguedetails extends Component {
 		return (
 			<div className="league-details">
 				<div className="middle-tabs">
-					<ul className="swipe-tabs" ref={this.swipeTabsEl}>
-						{this.tabs.map((tab, index) => {
-							return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-							           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-								<span>{tab}</span></li>;
-						})}
-						<li className="marker" ref={this.swipeMarkerEl}/>
-					</ul>
-					<div className="swipe-shadows"/>
+					<div className="container">
+						<ul className="swipe-tabs" ref={this.swipeTabsEl}>
+							{this.tabs.map((tab, index) => {
+								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
+								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
+									<span>{tab}</span></li>;
+							})}
+							<li className="marker" ref={this.swipeMarkerEl}/>
+						</ul>
+						<div className="swipe-shadows"/>
+					</div>
 				</div>
 				<ReactSwipe className="swipe-contents"
 				            childCount={this.tabs.length}
@@ -181,12 +183,13 @@ class Leaguedetails extends Component {
 
 					{leagueData.standingsTables.length > 0 ? (
 						<div className="swipe-content standing" data-tab="standing">
-							<Standings standingsTables={leagueData.standingsTables} swipeAdjustHeight={this.swipeAdjustHeight}/>
+							<Standings standingsTables={leagueData.standingsTables}
+							           swipeAdjustHeight={this.swipeAdjustHeight}/>
 						</div>
 					) : ""}
 
 					<div className="swipe-content fixture" data-tab="fixture">
-						<Tournament tournaments={leagueData.events.roundMatches.tournaments}/>
+						<Fixture events={leagueData.events} params={this.props.match.params} socket={this.props.socket}/>
 					</div>
 
 					<div className="swipe-content player-stats" data-tab="player-stats">
