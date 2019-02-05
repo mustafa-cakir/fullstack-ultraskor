@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Icon from "./Icon";
+import Icon from "./common/Icon";
 import {Trans} from "react-i18next";
 
 class RefreshButton extends Component {

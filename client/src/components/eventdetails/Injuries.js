@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans, withNamespaces} from "react-i18next";
-import Errors from "../Errors";
-import Icon from "../Icon";
+import Errors from "../common/Errors";
+import Icon from "../common/Icon";
 
 class Injuries extends Component {
     constructor(props) {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Icon from "./Icon";
+import Icon from "./common/Icon";
 import DayPicker from "react-day-picker";
 import moment from "moment";
 import {Trans, withNamespaces} from "react-i18next";

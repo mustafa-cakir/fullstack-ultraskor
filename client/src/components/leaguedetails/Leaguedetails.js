@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import {Trans, withNamespaces} from "react-i18next";
 import Loading from "../Loading";
-import Standings from "./Standings";
+import Standings from "../common/Standings";
 import ReactSwipe from "react-swipe";
 import smoothscroll from "smoothscroll-polyfill";
 import Footer from "../Footer";
-import Tournament from "../Tournament";
+import Tournament from "../common/Tournament";
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
-import moment from "moment";
 
 class Leaguedetails extends Component {
 	constructor(props) {

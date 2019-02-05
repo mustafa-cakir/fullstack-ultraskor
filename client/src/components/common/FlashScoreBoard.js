@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
-import Mp3Goal from "../assets/sound/goal.mp3";
-import Mp3Cancel from "../assets/sound/cancel.mp3";
-import Mp3Finish from "../assets/sound/finish.mp3";
-import Mp3HalfTime from "../assets/sound/half-time.mp3";
-import Mp3Start from "../assets/sound/start.mp3";
-import Mp3RedCard from "../assets/sound/red-card.mp3";
+import Mp3Goal from "../../assets/sound/goal.mp3";
+import Mp3Cancel from "../../assets/sound/cancel.mp3";
+import Mp3Finish from "../../assets/sound/finish.mp3";
+import Mp3HalfTime from "../../assets/sound/half-time.mp3";
+import Mp3Start from "../../assets/sound/start.mp3";
+import Mp3RedCard from "../../assets/sound/red-card.mp3";
 import {withNamespaces} from "react-i18next";
 
 class FlashScoreBoard extends Component {

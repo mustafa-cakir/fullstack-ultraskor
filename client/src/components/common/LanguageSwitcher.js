@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import i18n from "i18next";
-import {HelperTranslateUrlTo} from "../Helper";
+import {HelperTranslateUrlTo} from "../../Helper";
 
 
 class LanguageSwitcher extends Component {

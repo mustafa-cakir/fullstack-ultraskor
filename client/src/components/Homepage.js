@@ -1,18 +1,18 @@
 import React, {Component} from 'react';
-import Tournament from "./Tournament";
-import Errors from "./Errors";
+import Tournament from "./common/Tournament";
+import Errors from "./common/Errors";
 import Loading from "./Loading";
 import moment from "moment";
 import Headertabs from "./Headertabs";
 import Footer from "./Footer";
-import Event from "./Event";
-import Icon from "./Icon";
+import Event from "./common/Event";
+import Icon from "./common/Icon";
 import {withNamespaces} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./RefreshButton";
 import i18n from "i18next";
 import {HelperUpdateMeta} from "../Helper";
-import FlashScoreBoard from "./FlashScoreBoard";
+import FlashScoreBoard from "./common/FlashScoreBoard";
 
 class Homepage extends Component {
 	constructor(props) {

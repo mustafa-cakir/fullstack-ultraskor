@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
-import IddaLogo from "../../assets/images/icon-iddaa.png";
 
 class Standings extends Component {
 	constructor(props) {
@@ -10,10 +9,6 @@ class Standings extends Component {
 			standingsTables: this.props.standingsTables,
 			tab: 'Total'
 		};
-	}
-
-	componentDidUpdate() {
-		this.props.swipeAdjustHeight()
 	}
 
 	tabSwitcherHandler(tab) {
@@ -31,7 +26,7 @@ class Standings extends Component {
 		return (
 			<div>
 				{standingsTables.map((standingsTable, index) => {
-					standingsTable.tableRows.sort((a,b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel]));
+					standingsTable.tableRows.sort((a, b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel]));
 					console.log(positionLabel);
 					return (
 						<div className="standing-table container" key={index}>
@@ -47,7 +42,7 @@ class Standings extends Component {
 										<div className="country"><Trans>{standingsTable.category.name}</Trans></div>
 									</div>
 									{standingsTable.isLive ?
-										<div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!
+										<div className="col text-right live-label pr-4"><Trans>Live Table!</Trans>!
 										</div> : ""}
 								</div>
 								<ul className="horizontal-tab mt-4 mb-1">

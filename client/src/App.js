@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import {Route, Switch, withRouter} from "react-router-dom";
 import Eventdetails from "./components/eventdetails/Eventdetails";
-import Errors from "./components/Errors";
+import Errors from "./components/common/Errors";
 import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
 import socketIOClient from 'socket.io-client';

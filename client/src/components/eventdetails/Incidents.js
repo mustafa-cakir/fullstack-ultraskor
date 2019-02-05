@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import iconWhistle from "../../assets/images/icon-whistle.png";
-import Icon from "../Icon";
+import Icon from "../common/Icon";
 import {Trans, withNamespaces} from "react-i18next";
 
 class Incidents extends Component {

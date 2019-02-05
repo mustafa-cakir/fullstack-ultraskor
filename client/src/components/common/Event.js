@@ -3,7 +3,7 @@ import Icon from "./Icon";
 import moment from "moment";
 import Link from "react-router-dom/es/Link";
 import {Trans, withNamespaces} from "react-i18next";
-import {generateSlug} from "../Helper";
+import {generateSlug} from "../../Helper";
 
 class Event extends Component {
 	isInProgress() {

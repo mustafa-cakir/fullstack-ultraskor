@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import logo from "../logo.png"
-import Icon from "./Icon";
+import Icon from "./common/Icon";
 import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
 import {Trans, withNamespaces} from "react-i18next";
-import LanguageSwitcher from "./LanguageSwitcher";
+import LanguageSwitcher from "./common/LanguageSwitcher";
 
 class Navbar extends Component {
 

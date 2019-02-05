@@ -12,7 +12,7 @@ import Lineup from "./Lineup";
 import Footer from "../Footer";
 import {withNamespaces} from "react-i18next";
 import Iddaa from "./Iddaa";
-import Errors from "../Errors";
+import Errors from "../common/Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
 import Injuries from "./Injuries";

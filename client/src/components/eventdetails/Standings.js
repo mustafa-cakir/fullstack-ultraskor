@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
-import Errors from "../Errors";
+import Errors from "../common/Errors";
 
 class Standings extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			standingData: null
+			standingData: null,
+			tab: 'Total'
 		};
 	}
 
@@ -20,8 +21,13 @@ class Standings extends Component {
 		this.props.swipeAdjustHeight()
 	}
 
-	getData = api => {
+	tabSwitcherHandler(tab) {
+		this.setState({
+			tab: tab
+		});
+	}
 
+	getData = api => {
 		const {socket} = this.props;
 		const options = {
 			api: api,
@@ -41,34 +47,18 @@ class Standings extends Component {
 				standingData: {error: err.toString()},
 			});
 		});
-
-		// fetch('/api/?api=' + api, {referrerPolicy: "no-referrer", cache: "no-store"})
-		//     .then(res => {
-		//         if (res.status === 200) {
-		//             return res.json();
-		//         } else {
-		//             throw Error(`Can't retrieve information from server, ${res.status}`);
-		//         }
-		//     })
-		//     .then(res => {
-		//         this.setState({
-		//             standingData: res,
-		//         });
-		//     })
-		//     .catch(err => {
-		//         this.setState({
-		//             standingData: {error: err.toString()},
-		//         });
-		//     });
 	};
 
 	render() {
-		const {standingData} = this.state;
+		const {standingData, tab} = this.state;
 		if (!standingData) return <Loading type="inside"/>;
 		if (standingData.error) return <Errors type="error" message={standingData.error}/>;
 
 		const {eventData} = this.props;
 		const standingsTables = standingData.standingsTables[0];
+		const positionLabel = tab === "Home" ? "homePosition" : tab === "Away" ? "awayPosition" : "position";
+		const tabLower = tab.toLowerCase();
+		standingsTables.tableRows.sort((a, b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel]));
 		return (
 			<div className="standing-table container">
 				<div className="white-box mt-2 pt-3">
@@ -85,6 +75,20 @@ class Standings extends Component {
 						{standingsTables.isLive ?
 							<div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!</div> : ""}
 					</div>
+					<ul className="horizontal-tab mt-4 mb-1">
+						<li className={tab === 'Total' ? "active" : ""}
+						    onClick={() => this.tabSwitcherHandler('Total')}>
+							<span><Trans>Overall</Trans></span>
+						</li>
+						<li className={tab === 'Home' ? "active" : ""}
+						    onClick={() => this.tabSwitcherHandler('Home')}>
+							<span><Trans>Home</Trans></span>
+						</li>
+						<li className={tab === 'Away' ? "active" : ""}
+						    onClick={() => this.tabSwitcherHandler('Away')}>
+							<span><Trans>Away</Trans></span>
+						</li>
+					</ul>
 					<div className="body pt-0">
 						<table className="table">
 							<thead>
@@ -100,19 +104,21 @@ class Standings extends Component {
 							</tr>
 							</thead>
 							<tbody>
-							{standingsTables.tableRows.map((item, index) => {
+							{standingsTables.tableRows.map((row, index) => {
 								return (
 									<tr key={index}
-									    className={(item.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (item.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (item.isLive ? ("live-game " + item.liveMatchStatus) : "")}>
-										<td className={"order " + (item.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[item.promotion.id].class : "")}>
-											<span>{item.position}</span></td>
-										<td className="team-logo"><img src={`https://www.sofascore.com/images/team-logo/football_${item.team.id}.png`} alt={item.team.name}/></td>
-										<td className="team">{item.team.shortName}<span className="live-pulse"/></td>
-										<td className="matches">{item.totalFields.matchesTotal}</td>
-										<td className="win">{item.totalFields.winTotal}</td>
-										<td className="draw">{item.totalFields.drawTotal}</td>
-										<td className="loss">{item.totalFields.lossTotal}</td>
-										<td className="points">{item.totalFields.pointsTotal}</td>
+									    className={(row.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (row.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (row.isLive ? ("live-game " + row.liveMatchStatus) : "")}>
+										<td className={"order " + (row.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[row.promotion.id].class : "")}>
+											<span>{row.position}</span></td>
+										<td className="team-logo"><img
+											src={`https://www.sofascore.com/images/team-logo/football_${row.team.id}.png`}
+											alt={row.team.name}/></td>
+										<td className="team">{row.team.shortName}<span className="live-pulse"/></td>
+										<td className="matches">{row[`${tabLower}Fields`][`matches${tab}`]}</td>
+										<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
+										<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
+										<td className="loss">{row[`${tabLower}Fields`][`loss${tab}`]}</td>
+										<td className="points">{row[`${tabLower}Fields`][`points${tab}`]}</td>
 									</tr>
 								)
 							})}

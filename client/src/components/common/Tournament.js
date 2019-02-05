@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Event from "./Event";
 import {Trans, withNamespaces} from "react-i18next";
-import {generateSlug, flagImg} from "../Helper";
+import {generateSlug, flagImg} from "../../Helper";
 import Link from "react-router-dom/es/Link";
 
 class Tournament extends Component {

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
-import Errors from "../Errors";
+import Errors from "../common/Errors";
 
 class Lineup extends Component {
     constructor(props) {
