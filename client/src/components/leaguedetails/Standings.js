@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
+import IddaLogo from "../../assets/images/icon-iddaa.png";
 
 class Standings extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			standingsTables: this.props.standingsTables,
-			sortBy: 'position'
+			tab: 'Total'
 		};
 	}
 
@@ -15,21 +16,23 @@ class Standings extends Component {
 		this.props.swipeAdjustHeight()
 	}
 
-	tabSwitcherHandler(sortBy) {
+	tabSwitcherHandler(tab) {
 		this.setState({
-			sortBy: sortBy
-		}, () => {
-			//this.state.leagueData.standingsTables[0].tableRows.sort((a, b) => parseFloat(a[sortBy]) - parseFloat(b[sortBy]));
+			tab: tab
 		});
 	}
 
 	render() {
-		const {standingsTables} = this.state;
+		const {standingsTables, tab} = this.state;
 		console.log(standingsTables);
 		if (!standingsTables) return <Loading/>;
+		const tabLower = tab.toLowerCase();
+		let positionLabel = tab === "Home" ? "homePosition" : tab === "Away" ? "awayPosition" : "position";
 		return (
 			<div>
 				{standingsTables.map((standingsTable, index) => {
+					standingsTable.tableRows.sort((a,b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel]));
+					console.log(positionLabel);
 					return (
 						<div className="standing-table container" key={index}>
 							<div className="white-box mt-2 pt-3">
@@ -47,6 +50,20 @@ class Standings extends Component {
 										<div className="col text-right live-label pr-4"><Trans>Live Table</Trans>!
 										</div> : ""}
 								</div>
+								<ul className="horizontal-tab mt-4 mb-1">
+									<li className={tab === 'Total' ? "active" : ""}
+									    onClick={() => this.tabSwitcherHandler('Total')}>
+										<span><Trans>Overall</Trans></span>
+									</li>
+									<li className={tab === 'Home' ? "active" : ""}
+									    onClick={() => this.tabSwitcherHandler('Home')}>
+										<span><Trans>Home</Trans></span>
+									</li>
+									<li className={tab === 'Away' ? "active" : ""}
+									    onClick={() => this.tabSwitcherHandler('Away')}>
+										<span><Trans>Away</Trans></span>
+									</li>
+								</ul>
 								<div className="body pt-0">
 									<table className="table">
 										<thead>
@@ -74,11 +91,11 @@ class Standings extends Component {
 													<td className="team">{row.team.shortName}<span
 														className="live-pulse"/>
 													</td>
-													<td className="matches">{row.totalFields.matchesTotal}</td>
-													<td className="win">{row.totalFields.winTotal}</td>
-													<td className="draw">{row.totalFields.drawTotal}</td>
-													<td className="loss">{row.totalFields.lossTotal}</td>
-													<td className="points">{row.totalFields.pointsTotal}</td>
+													<td className="matches">{row[`${tabLower}Fields`][`matches${tab}`]}</td>
+													<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
+													<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
+													<td className="loss">{row[`${tabLower}Fields`][`loss${tab}`]}</td>
+													<td className="points">{row[`${tabLower}Fields`][`points${tab}`]}</td>
 												</tr>
 											)
 										})}
