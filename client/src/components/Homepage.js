@@ -41,9 +41,29 @@ class Homepage extends Component {
 			loading: true,
 			page: "homepage"
 		});
-
+		this.once = true;
 		const page = this.props.location.pathname;
 		this.trackPage(page);
+	}
+
+	componentDidUpdate() {
+		// seachQuery work. TODO: will continute
+		// const {searchQuery} = this.props;
+		//
+		// if (searchQuery && this.once) {
+		// 	const {mainData} = this.state;
+		// 	//let newTournaments = [];
+		// 	mainData.sportItem.tournaments = mainData.sportItem.tournaments.filter(tournament => {
+		// 		let temp = tournament.events.filter(event => {
+		// 			return event.awayTeam.name.toLowerCase().search(searchQuery.toLowerCase()) > -1 || event.homeTeam.name.toLowerCase().search(searchQuery.toLowerCase()) > -1
+		// 		});
+		// 		return temp.length > 0;
+		// 	});
+		// 	this.once = false;
+		// 	this.setState({
+		// 		mainData: mainData
+		// 	})
+		// }
 	}
 
 	componentWillUnmount() {
@@ -260,7 +280,6 @@ class Homepage extends Component {
 				</React.Fragment>
 			)
 		}
-
 		if (dataObj) {
 			if (typeof dataObj.error !== "undefined") {
 				mainContent.push(<Errors key={1} type="error" message={dataObj.error}/>);
@@ -277,7 +296,6 @@ class Homepage extends Component {
 				}
 			}
 		}
-
 		return (
 			<div>
 				<Headertabs

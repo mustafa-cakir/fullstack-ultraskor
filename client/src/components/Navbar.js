@@ -62,7 +62,9 @@ class Navbar extends Component {
     };
 
     searchHandler = searchTerm => {
-
+		this.props.updateParentState({
+			searchQuery: searchTerm
+		})
     };
 
     goBack() {

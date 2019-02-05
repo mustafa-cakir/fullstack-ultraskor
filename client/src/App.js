@@ -16,12 +16,12 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			searchQuery: null,
 			socket: socketIOClient.connect(window.location.origin.replace("3000", "5001"), {
 				reconnection: false,
 				autoConnect: false
 			})
 		};
-		this.reconnectSocket = this.reconnectSocket.bind(this);
 	}
 
 	componentDidMount() {
@@ -70,12 +70,6 @@ class App extends Component {
 		}
 	}
 
-	reconnectSocket() {
-		this.setState({
-			socket: this.state.socket.open()
-		});
-	}
-
 	updateParentState = (state) => {
 		return new Promise((resolve) => {
 			this.setState(state, () => {
@@ -88,11 +82,11 @@ class App extends Component {
 		const {socket} = this.state;
 		return (
 			<div className="App">
-				<Navbar getData={this.getData}/>
+				<Navbar updateParentState={this.updateParentState}/>
 				<main className="main">
 					<Switch>
 						<Route exact path='/'
-						       render={() => <Homepage socket={socket} reconnectSocket={this.reconnectSocket} {...this.props}/>}/>
+						       render={() => <Homepage {...this.props} {...this.state}/>}/>
 
 						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
