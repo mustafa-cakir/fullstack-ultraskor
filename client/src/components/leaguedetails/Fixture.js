@@ -11,24 +11,25 @@ class Fixture extends Component {
 			index: 0,
 			loading: false,
 			isDropdown: false,
-			weekMatches: this.props.events.weekMatches,
-			currentWeek: this.props.events.weekMatches.data.index
+			roundName: this.props.events.roundMatches.data.roundName,
+			roundMatches: this.props.events.roundMatches,
+			currentRound: this.props.events.roundMatches.data.index
 		};
 	}
 
-	initSocket(start, end) {
+	initSocket(round, name) {
 		const {leagueid, seasonid} = this.props.params;
 		const {socket} = this.props;
 		let options = {
-			api: `/u-tournament/${leagueid}/season/${seasonid}/matches/week/${start}/${end}`,
-			page: 'leaguedetails-fixture-week-matches'
+			api: `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? "/" + name : ""}`,
+			page: 'leaguedetails-fixture-round-matches'
 		};
 		socket.emit("get-main", options);
-		socket.on('return-main-leaguedetails-fixture-week-matches', res => {
-			console.log(res.weekMatches);
+		socket.on('return-main-leaguedetails-fixture-round-matches', res => {
+			console.log(res.roundMatches);
 			this.setState({
 				loading: false,
-				weekMatches: res.weekMatches
+				roundMatches: res.roundMatches
 			});
 		});
 	}
@@ -37,62 +38,60 @@ class Fixture extends Component {
 
 	}
 
-	weekClicked(week) {
+	roundClicked(round) {
 		this.setState({
-			currentWeek: week.weekIndex,
+			roundName: round.name,
+			currentRound: round.round,
 			isDropdown: false,
 			loading: true
 		}, () => {
-			this.initSocket(week.weekStartDate, week.weekEndDate);
+			this.initSocket(round.round, round.name);
 		});
 	}
 
 	render() {
-		const {weekMatches, currentWeek, loading} = this.state;
+		const {roundMatches, currentRound, loading, roundName} = this.state;
 
-		const prevWeek = this.props.events.weeks.filter(item => {
-			return item.weekIndex === currentWeek - 1;
-		})[0];
-		const nextWeek = this.props.events.weeks.filter(item => {
-			return item.weekIndex === currentWeek + 1;
-		})[0];
+		const currentRoundIndex = this.props.events.rounds.findIndex(x => x.round === currentRound);
+		const prevRound = this.props.events.rounds[currentRoundIndex - 1];
+		const nextRound = this.props.events.rounds[currentRoundIndex + 1];
 
-		//console.log(prevWeek, nextWeek);
+		console.log(this.props.events.rounds[currentRoundIndex], prevRound, nextRound);
 		return (
 			<div className="container">
 				<div className="white-box mt-2">
 					<div className="px-3">
 						<div className="row heading align-items-center">
-							<div className={"col col-3 col-nav " + (!prevWeek ? "not-exist" : "")} onClick={() => prevWeek ? this.weekClicked(prevWeek) : ""}>
+							<div className={"col col-3 col-nav " + (!prevRound ? "not-exist" : "")} onClick={() => prevRound ? this.roundClicked(prevRound) : ""}>
 								<Icon name="fas fa-chevron-left"/> <Trans>Prev</Trans>
 							</div>
 							<div
 								className={"col px-0 col-6 text-center col-dropdown " + (this.state.isDropdown ? "open" : "")}>
 								<div className="week-label"
 								     onClick={() => this.setState({isDropdown: !this.state.isDropdown})}>
-									{currentWeek}<Trans>th Week</Trans><Icon name="fas fa-caret-down"/>
+									{roundName ? <Trans>{roundName}</Trans> : <span>{currentRound}<Trans>th Week</Trans></span>} <Icon name="fas fa-caret-down"/>
 									<div className="dropdown">
 										<ul>
-											{this.props.events.weeks.map((week, index) => {
+											{this.props.events.rounds.map((round, index) => {
 												return (
 													<li key={index}
-													    className={(week.weekIndex === currentWeek ? "active" : "") + (week.weekIndex === this.props.events.weekMatches.data.index ? " this-week" : "")}
-													    onClick={() => this.weekClicked(week)}>{week.weekIndex}<Trans>th
-														Week</Trans></li>
+													    className={(round.round === currentRound ? "active" : "") + (round.round === this.props.events.roundMatches.data.index ? " this-round" : "")}
+													    onClick={() => this.roundClicked(round)}>{round.name? <Trans>{round.name}</Trans> : <span>{round.round}<Trans>th
+														Week</Trans></span>}</li>
 												)
 											})}
 										</ul>
 									</div>
 								</div>
 							</div>
-							<div className={"col col-3 text-right col-nav " + (!nextWeek ? "not-exist" : "")} onClick={() => nextWeek ? this.weekClicked(nextWeek) : ""}>
+							<div className={"col col-3 text-right col-nav " + (!nextRound ? "not-exist" : "")} onClick={() => nextRound ? this.roundClicked(nextRound) : ""}>
 								<Trans>Next</Trans> <Icon name="fas fa-chevron-right"/>
 							</div>
 						</div>
 					</div>
 					<div className="fixture-list">
 						{loading ? <Loading type="inside"/> : ""}
-						<Tournament tournaments={weekMatches.tournaments}/>
+						<Tournament tournaments={roundMatches.tournaments}/>
 					</div>
 				</div>
 			</div>

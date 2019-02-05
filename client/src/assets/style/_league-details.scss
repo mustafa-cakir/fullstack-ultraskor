@@ -47,6 +47,7 @@
 			border-radius: 17px;
 			cursor: pointer;
 			outline:none;
+			min-width: 120px;
 			&:hover {
 				color: $color-link-hover;
 			}
@@ -94,7 +95,7 @@
 						background-color: rgba(0, 0, 0, 0.14);
 						font-style: italic;
 					}
-					&.this-week {
+					&.this-round {
 						color: #D0021B;
 					}
 				}

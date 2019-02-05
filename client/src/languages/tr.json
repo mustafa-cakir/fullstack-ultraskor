@@ -225,5 +225,14 @@
 	"Overall": "Genel",
 	"Home": "Evinde",
 	"Away": "Deplasmanda",
-	"th Week": ". Hafta"
+	"th Week": ". Hafta",
+	"Round 1": "1. Tur",
+	"Round 2": "2. Tur",
+	"Round 3": "3. Tur",
+	"Round 4": "4. Tur",
+	"Round 5": "5. Tur",
+	"Round 6": "6. Tur",
+	"Quarterfinals": "Çeyrek Final",
+	"Semifinals": "Yarı Final",
+	"Finals": "Final"
 }
