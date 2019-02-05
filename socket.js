@@ -69,7 +69,7 @@ const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-	if (NODE_ENV !== "dev") { // MongoDB connection disabled!!!!
+	if (NODE_ENV !== "dev") { // MongoDB connection disabled for localhost
  		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
 			if (err) {
 				// do nothing, just proceed
@@ -225,9 +225,9 @@ io.on('connection', socket => {
                     socket.emit('return-error-updates', "Error while retrieving information from server")
                 });
         };
-	    // getUpdatesHandler();
+	    getUpdatesHandler();
 	    intervalUpdates = setInterval(() => {
-            getUpdatesHandler(); // start the 1st check after 5 seconds.
+            getUpdatesHandler(); // check in every 15 seconds
         }, 15000);
     });
 
