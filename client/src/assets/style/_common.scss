@@ -850,6 +850,25 @@ code {
 		padding: 15px 20px 17px 20px;
 		flex-direction: row;
 		cursor: pointer;
+		span {
+			opacity: 0;
+			animation: .2s fadeInToLeft linear forwards;
+		}
+		&:nth-child(1) span {
+			animation-delay: .5s;
+		}
+		&:nth-child(2) span  {
+			animation-delay: .6s;
+		}
+		&:nth-child(3) span  {
+			animation-delay: .7s;
+		}
+		&:nth-child(4) span  {
+			animation-delay: .8s;
+		}
+		&:nth-child(5) span  {
+			animation-delay: .9s;
+		}
 
 		&.active {
 			color: $premier-leage-2;
@@ -953,6 +972,17 @@ code {
     100% {
         opacity: 1;
     }
+}
+
+@keyframes fadeInToLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0px);
+	}
 }
 
 
