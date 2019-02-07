@@ -45,27 +45,6 @@ class Homepage extends Component {
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 	}
-
-	componentDidUpdate() {
-		// seachQuery work. TODO: will continute
-		// const {searchQuery} = this.props;
-		//
-		// if (searchQuery && this.once) {
-		// 	const {mainData} = this.state;
-		// 	//let newTournaments = [];
-		// 	mainData.sportItem.tournaments = mainData.sportItem.tournaments.filter(tournament => {
-		// 		let temp = tournament.events.filter(event => {
-		// 			return event.awayTeam.name.toLowerCase().search(searchQuery.toLowerCase()) > -1 || event.homeTeam.name.toLowerCase().search(searchQuery.toLowerCase()) > -1
-		// 		});
-		// 		return temp.length > 0;
-		// 	});
-		// 	this.once = false;
-		// 	this.setState({
-		// 		mainData: mainData
-		// 	})
-		// }
-	}
-
 	componentWillUnmount() {
 		this.socket.emit('is-homepage-getupdates', false);
 	}
@@ -311,7 +290,7 @@ class Homepage extends Component {
 				</div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
 
-				<FlashScoreBoard socket={this.socket}/>
+				<FlashScoreBoard socket={this.socket} audioFiles={this.props.audioFiles}/>
 				<Footer/>
 			</div>
 		)

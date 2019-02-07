@@ -9,6 +9,12 @@ import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
 import socketIOClient from 'socket.io-client';
 import Leaguedetails from "./components/leaguedetails/Leaguedetails";
+import Mp3Goal from "./assets/sound/goal.mp3";
+import Mp3Cancel from "./assets/sound/cancel.mp3";
+import Mp3Finish from "./assets/sound/finish.mp3";
+import Mp3RedCard from "./assets/sound/red-card.mp3";
+import Mp3HalfTime from "./assets/sound/half-time.mp3";
+import Mp3Start from "./assets/sound/start.mp3";
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -16,20 +22,27 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			searchQuery: null,
 			socket: socketIOClient.connect(window.location.origin.replace("3000", "5001"), {
 				reconnection: false,
 				autoConnect: false
 			})
 		};
+        this.audioFiles = {
+            goal: new Audio(Mp3Goal),
+            cancel: new Audio(Mp3Cancel),
+            finish: new Audio(Mp3Finish),
+            redcard: new Audio(Mp3RedCard),
+            halftime: new Audio(Mp3HalfTime),
+            start: new Audio(Mp3Start),
+        }
 	}
 
 	componentDidMount() {
 		this.state.socket.open();
 		this.state.socket.on('connect', () => {
 			setTimeout(() => {
-				this.state.socket.emit('get-updates'); // init get-updates, after 10 seconds of initial load
-			}, 10000)
+				this.state.socket.emit('get-updates'); // init get-updates, after 1 seconds of initial load
+			}, 1000)
 		});
 
 		this.state.socket.on('disconnect', () => {
@@ -86,7 +99,7 @@ class App extends Component {
 				<main className="main">
 					<Switch>
 						<Route exact path='/'
-						       render={() => <Homepage {...this.props} {...this.state}/>}/>
+						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
 						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>

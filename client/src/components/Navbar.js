@@ -5,6 +5,7 @@ import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
 import {Trans, withNamespaces} from "react-i18next";
 import LanguageSwitcher from "./common/LanguageSwitcher";
+import Search from "./Search";
 
 class Navbar extends Component {
 
@@ -12,33 +13,21 @@ class Navbar extends Component {
         super(props);
         this.headerEl = React.createRef();
         this.goBack = this.goBack.bind(this);
+        this.hideSearch = this.hideSearch.bind(this);
+        this.state = {
+            searchbarOpened: false
+        }
     }
 
     componentDidMount() {
-        this.searchHandler = this.debounce(this.searchHandler, 300);
         this.bodyClassList = document.body.classList;
-    };
-
-    debounce = (cb, delay) => {
-        let timeout;
-        return function () {
-            const context = this;
-            const args = arguments;
-            if (timeout) {
-                clearTimeout(timeout);
-            }
-            timeout = setTimeout(() => {
-                timeout = null;
-                cb.apply(context, args);
-            }, delay);
-        }
     };
 
     toggleSearchBar = () => {
         this.bodyClassList.remove('navbar-opened');
         this.bodyClassList.toggle('searchbar-opened');
         setTimeout(() => {
-            if (this.bodyClassList.contains('searchbar-opened')) this.searchInput.focus();
+            if (this.bodyClassList.contains('searchbar-opened')) this.setState({searchbarOpened: true});
         }, 500);
     };
 
@@ -51,20 +40,9 @@ class Navbar extends Component {
         }
     };
 
-    clearSearch = () => {
-        this.searchInput.value = '';
+    hideSearch = () => {
         this.bodyClassList.remove('searchbar-opened');
-    };
-
-    onChangeHandler = event => {
-        const searchTerm = event.target.value.toLowerCase();
-        this.searchHandler(searchTerm);
-    };
-
-    searchHandler = searchTerm => {
-		this.props.updateParentState({
-			searchQuery: searchTerm
-		})
+        this.setState({searchbarOpened: false});
     };
 
     goBack() {
@@ -72,11 +50,10 @@ class Navbar extends Component {
     }
 
     render() {
-        const {t} = this.props;
         const isPrev = ((this.props.history.location.state) ? this.props.history.location.state.isPrev === true : false);
         return (
             <header className={"header" + (isPrev ? " goback-active" : "")} ref={this.headerEl}>
-                <div className="header-animation" />
+                <div className="header-animation"/>
                 <div className="container">
                     <div className="row">
                         <div className="col col-menu px-0">
@@ -92,7 +69,8 @@ class Navbar extends Component {
                         </div>
                         <div className="col text-center">
                             <img src={logo} className="logo" alt="Canli Skor"/>
-                            <h1 className="header-title pl-0"><Link to="/" title="Canli Skor"><strong>ultra</strong>skor.com</Link></h1>
+                            <h1 className="header-title pl-0"><Link to="/" title="Canli Skor"><strong>ultra</strong>skor.com</Link>
+                            </h1>
                         </div>
                         <div className="col col-search px-0">
                             <button className="header-btn" onClick={this.toggleSearchBar}>
@@ -111,22 +89,7 @@ class Navbar extends Component {
                     <li><a href="/">SubMenu 2</a></li>
                     <li><LanguageSwitcher/></li>
                 </ul>
-                <section className="searchbar">
-                    <div className="container px-0 position-relative">
-                        <Icon name="fas fa-search search-icon"/>
-                        <input
-                            ref={(input) => {
-                                this.searchInput = input;
-                            }}
-                            placeholder={t("Search...")}
-                            className="search-input"
-                            onChange={this.onChangeHandler}
-                        />
-                        <button className="header-btn search-clear-btn" onClick={this.clearSearch}>
-                            <div className="close-icon"/>
-                        </button>
-                    </div>
-                </section>
+                <Search hideSearch={this.hideSearch} {...this.state}/>
             </header>
         )
     }

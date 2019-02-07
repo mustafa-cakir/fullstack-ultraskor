@@ -272,7 +272,6 @@ io.on('connection', socket => {
 			request(sofaOptions)
 				.then(res => {
 					if (params.page === "homepage") res = simplifyHomeData(res);
-					console.log(JSON.stringify(res));
 					if (res) {
 						cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
 							socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails

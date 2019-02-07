@@ -1,11 +1,5 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
-import Mp3Goal from "../../assets/sound/goal.mp3";
-import Mp3Cancel from "../../assets/sound/cancel.mp3";
-import Mp3Finish from "../../assets/sound/finish.mp3";
-import Mp3HalfTime from "../../assets/sound/half-time.mp3";
-import Mp3Start from "../../assets/sound/start.mp3";
-import Mp3RedCard from "../../assets/sound/red-card.mp3";
 import {withNamespaces} from "react-i18next";
 
 class FlashScoreBoard extends Component {
@@ -40,13 +34,13 @@ class FlashScoreBoard extends Component {
 	playSound(type) {
 		if (!this.state.flashScoreMuted) {
 			setTimeout(() => {
-				if (type === "goal")  new Audio(Mp3Goal).play();
-				else if (type === "cancel") new Audio(Mp3Cancel).play();
-				else if (type === "finish") new Audio(Mp3Finish).play();
-				else if (type === "red-card") new Audio(Mp3RedCard).play();
-				else if (type === "half-time") new Audio(Mp3HalfTime).play();
-				else if (type === "start") new Audio(Mp3Start).play();
-			}, 500);
+				if (type === "goal") this.props.audioFiles.goal.play();
+				else if (type === "cancel") this.props.audioFiles.cancel.play();
+				else if (type === "finish") this.props.audioFiles.finish.play();
+				else if (type === "red-card") this.props.audioFiles.redcard.play();
+				else if (type === "half-time") this.props.audioFiles.halftime.play();
+				else if (type === "start") this.props.audioFiles.start.play();
+			}, 100);
 		}
 	}
 
