@@ -7,19 +7,24 @@ class TranslateUrlHandler {
 	constructor() {
 		this.regEx = {
 			toEnglish: {
-				"mac": "match",
-				"canli-skor": "live-score",
-				"lig": "league",
+				"/mac/": "/match/",
+				"canli-skor-": "live-score-",
+				"/lig/": "/league/",
 				"-puan-durumu-": "-standing-",
-				"-sezon-": "-season-"
+				"-sezon-": "-season-",
+                "/maclar/": "/matches/",
+                "tarih-": "date-"
+
 			},
 			toTurkish: {
 				"/en": "",
-				"match/": "mac/",
+				"/match/": "/mac/",
 				"live-score-": "canli-skor-",
-				"league": "lig",
+				"/league/": "/lig/",
 				"-standing-": "-puan-durumu-",
 				"-season-": "-sezon-",
+                "/matches/": "/maclar/",
+                "date-": "tarih-"
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import Headertabs from "./Headertabs";
 import Footer from "./Footer";
 import Event from "./common/Event";
 import Icon from "./common/Icon";
-import {withNamespaces} from "react-i18next";
+import {Trans, withNamespaces} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./RefreshButton";
 import i18n from "i18next";
@@ -279,6 +279,7 @@ class Homepage extends Component {
 				}
 			}
 		}
+		const {t} = this.props;
 		return (
 			<div>
 				<Headertabs
@@ -293,8 +294,14 @@ class Homepage extends Component {
 					{favEventContainer}
 					{mainContent}
 				</div>
+                <div className="container date-prev-next-container">
+                    <div className="row date-prev-next align-items-center">
+                        <div className="col col-yesterday"><a className="pl-3" href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`} title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
+                        <div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"} title={t('Today\'s football matches')}><Trans>Today's Matches</Trans></a></div>
+                        <div className="col text-right col-tomorrow"><a className="pr-3" href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`} title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans> <Icon name="fas fa-chevron-right"/></a></div>
+                    </div>
+                </div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
-
 				<FlashScoreBoard socket={this.socket} audioFiles={this.props.audioFiles}/>
 				<Footer/>
 			</div>
