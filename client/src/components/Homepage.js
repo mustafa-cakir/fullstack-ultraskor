@@ -63,7 +63,7 @@ class Homepage extends Component {
 			this.setState({
 				flashScoreMuted: storageFlashScoreMuted,
 				flashScoreShrinked: storageFlashScoreShrink,
-				favEvents: storageFavEvents
+				favEvents: storageFavEvents || []
 			});
 		}
 	}
