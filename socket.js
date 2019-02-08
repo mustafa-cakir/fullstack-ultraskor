@@ -537,6 +537,55 @@ io.on('connection', socket => {
 	});
 });
 
+app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
+	const sofaOptionsGetToday = {
+		method: 'GET',
+		uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json`,
+		json: true,
+		headers: {
+			'Content-Type': 'application/json',
+			'Origin': 'https://www.sofascore.com',
+			'referer': 'https://www.sofascore.com/',
+			'x-requested-with': 'XMLHttpRequest'
+		}
+	};
+	res.header('Content-Type', 'text/plain');
+	function generateSlug(text) {
+		const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
+		const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'
+		const p = new RegExp(a.split('').join('|'), 'g')
+
+		return text.toString().toLowerCase()
+			.replace(/\s+/g, '-')           // Replace spaces with -
+			.replace(p, c =>
+				b.charAt(a.indexOf(c)))     // Replace special chars
+			.replace(/&/g, '-and-')         // Replace & with 'and'
+			.replace(/[^\w-]+/g, '')       // Remove all non-word chars
+			.replace(/--+/g, '-')         // Replace multiple - with single -
+			.replace(/^-+/, '')             // Trim - from start of text
+			.replace(/-+$/, '')             // Trim - from end of text
+	}
+
+	request(sofaOptionsGetToday)
+		.then(mainData => {
+			if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
+				let urls = [];
+				mainData.sportItem.tournaments.forEach(tournament => {
+					tournament.events.forEach(event => {
+						urls.push(`${req.params.lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${req.params.lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
+					});
+				});
+				res.send(urls.join('\r'));
+			} else {
+				res.status(500).send('Error')
+			}
+		})
+		.catch(() => {
+			res.status(500).send('Error')
+		});
+});
+
+
 // Log Errors
 app.post('/api/logerrors', (req, res) => {
 	if (db) {
