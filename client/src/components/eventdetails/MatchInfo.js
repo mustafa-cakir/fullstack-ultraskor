@@ -4,7 +4,7 @@ import {Trans} from "react-i18next";
 
 class MatchInfo extends Component {
     render() {
-        const {eventData} = this.props;
+        const {eventData, provider3MatchData} = this.props;
         let tournament, country, city, stadium, capacity, attendance, date, referee;
 
         tournament = eventData.event.tournament ? eventData.event.tournament.name : null;
@@ -49,6 +49,11 @@ class MatchInfo extends Component {
                         <div className="col col-3 f-500 text-right pr-0"><Trans>Referee</Trans></div>
                         <div className="col col-7">{referee}</div>
                     </div> : ''}
+
+                    {provider3MatchData && provider3MatchData.broadcast && provider3MatchData.broadcast.length > 0 ? <div className="row">
+                        <div className="col col-3 f-500 text-right pr-0"><Trans>Broadcast</Trans></div>
+                        <div className="col col-7">{provider3MatchData.broadcast.join(', ')}</div>
+                    </div> : ""}
                 </div>
             </div>
         )

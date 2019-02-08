@@ -347,7 +347,7 @@ class Eventdetails extends Component {
 								<div className="white-box mt-2 pb-2"><PressureGraph eventData={eventData}/><Bestplayer
 									eventData={eventData} swipeByTabName={this.swipeByTabName}/><Incidents
 									eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/></div>
-								<MatchInfo eventData={eventData}/>
+								<MatchInfo eventData={eventData} provider3MatchData={provider3MatchData}/>
 								<small>1: {this.state.provider1MatchData ? "y" : "n"} -
 									2: {this.state.provider2MatchData ? "y" : "n"} -
 									3: {this.state.provider3MatchData ? "y" : "n"}</small>
