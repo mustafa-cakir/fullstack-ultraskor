@@ -101,6 +101,9 @@ class App extends Component {
 						<Route exact path='/'
 						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
+                        <Route path='/(maclar|matches)/(tarih|date)-:date'
+                               render={props => <Homepage {...this.props} {...props} {...this.state} audioFiles={this.audioFiles}/>}/>
+
 						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
 

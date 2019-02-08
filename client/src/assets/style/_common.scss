@@ -390,6 +390,15 @@ code {
 		transform: translateY(-2px);
 		transition: opacity .58s cubic-bezier(0.32, 0.08, 0.24, 1) .31s, transform .4879s cubic-bezier(0.32, 0.08, 0.24, 1) .30s;
 	}
+	&:nth-child(15),
+	&:nth-child(16),
+	&:nth-child(17),
+	&:nth-child(18),
+	&:nth-child(19),
+	&:nth-child(20),
+	&:nth-child(21){
+		transition: opacity .58s cubic-bezier(0.32, 0.08, 0.24, 1) .5s;
+	}
 }
 
 .initial-load .homepage-list > div {
@@ -875,6 +884,18 @@ code {
 		}
 		&:nth-child(5) span  {
 			animation-delay: .9s;
+		}
+		&:nth-child(6) span  {
+			animation-delay: 1s;
+		}
+		&:nth-child(7) span  {
+			animation-delay: 1.1s;
+		}
+		&:nth-child(8) span  {
+			animation-delay: 1.2s;
+		}
+		&:nth-child(9) span  {
+			animation-delay: 1.3s;
 		}
 
 		&.active {

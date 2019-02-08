@@ -4,6 +4,7 @@ import DayPicker from "react-day-picker";
 import moment from "moment";
 import {Trans, withNamespaces} from "react-i18next";
 import 'moment/locale/tr';
+import MomentLocaleUtils from 'react-day-picker/moment';
 import {flagImg} from "../Helper";
 
 class Headertabs extends Component {
@@ -15,7 +16,7 @@ class Headertabs extends Component {
             isLive: false,
             isSportDropdown: false,
             isDateDropdown: false,
-            selectedDay: moment().format('YYYY-MM-DD')
+            selectedDay: this.props.todaysDateByUrl || moment().format('YYYY-MM-DD'),
         };
     }
 
@@ -35,6 +36,7 @@ class Headertabs extends Component {
         obj.isSportDropdown = false;
         obj.isFilterDropdown = false;
         obj.isDateDropdown = false;
+        delete obj.selectedDay;
         sessionStorage.setItem('HeadertabsState', JSON.stringify(obj));
     }
 
@@ -159,6 +161,7 @@ class Headertabs extends Component {
     }
 
     handleSelectedDay(day) {
+        const {t} = this.props;
         let selectedDay = moment(day).format('YYYY-MM-DD');
         if (selectedDay !== this.state.selectedDay) {
             this.props.initSocket({
@@ -166,6 +169,8 @@ class Headertabs extends Component {
                 loading: true,
 	            page: "homepage"
             });
+            let url = (moment().format('DD') === moment(selectedDay).format('DD')) ? "/" : `/${t('matches')}/${t('date')}-${selectedDay}`
+            window.history.pushState(selectedDay, `UltraSkor - ${selectedDay}`, url);
         }
         this.setState({
             selectedDay: selectedDay,
@@ -175,35 +180,9 @@ class Headertabs extends Component {
         }, this.setSessionStorage);
     }
 
-
     render() {
-        const {t, i18n} = this.props;
-        const MONTHS = [
-            t('January'),
-            t('February'),
-            t('March'),
-            t('April'),
-            t('May'),
-            t('June'),
-            t('July'),
-            t('August'),
-            t('September'),
-            t('October'),
-            t('November'),
-            t('December'),
-        ];
-        const WEEKDAYS_LONG = [
-            t('Sunday'),
-            t('Monday'),
-            t('Tuesday'),
-            t('Wednesday'),
-            t('Thursday'),
-            t('Friday'),
-            t('Saturday'),
-        ];
-        const WEEKDAYS_SHORT = [t('Su'), t('Mo'), t('Tu'), t('We'), t('Th'), t('Fr'), t('St')];
+        const {i18n} = this.props;
         moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
-
         return (
             <ul className="header-tabs row">
                 <li className="col p-0">
@@ -256,9 +235,8 @@ class Headertabs extends Component {
                             onDayClick={this.handleSelectedDay.bind(this)}
                             firstDayOfWeek={1}
                             selectedDays={new Date(this.state.selectedDay)}
-                            months={MONTHS}
-                            weekdaysLong={WEEKDAYS_LONG}
-                            weekdaysShort={WEEKDAYS_SHORT}
+                            locale={i18n.language}
+                            localeUtils={MomentLocaleUtils}
                         />
                     ) : (
                         null

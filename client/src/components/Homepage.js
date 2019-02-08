@@ -29,13 +29,17 @@ class Homepage extends Component {
 		this.initSocket = this.initSocket.bind(this);
 		this.handleSocketUpdatesData = this.handleSocketUpdatesData.bind(this);
 		this.handleSocketData = this.handleSocketData.bind(this);
-		this.todaysDate = null;
 		this.socket = this.props.socket;
+		this.todaysDate = null;
 	};
 
 	componentDidMount() {
-		this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
-		this.analyzeSessionStorage();
+		if (this.props.match.params.date) {
+		    this.todaysDate = this.props.match.params.date;
+        } else {
+            this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
+            this.analyzeSessionStorage();
+        }
 		this.initSocket({
 			api: '/football//' + this.todaysDate + '/json',
 			loading: true,
@@ -281,6 +285,7 @@ class Homepage extends Component {
 					{...this.state}
 					updateParentState={this.updateParentState}
 					initSocket={this.initSocket}
+                    todaysDateByUrl={this.props.match.params.date}
 				/>
 
 				{this.state.loading ? <Loading/> : null}
