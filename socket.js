@@ -572,7 +572,7 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
 				let urls = [];
 				mainData.sportItem.tournaments.forEach(tournament => {
 					tournament.events.forEach(event => {
-						urls.push(`${req.params.lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${req.params.lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
+						urls.push(`https://www.ultraskor.com${req.params.lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${req.params.lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
 					});
 				});
 				res.send(urls.join('\r'));
