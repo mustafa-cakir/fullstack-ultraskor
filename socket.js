@@ -542,7 +542,7 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 
 	if (type === "index") {
 		res.header('Content-Type', 'application/xml');
-		let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex>';
+		let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
 		if (by === "year") {
 			for (let i = 1; i <= 12; i++) {
