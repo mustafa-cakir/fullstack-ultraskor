@@ -450,12 +450,12 @@ class Eventdetails extends Component {
 							"awayTeam": {
 								"@type": "SportsTeam",
 								"name": "${eventData.event.homeTeam.name}",
-								"coach": "${eventData.managerDuel ? eventData.managerDuel.homeManager.name : ""}",
+								"coach": "${eventData.managerDuel ? eventData.managerDuel.homeManager.name : ""}"
 							},
 							"homeTeam": {
 								"@type": "SportsTeam",
-								"name": "${eventData.event.awayTeam.name}"
-								"coach": "${eventData.managerDuel ? eventData.managerDuel.awayManager.name : ""}",
+								"name": "${eventData.event.awayTeam.name}",
+								"coach": "${eventData.managerDuel ? eventData.managerDuel.awayManager.name : ""}"
 							},
 							"image": [
 								"http://www.example.com/image1.jpg",
