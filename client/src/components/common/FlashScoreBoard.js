@@ -62,7 +62,7 @@ class FlashScoreBoard extends Component {
 		if (res && res.length > 0) {
 			res.forEach(x => {
 				x.forEach(change => {
-					console.log(change);
+					//console.log(change);
 					if (change.kind === "E" && change.event && change.event.id) {
 						if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
 							if (parseInt(change.rhs) > parseInt(change.lhs)) {

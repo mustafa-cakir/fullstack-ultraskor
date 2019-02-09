@@ -661,7 +661,16 @@ code {
 		font-weight: 700;
 		border-bottom: 1px solid #edeef0;
 		padding-bottom: 12px;
+        font-size: 1rem;
+        line-height: 1.2;
+        margin: 0;
 	}
+    .desc {
+        font-weight: 300;
+        font-size: 1rem;
+        line-height: 1.3rem;
+        margin: 1rem 0;
+    }
 	.body {
 		padding: 12px 0;
 	}
