@@ -537,52 +537,89 @@ io.on('connection', socket => {
 	});
 });
 
-app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
-	const sofaOptionsGetToday = {
-		method: 'GET',
-		uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json`,
-		json: true,
-		headers: {
-			'Content-Type': 'application/json',
-			'Origin': 'https://www.sofascore.com',
-			'referer': 'https://www.sofascore.com/',
-			'x-requested-with': 'XMLHttpRequest'
-		}
-	};
-	res.header('Content-Type', 'text/plain');
-	function generateSlug(text) {
-		const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
-		const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'
-		const p = new RegExp(a.split('').join('|'), 'g')
+app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
+	const {lang, sport, type, by, date} = req.params;
 
-		return text.toString().toLowerCase()
-			.replace(/\s+/g, '-')           // Replace spaces with -
-			.replace(p, c =>
-				b.charAt(a.indexOf(c)))     // Replace special chars
-			.replace(/&/g, '-and-')         // Replace & with 'and'
-			.replace(/[^\w-]+/g, '')       // Remove all non-word chars
-			.replace(/--+/g, '-')         // Replace multiple - with single -
-			.replace(/^-+/, '')             // Trim - from start of text
-			.replace(/-+$/, '')             // Trim - from end of text
-	}
+	if (type === "index") {
+		res.header('Content-Type', 'application/xml');
+		let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex>';
 
-	request(sofaOptionsGetToday)
-		.then(mainData => {
-			if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
-				let urls = [];
-				mainData.sportItem.tournaments.forEach(tournament => {
-					tournament.events.forEach(event => {
-						urls.push(`https://www.ultraskor.com${req.params.lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${req.params.lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
-					});
-				});
-				res.send(urls.join('\r'));
-			} else {
-				res.status(500).send('Error')
+		if (by === "year") {
+			for (let i = 1; i <= 12; i++) {
+				xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/index/month/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
 			}
-		})
-		.catch(() => {
-			res.status(500).send('Error')
-		});
+		} else if (by === "month") {
+			let daysInMonth = moment(date, "YYYY-MM").daysInMonth();
+			for (let i = 1; i <= daysInMonth; i++) {
+				xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/list/day/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
+			}
+		}
+		xmlString += '</sitemapindex>';
+		res.send(xmlString);
+
+	} else if (type === "list" && by === "day") {
+		console.log('trigger');
+		const sofaOptionsGetToday = {
+			method: 'GET',
+			uri: `https://www.sofascore.com/${sport}//${date}/json`,
+			json: true,
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://www.sofascore.com',
+				'referer': 'https://www.sofascore.com/',
+				'x-requested-with': 'XMLHttpRequest'
+			}
+		};
+		res.header('Content-Type', 'text/plain');
+
+		function generateSlug(text) {
+			const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
+			const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
+			const p = new RegExp(a.split('').join('|'), 'g');
+
+			return text.toString().toLowerCase()
+				.replace(/\s+/g, '-')           // Replace spaces with -
+				.replace(p, c =>
+					b.charAt(a.indexOf(c)))     // Replace special chars
+				.replace(/&/g, '-and-')         // Replace & with 'and'
+				.replace(/[^\w-]+/g, '')       // Remove all non-word chars
+				.replace(/--+/g, '-')         // Replace multiple - with single -
+				.replace(/^-+/, '')             // Trim - from start of text
+				.replace(/-+$/, '')             // Trim - from end of text
+		}
+
+		request(sofaOptionsGetToday)
+			.then(mainData => {
+				if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
+					let tournaments = mainData.sportItem.tournaments.reduce(function (whole, tournament) {
+						tournament.events = tournament.events.filter((event) => {
+							return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === date;
+						});
+						tournament.events.forEach(() => {
+							if (whole.indexOf(tournament) < 0) whole.push(tournament);
+						});
+						return whole;
+					}, []);
+
+					let urls = [];
+					tournaments.forEach(tournament => {
+						tournament.events.forEach(event => {
+							urls.push(`https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
+						});
+					});
+					res.send(urls.join('\r'));
+				} else {
+					res.status(500).send('Error')
+				}
+			})
+			.catch(() => {
+				res.status(500).send('Error')
+			});
+	}
+});
+
+app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
+	res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`)
 });
 
 
