@@ -376,12 +376,6 @@ class Eventdetails extends Component {
 								<small>1: {this.state.provider1MatchData ? "y" : "n"} -
 									2: {this.state.provider2MatchData ? "y" : "n"} -
 									3: {this.state.provider3MatchData ? "y" : "n"}</small>
-								<Link to={
-									{
-										pathname: '/mac/galatasaray-trabzonspor-canli-skor-7479952',
-										state: {isPrev: true},
-									}
-								}>Test Link</Link>
 							</div>
 						</div>
 					</div>
