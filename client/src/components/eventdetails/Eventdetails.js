@@ -23,7 +23,6 @@ import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
 import H2h from "./H2h";
-import Link from "react-router-dom/es/Link";
 
 class Eventdetails extends Component {
 	constructor(props) {
@@ -62,7 +61,6 @@ class Eventdetails extends Component {
 		this.tabs = [];
 		const page = this.props.location.pathname;
 		this.trackPage(page);
-		console.log('triggered!!');
 	};
 
 	trackPage(page) {
@@ -75,10 +73,6 @@ class Eventdetails extends Component {
 	componentDidUpdate() {
 		if (this.props.match.params.eventid !== this.state.eventid) {
 			window.location.reload(); // in case the same component re-called with different matchid, refresh the page to load the fresh data
-		}
-		if (this.swipeEl.current) {
-			this.swipeAdjustHeight(this.state.index);
-			this.swipeMarkerAndScrollHandler();
 		}
 	}
 
@@ -101,13 +95,21 @@ class Eventdetails extends Component {
 		} else if (tab === "h2h") {
 			this.setState({isTabH2h: true})
 		}
+
 	};
 	swipeSwiping = (percentage) => {
 		//console.log(percentage);
 	};
 	swipeTabClick = (event, index) => {
 		this.rippleEffectHandler(event);
-		this.swipeEl.current.slide(index);
+		this.setState({
+			index: index
+		}, () => {
+			this.swipeEl.current.slide(index);
+			this.swipeMarkerAndScrollHandler(index);
+			this.swipeAdjustHeight(index);
+		});
+
 	};
 
 	swipeAdjustHeight(index) {
@@ -340,7 +342,7 @@ class Eventdetails extends Component {
 								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
 									<span className="text">{tab}</span></li>;
 							})}
-							<li className="marker" ref={this.swipeMarkerEl}/>
+							<li className="marker" ref={this.swipeMarkerEl} style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
 						</ul>
 						<div className="swipe-shadows"/>
 					</div>
