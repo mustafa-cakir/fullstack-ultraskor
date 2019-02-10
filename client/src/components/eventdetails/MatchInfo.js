@@ -11,6 +11,7 @@ class MatchInfo extends Component {
 			initSocketOnce: true
 		}
 	}
+
 	componentDidMount() {
 		moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
 	}
@@ -22,7 +23,7 @@ class MatchInfo extends Component {
 	}
 
 	initSocket() {
-		const { socket, provider2MatchData } = this.props;
+		const {socket, provider2MatchData} = this.props;
 
 		socket.emit("get-oley", {matchid: provider2MatchData.id, type: "teamstats"});
 		socket.once('return-oley-teamstats', res => {
@@ -138,11 +139,11 @@ const Teamstats = props => {
 
 	let printGeneralInfo = [];
 
-	generalInfo.map((item,index) => {
+	generalInfo.map((item, index) => {
 		if (index === 0) {
-			printGeneralInfo.push(<h2 className="desc" key={index}>{item.textValue}</h2>);
+			printGeneralInfo.push(<h2 className="desc provider2-data" key={index}>{item.textValue}</h2>);
 		} else {
-			printGeneralInfo.push(<p key={index}>{item.textValue}</p>);
+			printGeneralInfo.push(<p class="provider2-data" key={index}>{item.textValue}</p>);
 		}
 	});
 	console.log(generalInfo);

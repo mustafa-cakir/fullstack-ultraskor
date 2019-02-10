@@ -973,6 +973,10 @@
 			}
 		}
 	}
+    .provider2-data {
+        opacity: 0;
+        animation: .3s fadeIn linear forwards;
+    }
 }
 
 .event-details > div {
@@ -995,6 +999,14 @@
 	&:nth-child(5) {
 		animation-delay: .25s;
 	}
+}
+@keyframes fadeIn {
+    0% {
+        opacity: 0
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes rippleDrop {
