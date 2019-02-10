@@ -4,13 +4,47 @@ import i18n from "i18next";
 import {Trans} from "react-i18next";
 
 class MatchInfo extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			teamStats: null
+		}
+	}
 	componentDidMount() {
 		moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
 	}
+
+	componentDidUpdate() {
+		setTimeout(() => {
+			this.props.swipeAdjustHeight();
+		}, 100);
+	}
+
+	initSocket() {
+		const { socket, provider2MatchData } = this.props;
+
+		socket.emit("get-oley", {matchid: provider2MatchData.id, type: "teamstats"});
+		socket.once('return-oley-teamstats', res => {
+			this.setState({
+				teamStats: res,
+			});
+		});
+		socket.on('return-oley-error-teamstats', err => {
+			// do nothing
+		});
+	}
+
 	render() {
 		const {eventData, provider3MatchData} = this.props;
-		let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
+		const {teamStats} = this.state;
+		const {language} = i18n;
 
+		const {provider2MatchData} = this.props;
+		if (provider2MatchData && !teamStats) {
+			this.initSocket();
+		}
+
+		let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
 		tournament = eventData.event.tournament ? eventData.event.tournament.name : null;
 		attendance = eventData.event.attendance ? eventData.event.attendance.toLocaleString() : null;
 		date = moment(eventData.event.startTimestamp * 1000).format('DD MMM YYYY, HH:mm');
@@ -22,25 +56,31 @@ class MatchInfo extends Component {
 			stadium = eventData.event.venue.stadium ? eventData.event.venue.stadium.name : null;
 			capacity = (eventData.event.venue.stadium && eventData.event.venue.stadium.capacity) ? eventData.event.venue.stadium.capacity.toLocaleString() : null;
 		}
-		const {language} = i18n;
+
 		return (
 			<div className="white-box mt-2">
 				<h1 className="title">{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name} <Trans>Match
 					Information</Trans></h1>
+
+				{teamStats ? <Teamstats teamStats={teamStats}/> : ""}
+
 				{language === "tr" ? (
 					<React.Fragment>
-						<h2 className="desc">
-							{eventData.event.tournament.name} {eventData.event.season.year} sezonunda {eventData.event.homeTeam.name} ve {eventData.event.awayTeam.name} arasında {moment(eventData.event.startTimestamp * 1000).format('LL')} günü oynanacak olan maçın başlama  saati {moment(eventData.event.startTimestamp * 1000).format('HH:mm')}. {stadium} stadındaki mücadeleyi {referee} yönetiyor.
-						</h2>
-						<p>Başlama düdüğünden itibaren  {broadcast ? "" + broadcast + " kanalindan canlı olarak izleyebilir ve " : ""}
-							Ultraskor.com <a href={window.location.href} title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} canlı skor ve maç sonucu`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name}</a> maç detay sayfasindan maçın canlı skorunu, istatiklerini, kadrolarını ve canlı puan durumunu anlık olarak takip edebilirsiniz.</p>
+						<p className="match-facts">Başlama düdüğünden
+							itibaren {broadcast ? "" + broadcast + " kanalindan maçı canlı olarak izleyebilir ve " : ""}
+							Ultraskor.com <a href={window.location.href}
+							                 title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} canlı skor ve maç sonucu`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name} maç
+								sonucu</a> sayfasindan maçın canlı skorunu, istatiklerini, kadrolarını ve canlı puan
+							durumunu anlık olarak takip edebilirsiniz.</p>
 					</React.Fragment>) : (
 					<React.Fragment>
-						<h2 className="desc">
-							{eventData.event.homeTeam.name} is playing against {eventData.event.awayTeam.name} in the {eventData.event.tournament.name} {eventData.event.season.year} season. The match starts on {moment(eventData.event.startTimestamp * 1000).format('LL')} @ {moment(eventData.event.startTimestamp * 1000).format('HH:mm')} at {stadium} stadium.  The referee will be {referee}
-						</h2>
 						<p>
-							You can {broadcast ? "watch live stream through " + broadcast + " channel when the game kicks off and " : ""} track the live score, stats, lineups and live standings on UltraSkor.com's <a href={window.location.href} title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} live score and match result`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name}</a> match details page.
+							You
+							can {broadcast ? "watch live stream through " + broadcast + " channel when the game kicks off and " : ""} track
+							the live score, stats, lineups and live standings on UltraSkor.com's <a
+							href={window.location.href}
+							title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} live score and match result`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name}</a> match
+							details page.
 						</p>
 					</React.Fragment>)}
 
@@ -83,5 +123,32 @@ class MatchInfo extends Component {
 		)
 	}
 }
+
+const Teamstats = props => {
+	const {teamStats} = props;
+
+	//let generalInfo = [];
+	//console.log(teamStats);
+	let generalInfo = teamStats.textList.filter(item => {
+		return item.textGroupName === "Maça Giriş"
+	});
+
+	let printGeneralInfo = [];
+
+	generalInfo.map((item,index) => {
+		if (index === 0) {
+			printGeneralInfo.push(<h2 className="desc" key={index}>{item.textValue}</h2>);
+		} else {
+			printGeneralInfo.push(<p key={index}>{item.textValue}</p>);
+		}
+	});
+	console.log(generalInfo);
+
+	return (
+		<React.Fragment>
+			{printGeneralInfo}
+		</React.Fragment>
+	)
+};
 
 export default MatchInfo

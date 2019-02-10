@@ -301,7 +301,7 @@ class Eventdetails extends Component {
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
-		const {t} = this.props;
+		const {socket, t} = this.props;
 		this.tabs = [
 			t('Summary'),
 			...(provider1MatchData ? [t("Live Tracker")] : []),
@@ -345,10 +345,20 @@ class Eventdetails extends Component {
 					<div className="swipe-content summary">
 						<div className="event-details-summary">
 							<div className="container">
-								<div className="white-box mt-2 pb-2"><PressureGraph eventData={eventData}/><Bestplayer
-									eventData={eventData} swipeByTabName={this.swipeByTabName}/><Incidents
-									eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/></div>
-								<MatchInfo eventData={eventData} provider3MatchData={provider3MatchData}/>
+								<div className="white-box mt-2 pb-2">
+									<PressureGraph
+										eventData={eventData}/>
+									<Bestplayer
+										eventData={eventData} swipeByTabName={this.swipeByTabName}/>
+									<Incidents
+										eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
+								</div>
+								<MatchInfo
+									eventData={eventData}
+									provider3MatchData={provider3MatchData}
+									provider2MatchData={provider2MatchData}
+									swipeAdjustHeight={this.swipeAdjustHeight}
+									socket={socket}/>
 								<small>1: {this.state.provider1MatchData ? "y" : "n"} -
 									2: {this.state.provider2MatchData ? "y" : "n"} -
 									3: {this.state.provider3MatchData ? "y" : "n"}</small>
@@ -373,7 +383,7 @@ class Eventdetails extends Component {
 						<div className="swipe-content lineup" data-tab="lineup">
 							{this.state.isTabLineup ?
 								<Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}
-								        socket={this.props.socket}/>
+								        socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -382,9 +392,9 @@ class Eventdetails extends Component {
 						<div className="swipe-content injuries" data-tab="injuries">
 							{this.state.isTabInjury ?
 								<Injuries eventData={eventData}
-								          matchid={provider2MatchData ? provider2MatchData.id : null}
+								          provider2MatchData={provider2MatchData}
 								          swipeAdjustHeight={this.swipeAdjustHeight}
-								          socket={this.props.socket}/>
+								          socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -398,7 +408,7 @@ class Eventdetails extends Component {
 					{eventData.standingsAvailable ? (
 						<div className="swipe-content standing" data-tab="standing">
 							{this.state.isTabStanding ?
-								<Standings eventData={eventData} socket={this.props.socket}
+								<Standings eventData={eventData} socket={socket}
 								           swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
 						</div>
 					) : ""}

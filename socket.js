@@ -11,7 +11,8 @@ const cacheDuration = {
 	provider1: 60 * 60 * 24, // 24 hours
 	provider2: 60 * 60 * 24, // 24 hours
 	provider3: 60 * 60 * 24, // 24 hours
-	missing: 60 * 60 * 24, // 24 hours
+	missings: 60 * 60 * 24, // 7 days
+	teamstats: 60 * 60 * 24, // 7 days
 	main: {
 		homepage: 15, // 5 seconds
 		eventdetails: 5, // 5 seconds
@@ -75,7 +76,7 @@ const simplifyHomeData = res => {
 };
 
 let db = null,
-	matchlistbydateCollection = null;
+	helperDataCollection = null;
 
 const mongoOptions = {
 	useNewUrlParser: true,
@@ -95,7 +96,7 @@ io.on('connection', socket => {
 			} else {
 				try {
 					db = client.db('ultraskor');
-					matchlistbydateCollection = db.collection('helperdata_bydate');
+					helperDataCollection = db.collection('helperdata_bydate');
 				} catch (err) {
 					// do nothing, just proceed
 				}
@@ -315,8 +316,8 @@ io.on('connection', socket => {
 				.then(res => {
 					if (res.data && res.data.length > 0) {
 						cacheService.instance().set(cacheKey, res, cacheDuration.provider1, () => {
-							if (matchlistbydateCollection) {
-								matchlistbydateCollection.insertOne({
+							if (helperDataCollection) {
+								helperDataCollection.insertOne({
 									date: date,
 									provider: "provider1",
 									data: res
@@ -336,8 +337,8 @@ io.on('connection', socket => {
 			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 				socket.emit('return-eventdetails-prodiver1', cachedData);
 			} else { // Cache is not found
-				if (matchlistbydateCollection) {
-					matchlistbydateCollection
+				if (helperDataCollection) {
+					helperDataCollection
 						.findOne({"date": date, "provider": "provider1"})
 						.then(result => {
 							if (result) {
@@ -382,8 +383,8 @@ io.on('connection', socket => {
 				.then(res => {
 					if (res.initialData && res.initialData.length > 0) {
 						cacheService.instance().set(cacheKey, res, cacheDuration.provider2, () => {
-							if (matchlistbydateCollection) {
-								matchlistbydateCollection.insertOne({
+							if (helperDataCollection) {
+								helperDataCollection.insertOne({
 									date: date,
 									provider: "provider2",
 									data: res
@@ -403,8 +404,8 @@ io.on('connection', socket => {
 			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 				socket.emit('return-eventdetails-prodiver2', cachedData);
 			} else { // Cache is not found
-				if (matchlistbydateCollection) {
-					matchlistbydateCollection
+				if (helperDataCollection) {
+					helperDataCollection
 						.findOne({"date": date, "provider": "provider2"})
 						.then(result => {
 							if (result) {
@@ -438,8 +439,8 @@ io.on('connection', socket => {
 					res = replaceDotWithUnderscore(res.events);
 					if (res && res[params.code] && params.date === moment(res[params.code].startDate * 1e3).format('DD.MM.YYYY')) {
 						cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
-							if (matchlistbydateCollection) {
-								matchlistbydateCollection.insertOne({
+							if (helperDataCollection) {
+								helperDataCollection.insertOne({
 									date: params.date,
 									provider: "provider3",
 									data: res
@@ -459,8 +460,8 @@ io.on('connection', socket => {
 			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 				socket.emit('return-eventdetails-prodiver3', cachedData);
 			} else { // Cache is not found
-				if (matchlistbydateCollection) {
-					matchlistbydateCollection
+				if (helperDataCollection) {
+					helperDataCollection
 						.findOne({"date": params.date, "provider": "provider3"})
 						.then(result => {
 							if (result) {
@@ -478,47 +479,47 @@ io.on('connection', socket => {
 		});
 	});
 
-	socket.on('get-eventdetails-missing', matchid => {
-		const cacheKey = `helperData-${matchid}-missing`;
+	socket.on('get-oley', params => {
+		const cacheKey = `helperData-${params.matchid}-${params.type}`;
 		const initRemoteRequests = () => {
-			const missingOptions = {
+			const oleyOptions = {
 				method: 'GET',
-				uri: `https://widget.oley.com/match/missings/1/${matchid}`,
+				uri: `https://widget.oley.com/match/${params.type}/1/${params.matchid}`,
 				json: true,
 				timeout: 1500
 			};
-			request(missingOptions)
+			request(oleyOptions)
 				.then(res => {
 					if (res) {
-						cacheService.instance().set(cacheKey, res, cacheDuration.missing, () => {
-							if (matchlistbydateCollection) {
-								matchlistbydateCollection.insertOne({
-									matchid: matchid,
-									type: "missing",
+						cacheService.instance().set(cacheKey, res, cacheDuration[params.type], () => {
+							if (helperDataCollection) {
+								helperDataCollection.insertOne({
+									matchid: params.matchid,
+									type: params.type,
 									data: res
 								});
 							}
 						});
 					}
-					socket.emit('return-eventdetails-missing', res); // return missings
+					socket.emit(`return-oley-${params.type}`, res); // return
 				})
 				.catch(() => {
-					console.log(`error returning data for missing`);
-					socket.emit('return-error-missing', 'Error while retrieving information from server');
+					console.log(`error returning data for ${params.type}`);
+					socket.emit(`return-oley-error-${params.type}`, 'Error while retrieving information from server');
 				});
 		};
 
 		cacheService.instance().get(cacheKey, (err, cachedData) => {
 			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				socket.emit('return-eventdetails-missing', cachedData);
+				socket.emit(`return-oley-${params.type}`, cachedData);
 			} else { // Cache is not found
-				if (matchlistbydateCollection) {
-					matchlistbydateCollection
-						.findOne({matchid: matchid, type: "missing"})
+				if (helperDataCollection) {
+					helperDataCollection
+						.findOne({matchid: params.matchid, type: params.type})
 						.then(result => {
 							if (result) {
-								cacheService.instance().set(cacheKey, result.data, cacheDuration.missing, () => {
-									socket.emit('return-eventdetails-missing', result.data); // Data is found in the db, now caching and serving!
+								cacheService.instance().set(cacheKey, result.data, cacheDuration[params.type], () => {
+									socket.emit(`return-oley-${params.type}`, result.data); // Data is found in the db, now caching and serving!
 								});
 							} else {
 								initRemoteRequests(); // data can't be found in db, get it from remote servers

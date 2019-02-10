@@ -665,10 +665,15 @@ code {
         line-height: 1.2;
         margin: 0;
 	}
+    .match-facts {
+        a {
+            color: #212529;
+        }
+    }
     .desc {
-        font-weight: 300;
-        font-size: 1rem;
-        line-height: 1.3rem;
+        font-weight: 400;
+        font-size: 0.9rem;
+        line-height: 1.5;
         margin: 1rem 0;
     }
 	.body {
