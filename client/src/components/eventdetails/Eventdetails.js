@@ -22,6 +22,8 @@ import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
+import H2h from "./H2h";
+import Link from "react-router-dom/es/Link";
 
 class Eventdetails extends Component {
 	constructor(props) {
@@ -40,25 +42,27 @@ class Eventdetails extends Component {
 			isTabLineup: false,
 			isTabInjury: false,
 			isTabLiveTracker: false,
+			isTabH2h: false,
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
-			refreshButton: false
+			refreshButton: false,
+			eventid: this.props.match.params.eventid
 		};
 		this.tabs = [];
-		this.eventid = this.props.match.params.eventid;
 		smoothscroll.polyfill();
 	};
 
 	componentDidMount() {
 		this.initSocket({
-			api: '/event/' + this.eventid + '/json',
+			api: '/event/' + this.state.eventid + '/json',
 			loading: true,
 			page: "eventdetails"
 		});
 		this.tabs = [];
 		const page = this.props.location.pathname;
 		this.trackPage(page);
+		console.log('triggered!!');
 	};
 
 	trackPage(page) {
@@ -69,6 +73,9 @@ class Eventdetails extends Component {
 	};
 
 	componentDidUpdate() {
+		if (this.props.match.params.eventid !== this.state.eventid) {
+			window.location.reload(); // in case the same component re-called with different matchid, refresh the page to load the fresh data
+		}
 		if (this.swipeEl.current) {
 			this.swipeAdjustHeight(this.state.index);
 			this.swipeMarkerAndScrollHandler();
@@ -91,6 +98,8 @@ class Eventdetails extends Component {
 			this.setState({isTabInjury: true})
 		} else if (tab === "live-tracker") {
 			this.setState({isTabLiveTracker: true})
+		} else if (tab === "h2h") {
+			this.setState({isTabH2h: true})
 		}
 	};
 	swipeSwiping = (percentage) => {
@@ -180,6 +189,9 @@ class Eventdetails extends Component {
 			refreshButton: false
 		});
 		this.updateMeta();
+		setTimeout(() => {
+			this.swipeByTabName(this.props.t('Summary'));
+		}, 100);
 	}
 
 	handleSocketDataProvider1(res) {
@@ -309,6 +321,7 @@ class Eventdetails extends Component {
 			...(eventData.event.hasStatistics ? [t("Stats")] : []),
 			...(eventData.event.hasLineups ? [t("Lineup")] : []),
 			...(provider2MatchData ? [t('Injuries & Susp.')] : []),
+			t('Head To Head'),
 			t('Iddaa'),
 			...(eventData.standingsAvailable ? [t("Standing")] : []),
 			t('Media'),
@@ -363,6 +376,12 @@ class Eventdetails extends Component {
 								<small>1: {this.state.provider1MatchData ? "y" : "n"} -
 									2: {this.state.provider2MatchData ? "y" : "n"} -
 									3: {this.state.provider3MatchData ? "y" : "n"}</small>
+								<Link to={
+									{
+										pathname: '/mac/galatasaray-trabzonspor-canli-skor-7479952',
+										state: {isPrev: true},
+									}
+								}>Test Link</Link>
 							</div>
 						</div>
 					</div>
@@ -399,6 +418,14 @@ class Eventdetails extends Component {
 								: ""}
 						</div>
 					) : ""}
+
+					<div className="swipe-content h2h" data-tab="h2h">
+						{this.state.isTabH2h ?
+							<H2h eventData={eventData}
+							     swipeAdjustHeight={this.swipeAdjustHeight}
+							     socket={socket}/>
+							: ""}
+					</div>
 
 					<div className="swipe-content iddaa" data-tab="iddaa">
 						<Iddaa eventData={eventData} provider2MatchData={provider2MatchData}

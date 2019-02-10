@@ -91,7 +91,7 @@ class Fixture extends Component {
 					</div>
 					<div className="fixture-list">
 						{loading ? <Loading type="inside"/> : ""}
-						<Tournament tournaments={roundMatches.tournaments}/>
+						<Tournament tournaments={roundMatches.tournaments} from="fixture"/>
 					</div>
 				</div>
 			</div>

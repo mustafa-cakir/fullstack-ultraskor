@@ -121,8 +121,7 @@ io.on('connection', socket => {
 		isHomepageGetUpdates = status;
 	});
 
-
-	socket.on('current-page', (page) => {
+	socket.on('current-page', page => {
 		currentPage = page;
 	});
 
@@ -140,6 +139,7 @@ io.on('connection', socket => {
 		};
 		let previousData;
 		const getUpdatesHandler = () => {
+			console.log('Flash Score Active?', isFlashScoreActive);
 			if (!isFlashScoreActive) return false;
 			request(sofaOptions)
 				.then(res => {

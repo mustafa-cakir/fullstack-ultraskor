@@ -64,7 +64,7 @@
 
 .event-time {
 	font-size: .9rem;
-	max-width: 50px;
+	max-width: 60px;
 	text-align: center;
 	@include line-clamp(1);
 	.full-time {
@@ -81,6 +81,9 @@
 			text-align: center;
 		}
 	}
+    .in-the-past {
+        font-size: .8rem;
+    }
 }
 
 .event-link,
@@ -121,6 +124,10 @@
 		color: $color-fav;
 		animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
 	}
+}
+.half-time-score {
+    max-width: 50px;
+    font-size: .9rem;
 }
 
 @keyframes favAnimation {

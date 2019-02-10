@@ -20,11 +20,16 @@ class MatchInfo extends Component {
 		setTimeout(() => {
 			this.props.swipeAdjustHeight();
 		}, 100);
+		if (this.state.initSocketOnce && this.props.provider2MatchData) {
+			this.setState({initSocketOnce: false}, () => {
+				this.initSocket();
+			});
+		}
 	}
 
 	initSocket() {
-		const {socket, provider2MatchData} = this.props;
 
+		const {socket, provider2MatchData} = this.props;
 		socket.emit("get-oley", {matchid: provider2MatchData.id, type: "teamstats"});
 		socket.once('return-oley-teamstats', res => {
 			this.setState({
@@ -38,15 +43,8 @@ class MatchInfo extends Component {
 
 	render() {
 		const {eventData, provider3MatchData} = this.props;
-		const {teamStats, initSocketOnce} = this.state;
+		const {teamStats} = this.state;
 		const {language} = i18n;
-
-		const {provider2MatchData} = this.props;
-		if (provider2MatchData && initSocketOnce) {
-			this.setState({initSocketOnce: false}, () => {
-				this.initSocket();
-			});
-		}
 
 		let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
 		tournament = eventData.event.tournament ? eventData.event.tournament.name : null;
@@ -137,20 +135,15 @@ const Teamstats = props => {
 		return item.textGroupName === "Maça Giriş"
 	});
 
-	let printGeneralInfo = [];
-
-	generalInfo.map((item, index) => {
-		if (index === 0) {
-			printGeneralInfo.push(<h2 className="desc provider2-data" key={index}>{item.textValue}</h2>);
-		} else {
-			printGeneralInfo.push(<p class="provider2-data" key={index}>{item.textValue}</p>);
-		}
-	});
-	console.log(generalInfo);
-
 	return (
 		<React.Fragment>
-			{printGeneralInfo}
+			{generalInfo.map((item, index) => {
+				return (index === 0) ? (
+					<h2 className="desc provider2-data" key={index}>{item.textValue}</h2>
+				) : (
+					<p className="provider2-data" key={index}>{item.textValue}</p>
+				)
+			})}
 		</React.Fragment>
 	)
 };

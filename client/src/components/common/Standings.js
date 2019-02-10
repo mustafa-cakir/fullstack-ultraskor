@@ -29,7 +29,7 @@ class Standings extends Component {
 					return (
 						<div className="standing-table container" key={index}>
 							<div className="white-box mt-2 pt-3">
-								<div className="row heading align-items-center">
+								<div className="row league-heading align-items-center">
 									<div className="col col-img">
 										<img
 											src={"https://www.sofascore.com/u-tournament/" + standingsTable.tournament.uniqueId + "/logo"}

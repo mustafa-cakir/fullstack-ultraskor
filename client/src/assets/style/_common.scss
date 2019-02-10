@@ -831,24 +831,25 @@ code {
 			}
 		}
 	}
-	.heading {
-		.col-img {
-			max-width: 50px;
-			padding-right: 0;
-			img {
-				height: 40px;
-				width: 40px;
-			}
-		}
-		.name {
-			font-size: 1rem;
-			font-weight: 500;
-		}
-		.country {
-			color: #aaa;
-			font-weight: 400;
-		}
-	}
+}
+
+.league-heading {
+    .col-img {
+        max-width: 50px;
+        padding-right: 0;
+        img {
+            height: 40px;
+            width: 40px;
+        }
+    }
+    .name {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    .country {
+        color: #aaa;
+        font-weight: 400;
+    }
 }
 
 .middle-tabs {

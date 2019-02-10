@@ -4,11 +4,12 @@ import Icon from "../common/Icon";
 import {Trans, withNamespaces} from "react-i18next";
 
 class Incidents extends Component {
-    constructor(props) {
-        super(props);
-        const {eventData} = this.props;
-        this.incidents = eventData.incidents.reverse();
-    }
+	constructor(props) {
+		super(props);
+		this.state = {
+			incidents: this.props.eventData.incidents.reverse()
+		}
+	}
 
     componentDidUpdate() {
         setTimeout(() => {
@@ -159,7 +160,8 @@ class Incidents extends Component {
     };
 
     render() {
-        if (!this.incidents || this.incidents.length === 0) return false;
+	    let { incidents } = this.state;
+        if (!incidents || incidents.length === 0) return false;
         const {t} = this.props;
         return (
             <div>
@@ -171,7 +173,7 @@ class Incidents extends Component {
                                 <img src={iconWhistle} alt="whistle" className="icon-whistle"/> <Trans>Kick off</Trans>
                             </div>
                         </div>
-                        {this.incidents.map((item, index) => {
+                        {incidents.map((item, index) => {
                             return (
                                 <div key={index} className={"match-incidents-row"}>
                                     {Incidents.typesHandler(item, item.incidentType, item.isHome === true, t)}

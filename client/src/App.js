@@ -101,18 +101,18 @@ class App extends Component {
 						<Route exact path='/'
 						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
-                        <Route path='/(maclar|matches)/(tarih|date)-:date'
+                        <Route exact path='/(maclar|matches)/(tarih|date)-:date'
                                render={props => <Homepage {...this.props} {...props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
-						<Route path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
+						<Route exact path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
 
-						<Route path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
+						<Route exact path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
 						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
 
 						<Route exact path='/test' component={TestComp}/>
 
-						<Route path="/eventdetails/:eventid" socket={socket}
+						<Route exact path="/eventdetails/:eventid" socket={socket}
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
 
 						<Route render={() => <Errors type="page-not-found"/>}/>

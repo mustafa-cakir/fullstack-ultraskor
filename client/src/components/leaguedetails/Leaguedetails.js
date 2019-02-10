@@ -51,6 +51,7 @@ class Leaguedetails extends Component {
 			page: 'leaguedetails'
 		};
 		socket.emit('is-flashscore-active', false);
+		socket.emit('current-page', "leaguedetails");
 		socket.emit("get-main", options);
 		socket.once('return-main-leaguedetails', res => {
 			this.setState({

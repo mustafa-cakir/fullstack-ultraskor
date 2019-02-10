@@ -186,6 +186,7 @@ class Homepage extends Component {
 			document.body.classList.remove('initial-load');
 		}
 		this.socket.emit('get-main', options);
+		this.socket.emit('current-page', "homepage");
 
 		this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
 		this.socket.on('return-updates-homepage', this.handleSocketUpdatesData);
