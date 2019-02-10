@@ -7,7 +7,8 @@ class MatchInfo extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			teamStats: null
+			teamStats: null,
+			initSocketOnce: true
 		}
 	}
 	componentDidMount() {
@@ -36,12 +37,14 @@ class MatchInfo extends Component {
 
 	render() {
 		const {eventData, provider3MatchData} = this.props;
-		const {teamStats} = this.state;
+		const {teamStats, initSocketOnce} = this.state;
 		const {language} = i18n;
 
 		const {provider2MatchData} = this.props;
-		if (provider2MatchData && !teamStats) {
-			this.initSocket();
+		if (provider2MatchData && initSocketOnce) {
+			this.setState({initSocketOnce: false}, () => {
+				this.initSocket();
+			});
 		}
 
 		let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
