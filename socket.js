@@ -139,7 +139,6 @@ io.on('connection', socket => {
 		};
 		let previousData;
 		const getUpdatesHandler = () => {
-			console.log('Flash Score Active?', isFlashScoreActive);
 			if (!isFlashScoreActive) return false;
 			request(sofaOptions)
 				.then(res => {
