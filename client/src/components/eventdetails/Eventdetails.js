@@ -338,7 +338,7 @@ class Eventdetails extends Component {
 							{this.tabs.map((tab, index) => {
 								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
 								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-									<span>{tab}</span></li>;
+									<span className="text">{tab}</span></li>;
 							})}
 							<li className="marker" ref={this.swipeMarkerEl}/>
 						</ul>

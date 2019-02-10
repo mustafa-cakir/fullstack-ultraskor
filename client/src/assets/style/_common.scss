@@ -881,35 +881,35 @@ code {
 		padding: 15px 20px 17px 20px;
 		flex-direction: row;
 		cursor: pointer;
-		span {
+		.text {
 			opacity: 0;
 			animation: .2s fadeInToLeft linear forwards;
 		}
-		&:nth-child(1) span {
+		&:nth-child(1) .text {
 			animation-delay: .5s;
 		}
-		&:nth-child(2) span  {
+		&:nth-child(2) .text  {
 			animation-delay: .6s;
 		}
-		&:nth-child(3) span  {
+		&:nth-child(3) .text  {
 			animation-delay: .7s;
 		}
-		&:nth-child(4) span  {
+		&:nth-child(4) .text  {
 			animation-delay: .8s;
 		}
-		&:nth-child(5) span  {
+		&:nth-child(5) .text  {
 			animation-delay: .9s;
 		}
-		&:nth-child(6) span  {
+		&:nth-child(6) .text  {
 			animation-delay: 1s;
 		}
-		&:nth-child(7) span  {
+		&:nth-child(7) .text  {
 			animation-delay: 1.1s;
 		}
-		&:nth-child(8) span  {
+		&:nth-child(8) .text  {
 			animation-delay: 1.2s;
 		}
-		&:nth-child(9) span  {
+		&:nth-child(9) .text  {
 			animation-delay: 1.3s;
 		}
 
