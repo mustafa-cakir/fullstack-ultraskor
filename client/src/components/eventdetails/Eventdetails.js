@@ -137,6 +137,7 @@ class Eventdetails extends Component {
 		if (options.loading) this.setState({loading: true});
 		const {socket} = this.props;
 
+		socket.emit('is-flashscore-active', false);
 		socket.emit('current-page', "eventdetails");
 		socket.emit('get-main', options);
 		socket.once('return-main-eventdetails', jsonData => {

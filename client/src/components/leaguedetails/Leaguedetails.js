@@ -50,6 +50,7 @@ class Leaguedetails extends Component {
 			api: `/u-tournament/${leagueid}/season/${seasonid}/json`,
 			page: 'leaguedetails'
 		};
+		socket.emit('is-flashscore-active', false);
 		socket.emit("get-main", options);
 		socket.once('return-main-leaguedetails', res => {
 			this.setState({
