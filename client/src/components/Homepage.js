@@ -141,21 +141,6 @@ class Homepage extends Component {
 		})
 	};
 
-	handleSocketError(err, options) {
-		if (options.loading) {
-			this.setState({
-				orjData: {error: err.toString()},
-				mainData: {error: err.toString()},
-				loading: false,
-				refreshButton: true
-			});
-		} else {
-			this.setState({
-				refreshButton: true
-			});
-		}
-	}
-
 	handleGetData(res, updated) {
 		if (!updated) {
 			setTimeout(() => {
@@ -224,11 +209,14 @@ class Homepage extends Component {
 		this.socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
 		this.socket.removeListener('disconnect', this.onSocketDisconnect);
 		this.socket.removeListener('connect', this.onSocketConnect);
+		this.socket.removeListener('return-error-updates', this.onSocketDisconnect);
 	}
 
 	initSocket() {
+		this.socket.emit('is-homepage-getupdates', true);
 		this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
 		this.socket.on('disconnect', this.onSocketDisconnect);
+		this.socket.on('return-error-updates', this.onSocketDisconnect);
 		this.socket.on('connect', this.onSocketConnect);
 	}
 
