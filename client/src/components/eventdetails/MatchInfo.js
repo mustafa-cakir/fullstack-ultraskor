@@ -22,23 +22,30 @@ class MatchInfo extends Component {
 		}, 100);
 		if (this.state.initSocketOnce && this.props.provider2MatchData) {
 			this.setState({initSocketOnce: false}, () => {
-				this.initSocket();
+				this.initGetData();
 			});
 		}
 	}
 
-	initSocket() {
+	initGetData() {
+		const {provider2MatchData} = this.props;
 
-		const {socket, provider2MatchData} = this.props;
-		socket.emit("get-oley", {matchid: provider2MatchData.id, type: "teamstats"});
-		socket.once('return-oley-teamstats', res => {
-			this.setState({
-				teamStats: res,
+		fetch(`/api/helper2/widget/teamstats/${provider2MatchData.id}`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					teamStats: res,
+				});
+			})
+			.catch(err => {
+				// do nothing
 			});
-		});
-		socket.on('return-oley-error-teamstats', err => {
-			// do nothing
-		});
 	}
 
 	render() {
