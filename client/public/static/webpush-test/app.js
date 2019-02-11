@@ -18,51 +18,10 @@ function urlB64ToUint8Array(base64String) {
 	return outputArray;
 }
 
-// Installing service worker
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-	console.log('Service Worker and Push is supported');
-
-	navigator.serviceWorker.register('sw.js')
-		.then(function (swRegistration) {
-			//alert('service worker registered');
-			console.log('service worker registered');
-			window.test = swRegistration.pushManager;
-			swRegistration.pushManager.getSubscription()
-				.then(function (subscription) {
-					if (subscription) {
-						console.log('User is subscribed already');
-					} else {
-
-						let options = {
-							userVisibleOnly: true,
-							applicationServerKey: urlB64ToUint8Array(applicationKey)
-						};
-
-						swRegistration.pushManager.subscribe(options)
-							.then(function (subscription) {
-								console.log(subscription);
-								console.log('User is subscribed');
-								saveSubscription(subscription);
-							})
-							.catch(function (err) {
-								console.log('Failed to subscribe user: ', err);
-							})
-					}
-				})
-		})
-		.catch(function (error) {
-			console.error('Service Worker Error', error);
-		});
-} else {
-	console.warn('Push messaging is not supported');
-
-}
-console.log(window.PushManager, navigator.serviceWorker);
-
 // Send request to database for add new subscriber
-function saveSubscription(subscription) {
+function subscribeHandler(subscription) {
 	let xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("POST", "/webpush/subscribe");
+	xmlHttp.open("POST", (window.location.hostname === 'localhost' ? "http://localhost:5003" : "") + "/webpush/subscribe");
 	xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	xmlHttp.onreadystatechange = function () {
 		if (xmlHttp.readyState != 4) return;
@@ -80,3 +39,82 @@ function saveSubscription(subscription) {
 
 	xmlHttp.send(JSON.stringify(data));
 }
+
+function unsubscribeHandler(subscription) {
+	let xmlHttp = new XMLHttpRequest();
+	xmlHttp.open("POST", (window.location.hostname === 'localhost' ? "http://localhost:5003" : "") + "/webpush/unsubscribe");
+	xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	xmlHttp.onreadystatechange = function () {
+		if (xmlHttp.readyState != 4) return;
+		if (xmlHttp.status != 200 && xmlHttp.status != 304) {
+			console.log('HTTP error ' + xmlHttp.status, null);
+		} else {
+			console.log("User subscribed to server");
+		}
+	};
+
+	let data = {
+		topic: "matchid_123123",
+		subscription: JSON.stringify(subscription)
+	};
+
+	xmlHttp.send(JSON.stringify(data));
+}
+
+function registrationHandler(swRegistration) {
+	swRegistration.pushManager.getSubscription()
+		.then(function (subscription) {
+			if (subscription) {
+				console.log('User is subscribed already', subscription);
+			} else {
+
+				let options = {
+					userVisibleOnly: true,
+					applicationServerKey: urlB64ToUint8Array(applicationKey)
+				};
+
+				swRegistration.pushManager.subscribe(options)
+					.then(function (subscription) {
+						console.log(subscription);
+						console.log('User is subscribed');
+						subscribeHandler(subscription);
+					})
+					.catch(function (err) {
+						console.log('Failed to subscribe user: ', err);
+					})
+			}
+		})
+}
+
+
+
+// Installing service worker
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+	console.log('Service Worker and Push is supported');
+
+
+
+	navigator.serviceWorker.register('sw.js')
+		.then(function (swRegistration) {
+			console.log('service worker registered');
+			var btns = document.querySelectorAll('.btn');
+			btns.forEach(btn => {
+				btn.addEventListener('click', () => {
+					if (btn.classList.contains('subscribe')) {
+						registrationHandler(swRegistration);
+						console.log('subscribe btn clicked', swRegistration);
+					} else if (this.classList.contains('unsubscribe')) {
+						console.log('unsubscribe btn clicked');
+					}
+				})
+			});
+
+		})
+		.catch(function (error) {
+			console.error('Service Worker Error', error);
+		});
+} else {
+	console.warn('Push messaging is not supported');
+
+}
+console.log(window.PushManager, navigator.serviceWorker);

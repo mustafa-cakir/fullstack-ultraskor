@@ -26,9 +26,9 @@ class Homepage extends Component {
 			refreshButton: false,
 		};
 		this.updateParentState = this.updateParentState.bind(this);
-		this.initSocket = this.initSocket.bind(this);
-		this.handleSocketUpdatesData = this.handleSocketUpdatesData.bind(this);
-		this.handleSocketData = this.handleSocketData.bind(this);
+		this.initGetData = this.initGetData.bind(this);
+		this.onSocketReturnUpdatesData = this.onSocketReturnUpdatesData.bind(this);
+		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
 		this.socket = this.props.socket;
@@ -37,12 +37,12 @@ class Homepage extends Component {
 
 	componentDidMount() {
 		if (this.props.match.params.date) {
-		    this.todaysDate = this.props.match.params.date;
-        } else {
-            this.todaysDate = moment().subtract(3, "hours").format('YYYY-MM-DD');
-            this.analyzeSessionStorage();
-        }
-		this.initSocket({
+			this.todaysDate = this.props.match.params.date;
+		} else {
+			this.todaysDate = moment().format('YYYY-MM-DD');
+			this.analyzeSessionStorage();
+		}
+		this.initGetData({
 			api: '/football//' + this.todaysDate + '/json',
 			loading: true,
 			page: "homepage"
@@ -50,6 +50,7 @@ class Homepage extends Component {
 		this.once = true;
 		const page = this.props.location.pathname;
 		this.trackPage(page);
+		this.initSocket();
 	}
 
 	analyzeSessionStorage() {
@@ -155,15 +156,9 @@ class Homepage extends Component {
 		}
 	}
 
-	handleSocketUpdatesData(res) {
-		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date)
-			this.handleSocketData(res, true);
-		else return false;
-	}
-
-	handleSocketData(res, updated) {
+	handleGetData(res, updated) {
 		if (!updated) {
-			setTimeout(()=>{
+			setTimeout(() => {
 				document.body.classList.add('initial-load');
 			}, 0);
 		}
@@ -179,41 +174,69 @@ class Homepage extends Component {
 		this.analyzeSessionStorage();
 	}
 
+	initGetData = options => {
+		this.setState({loading: true});
+		document.body.classList.remove('initial-load');
+
+		fetch('/api/?query=' + options.api + '&page=homepage')
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.handleGetData(res);
+			})
+			.catch(err => {
+				this.setState({
+					orjData: {error: err.toString()},
+					mainData: {error: err.toString()},
+					loading: false,
+					refreshBtn: true
+				});
+			});
+
+		// this.socket.emit('get-main', options);
+		//
+		// this.socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
+		// this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+		// this.socket.once('return-main-homepage', this.handleGetData);
+		// this.socket.once('return-error-homepage', err => {
+		// 	this.handleSocketError(err, options)
+		// });
+		//
+		// this.socket.once('return-error-updates', () => {
+		// 	this.setState({
+		// 		refreshButton: true
+		// 	})
+		// });
+		//
+		//
+		// this.socket.on('close', () => {
+		// 	console.log('socket is disconnected');
+		// });
+	};
+
 	componentWillUnmount() {
 		this.socket.emit('is-homepage-getupdates', false);
-		// this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
-		// this.socket.removeListener('disconnect', this.onSocketDisconnect);
-		// this.socket.removeListener('connect', this.onSocketConnect);
+		this.socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
+		this.socket.removeListener('disconnect', this.onSocketDisconnect);
+		this.socket.removeListener('connect', this.onSocketConnect);
 	}
 
-	initSocket = options => {
-		if (options.loading) {
-			this.setState({loading: true});
-			document.body.classList.remove('initial-load');
-		}
-		this.socket.emit('get-main', options);
-		this.socket.emit('current-page', "homepage");
-
-		this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
-		this.socket.on('return-updates-homepage', this.handleSocketUpdatesData);
-		this.socket.once('return-main-homepage', this.handleSocketData);
-		this.socket.once('return-error-homepage', err => {
-			this.handleSocketError(err, options)
-		});
-
-		this.socket.once('return-error-updates', () => {
-			this.setState({
-				refreshButton: true
-			})
-		});
+	initSocket() {
+		this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
 		this.socket.on('disconnect', this.onSocketDisconnect);
-
 		this.socket.on('connect', this.onSocketConnect);
+	}
 
-		this.socket.on('close', () => {
-			console.log('socket is disconnected');
-		});
-	};
+	onSocketReturnUpdatesData(res) {
+		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date)
+			this.handleGetData(res, true);
+		else return false;
+	}
 
 	onSocketDisconnect() {
 		this.setState({
@@ -222,7 +245,6 @@ class Homepage extends Component {
 	}
 
 	onSocketConnect() {
-		this.socket.emit('current-page', "homepage");
 		this.socket.emit('is-homepage-getupdates', true);
 		this.setState({
 			refreshButton: false
@@ -280,8 +302,9 @@ class Homepage extends Component {
 			} else {
 				if (dataObj.sportItem) {
 					if (dataObj.sportItem.tournaments.length > 0) {
-						mainContent.push(<Tournament key={1} tournaments={dataObj.sportItem.tournaments} updateParentState={this.updateParentState}
-						                              {...this.state}/>)
+						mainContent.push(<Tournament key={1} tournaments={dataObj.sportItem.tournaments}
+						                             updateParentState={this.updateParentState}
+						                             {...this.state}/>)
 					} else {
 						mainContent.push(<Errors key={1} type="no-matched-game"/>)
 					}
@@ -296,8 +319,8 @@ class Homepage extends Component {
 				<Headertabs
 					{...this.state}
 					updateParentState={this.updateParentState}
-					initSocket={this.initSocket}
-                    todaysDateByUrl={this.props.match.params.date}
+					initGetData={this.initGetData}
+					todaysDateByUrl={this.props.match.params.date}
 				/>
 
 				{this.state.loading ? <Loading/> : null}
@@ -305,13 +328,21 @@ class Homepage extends Component {
 					{favEventContainer}
 					{mainContent}
 				</div>
-                <div className="container date-prev-next-container">
-                    <div className="row date-prev-next align-items-center">
-                        <div className="col col-yesterday"><a className="pl-3" href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`} title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
-                        <div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"} title={t('Today\'s football matches')}><Trans>Today's Matches</Trans></a></div>
-                        <div className="col text-right col-tomorrow"><a className="pr-3" href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`} title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans> <Icon name="fas fa-chevron-right"/></a></div>
-                    </div>
-                </div>
+				<div className="container date-prev-next-container">
+					<div className="row date-prev-next align-items-center">
+						<div className="col col-yesterday"><a className="pl-3"
+						                                      href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+						                                      title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
+							name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
+						<div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"}
+						                                              title={t('Today\'s football matches')}><Trans>Today's
+							Matches</Trans></a></div>
+						<div className="col text-right col-tomorrow"><a className="pr-3"
+						                                                href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+						                                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
+							<Icon name="fas fa-chevron-right"/></a></div>
+					</div>
+				</div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
 				<FlashScoreBoard socket={this.socket} audioFiles={this.props.audioFiles}/>
 				<Footer/>

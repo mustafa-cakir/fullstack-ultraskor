@@ -53,9 +53,8 @@ class Eventdetails extends Component {
 	};
 
 	componentDidMount() {
-		this.initSocket({
+		this.initGetData({
 			api: '/event/' + this.state.eventid + '/json',
-			loading: true,
 			page: "eventdetails"
 		});
 		this.tabs = [];
@@ -144,43 +143,89 @@ class Eventdetails extends Component {
 		if (this.swipeEl) this.swipeEl.current.slide(index);
 	}
 
-	initSocket = options => {
-		if (options.loading) this.setState({loading: true});
-		const {socket} = this.props;
+	initGetData = options => {
+		this.setState({loading: true});
 
-		socket.emit('is-flashscore-active', false);
-		socket.emit('current-page', "eventdetails");
-		socket.emit('get-main', options);
-		socket.once('return-main-eventdetails', jsonData => {
-			this.handleSocketDataMain(jsonData);
-
-			// init helperData socket emit
-			let date1 = moment(jsonData.event.formatedStartDate, 'DD.MM.YYYY').format('DD.MM.YYYY'),
-				date2 = moment(date1, 'DD.MM.YYYY').format('MM/DD/YYYY');
-
-			socket.emit('get-eventdetails-helper-1', date1);
-			socket.emit('get-eventdetails-helper-2', date2);
-		});
-
-		socket.on('return-error-eventdetails', err => {
-			if (options.loading) {
+		fetch('/api/?query=' + options.api + '&page=eventdetails')
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.handleGetData(res);
+				this.initGetDataHelper(res.event.formatedStartDate);
+			})
+			.catch(err => {
 				this.setState({
 					eventData: {error: err.toString()},
 					loading: false
 				});
-			} else {
-				this.setState({
-					refreshButton: true
-				});
-			}
-		});
+			});
 
-		socket.on('return-eventdetails-prodiver1', this.handleSocketDataProvider1.bind(this));
-		socket.on('return-eventdetails-prodiver2', this.handleSocketDataProvider2.bind(this));
-		socket.on('return-eventdetails-prodiver3', this.handleSocketDataProvider3.bind(this));
+		// socket.once('return-main-eventdetails', jsonData => {
+		// 	this.handleGetData(jsonData);
+		// });
+
+		// socket.on('return-error-eventdetails', err => {
+		// 	if (options.loading) {
+		// 		this.setState({
+		// 			eventData: {error: err.toString()},
+		// 			loading: false
+		// 		});
+		// 	} else {
+		// 		this.setState({
+		// 			refreshButton: true
+		// 		});
+		// 	}
+		// });
+
+		// socket.on('return-eventdetails-prodiver1', this.handleGetDataHelper1.bind(this));
+		// socket.on('return-eventdetails-prodiver2', this.handleGetDataHelper2.bind(this));
+		// socket.on('return-eventdetails-prodiver3', this.handleGetDataHelper3.bind(this));
 	};
 
-	handleSocketDataMain(jsonData) {
+	initGetDataHelper(date) {
+		// init helperData socket emit
+		let date1 = moment(date, 'DD.MM.YYYY').format('DD.MM.YYYY'),
+			date2 = moment(date1, 'DD.MM.YYYY').format('MM/DD/YYYY');
+
+		fetch('/api/helper1/' + date1)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.handleGetDataHelper1(res);
+			})
+			.catch(err => {
+				console.log(err);
+			});
+
+		fetch('/api/helper2/' + date2.replace(/\//g, "."))
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.handleGetDataHelper2(res)
+			})
+			.catch(err => {
+				console.log(err);
+			});
+		// socket.emit('get-eventdetails-helper-1', date1);
+		// socket.emit('get-eventdetails-helper-2', date2);
+	};
+
+	handleGetData(jsonData) {
 		if (window.location.pathname.split('/')[1] === "eventdetails") {
 			window.location = `${window.location.origin}/mac/${jsonData.event.slug}-canli-skor-${jsonData.event.id}/`;
 			return;
@@ -196,7 +241,7 @@ class Eventdetails extends Component {
 		}, 100);
 	}
 
-	handleSocketDataProvider1(res) {
+	handleGetDataHelper1(res) {
 		if (res.data && res.data.length > 0) {
 			const jsonData = this.state.eventData;
 			res.data.forEach(item => {
@@ -210,7 +255,7 @@ class Eventdetails extends Component {
 		}
 	}
 
-	handleSocketDataProvider2(res) {
+	handleGetDataHelper2(res) {
 		if (res && res.initialData && res.initialData.length > 0) {
 			const jsonData = this.state.eventData;
 			let jsonDataTeamNames = [];
@@ -243,17 +288,29 @@ class Eventdetails extends Component {
 					provider2MatchData: provider2Data[0]
 				});
 				if (provider2Data[0].code) {
-					let provider3Options = {
-						date: moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'),
-						code: provider2Data[0].code
-					};
-					this.props.socket.emit('get-eventdetails-helper-3', provider3Options);
+					let date = moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'),
+						code = provider2Data[0].code;
+
+					fetch(`/api/helper3/${date}/${code}`)
+						.then(res => {
+							if (res.status === 200) {
+								return res.json();
+							} else {
+								throw Error(`Can't retrieve information from server, ${res.status}`);
+							}
+						})
+						.then(res => {
+							this.handleGetDataHelper3(res)
+						})
+						.catch(err => {
+							console.log(err);
+						});
 				}
 			}
 		}
 	}
 
-	handleSocketDataProvider3(res) {
+	handleGetDataHelper3(res) {
 		const provider2Data = this.state.provider2MatchData;
 		if (provider2Data && provider2Data.code) {
 			const provider3Data = res[provider2Data.code] ? res[provider2Data.code] : null;

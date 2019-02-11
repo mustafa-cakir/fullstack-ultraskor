@@ -10,6 +10,13 @@ const port = 5003;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
+
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
 
 const mongoOptions = {
@@ -42,7 +49,10 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/webpush/subscribe', (req, res) => {
-	if (db && collection) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	if (db
+		&& collection) {
 		req.body.subscription = JSON.parse(req.body.subscription);
 		console.log(req.body);
 		try {

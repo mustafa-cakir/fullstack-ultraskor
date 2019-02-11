@@ -23,18 +23,38 @@ class Injuries extends Component {
 	}
 
 	initSocket() {
-		const {socket, provider2MatchData} = this.props;
-		socket.emit("get-oley", {matchid: provider2MatchData.id, type: "missings"});
-		socket.once('return-oley-missings', res => {
-			this.setState({
-				injuriesData: res,
+		const { provider2MatchData} = this.props;
+
+		fetch(`/api/helper2/widget/missings/${provider2MatchData.id}`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					injuriesData: res,
+				});
+			})
+			.catch(err => {
+				this.setState({
+					injuriesData: {error: err.toString()},
+				});
 			});
-		});
-		socket.on('return-oley-error-missings', err => {
-			this.setState({
-				injuriesData: {error: err.toString()},
-			});
-		});
+
+		// socket.emit("get-oley", {matchid: provider2MatchData.id, type: "missings"});
+		// socket.once('return-oley-missings', res => {
+		// 	this.setState({
+		// 		injuriesData: res,
+		// 	});
+		// });
+		// socket.on('return-oley-error-missings', err => {
+		// 	this.setState({
+		// 		injuriesData: {error: err.toString()},
+		// 	});
+		// });
 	};
 
 	render() {

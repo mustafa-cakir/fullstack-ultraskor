@@ -8,6 +8,7 @@ import Footer from "../Footer";
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import Fixture from "./Fixture";
+import Errors from "../common/Errors";
 
 class Leaguedetails extends Component {
 	constructor(props) {
@@ -21,13 +22,14 @@ class Leaguedetails extends Component {
 		this.state = {
 			index: 0,
 			leagueData: null,
+			isFixtureTabClicked: false
 		};
 		smoothscroll.polyfill();
 	}
 
 	componentDidMount() {
 		this.tabs = [];
-		this.initSocket();
+		this.initGetData();
 	}
 
 	componentDidUpdate() {
@@ -43,22 +45,31 @@ class Leaguedetails extends Component {
 		});
 	};
 
-	initSocket() {
+	initGetData() {
 		const {leagueid, seasonid} = this.props.match.params;
-		const {socket} = this.props;
-		let options = {
-			api: `/u-tournament/${leagueid}/season/${seasonid}/json`,
-			page: 'leaguedetails'
-		};
-		socket.emit('is-flashscore-active', false);
-		socket.emit('current-page', "leaguedetails");
-		socket.emit("get-main", options);
-		socket.once('return-main-leaguedetails', res => {
-			this.setState({
-				leagueData: res
+		// const {socket} = this.props;
+
+		let api = `/u-tournament/${leagueid}/season/${seasonid}/json`;
+
+		fetch(`/api/?query=${api}&page=leaguedetails`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					leagueData: res
+				});
+				this.updateMeta(res);
+			})
+			.catch(err => {
+				this.setState({
+					leagueData: {error: err.toString()},
+				});
 			});
-			this.updateMeta(res);
-		});
 	}
 
 	updateMeta(leagueData) {
@@ -82,6 +93,15 @@ class Leaguedetails extends Component {
 				hrefLang: "en"
 			})
 		}
+	};
+
+	swipeComplete = (index, el) => {
+		let tab = el.getAttribute('data-tab');
+
+		if (tab === "fixture") {
+			this.setState({isFixtureTabClicked: true})
+		}
+
 	};
 
 	swipeByIndex(index) {
@@ -148,6 +168,7 @@ class Leaguedetails extends Component {
 		const {t} = this.props;
 		const {leagueData} = this.state;
 		if (!leagueData) return <Loading/>;
+		if (leagueData.error) return <Errors type="error" message={leagueData.error}/>;
 
 		this.tabs = [
 			...(leagueData.standingsTables.length > 0 ? [t('LANG_Standing')] : []),
@@ -191,7 +212,10 @@ class Leaguedetails extends Component {
 					) : ""}
 
 					<div className="swipe-content fixture" data-tab="fixture">
-						<Fixture events={leagueData.events} params={this.props.match.params} socket={this.props.socket}/>
+						{this.state.isFixtureTabClicked ? (
+							<Fixture events={leagueData.events} params={this.props.match.params}
+							         socket={this.props.socket}/>
+						) : ""}
 					</div>
 
 					<div className="swipe-content player-stats" data-tab="player-stats">

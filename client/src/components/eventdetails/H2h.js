@@ -23,27 +23,41 @@ class H2h extends Component {
 	}
 
 	initSocket = api => {
-		const {socket} = this.props;
-		const options = {
-			api: api,
-			page: 'h2h'
-		};
 
-		socket.emit('get-main', options);
-
-		socket.once('return-main-h2h', res => {
-			this.setState({
-				h2hData: res
+		fetch(`/api/?query=${api}&page=h2h`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					h2hData: res
+				});
+			})
+			.catch(err => {
+				this.setState({
+					h2hData: {error: err.toString()},
+				});
 			});
-		});
 
-		socket.on('return-error-h2h', err => {
-			this.setState({
-				h2hData: {error: err.toString()},
-			});
-		});
 
-		console.log('initSocket triggered!!')
+		// socket.emit('get-main', options);
+		//
+		// socket.once('return-main-h2h', res => {
+		// 	this.setState({
+		// 		h2hData: res
+		// 	});
+		// });
+		//
+		// socket.on('return-error-h2h', err => {
+		// 	this.setState({
+		// 		h2hData: {error: err.toString()},
+		// 	});
+		// });
+
 	};
 
 	tabSwitcherHandler(tab) {

@@ -4,6 +4,8 @@ const socketIO = require('socket.io');
 const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const diff = require('deep-diff');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const _ = require('lodash');
 const moment = require('moment');
 const cacheService = require('./cache.service');
@@ -14,9 +16,11 @@ const cacheDuration = {
 	missings: 60 * 60 * 24, // 7 days
 	teamstats: 60 * 60 * 24, // 7 days
 	main: {
+		default: 60, // 1 min.
 		homepage: 15, // 5 seconds
 		eventdetails: 5, // 5 seconds
-		lineup: 60 * 30, // 30 min
+		lineup: 60 * 30, // 30 min,
+		h2h: 60 * 30, // 30 min
 		standing: 60, // 1 min.
 	}
 };
@@ -26,8 +30,29 @@ const port = 5001;
 const app = express();
 
 // our server instance
-const server = http.createServer(app);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
+const whitelist = [
+	'http://localhost:5000',
+	'http://localhost:3000',
+	'https://www.ultraskor.com',
+];
+const corsOptions = {
+	origin: function (origin, callback) {
+		if (whitelist.indexOf(origin) !== -1 || !origin) {
+			callback(null, true)
+		} else {
+			callback(new Error('Not allowed by CORS'))
+		}
+	}
+};
+
+app.use(cors(corsOptions));
+
+cacheService.start(function (err) {
+	if (err) console.error('cache service failed to start', err);
+});
 
 // This creates our socket using the instance of the server
 // const io = socketIO(server, {
@@ -35,6 +60,7 @@ const server = http.createServer(app);
 // 	pingTimeout: 120000,
 // });
 
+const server = http.createServer(app);
 const io = socketIO(server);
 
 const replaceDotWithUnderscore = obj => {
@@ -87,26 +113,341 @@ const mongoOptions = {
 
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 
+MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
+	if (err) {
+		// do nothing, just proceed
+	} else {
+		try {
+			db = client.db('ultraskor');
+			helperDataCollection = db.collection('helperdata_bydate');
+		} catch (err) {
+			// do nothing, just proceed
+		}
+	}
+	server.listen(port, () => console.log(`Listening on port ${port}`));
+
+});
+
+app.get('/api/', (req, res) => {
+	const cacheKey = `mainData-${req.query.query}`;
+	req.query.page = req.query.page || "default";
+	console.log('cache Duration', req.query.query, cacheDuration.main[req.query.page])
+	const initRemoteRequests = () => {
+		const sofaOptions = {
+			method: 'GET',
+			uri: `https://www.sofascore.com${req.query.query}?_=${Math.floor(Math.random() * 10e8)}`,
+			json: true,
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://www.sofascore.com',
+				'referer': 'https://www.sofascore.com/',
+				'x-requested-with': 'XMLHttpRequest'
+			}
+		};
+
+		request(sofaOptions)
+			.then(response => {
+				if (req.query.page === "homepage") response = simplifyHomeData(response);
+				if (response) {
+					cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5, () => {
+						res.send(response);
+					});
+				}
+			})
+			.catch(() => {
+				console.log(`error returning data from main for ${req.query.page}`);
+				res.status(500).send({
+					status: "error",
+					message: 'Error while retrieving information from server'
+				})
+			});
+	};
+
+	cacheService.instance().get(cacheKey, (err, cachedData) => {
+		if (err) {
+			initRemoteRequests();
+			console.log('cache server is broken');
+		} else {
+			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+				res.send(cachedData);
+				console.log('served from cache');
+			} else {
+				initRemoteRequests();
+				console.log('cache not exist, get from remote');
+			}
+		}
+	});
+});
+
+app.get('/api/helper1/:date', (req, res) => {
+	const date = req.params.date;
+	const cacheKey = `helperData-${req.params.date}-provider1`;
+
+	const initRemoteRequests = () => {
+		const provider1options = {
+			method: 'GET',
+			uri: `http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=${date}`,
+			json: true,
+			timeout: 1500
+		};
+		request(provider1options)
+			.then(response => {
+				if (response.data && response.data.length > 0) {
+					cacheService.instance().set(cacheKey, response, cacheDuration.provider1, () => {
+						if (helperDataCollection) {
+							try {
+								helperDataCollection.insertOne({
+									date: date,
+									provider: "provider1",
+									data: response
+								});
+							} catch {
+								// do nothing just proceed
+							}
+						}
+						res.send(response.data);
+					});
+				} else {
+					res.send('');
+				}
+			})
+			.catch(() => {
+				res.status(500).send({
+					status: "error",
+					message: 'Error while retrieving information from server'
+				})
+			});
+	};
+
+	cacheService.instance().get(cacheKey, (err, cachedData) => {
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			res.send(cachedData);
+		} else { // Cache is not found
+			if (helperDataCollection) {
+				helperDataCollection
+					.findOne({"date": date, "provider": "provider1"})
+					.then(result => {
+						if (result) {
+							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1, () => {
+								res.send(result.data); // Data is found in the db, now caching and serving!
+							});
+						} else {
+							initRemoteRequests(); // data can't be found in db, get it from remote servers
+						}
+					})
+			} else {
+				initRemoteRequests();  // db is not initalized, get data from remote servers
+			}
+		}
+	});
+});
+
+app.get('/api/helper2/:date', (req, res) => {
+	const date = req.params.date.replace(/\./g,'/');
+	const cacheKey = `helperData-${date}-provider2`;
+
+	const initRemoteRequests = () => {
+		const provider2options = {
+			method: 'POST',
+			uri: 'https://brdg-c1884f68-d545-4103-bee0-fbcf3d58c850.azureedge.net/livescore/matchlist',
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://www.broadage.com',
+			},
+			body: JSON.stringify({
+				"coverageId": "6bf0cf44-e13a-44e1-8008-ff17ba6c2128",
+				"options": {
+					"sportId": 1,
+					"day": date,
+					"origin": "broadage.com",
+					"timeZone": 3
+				}
+			}),
+			json: true,
+			timeout: 1500
+		};
+		request(provider2options)
+			.then(res => {
+				if (res.initialData && res.initialData.length > 0) {
+					cacheService.instance().set(cacheKey, res, cacheDuration.provider2, () => {
+						if (helperDataCollection) {
+							try {
+								helperDataCollection.insertOne({
+									date: date,
+									provider: "provider2",
+									data: res
+								});
+							} catch {
+								// do nothing
+							}
+						}
+						res.send(res); // return anyway if collection not exist
+					});
+				} else {
+					res.send('');
+				}
+
+			})
+			.catch(() => {
+				res.status(500).send({
+					status: "error",
+					message: 'Error while retrieving information from server'
+				})
+			});
+	};
+
+	cacheService.instance().get(cacheKey, (err, cachedData) => {
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			res.send(cachedData);
+		} else { // Cache is not found
+			if (helperDataCollection) {
+				helperDataCollection
+					.findOne({"date": date, "provider": "provider2"})
+					.then(result => {
+						if (result) {
+							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider2, () => {
+								res.send(result.data); // Data is found in the db, now caching and serving!
+							});
+						} else {
+							initRemoteRequests(); // data can't be found in db, get it from remote servers
+						}
+					})
+			} else {
+				initRemoteRequests();  // db is not initalized, get data from remote servers
+			}
+		}
+	});
+});
+
+app.get('/api/helper3/:date/:code', (req, res) => {
+	const date = req.params.date;
+	const code = req.params.code;
+
+	const cacheKey = `helperData-${date}-provider3`;
+
+	const initRemoteRequests = () => {
+		const provider3options = {
+			method: 'GET',
+			uri: `https://www.tuttur.com/draw/events/type/football`,
+			json: true,
+			timeout: 1500
+		};
+
+		request(provider3options)
+			.then(res => {
+				res = replaceDotWithUnderscore(res.events);
+				if (res && res[code] && date === moment(res[code].startDate * 1e3).format('DD.MM.YYYY')) {
+					cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
+						if (helperDataCollection) {
+							helperDataCollection.insertOne({
+								date: date,
+								provider: "provider3",
+								data: res
+							});
+						}
+					});
+					res.send(res); // return provider3
+				} else {
+					res.send('');
+				}
+			})
+			.catch(() => {
+				res.status(500).send({
+					status: "error",
+					message: 'Error while retrieving information from server'
+				})
+			});
+	};
+
+	cacheService.instance().get(cacheKey, (err, cachedData) => {
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			res.send(cachedData);
+		} else { // Cache is not found
+			if (helperDataCollection) {
+				helperDataCollection
+					.findOne({"date": date, "provider": "provider3"})
+					.then(result => {
+						if (result) {
+							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3, () => {
+								res.send(result.data); // Data is found in the db, now caching and serving!
+							});
+						} else {
+							initRemoteRequests(); // data can't be found in db, get it from remote servers
+						}
+					})
+			} else {
+				initRemoteRequests();  // db is not initalized, get data from remote servers
+			}
+		}
+	});
+});
+
+app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
+	const type = req.params.type;
+	const matchid = req.params.matchid;
+
+	const cacheKey = `helperData-${matchid}-${type}`;
+	const initRemoteRequests = () => {
+		const oleyOptions = {
+			method: 'GET',
+			uri: `https://widget.oley.com/match/${type}/1/${matchid}`,
+			json: true,
+			timeout: 1500
+		};
+		request(oleyOptions)
+			.then(response => {
+				if (response) {
+					cacheService.instance().set(cacheKey, response, cacheDuration[type], () => {
+						if (helperDataCollection) {
+							helperDataCollection.insertOne({
+								matchid: matchid,
+								type: type,
+								data: response
+							});
+						}
+					});
+				} else {
+					res.status(500).send({
+						status: "error",
+						message: 'Error while retrieving information from server'
+					})
+				}
+				res.send(response); // return
+			})
+			.catch(() => {
+				res.status(500).send({
+					status: "error",
+					message: 'Error while retrieving information from server'
+				})
+			});
+	};
+
+	cacheService.instance().get(cacheKey, (err, cachedData) => {
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			res.send(cachedData);
+		} else { // Cache is not found
+			if (helperDataCollection) {
+				helperDataCollection
+					.findOne({matchid: matchid, type: type})
+					.then(result => {
+						if (result) {
+							cacheService.instance().set(cacheKey, result.data, cacheDuration[type], () => {
+								res.send(result.data); // Data is found in the db, now caching and serving!
+							});
+						} else {
+							initRemoteRequests(); // data can't be found in db, get it from remote servers
+						}
+					})
+			} else {
+				initRemoteRequests();  // db is not initalized, get data from remote servers
+			}
+		}
+	});
+});
+
+
 // This is what the socket.socket syntax is like, we will work this later
 io.on('connection', socket => {
-	if (NODE_ENV !== "dev") { // MongoDB connection disabled for localhost
-		MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
-			if (err) {
-				// do nothing, just proceed
-			} else {
-				try {
-					db = client.db('ultraskor');
-					helperDataCollection = db.collection('helperdata_bydate');
-				} catch (err) {
-					// do nothing, just proceed
-				}
-			}
-		});
-	}
-
-	cacheService.start(function (err) {
-		if (err) console.error('cache service failed to start', err);
-	});
 
 	let currentPage = null,
 		isFlashScoreActive = false,
@@ -119,10 +460,6 @@ io.on('connection', socket => {
 
 	socket.on('is-homepage-getupdates', status => {
 		isHomepageGetUpdates = status;
-	});
-
-	socket.on('current-page', page => {
-		currentPage = page;
 	});
 
 	socket.once('get-updates', () => {
@@ -253,7 +590,7 @@ io.on('connection', socket => {
 		}, 15000);
 	});
 
-	socket.on('get-main', (params) => {
+	/* socket.on('get-main', (params) => {
 		const cacheKey = `mainData-${params.api}`;
 
 		const initRemoteRequests = () => {
@@ -299,9 +636,9 @@ io.on('connection', socket => {
 			}
 		});
 
-	});
+	}); */
 
-	socket.on('get-eventdetails-helper-1', date => {
+	/* socket.on('get-eventdetails-helper-1', date => {
 		const cacheKey = `helperData-${date}-provider1`;
 
 		const initRemoteRequests = () => {
@@ -353,9 +690,9 @@ io.on('connection', socket => {
 				}
 			}
 		});
-	});
+	}); */
 
-	socket.on('get-eventdetails-helper-2', date => {
+	/* socket.on('get-eventdetails-helper-2', date => {
 		const cacheKey = `helperData-${date}-provider2`;
 
 		const initRemoteRequests = () => {
@@ -420,9 +757,9 @@ io.on('connection', socket => {
 				}
 			}
 		});
-	});
+	}); */
 
-	socket.on('get-eventdetails-helper-3', params => {
+	/* socket.on('get-eventdetails-helper-3', params => {
 		const cacheKey = `helperData-${params.date}-provider3`;
 
 		const initRemoteRequests = () => {
@@ -476,9 +813,9 @@ io.on('connection', socket => {
 				}
 			}
 		});
-	});
+	}); */
 
-	socket.on('get-oley', params => {
+	/* socket.on('get-oley', params => {
 		const cacheKey = `helperData-${params.matchid}-${params.type}`;
 		const initRemoteRequests = () => {
 			const oleyOptions = {
@@ -529,13 +866,14 @@ io.on('connection', socket => {
 				}
 			}
 		});
-	});
+	}); */
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 		clearInterval(intervalUpdates);
 	});
 });
+
 
 app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 	const {lang, sport, type, by, date} = req.params;
@@ -637,4 +975,4 @@ app.post('/api/logerrors', (req, res) => {
 	}
 });
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+

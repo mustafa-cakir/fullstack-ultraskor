@@ -28,25 +28,40 @@ class Standings extends Component {
 	}
 
 	getData = api => {
-		const {socket} = this.props;
-		const options = {
-			api: api,
-			page: 'standing'
-		};
+		// const {socket} = this.props;
 
-		socket.emit('get-main', options);
-
-		socket.once('return-main-standing', res => {
-			this.setState({
-				standingData: res,
+		fetch(`/api/?query=${api}&page=standing`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					standingData: res,
+				});
+			})
+			.catch(err => {
+				this.setState({
+					standingData: {error: err.toString()},
+				});
 			});
-		});
 
-		socket.on('return-error-standing', err => {
-			this.setState({
-				standingData: {error: err.toString()},
-			});
-		});
+		// socket.emit('get-main', options);
+		//
+		// socket.once('return-main-standing', res => {
+		// 	this.setState({
+		// 		standingData: res,
+		// 	});
+		// });
+		//
+		// socket.on('return-error-standing', err => {
+		// 	this.setState({
+		// 		standingData: {error: err.toString()},
+		// 	});
+		// });
 	};
 
 	render() {

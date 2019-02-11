@@ -3,6 +3,7 @@ import Tournament from "../common/Tournament";
 import Icon from "../common/Icon";
 import {Trans} from "react-i18next";
 import Loading from "../Loading";
+import Errors from "../common/Errors";
 
 class Fixture extends Component {
 	constructor(props) {
@@ -17,21 +18,31 @@ class Fixture extends Component {
 		};
 	}
 
-	initSocket(round, name) {
+	initGetData(round, name) {
 		const {leagueid, seasonid} = this.props.params;
-		const {socket} = this.props;
-		let options = {
-			api: `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? "/" + name : ""}`,
-			page: 'leaguedetails-fixture-round-matches'
-		};
-		socket.emit("get-main", options);
-		socket.on('return-main-leaguedetails-fixture-round-matches', res => {
-			console.log(res.roundMatches);
-			this.setState({
-				loading: false,
-				roundMatches: res.roundMatches
+
+		let api =  `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? "/" + name : ""}`;
+
+		fetch(`/api/?query=${api}&page=leaguedetails-fixture-round-matches`)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.setState({
+					loading: false,
+					roundMatches: res.roundMatches
+				});
+			})
+			.catch(err => {
+				this.setState({
+					roundMatches: {error: err.toString()},
+				});
 			});
-		});
+
 	}
 
 	componentDidMount() {
@@ -45,18 +56,19 @@ class Fixture extends Component {
 			isDropdown: false,
 			loading: true
 		}, () => {
-			this.initSocket(round.round, round.name);
+			this.initGetData(round.round, round.name);
 		});
 	}
 
 	render() {
 		const {roundMatches, currentRound, loading, roundName} = this.state;
 
+		if (roundMatches.error) return <Errors type="error" message={roundMatches.error}/>;
+
 		const currentRoundIndex = this.props.events.rounds.findIndex(x => x.round === currentRound);
 		const prevRound = this.props.events.rounds[currentRoundIndex - 1];
 		const nextRound = this.props.events.rounds[currentRoundIndex + 1];
 
-		console.log(this.props.events.rounds[currentRoundIndex], prevRound, nextRound);
 		return (
 			<div className="container">
 				<div className="white-box mt-2">

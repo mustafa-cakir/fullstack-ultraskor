@@ -24,26 +24,42 @@ class Lineup extends Component {
     }
 
     getData = api => {
-        const {socket} = this.props;
-        const options = {
-            api: api,
-            page: 'lineup'
-        };
+        // const {socket} = this.props;
 
-        socket.emit('get-main', options);
+	    fetch(`/api/?query=${api}&page=lineup`)
+		    .then(res => {
+			    if (res.status === 200) {
+				    return res.json();
+			    } else {
+				    throw Error(`Can't retrieve information from server, ${res.status}`);
+			    }
+		    })
+		    .then(res => {
+			    this.setState({
+				    lineupData: res,
+				    activeTeam: res.homeTeam
+			    });
+		    })
+		    .catch(err => {
+			    this.setState({
+				    lineupData: {error: err.toString()},
+			    });
+		    });
 
-        socket.once('return-main-lineup', res => {
-            this.setState({
-                lineupData: res,
-                activeTeam: res.homeTeam
-            });
-        });
+        // socket.emit('get-main', options);
 
-        socket.on('return-error-lineup', err => {
-            this.setState({
-                lineupData: {error: err.toString()},
-            });
-        })
+        // socket.once('return-main-lineup', res => {
+        //     this.setState({
+        //         lineupData: res,
+        //         activeTeam: res.homeTeam
+        //     });
+        // });
+
+        // socket.on('return-error-lineup', err => {
+        //     this.setState({
+        //         lineupData: {error: err.toString()},
+        //     });
+        // })
     };
 
     listTabHandler(selection) {
