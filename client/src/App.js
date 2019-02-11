@@ -37,7 +37,14 @@ class App extends Component {
         }
 	}
 
+
 	componentDidMount() {
+		if (("WebSocket" in window && window.WebSocket !== undefined) || ("MozWebSocket" in window)) {
+			this.initSocket()
+		}
+	}
+
+	initSocket() {
 		this.state.socket.open();
 		this.state.socket.on('connect', () => {
 			setTimeout(() => {
