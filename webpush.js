@@ -5,7 +5,7 @@ const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const webpush = require('web-push');
 const Q = require('q');
-const port = 5002;
+const port = 5003;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
