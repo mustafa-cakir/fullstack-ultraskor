@@ -131,7 +131,6 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 app.get('/api/', (req, res) => {
 	const cacheKey = `mainData-${req.query.query}`;
 	req.query.page = req.query.page || "default";
-	console.log('cache Duration', req.query.query, cacheDuration.main[req.query.page])
 	const initRemoteRequests = () => {
 		const sofaOptions = {
 			method: 'GET',
@@ -896,7 +895,6 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 		res.send(xmlString);
 
 	} else if (type === "list" && by === "day") {
-		console.log('trigger');
 		const sofaOptionsGetToday = {
 			method: 'GET',
 			uri: `https://www.sofascore.com/${sport}//${date}/json`,
