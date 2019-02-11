@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Web-Push Application with Restful Api</title>
+</head>
+<body>
+    <h1>This is a web-push notification example</h1>
+
+    <p><button class="btn unsubscribe-all">Unsubscribe from All</button></p>
+
+    <p>Match: Sivasspor - Akhisarspor, Id: 787025 - <button class="btn subscribe" data-matchid="787025">Subscribe</button> - <button class="btn unsubscribe" data-matchid="787025">Unsubscribe</button> - <span class="status" data-matchid="787025"></span> </p>
+    <p>Match: MKE Ankaragücü - Kasımpaşa, Id: 7870264 - <button class="btn subscribe" data-matchid="7870264">Subscribe</button> - <button class="btn unsubscribe" data-matchid="7870264">Unsubscribe</button> - <span class="status" data-matchid="7870264"></span></p>
+    <p>Match: Wolverhampton - Newcastle, Id: 7828165 - <button class="btn subscribe" data-matchid="7828165">Subscribe</button> - <button class="btn unsubscribe" data-matchid="7828165">Unsubscribe</button> - <span class="status" data-matchid="7828165"></span></p>
+
+    <!-- call service worker for register and send subscribe request to the server with javascript -->
+<script src="app.js"></script>
+</body>
+</html>
