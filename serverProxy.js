@@ -3,9 +3,13 @@ const request = require('request');
 // create express app
 const app = express();
 
+
+app.get('/images*', (req, res) => {
+	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : req.originalUrl}`).pipe(res);
+});
+
 // define a simple route
 app.get('*', (req, res) => {
-
     let path = req.originalUrl;
 	// path = path.substring(11, path.length);
 	// console.log(path);

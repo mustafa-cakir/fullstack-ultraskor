@@ -51,7 +51,7 @@ class Injuries extends Component {
 							<div className="col col-img">
 								<img
 									alt={eventData.event.homeTeam.name}
-									src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
 								/>
 							</div>
 							<div className="col">
@@ -76,7 +76,7 @@ class Injuries extends Component {
 							<div className="col col-img">
 								<img
 									alt={eventData.event.awayTeam.name}
-									src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
 								/>
 							</div>
 							<div className="col">

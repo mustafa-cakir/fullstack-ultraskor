@@ -13,7 +13,7 @@ class Scoreboard extends Component {
                             <div className="team-logo mb-2">
                                 <img
                                     alt={eventData.event.homeTeam.name}
-                                    src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
                                 />
                             </div>
                             <div className="team-name">{eventData.event.homeTeam.name}</div>
@@ -34,7 +34,7 @@ class Scoreboard extends Component {
                         <div className="col-4 pl-0">
                             <div className="team-logo mb-2">
                                 <img alt={eventData.event.awayTeam.name}
-                                     src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
+                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
                             </div>
                             <div className="team-name">{eventData.event.awayTeam.name}</div>
                             <div

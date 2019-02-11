@@ -72,7 +72,7 @@ class H2h extends Component {
 								<img
 									className="team-logo"
 									alt={eventData.event.homeTeam.name}
-									src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
 								/>
 								<div className="team-name">{eventData.event.homeTeam.name}</div>
 							</span>
@@ -83,7 +83,7 @@ class H2h extends Component {
 								<img
 									className="team-logo"
 									alt={eventData.event.awayTeam.name}
-									src={'https://www.sofascore.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
 								/>
 								<div className="team-name">{eventData.event.awayTeam.name}</div>
 							</span>
