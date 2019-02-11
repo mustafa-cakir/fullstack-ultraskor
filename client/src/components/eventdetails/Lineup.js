@@ -120,7 +120,7 @@ class Lineup extends Component {
                                      onClick={() => this.formationSwitchHandler(1)}>
                                     <img
                                         alt={eventData.event.homeTeam.name}
-                                        src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+                                        src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                                     />
                                     {homeFormation.map((item, index) => {
                                         return (
@@ -138,7 +138,7 @@ class Lineup extends Component {
                                         )
                                     })}
                                     <img alt={eventData.event.awayTeam.name}
-                                         src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
+                                         src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +160,7 @@ class Lineup extends Component {
                                                                     <div className="picture">
                                                                         <img
                                                                             alt={player.name}
-                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ".png"}/>
+                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ""}/>
                                                                         {rating ? (
                                                                             <span
                                                                                 className={"text-bold rating " + Lineup.ratingClass(rating)}>{rating}</span>
@@ -196,7 +196,7 @@ class Lineup extends Component {
                                                 <div className="picture">
                                                     <img
                                                         alt={activeTeam.lineupsSorted[0].player.name}
-                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ".png"}/>
+                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ""}/>
                                                     {activeTeam.lineupsSorted[0].rating ? <span
                                                         className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
 
@@ -265,7 +265,7 @@ class Lineup extends Component {
                                         <div className="col list-image">
                                             <img
                                                 alt={item.player.name}
-                                                src={window.ImageServer + "/images/player/image_" + item.player.id + ".png"}/>
+                                                src={window.ImageServer + "/images/player/image_" + item.player.id + ""}/>
                                         </div>
 
                                         <div className="col list-text">

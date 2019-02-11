@@ -79,7 +79,7 @@ class Standings extends Component {
 													<td className={"order " + (row.promotion && standingsTable.promotionsColoring ? "promotion " + standingsTable.promotionsColoring[row.promotion.id].class : "")}>
 														<span>{row.position}</span></td>
 													<td className="team-logo"><img
-														src={`${window.ImageServer}/images/team-logo/football_${row.team.id}.png`}
+														src={`${window.ImageServer}/images/team-logo/football_${row.team.id}`}
 														alt={row.team.name}/></td>
 													<td className="team">{row.team.shortName}<span
 														className="live-pulse"/>

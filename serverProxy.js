@@ -5,7 +5,7 @@ const app = express();
 
 
 app.get('/images*', (req, res) => {
-	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : req.originalUrl}`).pipe(res);
+	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`).pipe(res);
 });
 
 // define a simple route

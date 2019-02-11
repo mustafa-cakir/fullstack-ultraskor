@@ -34,13 +34,13 @@ class PressureGraph extends Component {
                         <div className="homeLabel">
                             <img
                                 alt={eventData.event.homeTeam.name}
-                                src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
+                                src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                             />
                         </div>
                         <div className="awayLabel">
                             <img
                                 alt={eventData.event.awayTeam.name}
-                                src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
+                                src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
                             />
                         </div>
                     </div>

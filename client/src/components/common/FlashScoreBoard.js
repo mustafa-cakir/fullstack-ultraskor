@@ -138,7 +138,7 @@ class FlashScoreBoard extends Component {
 						<div className="col col-minute">{flashData.event.statusDescription}'</div>
 						<div className="col home-team text-center">
 							<img
-								src={`${window.ImageServer}/images/team-logo/football_${flashData.event.homeTeam.id}.png`}
+								src={`${window.ImageServer}/images/team-logo/football_${flashData.event.homeTeam.id}`}
 								className="team-logo"
 								alt={flashData.event.homeTeam.name}/>
 							<div className="team-name">{flashData.event.homeTeam.name}</div>
@@ -155,7 +155,7 @@ class FlashScoreBoard extends Component {
 						</div>
 						<div className="col away-team text-center">
 							<img
-								src={`${window.ImageServer}/images/team-logo/football_${flashData.event.awayTeam.id}.png`}
+								src={`${window.ImageServer}/images/team-logo/football_${flashData.event.awayTeam.id}`}
 								className="team-logo"
 								alt={flashData.event.awayTeam.name}/>
 							<div className="team-name">{flashData.event.awayTeam.name}</div>

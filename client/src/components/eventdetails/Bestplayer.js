@@ -33,7 +33,7 @@ class Bestplayer extends Component {
                 <div className="best-player-container mt-2 mb-2">
                     <div className="row m-0 align-items-center">
                         <div className="p-0 col col-img"><img
-                            src={window.ImageServer + "/images/player/image_" + eventData.event.bestHomeTeamPlayer.player.id + ".png"}
+                            src={window.ImageServer + "/images/player/image_" + eventData.event.bestHomeTeamPlayer.player.id + ""}
                             alt={eventData.event.bestHomeTeamPlayer.player.name}/></div>
                         <div className="col col-text">
                             <div
@@ -46,7 +46,7 @@ class Bestplayer extends Component {
                             <div className="name">{eventData.event.bestAwayTeamPlayer.player.shortName}</div>
                         </div>
                         <div className="p-0 col col-img text-right"><img
-                            src={window.ImageServer + "/images/player/image_" + eventData.event.bestAwayTeamPlayer.player.id + ".png"}
+                            src={window.ImageServer + "/images/player/image_" + eventData.event.bestAwayTeamPlayer.player.id + ""}
                             alt={eventData.event.bestAwayTeamPlayer.player.name}/></div>
                     </div>
                 </div>
