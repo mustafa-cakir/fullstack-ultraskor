@@ -12,6 +12,7 @@ class FlashScoreBoard extends Component {
 			flashData: null
 		};
 		this.handleSocketFlashScoreChanges = this.handleSocketFlashScoreChanges.bind(this);
+		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.flashScoreTimer = null;
 		this.socket = this.props.socket;
 	}
@@ -19,17 +20,21 @@ class FlashScoreBoard extends Component {
 	componentWillUnmount() {
 		this.socket.emit('is-flashscore-active', false);
 		clearTimeout(this.flashScoreTimer);
+		this.socket.removeListener('connect', this.onSocketConnect);
+		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 	}
 
 	componentDidMount() {
 		this.analyzeSessionStorage();
 		this.socket.emit('is-flashscore-active', true);
-		this.socket.on('connect', () => {
-			this.socket.emit('is-flashscore-active', true);
-		});
+		this.socket.on('connect', this.onSocketConnect);
 
 		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 		this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+	}
+
+	onSocketConnect() {
+		this.socket.emit('is-flashscore-active', true);
 	}
 
 	playSound(type) {

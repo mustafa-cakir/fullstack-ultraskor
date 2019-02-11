@@ -29,6 +29,8 @@ class Homepage extends Component {
 		this.initSocket = this.initSocket.bind(this);
 		this.handleSocketUpdatesData = this.handleSocketUpdatesData.bind(this);
 		this.handleSocketData = this.handleSocketData.bind(this);
+		this.onSocketConnect = this.onSocketConnect.bind(this);
+		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
 		this.socket = this.props.socket;
 		this.todaysDate = null;
 	};
@@ -48,9 +50,6 @@ class Homepage extends Component {
 		this.once = true;
 		const page = this.props.location.pathname;
 		this.trackPage(page);
-	}
-	componentWillUnmount() {
-		this.socket.emit('is-homepage-getupdates', false);
 	}
 
 	analyzeSessionStorage() {
@@ -180,6 +179,13 @@ class Homepage extends Component {
 		this.analyzeSessionStorage();
 	}
 
+	componentWillUnmount() {
+		this.socket.emit('is-homepage-getupdates', false);
+		// this.socket.removeListener('return-updates-homepage', this.handleSocketUpdatesData);
+		// this.socket.removeListener('disconnect', this.onSocketDisconnect);
+		// this.socket.removeListener('connect', this.onSocketConnect);
+	}
+
 	initSocket = options => {
 		if (options.loading) {
 			this.setState({loading: true});
@@ -200,24 +206,28 @@ class Homepage extends Component {
 				refreshButton: true
 			})
 		});
-		this.socket.on('disconnect', () => {
-			this.setState({
-				refreshButton: true
-			});
-		});
+		this.socket.on('disconnect', this.onSocketDisconnect);
 
-		this.socket.on('connect', () => {
-			this.socket.emit('current-page', "homepage");
-			this.socket.emit('is-homepage-getupdates', true);
-			this.setState({
-				refreshButton: false
-			});
-		});
+		this.socket.on('connect', this.onSocketConnect);
 
 		this.socket.on('close', () => {
 			console.log('socket is disconnected');
 		});
 	};
+
+	onSocketDisconnect() {
+		this.setState({
+			refreshButton: true
+		});
+	}
+
+	onSocketConnect() {
+		this.socket.emit('current-page', "homepage");
+		this.socket.emit('is-homepage-getupdates', true);
+		this.setState({
+			refreshButton: false
+		});
+	}
 
 	updateMeta() {
 		if (i18n.language === "en") {
