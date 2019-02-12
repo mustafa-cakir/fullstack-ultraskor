@@ -17,5 +17,6 @@
     "theme_color": "#0656bf",
     "background_color": "#0656bf",
     "start_url": "https://www.ultraskor.com",
-    "display": "standalone"
+    "display": "standalone",
+    "gcm_sender_id": "103953800507"
 }

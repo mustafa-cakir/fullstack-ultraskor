@@ -117,12 +117,20 @@
 	font-size: 1.5rem;
 	max-width: 40px;
 	cursor: pointer;
+	position: relative;
 	i {
 		color: rgba(#333, .2);
 	}
 	.active {
 		color: $color-fav;
 		animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
+	}
+	.fav-loading {
+		font-size: 1rem;
+		position: absolute;
+		left: -19px;
+		top: 18px;
+		animation: 1s spin infinite;
 	}
 }
 .half-time-score {

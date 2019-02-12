@@ -19,7 +19,7 @@ export const askForPermissioToReceiveNotifications = async () => {
 		const messaging = firebase.messaging();
 		await messaging.requestPermission();
 		const token = await messaging.getToken();
-		console.log('token: ', token);
+		//console.log('token: ', token);
 		return token;
 	} catch (error) {
 		console.error(error);

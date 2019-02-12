@@ -189,6 +189,17 @@ app.get('/api/', (req, res) => {
 	});
 });
 
+app.post('/api/webpush', (req, res) => {
+	const {method, token, topic} = req.body;
+	firebaseAdmin.messaging()[method](token, topic)
+		.then(() => {
+			res.send(`Successfully ${method} to topic`);
+		})
+		.catch(err => {
+			res.status(500).send(`An error occurred while processing your request, err: ${err}`);
+		});
+});
+
 app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
 	const cacheKey = `helperData-${req.params.date}-provider1`;
@@ -901,7 +912,7 @@ io.on('connection', socket => {
 		});
 	}); */
 
-	socket.on('web-push-subscription', options => {
+	/* socket.on('web-push-subscription', options => {
 		firebaseAdmin.messaging()[options.method](options.token, options.topic)
 			.then(() => {
 				socket.emit('web-push-subscription-return', {
@@ -915,7 +926,7 @@ io.on('connection', socket => {
 					message: `An error occurred while processing your request`
 				});
 			});
-	});
+	}); */
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');

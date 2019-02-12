@@ -7,6 +7,13 @@ import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
 class Event extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			favLoading: false
+		}
+	}
+
 	isInProgress() {
 		let text;
 		let liveBlinkerCodes = [6, 7];
@@ -68,51 +75,47 @@ class Event extends Component {
 			favEvents = favEvents.filter(item => item !== eventId);
 			favEventsList = favEventsList.filter(item => item !== event);
 		}
+		this.setState({
+			favLoading: true
+		});
 
-		localStorage.setItem('FavEvents', JSON.stringify(favEvents));
-
-		if (this.props.updateParentState) {
-			this.props.updateParentState({
-				favEvents: favEvents,
-				favEventsList: favEventsList
-			})
-		}
-
-		if (this.props.deviceToken) {
-			this.initSocket({
-				token: this.props.deviceToken,
-				eventId: eventId,
-				method: method
-			});
-		} else {
-			askForPermissioToReceiveNotifications().then(token => {
-				this.props.updateParentState({
-					deviceToken: token
-				});
-				this.initSocket({
-					token: token,
-					eventId: eventId,
+		askForPermissioToReceiveNotifications().then(token => {
+			fetch(`/api/webpush`, {
+				method: "POST",
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					token: [token],
+					topic: `/topics/match_${eventId}`,
 					method: method
 				})
 			})
-		}
+				.then(res => {
+					if (res.status === 200) {
+						return res;
+					} else {
+						throw Error(`Can't retrieve information from server, ${res}`);
+					}
+				})
+				.then(() => {
+					console.log(`Successfully ${method} for /topics/match_${eventId}`);
+					localStorage.setItem('FavEvents', JSON.stringify(favEvents));
+					this.props.updateParentState({
+						favEvents: favEvents,
+						favEventsList: favEventsList
+					});
+					if (method === "subscribeToTopic") this.setState({favLoading: false});
 
-	}
+				})
+				.catch(err => {
+					// error
+					console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
+					if (method === "subscribeToTopic") this.setState({favLoading: false});
+				});
+		})
 
-	initSocket(options) {
-		this.props.socket.emit('web-push-subscription', {
-			token: [options.token],
-			topic: `/topics/match_${options.eventId}`,
-			method: options.method
-		});
-
-		this.props.socket.once('web-push-subscription-return', res => {
-			if (res.success) {
-				console.log(`Successfully ${options.method} for /topics/match_${options.eventId} - Message returned: ${res.message}`);
-			} else {
-				console.log(`Failed to ${options.method} for /topics/match_${options.eventId} - Message returned: ${res.message}`);
-			}
-		});
 	}
 
 	render() {
@@ -161,6 +164,7 @@ class Event extends Component {
 						) : (
 							<div className="col event-fav pl-0 text-right pr-2"
 								 onClick={this.favClickHandler.bind(this)}>
+								{this.state.favLoading ? <Icon name="fas fa-spinner fav-loading"/> : ""}
 								{this.props.favContainer || favActive ? (
 									<Icon name="fas fa-star active"/>) : event.status.type !== "finished" ?
 									<Icon name="far fa-star"/> : ""}
