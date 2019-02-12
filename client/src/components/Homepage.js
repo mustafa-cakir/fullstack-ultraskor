@@ -24,6 +24,7 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshButton: false,
+			deviceToken: null
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -31,7 +32,6 @@ class Homepage extends Component {
 		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
-		this.socket = this.props.socket;
 		this.todaysDate = null;
 	};
 
@@ -182,42 +182,24 @@ class Homepage extends Component {
 					refreshBtn: true
 				});
 			});
-
-		// this.socket.emit('get-main', options);
-		//
-		// this.socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
-		// this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
-		// this.socket.once('return-main-homepage', this.handleGetData);
-		// this.socket.once('return-error-homepage', err => {
-		// 	this.handleSocketError(err, options)
-		// });
-		//
-		// this.socket.once('return-error-updates', () => {
-		// 	this.setState({
-		// 		refreshButton: true
-		// 	})
-		// });
-		//
-		//
-		// this.socket.on('close', () => {
-		// 	console.log('socket is disconnected');
-		// });
 	};
 
 	componentWillUnmount() {
-		this.socket.emit('is-homepage-getupdates', false);
-		this.socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
-		this.socket.removeListener('disconnect', this.onSocketDisconnect);
-		this.socket.removeListener('connect', this.onSocketConnect);
-		this.socket.removeListener('return-error-updates', this.onSocketDisconnect);
+		const {socket} = this.props;
+		socket.emit('is-homepage-getupdates', false);
+		socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
+		socket.removeListener('disconnect', this.onSocketDisconnect);
+		socket.removeListener('connect', this.onSocketConnect);
+		socket.removeListener('return-error-updates', this.onSocketDisconnect);
 	}
 
 	initSocket() {
-		this.socket.emit('is-homepage-getupdates', true);
-		this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
-		this.socket.on('disconnect', this.onSocketDisconnect);
-		this.socket.on('return-error-updates', this.onSocketDisconnect);
-		this.socket.on('connect', this.onSocketConnect);
+		const {socket} = this.props;
+		socket.emit('is-homepage-getupdates', true);
+		socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+		socket.on('disconnect', this.onSocketDisconnect);
+		socket.on('return-error-updates', this.onSocketDisconnect);
+		socket.on('connect', this.onSocketConnect);
 	}
 
 	onSocketReturnUpdatesData(res) {
@@ -233,7 +215,8 @@ class Homepage extends Component {
 	}
 
 	onSocketConnect() {
-		this.socket.emit('is-homepage-getupdates', true);
+		const {socket} = this.props;
+		socket.emit('is-homepage-getupdates', true);
 		this.setState({
 			refreshButton: false
 		});
@@ -278,8 +261,11 @@ class Homepage extends Component {
 						</div>
 					</div>
 					{this.state.favEventsList.map((event, i) => {
-						return (<Event key={i} favContainer={true} event={event}
-						               updateParentState={this.updateParentState} {...this.state}/>)
+						return (<Event key={i}
+									   socket={this.props.socket}
+									   favContainer={true}
+									   event={event}
+									   updateParentState={this.updateParentState} {...this.state}/>)
 					})}
 				</React.Fragment>
 			)
@@ -290,9 +276,11 @@ class Homepage extends Component {
 			} else {
 				if (dataObj.sportItem) {
 					if (dataObj.sportItem.tournaments.length > 0) {
-						mainContent.push(<Tournament key={1} tournaments={dataObj.sportItem.tournaments}
-						                             updateParentState={this.updateParentState}
-						                             {...this.state}/>)
+						mainContent.push(<Tournament key={1}
+													 socket={this.props.socket}
+													 tournaments={dataObj.sportItem.tournaments}
+													 updateParentState={this.updateParentState}
+													 {...this.state}/>)
 					} else {
 						mainContent.push(<Errors key={1} type="no-matched-game"/>)
 					}
@@ -319,20 +307,20 @@ class Homepage extends Component {
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
 						<div className="col col-yesterday"><a className="pl-3"
-						                                      href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
-						                                      title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
+															  href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+															  title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
 							name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
 						<div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"}
-						                                              title={t('Today\'s football matches')}><Trans>Today's
+																	  title={t('Today\'s football matches')}><Trans>Today's
 							Matches</Trans></a></div>
 						<div className="col text-right col-tomorrow"><a className="pr-3"
-						                                                href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
-						                                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
+																		href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+																		title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
 							<Icon name="fas fa-chevron-right"/></a></div>
 					</div>
 				</div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
-				<FlashScoreBoard socket={this.socket} audioFiles={this.props.audioFiles}/>
+				<FlashScoreBoard socket={this.props.socket} audioFiles={this.props.audioFiles}/>
 				<Footer/>
 			</div>
 		)

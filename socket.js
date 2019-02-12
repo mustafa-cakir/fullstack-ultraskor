@@ -6,8 +6,10 @@ const request = require('request-promise-native');
 const diff = require('deep-diff');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cron = require('node-cron');
 const _ = require('lodash');
 const moment = require('moment');
+const firebaseAdmin = require('firebase-admin');
 const cacheService = require('./cache.service');
 const cacheDuration = {
 	provider1: 60 * 60 * 24, // 24 hours
@@ -35,6 +37,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const whitelist = [
 	'http://localhost:5000',
+	'http://localhost:5001',
 	'http://localhost:3000',
 	'https://www.ultraskor.com',
 ];
@@ -43,12 +46,20 @@ const corsOptions = {
 		if (whitelist.indexOf(origin) !== -1 || !origin) {
 			callback(null, true)
 		} else {
-			callback(new Error('Not allowed by CORS'))
+			console.log(origin);
+			callback(new Error('Not allowed by CORS'));
 		}
 	}
 };
 
 app.use(cors(corsOptions));
+
+const FireBaseServiceAccount = require("./livescores-firebase-adminsdk-l00mx-232f16f146");
+
+firebaseAdmin.initializeApp({
+	credential: firebaseAdmin.credential.cert(FireBaseServiceAccount),
+	databaseURL: "https://livescores-54cdf.firebaseio.com"
+});
 
 cacheService.start(function (err) {
 	if (err) console.error('cache service failed to start', err);
@@ -200,7 +211,7 @@ app.get('/api/helper1/:date', (req, res) => {
 									provider: "provider1",
 									data: response
 								});
-							} catch(err) {
+							} catch (err) {
 								// do nothing just proceed
 							}
 						}
@@ -242,7 +253,7 @@ app.get('/api/helper1/:date', (req, res) => {
 });
 
 app.get('/api/helper2/:date', (req, res) => {
-	const date = req.params.date.replace(/\./g,'/');
+	const date = req.params.date.replace(/\./g, '/');
 	const cacheKey = `helperData-${date}-provider2`;
 
 	const initRemoteRequests = () => {
@@ -461,6 +472,74 @@ io.on('connection', socket => {
 		isHomepageGetUpdates = status;
 	});
 
+	function initWebPush(res) {
+		res.forEach(x => {
+			x.forEach(change => {
+				if (change.kind === "E" && change.event && change.event.id) {
+					let message = {
+						webpush: {
+							notification: {
+								title: '',
+								body: '',
+								icon: '',
+								click_action: ''
+							}
+						},
+						topic: `match_${change.event.id}`
+					};
+
+					if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
+						if (parseInt(change.rhs) > parseInt(change.lhs)) {
+							message.webpush.notification.title = `GOL ${change.event.statusDescription}' ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+							message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+							message.webpush.notification.click_action = `http://ultraskor.com/eventdetails/${change.event.id}`;
+						} else {
+							message.webpush.notification.title = `GOL İPTAL ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+							message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+							message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+						}
+					} else if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
+						message.webpush.notification.title = `Kırmızı Kart ${change.event.statusDescription}' ${change.path[0] === "homeRedCards" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeRedCards" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+						message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+					} else if (change.path[0] === "status" && change.path[1] === "code") {
+						if (change.lhs === 0 && change.rhs === 6) { // game started
+							message.webpush.notification.title = `Maç Başladı`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} - ${change.event.awayTeam.name}`;
+						} else if (change.lhs === 6 && change.rhs === 31) { // half time
+							message.webpush.notification.title = `İlk Yarı Sonucu`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
+							message.webpush.notification.title = `İkinci Yarı Başladı`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						} else if (change.rhs === 100) { // full time
+							message.webpush.notification.title = `Maç Sonucu`;
+							message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						}
+						message.webpush.notification.icon = `https://www.ultraskor.com/apple-touch-icon.png`;
+						message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+					}
+
+					if (message.webpush.notification.title) {
+						firebaseAdmin.messaging().send(message)
+							.then((response) => {
+								// Response is a message ID string.
+								console.log('Successfully sent message:', response);
+							})
+							.catch((error) => {
+								console.log('Error sending message:', error);
+							});
+					}
+				}
+			});
+		});
+
+
+	}
+
 	socket.once('get-updates', () => {
 		const sofaOptions = {
 			method: 'GET',
@@ -574,7 +653,10 @@ io.on('connection', socket => {
 							}
 						});
 
-						if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
+						if (diffArr.length > 0) {
+							initWebPush(diffArr);
+							socket.emit('return-flashcore-changes', diffArr);
+						}
 					}
 					previousData = events;
 				})
@@ -866,6 +948,22 @@ io.on('connection', socket => {
 			}
 		});
 	}); */
+
+	socket.on('web-push-subscription', options => {
+		firebaseAdmin.messaging()[options.method](options.token, options.topic)
+			.then(() => {
+				socket.emit('web-push-subscription-return', {
+					success: true,
+					message: `Successfully ${options.method} to topic`
+				});
+			})
+			.catch(() => {
+				socket.emit('web-push-subscription-return', {
+					status: false,
+					message: `An error occurred while processing your request`
+				});
+			});
+	});
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
