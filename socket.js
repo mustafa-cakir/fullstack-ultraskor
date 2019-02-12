@@ -6,8 +6,10 @@ const request = require('request-promise-native');
 const diff = require('deep-diff');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cron = require('node-cron');
 const _ = require('lodash');
 const moment = require('moment');
+const firebaseAdmin = require('firebase-admin');
 const cacheService = require('./cache.service');
 const cacheDuration = {
 	provider1: 60 * 60 * 24, // 24 hours
@@ -35,6 +37,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const whitelist = [
 	'http://localhost:5000',
+	'http://localhost:5001',
 	'http://localhost:3000',
 	'https://www.ultraskor.com',
 ];
@@ -43,12 +46,20 @@ const corsOptions = {
 		if (whitelist.indexOf(origin) !== -1 || !origin) {
 			callback(null, true)
 		} else {
-			callback(new Error('Not allowed by CORS'))
+			console.log(origin);
+			callback(new Error('Not allowed by CORS'));
 		}
 	}
 };
 
 app.use(cors(corsOptions));
+
+const FireBaseServiceAccount = require("./livescores-firebase-adminsdk-l00mx-232f16f146");
+
+firebaseAdmin.initializeApp({
+	credential: firebaseAdmin.credential.cert(FireBaseServiceAccount),
+	databaseURL: "https://livescores-54cdf.firebaseio.com"
+});
 
 cacheService.start(function (err) {
 	if (err) console.error('cache service failed to start', err);
@@ -200,7 +211,7 @@ app.get('/api/helper1/:date', (req, res) => {
 									provider: "provider1",
 									data: response
 								});
-							} catch(err) {
+							} catch (err) {
 								// do nothing just proceed
 							}
 						}
@@ -242,7 +253,7 @@ app.get('/api/helper1/:date', (req, res) => {
 });
 
 app.get('/api/helper2/:date', (req, res) => {
-	const date = req.params.date.replace(/\./g,'/');
+	const date = req.params.date.replace(/\./g, '/');
 	const cacheKey = `helperData-${date}-provider2`;
 
 	const initRemoteRequests = () => {
@@ -444,12 +455,147 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 	});
 });
 
+const sofaOptions = {
+	method: 'GET',
+	uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
+	json: true,
+	headers: {
+		'Content-Type': 'application/json',
+		'Origin': 'https://www.sofascore.com',
+		'referer': 'https://www.sofascore.com/',
+		'x-requested-with': 'XMLHttpRequest'
+	}
+};
 
-// This is what the socket.socket syntax is like, we will work this later
+function initWebPush(res) {
+	res.forEach(x => {
+		x.forEach(change => {
+			if (change.kind === "E" && change.event && change.event.id) {
+				let message = {
+					webpush: {
+						notification: {
+							title: '',
+							body: '',
+							icon: '',
+							click_action: ''
+						}
+					},
+					topic: `match_${change.event.id}`
+				};
+
+				if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
+					if (parseInt(change.rhs) > parseInt(change.lhs)) {
+						message.webpush.notification.title = `GOL ${change.event.statusDescription}' ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+						message.webpush.notification.click_action = `http://ultraskor.com/eventdetails/${change.event.id}`;
+					} else {
+						message.webpush.notification.title = `GOL İPTAL ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+						message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+					}
+				} else if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
+					message.webpush.notification.title = `Kırmızı Kart ${change.event.statusDescription}' ${change.path[0] === "homeRedCards" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
+					message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+					message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeRedCards" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+					message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+				} else if (change.path[0] === "status" && change.path[1] === "code") {
+					if (change.lhs === 0 && change.rhs === 6) { // game started
+						message.webpush.notification.title = `Maç Başladı`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} - ${change.event.awayTeam.name}`;
+					} else if (change.lhs === 6 && change.rhs === 31) { // half time
+						message.webpush.notification.title = `İlk Yarı Sonucu`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+					} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
+						message.webpush.notification.title = `İkinci Yarı Başladı`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+					} else if (change.rhs === 100) { // full time
+						message.webpush.notification.title = `Maç Sonucu`;
+						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
+					}
+					message.webpush.notification.icon = `https://www.ultraskor.com/apple-touch-icon.png`;
+					message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
+				}
+
+				if (message.webpush.notification.title) {
+					firebaseAdmin.messaging().send(message)
+						.then((response) => {
+							// Response is a message ID string.
+							console.log('Successfully sent message:', response);
+						})
+						.catch((error) => {
+							console.log('Error sending message:', error);
+						});
+				}
+			}
+		});
+	});
+}
+
+let previousData = null;
+let changes = null;
+let fullData = null;
+
+cron.schedule('*/15 * * * * *', () => {
+	// console.log('cron job', new Date());
+	request(sofaOptions)
+		.then(res => {
+			// console.log('triggered 1');
+			fullData = res;
+			const resFlash = _.clone(res, true);
+			let events = [];
+			const neededProperties = [
+				'awayRedCards',
+				'awayScore',
+				'homeRedCards',
+				'homeScore',
+				'id',
+				'status',
+				'statusDescription',
+				'awayTeam',
+				'homeTeam'
+			];
+
+			resFlash.sportItem.tournaments.forEach(tournament => {
+				tournament.events.forEach(event => {
+					let newEvents = {};
+					neededProperties.forEach(property => {
+						newEvents[property] = event[property]
+					});
+					events.push(newEvents)
+				});
+			});
+
+			if (previousData && previousData.length > 0) {
+				changes = [];
+
+				previousData.forEach(eventPrev => {
+					let eventNew = events.filter(item => item.id === eventPrev.id)[0];
+					let eventDiff = diff(eventPrev, eventNew);
+					if (eventDiff) {
+						eventDiff.forEach(x => {
+							x.event = eventNew;
+						});
+						changes.push(eventDiff);
+					}
+				});
+
+				if (changes.length > 0) {
+					initWebPush(changes);
+
+				}
+			}
+			previousData = events;
+		})
+		.catch((err) => {
+			console.log(`Error returning differences. Error: ${err}`);
+		});
+});
+
+
 io.on('connection', socket => {
-
-	let currentPage = null,
-		isFlashScoreActive = false,
+	let isFlashScoreActive = false,
 		isHomepageGetUpdates = false,
 		intervalUpdates = null;
 
@@ -462,126 +608,14 @@ io.on('connection', socket => {
 	});
 
 	socket.once('get-updates', () => {
-		const sofaOptions = {
-			method: 'GET',
-			uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
-			json: true,
-			headers: {
-				'Content-Type': 'application/json',
-				'Origin': 'https://www.sofascore.com',
-				'referer': 'https://www.sofascore.com/',
-				'x-requested-with': 'XMLHttpRequest'
-			}
-		};
-		let previousData;
 		const getUpdatesHandler = () => {
-			if (!isFlashScoreActive) return false;
-			request(sofaOptions)
-				.then(res => {
-					if (isHomepageGetUpdates) {
-						res = simplifyHomeData(res);
-						socket.emit('return-updates-homepage', res);
-					}
-					console.log('triggered 1');
-					const resFlash = _.clone(res, true);
-					let events = [];
-					const neededProperties = [
-						'awayRedCards',
-						'awayScore',
-						'homeRedCards',
-						'homeScore',
-						'id',
-						'status',
-						'statusDescription',
-						'awayTeam',
-						'homeTeam'
-					];
-
-					resFlash.sportItem.tournaments.forEach(tournament => {
-						// tournament.events = tournament.events.filter(event => {
-						//     return event.status.type !== "finished"
-						// });
-						tournament.events.forEach(event => {
-							let newEvents = {};
-							neededProperties.forEach(property => {
-								newEvents[property] = event[property]
-							});
-							events.push(newEvents)
-						});
-					});
-
-					//test case away Score
-					// setTimeout(() => {
-					// 	socket.emit('return-flashcore-changes', [[
-					// 		{
-					// 			kind: "E",
-					// 			lhs: "1",
-					// 			rhs: "2",
-					// 			path: [
-					// 				"awayScore",
-					// 				"current"
-					// 			],
-					// 			event: {
-					// 				awayRedCards: 0,
-					// 				awayScore: {current: 2},
-					// 				awayTeam: {name: "Malmö FF", id: 1892, subTeams: Array(0)},
-					// 				homeRedCards: 0,
-					// 				homeScore: {current: 0},
-					// 				homeTeam: {name: "Lyngby BK", id: 1756, subTeams: Array(0)},
-					// 				id: 8114504,
-					// 				status: {code: 6, type: "inprogress"},
-					// 				statusDescription: "30"
-					// 			}
-					// 		}
-					// 	]]);
-					// }, 1000);
-					// setTimeout(() => {
-					// 	socket.emit('return-flashcore-changes', [[
-					// 		{
-					// 			kind: "E",
-					// 			lhs: "1",
-					// 			rhs: "2",
-					// 			path: [
-					// 				"awayRedCards",
-					// 			],
-					// 			event: {
-					// 				awayRedCards: 2,
-					// 				awayScore: {current: 1},
-					// 				awayTeam: {name: "BB Erzurumspor", id: 55603, subTeams: Array(0)},
-					// 				homeRedCards: 1,
-					// 				homeScore: {current: 2},
-					// 				homeTeam: {name: "Beşiktaş", id: 3050, subTeams: Array(0)},
-					// 				id: 7870231,
-					// 				status: {code: 6, type: "inprogress"},
-					// 				statusDescription: "89"
-					// 			}
-					// 		}
-					// 	]]);
-					// }, 6000);
-					//test case
-
-					if (previousData && previousData.length > 0) {
-						let diffArr = [];
-
-						previousData.forEach(eventPrev => {
-							let eventNew = events.filter(item => item.id === eventPrev.id)[0];
-							let eventDiff = diff(eventPrev, eventNew);
-							if (eventDiff) {
-								eventDiff.forEach(x => {
-									x.event = eventNew;
-								});
-								diffArr.push(eventDiff);
-							}
-						});
-
-						if (diffArr.length > 0) socket.emit('return-flashcore-changes', diffArr);
-					}
-					previousData = events;
-				})
-				.catch((err) => {
-					console.log(`Error returning differences. Error: ${err}`);
-					socket.emit('return-error-updates', "Error while retrieving information from server")
-				});
+			if (isFlashScoreActive) {
+				socket.emit('return-flashcore-changes', changes);
+			}
+			if (isHomepageGetUpdates) {
+				fullData = simplifyHomeData(fullData);
+				socket.emit('return-updates-homepage', fullData);
+			}
 		};
 		getUpdatesHandler();
 		intervalUpdates = setInterval(() => {
@@ -866,6 +900,22 @@ io.on('connection', socket => {
 			}
 		});
 	}); */
+
+	socket.on('web-push-subscription', options => {
+		firebaseAdmin.messaging()[options.method](options.token, options.topic)
+			.then(() => {
+				socket.emit('web-push-subscription-return', {
+					success: true,
+					message: `Successfully ${options.method} to topic`
+				});
+			})
+			.catch(() => {
+				socket.emit('web-push-subscription-return', {
+					status: false,
+					message: `An error occurred while processing your request`
+				});
+			});
+	});
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
