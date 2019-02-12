@@ -126,11 +126,17 @@
 		animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
 	}
 	.fav-loading {
+		display: none;
 		font-size: 1rem;
 		position: absolute;
 		left: -19px;
 		top: 18px;
 		animation: 1s spin infinite;
+	}
+	&.loading {
+		.fav-loading {
+			display: block;
+		}
 	}
 }
 .half-time-score {
