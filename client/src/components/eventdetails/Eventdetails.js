@@ -16,7 +16,6 @@ import Errors from "../common/Errors";
 import ReactGA from 'react-ga';
 import moment from "moment";
 import Injuries from "./Injuries";
-import RefreshButton from "../RefreshButton";
 import smoothscroll from 'smoothscroll-polyfill';
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
@@ -45,7 +44,6 @@ class Eventdetails extends Component {
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
-			refreshButton: false,
 			eventid: this.props.match.params.eventid
 		};
 		this.tabs = [];
@@ -164,27 +162,6 @@ class Eventdetails extends Component {
 					loading: false
 				});
 			});
-
-		// socket.once('return-main-eventdetails', jsonData => {
-		// 	this.handleGetData(jsonData);
-		// });
-
-		// socket.on('return-error-eventdetails', err => {
-		// 	if (options.loading) {
-		// 		this.setState({
-		// 			eventData: {error: err.toString()},
-		// 			loading: false
-		// 		});
-		// 	} else {
-		// 		this.setState({
-		// 			refreshButton: true
-		// 		});
-		// 	}
-		// });
-
-		// socket.on('return-eventdetails-prodiver1', this.handleGetDataHelper1.bind(this));
-		// socket.on('return-eventdetails-prodiver2', this.handleGetDataHelper2.bind(this));
-		// socket.on('return-eventdetails-prodiver3', this.handleGetDataHelper3.bind(this));
 	};
 
 	initGetDataHelper(date) {
@@ -233,7 +210,6 @@ class Eventdetails extends Component {
 		this.setState({
 			eventData: jsonData,
 			loading: false,
-			refreshButton: false
 		});
 		this.updateMeta();
 		setTimeout(() => {
@@ -242,9 +218,11 @@ class Eventdetails extends Component {
 	}
 
 	handleGetDataHelper1(res) {
+		console.log(res);
 		if (res.data && res.data.length > 0) {
 			const jsonData = this.state.eventData;
 			res.data.forEach(item => {
+				console.log(item, jsonData.event.homeTeam.id);
 				let provider1Data = item.Matches.filter(match => match.HomeTeam.Id === jsonData.event.homeTeam.id);
 				if (provider1Data.length > 0) {
 					this.setState({
@@ -399,7 +377,8 @@ class Eventdetails extends Component {
 								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
 									<span className="text">{tab}</span></li>;
 							})}
-							<li className="marker" ref={this.swipeMarkerEl} style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
+							<li className="marker" ref={this.swipeMarkerEl}
+							    style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
 						</ul>
 						<div className="swipe-shadows"/>
 					</div>
@@ -527,7 +506,6 @@ class Eventdetails extends Component {
 						</div>
 					</div>
 				</ReactSwipe>
-				{this.state.refreshButton ? <RefreshButton/> : ""}
 				<Footer/>
 				<Helmet>
 					<script type="application/ld+json">{`

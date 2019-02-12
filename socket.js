@@ -17,6 +17,7 @@ const cacheDuration = {
 	provider3: 60 * 60 * 24, // 24 hours
 	missings: 60 * 60 * 24, // 7 days
 	teamstats: 60 * 60 * 24, // 7 days
+	webpushtopic: 60 * 60 * 24 * 7, // 7 days
 	main: {
 		default: 60, // 1 min.
 		homepage: 15, // 5 seconds
@@ -176,14 +177,14 @@ app.get('/api/', (req, res) => {
 	cacheService.instance().get(cacheKey, (err, cachedData) => {
 		if (err) {
 			initRemoteRequests();
-			console.log('cache server is broken');
+			//console.log('cache server is broken');
 		} else {
 			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 				res.send(cachedData);
-				console.log('served from cache');
+				//console.log('served from cache');
 			} else {
 				initRemoteRequests();
-				console.log('cache not exist, get from remote');
+				//console.log('cache not exist, get from remote');
 			}
 		}
 	});
@@ -191,9 +192,12 @@ app.get('/api/', (req, res) => {
 
 app.post('/api/webpush', (req, res) => {
 	const {method, token, topic} = req.body;
+	const cacheKey = topic;
 	firebaseAdmin.messaging()[method](token, topic)
 		.then(() => {
-			res.send(`Successfully ${method} to topic`);
+			cacheService.instance().set(cacheKey, "true", cacheDuration.webpushtopic, () => {
+				res.send(`Successfully ${method} to topic`);
+			});
 		})
 		.catch(err => {
 			res.status(500).send(`An error occurred while processing your request, err: ${err}`);
@@ -202,7 +206,7 @@ app.post('/api/webpush', (req, res) => {
 
 app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
-	const cacheKey = `helperData-${req.params.date}-provider1`;
+	const cacheKey = `helperData-${date}-provider1`;
 
 	const initRemoteRequests = () => {
 		const provider1options = {
@@ -226,7 +230,7 @@ app.get('/api/helper1/:date', (req, res) => {
 								// do nothing just proceed
 							}
 						}
-						res.send(response.data);
+						res.send(response);
 					});
 				} else {
 					res.send('');
@@ -287,6 +291,8 @@ app.get('/api/helper2/:date', (req, res) => {
 			json: true,
 			timeout: 1500
 		};
+
+		
 		request(provider2options)
 			.then(res => {
 				if (res.initialData && res.initialData.length > 0) {
@@ -466,18 +472,6 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 	});
 });
 
-const sofaOptions = {
-	method: 'GET',
-	uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
-	json: true,
-	headers: {
-		'Content-Type': 'application/json',
-		'Origin': 'https://www.sofascore.com',
-		'referer': 'https://www.sofascore.com/',
-		'x-requested-with': 'XMLHttpRequest'
-	}
-};
-
 function initWebPush(res) {
 	res.forEach(x => {
 		x.forEach(change => {
@@ -530,20 +524,39 @@ function initWebPush(res) {
 				}
 
 				if (message.webpush.notification.title) {
-					firebaseAdmin.messaging().send(message)
-						.then((response) => {
-							// Response is a message ID string.
-							console.log('Successfully sent message:', response);
-						})
-						.catch((error) => {
-							console.log('Error sending message:', error);
-						});
+					const cacheKey = `/topics/match_${change.event.id}`;
+					cacheService.instance().get(cacheKey, (err, cachedData) => {
+						if (typeof cachedData !== "undefined") { // subscription found for this topic, send notification
+							console.log('subscription found, send the push for ', change.event.id );
+							firebaseAdmin.messaging().send(message)
+								.then((response) => {
+									// Response is a message ID string.
+									console.log('Successfully sent message:', response);
+								})
+								.catch((error) => {
+									console.log('Error sending message:', error);
+								});
+						} else { // Cache is not found, no one is subscribe to this topic.
+							console.log('subscription not found, dont send any push for ', change.event.id );
+						}
+					});
 				}
 			}
 		});
 	});
 }
 
+const sofaOptions = {
+	method: 'GET',
+	uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
+	json: true,
+	headers: {
+		'Content-Type': 'application/json',
+		'Origin': 'https://www.sofascore.com',
+		'referer': 'https://www.sofascore.com/',
+		'x-requested-with': 'XMLHttpRequest'
+	}
+};
 let previousData = null;
 let changes = null;
 let fullData = null;
@@ -594,7 +607,6 @@ cron.schedule('*/15 * * * * *', () => {
 
 				if (changes.length > 0) {
 					initWebPush(changes);
-
 				}
 			}
 			previousData = events;

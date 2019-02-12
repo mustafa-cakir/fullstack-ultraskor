@@ -215,8 +215,7 @@ class Homepage extends Component {
 	}
 
 	onSocketConnect() {
-		const {socket} = this.props;
-		socket.emit('is-homepage-getupdates', true);
+		this.props.socket.emit('is-homepage-getupdates', true);
 		this.setState({
 			refreshButton: false
 		});
