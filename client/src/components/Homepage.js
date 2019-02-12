@@ -251,7 +251,7 @@ class Homepage extends Component {
 
 		if (this.state.favEventsList.length > 0) {
 			favEventContainer.push(
-				<React.Fragment key={1}>
+				<div className="fav-container" key={1}>
 					<div className="tournament-title">
 						<div className="row align-items-center">
 							<Icon name="fas fa-star event-fav-color"/>
@@ -267,7 +267,7 @@ class Homepage extends Component {
 									   event={event}
 									   updateParentState={this.updateParentState} {...this.state}/>)
 					})}
-				</React.Fragment>
+				</div>
 			)
 		}
 		if (dataObj) {

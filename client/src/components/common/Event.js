@@ -7,6 +7,13 @@ import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
 class Event extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			favEventLoading: false
+		}
+	}
+
 	isInProgress() {
 		let text;
 		let liveBlinkerCodes = [6, 7];
@@ -69,6 +76,7 @@ class Event extends Component {
 			favEventsList = favEventsList.filter(item => item !== event);
 		}
 
+		this.setState({favEventLoading: true});
 		askForPermissioToReceiveNotifications().then(token => {
 			fetch(`/api/webpush`, {
 				method: "POST",
@@ -84,6 +92,7 @@ class Event extends Component {
 			})
 				.then(res => {
 					if (res.status === 200) {
+						this.setState({favEventLoading: false});
 						return res;
 					} else {
 						throw Error(`Can't retrieve information from server, ${res}`);
@@ -99,6 +108,7 @@ class Event extends Component {
 				})
 				.catch(err => {
 					// error
+					this.setState({favEventLoading: false});
 					console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
 				});
 		})
@@ -151,7 +161,7 @@ class Event extends Component {
 						) : (
 							<div className="col event-fav pl-0 text-right pr-2"
 								 onClick={this.favClickHandler.bind(this)}>
-								<Icon name="fas fa-spinner fav-loading"/>
+								{this.state.favEventLoading ? <Icon name="fas fa-spinner fav-loading"/> : ""}
 								{this.props.favContainer || favActive ? (
 									<Icon name="fas fa-star active"/>) : event.status.type !== "finished" ?
 									<Icon name="far fa-star"/> : ""}

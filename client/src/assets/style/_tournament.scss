@@ -40,17 +40,18 @@
 }
 
 .homepage-list {
-	& > div:not(.tournament-title):not(.error):nth-child(odd) {
+	& > div:not(.tournament-title):not(.fav-container):not(.error):nth-child(odd) {
 		background: rgba(0, 0, 0, 0.1);
-		&.fav-active {
-			background: rgba($color-fav, .12);
-		}
 	}
 }
 
-.fav-active {
-	background: rgba($color-fav, .05);
-
+.fav-container {
+	& > div:not(.tournament-title):nth-child(even) {
+		background: rgba($color-fav, .12);
+	}
+	& > .fav-container {
+		background: rgba($color-fav, .05);
+	}
 }
 
 .event-container {
@@ -84,6 +85,9 @@
     .in-the-past {
         font-size: .8rem;
     }
+	& > div {
+		@include line-clamp(1);
+	}
 }
 
 .event-link,
@@ -126,17 +130,11 @@
 		animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
 	}
 	.fav-loading {
-		display: none;
 		font-size: 1rem;
 		position: absolute;
 		left: -19px;
 		top: 18px;
 		animation: 1s spin infinite;
-	}
-	&.loading {
-		.fav-loading {
-			display: block;
-		}
 	}
 }
 .half-time-score {
