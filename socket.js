@@ -200,7 +200,7 @@ app.get('/api/helper1/:date', (req, res) => {
 									provider: "provider1",
 									data: response
 								});
-							} catch {
+							} catch(err) {
 								// do nothing just proceed
 							}
 						}
@@ -276,7 +276,7 @@ app.get('/api/helper2/:date', (req, res) => {
 									provider: "provider2",
 									data: res
 								});
-							} catch {
+							} catch (err) {
 								// do nothing
 							}
 						}
