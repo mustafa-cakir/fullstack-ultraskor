@@ -3,130 +3,44 @@ const http = require('http');
 const socketIO = require('socket.io');
 const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
-const diff = require('deep-diff');
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const cron = require('node-cron');
 const _ = require('lodash');
 const moment = require('moment');
 const firebaseAdmin = require('firebase-admin');
 const cacheService = require('./cache.service');
 const helper = require('./helper');
-const cacheDuration = {
-	provider1: 60 * 60 * 24, // 24 hours
-	provider2: 60 * 60 * 24, // 24 hours
-	provider3: 60 * 60 * 24, // 24 hours
-	missings: 60 * 60 * 24, // 7 days
-	teamstats: 60 * 60 * 24, // 7 days
-	webpushtopic: 60 * 60 * 24 * 7, // 7 days
-	main: {
-		default: 60, // 1 min.
-		homepage: 15, // 5 seconds
-		eventdetails: 5, // 5 seconds
-		lineup: 60 * 30, // 30 min,
-		h2h: 60 * 30, // 30 min
-		standing: 60, // 1 min.
-	}
-};
+const webpushHelper = require('./webpush');
+const cronjob = require('./cronjob');
+const cacheDuration = helper.cacheDuration();
 
-// our localhost port
+
+
 const port = 5001;
 const app = express();
 
-// our server instance
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-const whitelist = [
-	'http://localhost:5000',
-	'http://localhost:5001',
-	'http://localhost:3000',
-	'https://www.ultraskor.com',
-];
-const corsOptions = {
-	origin: function (origin, callback) {
-		if (whitelist.indexOf(origin) !== -1 || !origin) {
-			callback(null, true)
-		} else {
-			console.log(origin);
-			callback(new Error('Not allowed by CORS'));
-		}
-	}
-};
-
-app.use(cors(corsOptions));
-
-const FireBaseServiceAccount = require("./livescores-firebase-adminsdk-l00mx-232f16f146");
-
-firebaseAdmin.initializeApp({
-	credential: firebaseAdmin.credential.cert(FireBaseServiceAccount),
-	databaseURL: "https://livescores-54cdf.firebaseio.com"
-});
+app.use(helper.initCors());
 
 cacheService.start(function (err) {
 	if (err) console.error('cache service failed to start', err);
 });
 
-// This creates our socket using the instance of the server
-// const io = socketIO(server, {
-// 	pingInterval: 25000,
-// 	pingTimeout: 120000,
-// });
+webpushHelper.init();
+cronjob.init();
 
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const replaceDotWithUnderscore = obj => {
-	_.forOwn(obj, (value, key) => {
-
-		// if key has a period, replace all occurences with an underscore
-		if (_.includes(key, '.')) {
-			const cleanKey = _.replace(key, /\./g, '_');
-			obj[cleanKey] = value;
-			delete obj[key];
-		}
-
-		// continue recursively looping through if we have an object or array
-		if (_.isObject(value)) {
-			return replaceDotWithUnderscore(value);
-		}
-	});
-	return obj;
-};
-
-const simplifyHomeData = res => {
-	if (res && res.sportItem && res.sportItem.tournaments) {
-		let eventIgnoredProperties = [
-			'changes', 'confirmedLineups', 'customId', 'hasAggregatedScore', 'hasDraw', 'hasEventPlayerHeatMap',
-			'hasEventPlayerStatistics', 'hasFirstToServe', 'hasOdds', 'hasGlobalHighlights', 'hasHighlights',
-			'hasHighlightsStream', 'hasLineups', 'hasLineupsList', 'hasLiveForm', 'hasLiveOdds', 'hasStatistics',
-			'hasSubScore', 'hasTime', 'isAwarded', 'isSyncable', 'roundInfo', 'sport', 'votingEnabled', 'winnerCode', 'odds'];
-
-		res.sportItem.tournaments.forEach(tournament => {
-			tournament.events.map(event => {
-				for (let i = 0; i < eventIgnoredProperties.length; i++) {
-					delete event[eventIgnoredProperties[i]]
-				}
-				return event
-			});
-		});
-	}
-	return res;
-};
 
 let db = null,
 	helperDataCollection = null;
 
-const mongoOptions = {
-	useNewUrlParser: true,
-	keepAlive: 1,
-	connectTimeoutMS: 1000,
-	socketTimeoutMS: 1000,
-};
-
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-
-MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, mongoOptions, function (err, client) {
+MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(), function (err, client) {
 	if (err) {
 		// do nothing, just proceed
 	} else {
@@ -139,6 +53,83 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 	}
 	server.listen(port, () => console.log(`Listening on port ${port}`));
 
+});
+
+
+io.on('connection', socket => {
+	let isFlashScoreActive = false,
+		isHomepageGetUpdates = false,
+		intervalUpdates = null;
+
+	socket.on('is-flashscore-active', status => {
+		isFlashScoreActive = status;
+	});
+
+	socket.on('is-homepage-getupdates', status => {
+		isHomepageGetUpdates = status;
+	});
+
+	socket.once('get-updates', () => {
+		const getUpdatesHandler = () => {
+			if (isFlashScoreActive && cronjob.changes()) {
+				socket.emit('return-flashcore-changes', cronjob.changes());
+			}
+			if (isHomepageGetUpdates && cronjob.fullData()) {
+				let mainData = helper.simplifyHomeData(cronjob.fullData());
+				socket.emit('return-updates-homepage', mainData);
+			}
+		};
+		getUpdatesHandler();
+		intervalUpdates = setInterval(() => {
+			getUpdatesHandler(); // check in every 15 seconds
+		}, 15000);
+	});
+
+	socket.on('get-updates-details', api => {
+		const cacheKey = `mainData-${api}-eventdetails`;
+		const initRemoteRequests = () => {
+			const sofaOptions = {
+				method: 'GET',
+				uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
+				json: true,
+				headers: {
+					'Content-Type': 'application/json',
+					'Origin': 'https://www.sofascore.com',
+					'referer': 'https://www.sofascore.com/',
+					'x-requested-with': 'XMLHttpRequest'
+				}
+			};
+
+			request(sofaOptions)
+				.then(response => {
+					if (response) {
+						cacheService.instance().set(cacheKey, response, cacheDuration.main.eventdetails || 5, () => {
+							socket.emit('return-updates-details', response);
+						});
+					}
+				})
+				.catch(() => {
+					socket.emit('return-error-updates', "Error while retrieving information from server");
+				});
+		};
+
+		cacheService.instance().get(cacheKey, (err, cachedData) => {
+			if (err) {
+				initRemoteRequests();
+			} else {
+				if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+					socket.emit('return-updates-details', cachedData);
+				} else {
+					initRemoteRequests();
+				}
+			}
+		});
+	});
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+		clearInterval(intervalUpdates);
+	});
 });
 
 app.get('/api/', (req, res) => {
@@ -159,7 +150,7 @@ app.get('/api/', (req, res) => {
 
 		request(sofaOptions)
 			.then(response => {
-				if (req.query.page === "homepage") response = simplifyHomeData(response);
+				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
 				if (response) {
 					cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5, () => {
 						res.send(response);
@@ -386,7 +377,7 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 
 		request(provider3options)
 			.then(res => {
-				res = replaceDotWithUnderscore(res.events);
+				res = helper.replaceDotWithUnderscore(res.events);
 				if (res && res[code] && date === moment(res[code].startDate * 1e3).format('DD.MM.YYYY')) {
 					cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
 						if (helperDataCollection) {
@@ -501,229 +492,6 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
 			}
 		}
-	});
-});
-
-function initWebPush(res) {
-	res.forEach(x => {
-		x.forEach(change => {
-			if (change.kind === "E" && change.event && change.event.id) {
-				let message = {
-					webpush: {
-						notification: {
-							title: '',
-							body: '',
-							icon: '',
-							click_action: ''
-						}
-					},
-					topic: `match_${change.event.id}`
-				};
-
-				if ((change.path[0] === "homeScore" || change.path[0] === "awayScore") && change.path[1] === "current") { // home or away scored!!
-					if (parseInt(change.rhs) > parseInt(change.lhs)) {
-						message.webpush.notification.title = `GOL ${change.event.statusDescription}' ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
-						message.webpush.notification.click_action = `http://ultraskor.com/eventdetails/${change.event.id}`;
-					} else {
-						message.webpush.notification.title = `GOL İPTAL ${change.path[0] === "homeScore" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
-						message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
-					}
-				} else if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
-					message.webpush.notification.title = `Kırmızı Kart ${change.event.statusDescription}' ${change.path[0] === "homeRedCards" ? change.event.homeTeam.name : change.event.awayTeam.name}`;
-					message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-					message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeRedCards" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
-					message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
-				} else if (change.path[0] === "status" && change.path[1] === "code") {
-					if (change.lhs === 0 && change.rhs === 6) { // game started
-						message.webpush.notification.title = `Maç Başladı`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} - ${change.event.awayTeam.name}`;
-					} else if (change.lhs === 6 && change.rhs === 31) { // half time
-						message.webpush.notification.title = `İlk Yarı Sonucu`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-					} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
-						message.webpush.notification.title = `İkinci Yarı Başladı`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-					} else if (change.rhs === 100) { // full time
-						message.webpush.notification.title = `Maç Sonucu`;
-						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-					}
-					message.webpush.notification.icon = `https://www.ultraskor.com/apple-touch-icon.png`;
-					message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
-				}
-
-				if (message.webpush.notification.title) {
-					const cacheKey = `/topics/match_${change.event.id}`;
-					cacheService.instance().get(cacheKey, (err, cachedData) => {
-						if (typeof cachedData !== "undefined") { // subscription found for this topic, send notification
-							console.log('subscription found, send the push for ', change.event.id);
-							firebaseAdmin.messaging().send(message)
-								.then((response) => {
-									// Response is a message ID string.
-									console.log('Successfully sent message:', response);
-								})
-								.catch((error) => {
-									console.log('Error sending message:', error);
-								});
-						} else { // Cache is not found, no one is subscribe to this topic.
-							console.log('subscription not found, dont send any push for ', change.event.id);
-						}
-					});
-				}
-			}
-		});
-	});
-}
-
-const sofaOptions = {
-	method: 'GET',
-	uri: `https://www.sofascore.com/football//${moment().format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
-	json: true,
-	headers: {
-		'Content-Type': 'application/json',
-		'Origin': 'https://www.sofascore.com',
-		'referer': 'https://www.sofascore.com/',
-		'x-requested-with': 'XMLHttpRequest'
-	}
-};
-let previousData = null;
-let changes = null;
-let fullData = null;
-
-cron.schedule('*/15 * * * * *', () => {
-	// console.log('cron job', new Date());
-	request(sofaOptions)
-		.then(res => {
-			// console.log('triggered 1');
-			fullData = res;
-			const resFlash = _.clone(res, true);
-			let events = [];
-			const neededProperties = [
-				'awayRedCards',
-				'awayScore',
-				'homeRedCards',
-				'homeScore',
-				'id',
-				'status',
-				'statusDescription',
-				'awayTeam',
-				'homeTeam'
-			];
-
-			resFlash.sportItem.tournaments.forEach(tournament => {
-				tournament.events.forEach(event => {
-					let newEvents = {};
-					neededProperties.forEach(property => {
-						newEvents[property] = event[property]
-					});
-					events.push(newEvents)
-				});
-			});
-
-			if (previousData && previousData.length > 0) {
-				changes = [];
-
-				previousData.forEach(eventPrev => {
-					let eventNew = events.filter(item => item.id === eventPrev.id)[0];
-					let eventDiff = diff(eventPrev, eventNew);
-					if (eventDiff) {
-						eventDiff.forEach(x => {
-							x.event = eventNew;
-						});
-						changes.push(eventDiff);
-					}
-				});
-
-				if (changes.length > 0) {
-					initWebPush(changes);
-				}
-			}
-			previousData = events;
-		})
-		.catch((err) => {
-			console.log(`Error returning differences. Error: ${err}`);
-		});
-});
-
-io.on('connection', socket => {
-	let isFlashScoreActive = false,
-		isHomepageGetUpdates = false,
-		intervalUpdates = null;
-
-	socket.on('is-flashscore-active', status => {
-		isFlashScoreActive = status;
-	});
-
-	socket.on('is-homepage-getupdates', status => {
-		isHomepageGetUpdates = status;
-	});
-
-	socket.once('get-updates', () => {
-		const getUpdatesHandler = () => {
-			if (isFlashScoreActive) {
-				socket.emit('return-flashcore-changes', changes);
-			}
-			if (isHomepageGetUpdates) {
-				fullData = simplifyHomeData(fullData);
-				socket.emit('return-updates-homepage', fullData);
-			}
-		};
-		getUpdatesHandler();
-		intervalUpdates = setInterval(() => {
-			getUpdatesHandler(); // check in every 15 seconds
-		}, 15000);
-	});
-
-
-
-	socket.on('get-updates-details', api => {
-		const cacheKey = `mainData-${api}-eventdetails`;
-		const initRemoteRequests = () => {
-			const sofaOptions = {
-				method: 'GET',
-				uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
-				json: true,
-				headers: {
-					'Content-Type': 'application/json',
-					'Origin': 'https://www.sofascore.com',
-					'referer': 'https://www.sofascore.com/',
-					'x-requested-with': 'XMLHttpRequest'
-				}
-			};
-
-
-			request(sofaOptions)
-				.then(response => {
-					if (response) {
-						cacheService.instance().set(cacheKey, response, cacheDuration.main.eventdetails || 5, () => {
-							socket.emit('return-updates-details', response);
-						});
-					}
-				})
-				.catch(() => {
-					socket.emit('return-error-updates', "Error while retrieving information from server");
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (err) {
-				initRemoteRequests();
-			} else {
-				if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-					socket.emit('return-updates-details', cachedData);
-				} else {
-					initRemoteRequests();
-				}
-			}
-		});
-	});
-
-	socket.on('disconnect', () => {
-		console.log('user disconnected');
-		clearInterval(intervalUpdates);
 	});
 });
 

@@ -187,12 +187,14 @@ class Eventdetails extends Component {
 	}
 
 	onSocketConnect() {
-		this.setState({
-			refreshButton: false
-		}, () => {
-			clearTimeout(this.initSocketInterval);
-			this.emitSocketMessage(true);
-		});
+		if (this.state.refreshButton) {
+			this.setState({
+				refreshButton: false
+			}, () => {
+				clearTimeout(this.initSocketInterval);
+				this.emitSocketMessage(true);
+			});
+		}
 	}
 
 	onSocketDisconnect() {
