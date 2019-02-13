@@ -8,6 +8,10 @@ app.get('/images*', (req, res) => {
 	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`).pipe(res);
 });
 
+function pushDomain(body) {
+	return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
+}
+
 // define a simple route
 app.get('*', (req, res) => {
     let path = req.originalUrl;
@@ -24,9 +28,9 @@ app.get('*', (req, res) => {
         }
     };
 
-    if (path.indexOf('common_widgets') > -1) {
-        options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js?v=2.0.1';
-    }
+    // if (path.indexOf('common_widgets') > -1) {
+    //     options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js?v=2.0.1';
+    // }
 
     //console.log(options.url);
     request(options, function (error, response, body) {
@@ -38,6 +42,9 @@ app.get('*', (req, res) => {
         } else {
             res.header("Content-Type", "application/javascript; charset=utf-8");
         }
+		if (path.indexOf('common_widgets') > -1) {
+			body = pushDomain(body);
+		}
         res.send(body);
     });
 

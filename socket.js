@@ -260,6 +260,10 @@ app.get('/api/helper1/:date', (req, res) => {
 							initRemoteRequests(); // data can't be found in db, get it from remote servers
 						}
 					})
+					.catch(() => {
+						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+						initRemoteRequests();
+					})
 			} else {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
 			}
@@ -339,6 +343,10 @@ app.get('/api/helper2/:date', (req, res) => {
 							initRemoteRequests(); // data can't be found in db, get it from remote servers
 						}
 					})
+					.catch(() => {
+						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+						initRemoteRequests();
+					})
 			} else {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
 			}
@@ -401,6 +409,10 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 						} else {
 							initRemoteRequests(); // data can't be found in db, get it from remote servers
 						}
+					})
+					.catch(() => {
+						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+						initRemoteRequests();
 					})
 			} else {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
@@ -465,6 +477,10 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 							initRemoteRequests(); // data can't be found in db, get it from remote servers
 						}
 					})
+					.catch(() => {
+						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+						initRemoteRequests();
+					})
 			} else {
 				initRemoteRequests();  // db is not initalized, get data from remote servers
 			}
@@ -527,7 +543,7 @@ function initWebPush(res) {
 					const cacheKey = `/topics/match_${change.event.id}`;
 					cacheService.instance().get(cacheKey, (err, cachedData) => {
 						if (typeof cachedData !== "undefined") { // subscription found for this topic, send notification
-							console.log('subscription found, send the push for ', change.event.id );
+							console.log('subscription found, send the push for ', change.event.id);
 							firebaseAdmin.messaging().send(message)
 								.then((response) => {
 									// Response is a message ID string.
@@ -537,7 +553,7 @@ function initWebPush(res) {
 									console.log('Error sending message:', error);
 								});
 						} else { // Cache is not found, no one is subscribe to this topic.
-							console.log('subscription not found, dont send any push for ', change.event.id );
+							console.log('subscription not found, dont send any push for ', change.event.id);
 						}
 					});
 				}
@@ -616,7 +632,6 @@ cron.schedule('*/15 * * * * *', () => {
 		});
 });
 
-
 io.on('connection', socket => {
 	let isFlashScoreActive = false,
 		isHomepageGetUpdates = false,
@@ -646,306 +661,11 @@ io.on('connection', socket => {
 		}, 15000);
 	});
 
-	/* socket.on('get-main', (params) => {
-		const cacheKey = `mainData-${params.api}`;
-
-		const initRemoteRequests = () => {
-			const sofaOptions = {
-				method: 'GET',
-				uri: `https://www.sofascore.com${params.api}?_=${Math.floor(Math.random() * 10e8)}`,
-				json: true,
-				headers: {
-					'Content-Type': 'application/json',
-					'Origin': 'https://www.sofascore.com',
-					'referer': 'https://www.sofascore.com/',
-					'x-requested-with': 'XMLHttpRequest'
-				}
-			};
-
-			request(sofaOptions)
-				.then(res => {
-					if (params.page === "homepage") res = simplifyHomeData(res);
-					if (res) {
-						cacheService.instance().set(cacheKey, res, cacheDuration.main[params.page] || 5, () => {
-							socket.emit(`return-main-${params.page}`, res);  // return-main-homepage, return-main-eventdetails
-						});
-					}
-				})
-				.catch(() => {
-					console.log(`error returning data from main for ${params.page}`);
-					socket.emit(`return-error-${params.page}`, 'Error while retrieving information from server');
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (err) {
-				initRemoteRequests();
-				console.log('cache server is broken');
-			} else {
-				if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-					socket.emit(`return-main-${params.page}`, cachedData);
-					console.log('served from cache');
-				} else {
-					initRemoteRequests();
-					console.log('cache not exist, get from remote');
-				}
-			}
-		});
-
-	}); */
-
-	/* socket.on('get-eventdetails-helper-1', date => {
-		const cacheKey = `helperData-${date}-provider1`;
-
-		const initRemoteRequests = () => {
-			const provider1options = {
-				method: 'GET',
-				uri: `http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=${date}`,
-				json: true,
-				timeout: 1500
-			};
-			request(provider1options)
-				.then(res => {
-					if (res.data && res.data.length > 0) {
-						cacheService.instance().set(cacheKey, res, cacheDuration.provider1, () => {
-							if (helperDataCollection) {
-								helperDataCollection.insertOne({
-									date: date,
-									provider: "provider1",
-									data: res
-								});
-							}
-						});
-					}
-					socket.emit('return-eventdetails-prodiver1', res); // return provider1
-				})
-				.catch(() => {
-					console.log(`error returning data from main for provider1`);
-					//socket.emit('my-error', 'Error while retrieving information from server');
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				socket.emit('return-eventdetails-prodiver1', cachedData);
-			} else { // Cache is not found
-				if (helperDataCollection) {
-					helperDataCollection
-						.findOne({"date": date, "provider": "provider1"})
-						.then(result => {
-							if (result) {
-								cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1, () => {
-									socket.emit('return-eventdetails-prodiver1', result.data); // Data is found in the db, now caching and serving!
-								});
-							} else {
-								initRemoteRequests(); // data can't be found in db, get it from remote servers
-							}
-						})
-				} else {
-					initRemoteRequests();  // db is not initalized, get data from remote servers
-				}
-			}
-		});
-	}); */
-
-	/* socket.on('get-eventdetails-helper-2', date => {
-		const cacheKey = `helperData-${date}-provider2`;
-
-		const initRemoteRequests = () => {
-			const provider2options = {
-				method: 'POST',
-				uri: 'https://brdg-c1884f68-d545-4103-bee0-fbcf3d58c850.azureedge.net/livescore/matchlist',
-				headers: {
-					'Content-Type': 'application/json',
-					'Origin': 'https://www.broadage.com',
-				},
-				body: JSON.stringify({
-					"coverageId": "6bf0cf44-e13a-44e1-8008-ff17ba6c2128",
-					"options": {
-						"sportId": 1,
-						"day": date,
-						"origin": "broadage.com",
-						"timeZone": 3
-					}
-				}),
-				json: true,
-				timeout: 1500
-			};
-			request(provider2options)
-				.then(res => {
-					if (res.initialData && res.initialData.length > 0) {
-						cacheService.instance().set(cacheKey, res, cacheDuration.provider2, () => {
-							if (helperDataCollection) {
-								helperDataCollection.insertOne({
-									date: date,
-									provider: "provider2",
-									data: res
-								});
-							}
-						});
-					}
-					socket.emit('return-eventdetails-prodiver2', res); // return provider2
-				})
-				.catch(() => {
-					console.log(`error returning data from main for provider2`);
-					//socket.emit('my-error', 'Error while retrieving information from server');
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				socket.emit('return-eventdetails-prodiver2', cachedData);
-			} else { // Cache is not found
-				if (helperDataCollection) {
-					helperDataCollection
-						.findOne({"date": date, "provider": "provider2"})
-						.then(result => {
-							if (result) {
-								cacheService.instance().set(cacheKey, result.data, cacheDuration.provider2, () => {
-									socket.emit('return-eventdetails-prodiver2', result.data); // Data is found in the db, now caching and serving!
-								});
-							} else {
-								initRemoteRequests(); // data can't be found in db, get it from remote servers
-							}
-						})
-				} else {
-					initRemoteRequests();  // db is not initalized, get data from remote servers
-				}
-			}
-		});
-	}); */
-
-	/* socket.on('get-eventdetails-helper-3', params => {
-		const cacheKey = `helperData-${params.date}-provider3`;
-
-		const initRemoteRequests = () => {
-			const provider3options = {
-				method: 'GET',
-				uri: `https://www.tuttur.com/draw/events/type/football`,
-				json: true,
-				timeout: 1500
-			};
-
-			request(provider3options)
-				.then(res => {
-					res = replaceDotWithUnderscore(res.events);
-					if (res && res[params.code] && params.date === moment(res[params.code].startDate * 1e3).format('DD.MM.YYYY')) {
-						cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
-							if (helperDataCollection) {
-								helperDataCollection.insertOne({
-									date: params.date,
-									provider: "provider3",
-									data: res
-								});
-							}
-						});
-						socket.emit('return-eventdetails-prodiver3', res); // return provider3
-					}
-				})
-				.catch(() => {
-					console.log(`error returning data from main for provider3`);
-					//socket.emit('my-error', 'Error while retrieving information from server');
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				socket.emit('return-eventdetails-prodiver3', cachedData);
-			} else { // Cache is not found
-				if (helperDataCollection) {
-					helperDataCollection
-						.findOne({"date": params.date, "provider": "provider3"})
-						.then(result => {
-							if (result) {
-								cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3, () => {
-									socket.emit('return-eventdetails-prodiver3', result.data); // Data is found in the db, now caching and serving!
-								});
-							} else {
-								initRemoteRequests(); // data can't be found in db, get it from remote servers
-							}
-						})
-				} else {
-					initRemoteRequests();  // db is not initalized, get data from remote servers
-				}
-			}
-		});
-	}); */
-
-	/* socket.on('get-oley', params => {
-		const cacheKey = `helperData-${params.matchid}-${params.type}`;
-		const initRemoteRequests = () => {
-			const oleyOptions = {
-				method: 'GET',
-				uri: `https://widget.oley.com/match/${params.type}/1/${params.matchid}`,
-				json: true,
-				timeout: 1500
-			};
-			request(oleyOptions)
-				.then(res => {
-					if (res) {
-						cacheService.instance().set(cacheKey, res, cacheDuration[params.type], () => {
-							if (helperDataCollection) {
-								helperDataCollection.insertOne({
-									matchid: params.matchid,
-									type: params.type,
-									data: res
-								});
-							}
-						});
-					}
-					socket.emit(`return-oley-${params.type}`, res); // return
-				})
-				.catch(() => {
-					console.log(`error returning data for ${params.type}`);
-					socket.emit(`return-oley-error-${params.type}`, 'Error while retrieving information from server');
-				});
-		};
-
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				socket.emit(`return-oley-${params.type}`, cachedData);
-			} else { // Cache is not found
-				if (helperDataCollection) {
-					helperDataCollection
-						.findOne({matchid: params.matchid, type: params.type})
-						.then(result => {
-							if (result) {
-								cacheService.instance().set(cacheKey, result.data, cacheDuration[params.type], () => {
-									socket.emit(`return-oley-${params.type}`, result.data); // Data is found in the db, now caching and serving!
-								});
-							} else {
-								initRemoteRequests(); // data can't be found in db, get it from remote servers
-							}
-						})
-				} else {
-					initRemoteRequests();  // db is not initalized, get data from remote servers
-				}
-			}
-		});
-	}); */
-
-	/* socket.on('web-push-subscription', options => {
-		firebaseAdmin.messaging()[options.method](options.token, options.topic)
-			.then(() => {
-				socket.emit('web-push-subscription-return', {
-					success: true,
-					message: `Successfully ${options.method} to topic`
-				});
-			})
-			.catch(() => {
-				socket.emit('web-push-subscription-return', {
-					status: false,
-					message: `An error occurred while processing your request`
-				});
-			});
-	}); */
-
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 		clearInterval(intervalUpdates);
 	});
 });
-
 
 app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 	const {lang, sport, type, by, date} = req.params;
@@ -1030,7 +750,6 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
 	res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`)
 });
-
 
 // Log Errors
 app.post('/api/logerrors', (req, res) => {
