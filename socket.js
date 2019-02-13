@@ -11,6 +11,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const firebaseAdmin = require('firebase-admin');
 const cacheService = require('./cache.service');
+const helper = require('./helper');
 const cacheDuration = {
 	provider1: 60 * 60 * 24, // 24 hours
 	provider2: 60 * 60 * 24, // 24 hours
@@ -208,41 +209,56 @@ app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
 	const cacheKey = `helperData-${date}-provider1`;
 
+	let now = moment(moment().format('YYYY-MM-DD')); //todays date
+	let end = moment(date, "DD.MM.YYYY"); // another date
+	let duration = moment.duration(end.diff(now));
+	let offset = duration.asDays();
+	// https://lsc.fn.sportradar.com/tempobet/en/Europe:Istanbul/gismo/event_fullfeed/1
 	const initRemoteRequests = () => {
 		const provider1options = {
 			method: 'GET',
-			uri: `http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=${date}`,
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://ls.betradar.com',
+				'Referer': 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page'
+			},
+			uri: `https://lsc.fn.sportradar.com/betradar/en/Europe:Istanbul/gismo/event_fullfeed/${offset}`,
 			json: true,
 			timeout: 1500
 		};
 		request(provider1options)
 			.then(response => {
-				if (response.data && response.data.length > 0) {
-					cacheService.instance().set(cacheKey, response, cacheDuration.provider1, () => {
+				let matchList = helper.preProcessHelper1Data(response);
+				if (matchList && matchList.length > 0) {
+					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1, () => {
 						if (helperDataCollection) {
 							try {
 								helperDataCollection.insertOne({
 									date: date,
 									provider: "provider1",
-									data: response
+									data: matchList
 								});
 							} catch (err) {
 								// do nothing just proceed
 							}
 						}
-						res.send(response);
+						res.send(matchList);
 					});
 				} else {
-					res.send('');
+					res.send({
+						status: "empty",
+						message: 'Error while retrieving information from server'
+					})
 				}
 			})
-			.catch(() => {
+			.catch(err => {
 				res.status(500).send({
 					status: "error",
-					message: 'Error while retrieving information from server'
+					message: 'Error while retrieving information from server. Error: ' + err.toString()
 				})
 			});
 	};
+
 
 	cacheService.instance().get(cacheKey, (err, cachedData) => {
 		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
@@ -296,7 +312,7 @@ app.get('/api/helper2/:date', (req, res) => {
 			timeout: 1500
 		};
 
-		
+
 		request(provider2options)
 			.then(res => {
 				if (res.initialData && res.initialData.length > 0) {
