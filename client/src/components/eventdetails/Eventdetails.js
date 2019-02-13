@@ -263,15 +263,12 @@ class Eventdetails extends Component {
 	}
 
 	handleGetDataHelper1(res) {
-		if (res.data && res.data.length > 0) {
+		if (res && res.length > 0) {
 			const jsonData = this.state.eventData;
-			res.data.forEach(item => {
-				let provider1Data = item.Matches.filter(match => match.HomeTeam.Id === jsonData.event.homeTeam.id);
-				if (provider1Data.length > 0) {
-					this.setState({
-						provider1MatchData: provider1Data[0]
-					});
-				}
+			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id);
+			console.log(provider1Data[0]);
+			this.setState({
+				provider1MatchData: provider1Data[0]
 			});
 		}
 	}
@@ -464,7 +461,7 @@ class Eventdetails extends Component {
 
 					{provider1MatchData ? (
 						<div className="swipe-content live-tracker" data-tab="live-tracker">
-							<LiveTracker matchid={provider1MatchData.Id}
+							<LiveTracker matchid={provider1MatchData.id}
 										 isTabLiveTracker={this.state.isTabLiveTracker}/>
 						</div>
 					) : ""}
