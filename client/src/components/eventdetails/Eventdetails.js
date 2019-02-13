@@ -53,17 +53,12 @@ class Eventdetails extends Component {
 		};
 		this.tabs = [];
 		smoothscroll.polyfill();
+		this.initSocketInterval = null;
 	};
 
 	componentDidMount() {
-		this.initGetData({
-			api: '/event/' + this.state.eventid + '/json',
-			page: "eventdetails"
-		});
-		this.initSocket({
-			api: '/event/' + this.state.eventid + '/json',
-			page: "eventdetails"
-		});
+		this.initGetData();
+		this.initSocket();
 		this.tabs = [];
 		const page = this.props.location.pathname;
 		this.trackPage(page);
@@ -101,7 +96,8 @@ class Eventdetails extends Component {
 		} else if (tab === "h2h") {
 			this.setState({isTabH2h: true})
 		}
-
+		this.swipeMarkerAndScrollHandler(index);
+		this.swipeAdjustHeight(index);
 	};
 	swipeSwiping = (percentage) => {
 		//console.log(percentage);
@@ -152,44 +148,66 @@ class Eventdetails extends Component {
 
 	componentWillUnmount() {
 		const {socket} = this.props;
-		socket.removeListener('connect', this.onSocketConnect);
+		socket.removeListener('return-updates-details', this.handleSocketData);
 		socket.removeListener('return-error-updates', this.onSocketDisconnect);
-		socket.on('disconnect', this.onSocketDisconnect);
+		socket.removeListener('disconnect', this.onSocketDisconnect);
+		socket.removeListener('connect', this.onSocketConnect);
+		clearTimeout(this.initSocketInterval);
 	}
 
-	initSocket = options => {
+	initSocket() {
 		const {socket} = this.props;
-
-		socket.emit('get-updates-details', 'test');
-
+		this.emitSocketMessage();
 		socket.on('return-updates-details', this.handleSocketData);
 		socket.on('return-error-updates', this.onSocketDisconnect);
 		socket.on('disconnect', this.onSocketDisconnect);
 		socket.on('connect', this.onSocketConnect);
 	};
 
+	emitSocketMessage(nowait) {
+		const {socket} = this.props;
+		const api = '/event/' + this.state.eventid + '/json';
+
+		if (nowait) {
+			socket.emit('get-updates-details', api);
+		} else {
+			this.initSocketInterval = setTimeout(() => { // init socket after 15 seconds (15 seconds interval)
+				socket.emit('get-updates-details', api);
+			}, 15000);
+		}
+	}
+
 	handleSocketData(res) {
-		// handle the data provided by socket
-		console.log(res);
+		this.setState({
+			eventData: res,
+		}, () => {
+			this.emitSocketMessage()
+
+		});
 	}
 
 	onSocketConnect() {
 		this.setState({
 			refreshButton: false
+		}, () => {
+			clearTimeout(this.initSocketInterval);
+			this.emitSocketMessage(true);
 		});
 	}
 
 	onSocketDisconnect() {
 		console.log('disconnected socket');
+		clearTimeout(this.initSocketInterval);
 		this.setState({
 			refreshButton: true
 		});
 	}
 
-	initGetData = options => {
+	initGetData = () => {
 		this.setState({loading: true});
+		const api = '/event/' + this.state.eventid + '/json';
 
-		fetch('/api/?query=' + options.api + '&page=eventdetails')
+		fetch(`/api/?query=${api}&page=eventdetails`)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -407,32 +425,31 @@ class Eventdetails extends Component {
 		return (
 			<div className="event-details">
 				{this.state.loading ? <Loading/> : null}
-				{this.state.refreshButton ? <RefreshButton/> : null}
 				<Scoreboard eventData={eventData}/>
 				<div className="middle-tabs">
 					<div className="container">
 						<ul className="swipe-tabs" ref={this.swipeTabsEl}>
 							{this.tabs.map((tab, index) => {
 								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-										   className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
+								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
 									<span className="text">{tab}</span></li>;
 							})}
 							<li className="marker" ref={this.swipeMarkerEl}
-								style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
+							    style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
 						</ul>
 						<div className="swipe-shadows"/>
 					</div>
 				</div>
 				<ReactSwipe className="swipe-contents"
-							childCount={this.tabs.length}
-							swipeOptions={{
-								speed: 200,
-								continuous: true,
-								callback: this.swipeChanging,
-								transitionEnd: this.swipeComplete,
-								swiping: this.swipeSwiping,
-								disableScroll: false
-							}} ref={this.swipeEl}>
+				            childCount={this.tabs.length}
+				            swipeOptions={{
+					            speed: 200,
+					            continuous: true,
+					            callback: this.swipeChanging,
+					            transitionEnd: this.swipeComplete,
+					            swiping: this.swipeSwiping,
+					            disableScroll: false
+				            }} ref={this.swipeEl}>
 
 					<div className="swipe-content summary">
 						<div className="event-details-summary">
@@ -461,7 +478,7 @@ class Eventdetails extends Component {
 					{provider1MatchData ? (
 						<div className="swipe-content live-tracker" data-tab="live-tracker">
 							<LiveTracker matchid={provider1MatchData.id}
-										 isTabLiveTracker={this.state.isTabLiveTracker}/>
+							             isTabLiveTracker={this.state.isTabLiveTracker}/>
 						</div>
 					) : ""}
 
@@ -475,7 +492,7 @@ class Eventdetails extends Component {
 						<div className="swipe-content lineup" data-tab="lineup">
 							{this.state.isTabLineup ?
 								<Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}
-										socket={socket}/>
+								        socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -484,9 +501,9 @@ class Eventdetails extends Component {
 						<div className="swipe-content injuries" data-tab="injuries">
 							{this.state.isTabInjury ?
 								<Injuries eventData={eventData}
-										  provider2MatchData={provider2MatchData}
-										  swipeAdjustHeight={this.swipeAdjustHeight}
-										  socket={socket}/>
+								          provider2MatchData={provider2MatchData}
+								          swipeAdjustHeight={this.swipeAdjustHeight}
+								          socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -494,22 +511,22 @@ class Eventdetails extends Component {
 					<div className="swipe-content h2h" data-tab="h2h">
 						{this.state.isTabH2h ?
 							<H2h eventData={eventData}
-								 swipeAdjustHeight={this.swipeAdjustHeight}
-								 socket={socket}/>
+							     swipeAdjustHeight={this.swipeAdjustHeight}
+							     socket={socket}/>
 							: ""}
 					</div>
 
 					<div className="swipe-content iddaa" data-tab="iddaa">
 						<Iddaa eventData={eventData} provider2MatchData={provider2MatchData}
-							   provider3MatchData={provider3MatchData}
-							   swipeAdjustHeight={this.swipeAdjustHeight}/>
+						       provider3MatchData={provider3MatchData}
+						       swipeAdjustHeight={this.swipeAdjustHeight}/>
 					</div>
 
 					{eventData.standingsAvailable ? (
 						<div className="swipe-content standing" data-tab="standing">
 							{this.state.isTabStanding ?
 								<Standings eventData={eventData} socket={socket}
-										   swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+								           swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
 						</div>
 					) : ""}
 
@@ -547,6 +564,7 @@ class Eventdetails extends Component {
 					</div>
 				</ReactSwipe>
 				<Footer/>
+				<span>{this.state.refreshButton ? <RefreshButton/> : null}</span>
 				<Helmet>
 					<script type="application/ld+json">{`
 				        {

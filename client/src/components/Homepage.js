@@ -198,8 +198,8 @@ class Homepage extends Component {
 		socket.emit('is-homepage-getupdates', true);
 		socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
 		socket.on('disconnect', this.onSocketDisconnect);
-		socket.on('return-error-updates', this.onSocketDisconnect);
 		socket.on('connect', this.onSocketConnect);
+		socket.on('return-error-updates', this.onSocketDisconnect);
 	}
 
 	onSocketReturnUpdatesData(res) {

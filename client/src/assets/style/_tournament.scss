@@ -1,320 +1,324 @@
 .tournament-title {
-	background: $color-cl-1;
-	color: #fff;
-	padding: 10px 25px;
-	position: sticky;
-	top: 47px;
-	z-index: 1;
+    background: $color-cl-1;
+    color: #fff;
+    padding: 10px 25px;
+    position: sticky;
+    top: 47px;
+    z-index: 1;
 }
 
 .league-link {
-	color: #fff;
-	padding: 10px;
-	margin: 0;
-	display: block;
-	&:hover {
-		color: #fff;
-	}
-	&-container {
-		padding: 0;
-	}
-	.flag {
-		padding: 0;
-	}
+    color: #fff;
+    padding: 10px;
+    margin: 0;
+    display: block;
+    &:hover {
+        color: #fff;
+    }
+    &-container {
+        padding: 0;
+    }
+    .flag {
+        padding: 0;
+    }
 }
 
 .tournament-name {
-	display: inline-block;
-	font-weight: lighter;
-	@include line-clamp(1);
-	strong {
-		font-weight: bold;
-	}
+    display: inline-block;
+    font-weight: lighter;
+    @include line-clamp(1);
+    strong {
+        font-weight: bold;
+    }
 }
 
 .event-score {
-	letter-spacing: 0.01rem;
-	max-width: 50px;
-	padding: 0;
-	@include line-clamp(1);
+    letter-spacing: 0.01rem;
+    max-width: 50px;
+    padding: 0;
+    @include line-clamp(1);
 }
 
 .homepage-list {
-	& > div:not(.tournament-title):not(.fav-container):not(.error):nth-child(odd) {
-		background: rgba(0, 0, 0, 0.1);
-	}
+    & > div:not(.tournament-title):not(.fav-container):not(.error):nth-child(odd) {
+        background: rgba(0, 0, 0, 0.1);
+    }
 }
 
 .fav-container {
-	& > div:not(.tournament-title):nth-child(even) {
-		background: rgba($color-fav, .12);
-	}
-	& > .fav-container {
-		background: rgba($color-fav, .05);
-	}
+    & > div:not(.tournament-title):nth-child(even) {
+        background: rgba($color-fav, .12);
+    }
+    & > .fav-container {
+        background: rgba($color-fav, .05);
+    }
 }
 
 .event-container {
-	height: 50px;
-	line-height: 50px;
+    height: 50px;
+    line-height: 50px;
 }
 
 .event-team {
-	@include line-clamp(1);
+    @include line-clamp(1);
 }
 
 .event-time {
-	font-size: .9rem;
-	max-width: 60px;
-	text-align: center;
-	@include line-clamp(1);
-	.full-time {
-		position: relative;
-		text-align: center;
-		.day {
-			display: none;
-			position: absolute;
-			top: 7px;
-			font-size: .7rem;
-			line-height: 10px;
-			color: rgba(0, 0, 0, .4);
-			width: 100%;
-			text-align: center;
-		}
-	}
+    font-size: .9rem;
+    max-width: 60px;
+    text-align: center;
+    @include line-clamp(1);
+    .full-time {
+        position: relative;
+        text-align: center;
+        .day {
+            display: none;
+            position: absolute;
+            top: 7px;
+            font-size: .7rem;
+            line-height: 10px;
+            color: rgba(0, 0, 0, .4);
+            width: 100%;
+            text-align: center;
+        }
+    }
     .in-the-past {
         font-size: .8rem;
     }
-	& > div {
-		@include line-clamp(1);
-	}
+    & > div {
+        @include line-clamp(1);
+    }
 }
 
 .event-link,
 .event-link:hover {
-	color: inherit;
-	text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 .live,
 .red {
-	color: red;
+    color: red;
 }
 
 .yellow {
-	color: #808000;
+    color: #808000;
 }
 
 .small-text {
-	font-size: .8rem;
+    font-size: .8rem;
 }
 
 .line-clamp {
-	@include line-clamp(1);
+    @include line-clamp(1);
 }
 
 .event-fav-color {
-	color: #fbbc37;
+    color: #fbbc37;
 }
 
 .event-fav {
-	font-size: 1.5rem;
-	max-width: 40px;
-	cursor: pointer;
-	position: relative;
-	i {
-		color: rgba(#333, .2);
-	}
-	.active {
-		color: $color-fav;
-		animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
-	}
-	.fav-loading {
-		font-size: 1rem;
-		position: absolute;
-		left: -19px;
-		top: 18px;
-		animation: 1s spin infinite;
-	}
+    font-size: 1.5rem;
+    max-width: 40px;
+    cursor: pointer;
+    position: relative;
+    i {
+        color: rgba(#333, .2);
+    }
+    .active {
+        color: $color-fav;
+        animation: favAnimation .5s cubic-bezier(0.52, 0.16, 0.52, 0.84);
+    }
+    .fav-loading {
+        font-size: 1.5rem;
+        position: absolute;
+        left: -16px;
+        top: 14px;
+        animation: 1s spin infinite;
+        @include media(web) {
+            left: -26px;
+        }
+    }
 }
+
 .half-time-score {
     max-width: 50px;
     font-size: .9rem;
 }
 
 @keyframes favAnimation {
-	0% {
-		transform: scale(1);
-	}
-	50% {
-		transform: scale(1.5);
-	}
-	100% {
-		transform: scale(1);
-	}
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .live-blinker {
-	animation: blink-animation 1s linear infinite;
-	color: red;
-	margin-left: 1px;
+    animation: blink-animation 1s linear infinite;
+    color: red;
+    margin-left: 1px;
 }
 
 .flash-blinker-1 {
-	animation: blink-animation 0.5s linear;
-	animation-iteration-count: 1;
+    animation: blink-animation 0.5s linear;
+    animation-iteration-count: 1;
 }
 
 .flash-blinker-1 {
-	animation: blink-animation 0.5s linear;
-	animation-iteration-count: 1;
+    animation: blink-animation 0.5s linear;
+    animation-iteration-count: 1;
 }
 
 .flash-blinker-3 {
-	animation: blink-animation 0.5s linear;
-	animation-iteration-count: 3;
+    animation: blink-animation 0.5s linear;
+    animation-iteration-count: 3;
 }
 
 .flash-blinker-5 {
-	animation: blink-animation 0.5s linear;
-	animation-iteration-count: 20;
+    animation: blink-animation 0.5s linear;
+    animation-iteration-count: 20;
 }
 
 .red-card {
-	display: inline-block;
-	background: #dc0d17;
-	color: #fff;
-	height: 14px;
-	line-height: 14px;
-	font-size: .7rem;
-	width: 10px;
-	text-align: center;
-	margin: -2px 4px 0;
-	vertical-align: middle;
-	box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
+    display: inline-block;
+    background: #dc0d17;
+    color: #fff;
+    height: 14px;
+    line-height: 14px;
+    font-size: .7rem;
+    width: 10px;
+    text-align: center;
+    margin: -2px 4px 0;
+    vertical-align: middle;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .3);
 }
 
 .score-separator {
-	margin: 0 2px;
-	position: relative;
-	top:-1px;
+    margin: 0 2px;
+    position: relative;
+    top: -1px;
 }
 
 .flash-score-board {
-	background: $premier-leage-2;
-	color: #fff;
-	width: 100%;
-	padding: 7px 0;
-	font-weight: 700;
-	font-size: .9rem;
-	position: fixed;
-	bottom: -100px;
-	box-shadow: 0px -1px 3px 0px rgba(0, 0, 0, 0.2), 0px -1px 1px 0px rgba(0, 0, 0, 0.14), 0px -2px 1px -1px rgba(0, 0, 0, 0.12);
-	z-index: 10;
-	animation: move-top .6s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
-	transition: transform .6s cubic-bezier(0.32, 0.08, 0.24, 1), box-shadow .6s cubic-bezier(0.32, 0.08, 0.24, 1);
-	&.hidden {
+    background: $premier-leage-2;
+    color: #fff;
+    width: 100%;
+    padding: 7px 0;
+    font-weight: 700;
+    font-size: .9rem;
+    position: fixed;
+    bottom: -100px;
+    box-shadow: 0px -1px 3px 0px rgba(0, 0, 0, 0.2), 0px -1px 1px 0px rgba(0, 0, 0, 0.14), 0px -2px 1px -1px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    animation: move-top .6s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+    transition: transform .6s cubic-bezier(0.32, 0.08, 0.24, 1), box-shadow .6s cubic-bezier(0.32, 0.08, 0.24, 1);
+    &.hidden {
         display: none;
     }
-	.red-card {
-		position: absolute;
-		top: 27px;
-		height: 21px;
-		line-height: 21px;
-		width: 15px;
-		&.home {
-			left: -7px;
-		}
-		&.away {
-			right: -7px;
-		}
-	}
-	.desc {
-		font-size: .7rem;
-		background: rgba(255,255,255,.4);
-		border-radius: 7px;
-		line-height: 14px;
-		&:empty {
-			display: none;
-		}
-	}
+    .red-card {
+        position: absolute;
+        top: 27px;
+        height: 21px;
+        line-height: 21px;
+        width: 15px;
+        &.home {
+            left: -7px;
+        }
+        &.away {
+            right: -7px;
+        }
+    }
+    .desc {
+        font-size: .7rem;
+        background: rgba(255, 255, 255, .4);
+        border-radius: 7px;
+        line-height: 14px;
+        &:empty {
+            display: none;
+        }
+    }
     &.shrink {
-		transform: translateY(84px);
-		box-shadow: none;
-		.content {
-			opacity: 0;
-		}
-	}
-	.content {
-		opacity: 1;
-		transition: opacity .1s linear;
-		transition-delay: .6s;
-	}
-	.shrink-btn {
-		position: absolute;
-		top: -30px;
-		right: 30px;
-		height: 30px;
-		width: 30px;
-		background: $premier-leage-2;
-		color: #fff;
-		line-height: 35px;
-		text-align: center;
-		border-radius: 15px 15px 0 0;
-	}
-	.col {
-		padding: 0 5px;
-	}
-	.col-minute {
-		max-width: 50px;
-		padding-left: .5rem;
-	}
-	.col-sound {
-		max-width: 50px;
-		text-align: center;
-		i {
-			background: rgba(255, 255, 255, .3);
-			height: 40px;
-			width: 40px;
-			line-height: 40px;
-			border-radius: 4px;
-		}
+        transform: translateY(84px);
+        box-shadow: none;
+        .content {
+            opacity: 0;
+        }
+    }
+    .content {
+        opacity: 1;
+        transition: opacity .1s linear;
+        transition-delay: .6s;
+    }
+    .shrink-btn {
+        position: absolute;
+        top: -30px;
+        right: 30px;
+        height: 30px;
+        width: 30px;
+        background: $premier-leage-2;
+        color: #fff;
+        line-height: 35px;
+        text-align: center;
+        border-radius: 15px 15px 0 0;
+    }
+    .col {
+        padding: 0 5px;
+    }
+    .col-minute {
+        max-width: 50px;
+        padding-left: .5rem;
+    }
+    .col-sound {
+        max-width: 50px;
+        text-align: center;
+        i {
+            background: rgba(255, 255, 255, .3);
+            height: 40px;
+            width: 40px;
+            line-height: 40px;
+            border-radius: 4px;
+        }
         &.muted {
             i {
                 background: rgba(255, 255, 255, .2);
             }
         }
-	}
-	.team-logo {
-		max-height: 35px;
-	}
-	.team-name {
-		@include line-clamp(1);
-		max-width: 22vw;
-		margin: 0 auto;
-	}
-	.col-score {
-		max-width: 85px;
-		padding: 0;
-		text-align: center;
-		font-size: 2rem;
-		.separator {
-			margin: 0 2px;
-		}
-	}
+    }
+    .team-logo {
+        max-height: 35px;
+    }
+    .team-name {
+        @include line-clamp(1);
+        max-width: 22vw;
+        margin: 0 auto;
+    }
+    .col-score {
+        max-width: 85px;
+        padding: 0;
+        text-align: center;
+        font-size: 2rem;
+        .separator {
+            margin: 0 2px;
+        }
+    }
 }
 
 @keyframes move-top {
-	0% {
-		bottom: -100px
-	}
-	100% {
-		bottom: 0;
-	}
+    0% {
+        bottom: -100px
+    }
+    100% {
+        bottom: 0;
+    }
 }
 
 @keyframes blink-animation {
-	50% {
-		opacity: 0;
-	}
+    50% {
+        opacity: 0;
+    }
 }

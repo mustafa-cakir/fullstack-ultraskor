@@ -213,7 +213,7 @@ app.get('/api/helper1/:date', (req, res) => {
 	let end = moment(date, "DD.MM.YYYY"); // another date
 	let duration = moment.duration(end.diff(now));
 	let offset = duration.asDays();
-	// https://lsc.fn.sportradar.com/tempobet/en/Europe:Istanbul/gismo/event_fullfeed/1
+
 	const initRemoteRequests = () => {
 		const provider1options = {
 			method: 'GET',
@@ -675,6 +675,50 @@ io.on('connection', socket => {
 		intervalUpdates = setInterval(() => {
 			getUpdatesHandler(); // check in every 15 seconds
 		}, 15000);
+	});
+
+
+
+	socket.on('get-updates-details', api => {
+		const cacheKey = `mainData-${api}-eventdetails`;
+		const initRemoteRequests = () => {
+			const sofaOptions = {
+				method: 'GET',
+				uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
+				json: true,
+				headers: {
+					'Content-Type': 'application/json',
+					'Origin': 'https://www.sofascore.com',
+					'referer': 'https://www.sofascore.com/',
+					'x-requested-with': 'XMLHttpRequest'
+				}
+			};
+
+
+			request(sofaOptions)
+				.then(response => {
+					if (response) {
+						cacheService.instance().set(cacheKey, response, cacheDuration.main.eventdetails || 5, () => {
+							socket.emit('return-updates-details', response);
+						});
+					}
+				})
+				.catch(() => {
+					socket.emit('return-error-updates', "Error while retrieving information from server");
+				});
+		};
+
+		cacheService.instance().get(cacheKey, (err, cachedData) => {
+			if (err) {
+				initRemoteRequests();
+			} else {
+				if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+					socket.emit('return-updates-details', cachedData);
+				} else {
+					initRemoteRequests();
+				}
+			}
+		});
 	});
 
 	socket.on('disconnect', () => {
