@@ -208,30 +208,43 @@ app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
 	const cacheKey = `helperData-${date}-provider1`;
 
+	let now = moment(moment().format('YYYY-MM-DD')); //todays date
+	let end = moment(date, "DD.MM.YYYY"); // another date
+	let duration = moment.duration(now.diff(end));
+	let offset = duration.asDays();
+	console.log(offset);
+	// https://lsc.fn.sportradar.com/tempobet/en/Europe:Istanbul/gismo/event_fullfeed/1
 	const initRemoteRequests = () => {
 		const provider1options = {
 			method: 'GET',
-			uri: `http://www.hurriyet.com.tr/api/spor/sporlivescorejsonlist/?sportId=1&date=${date}`,
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://ls.betradar.com',
+				'Referer': 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page'
+			},
+			uri: `https://lsc.fn.sportradar.com/tempobet/en/Europe:Istanbul/gismo/event_fullfeed/${offset}`,
 			json: true,
 			timeout: 1500
 		};
 		request(provider1options)
 			.then(response => {
-				if (response.data && response.data.length > 0) {
-					cacheService.instance().set(cacheKey, response, cacheDuration.provider1, () => {
-						if (helperDataCollection) {
-							try {
-								helperDataCollection.insertOne({
-									date: date,
-									provider: "provider1",
-									data: response
-								});
-							} catch (err) {
-								// do nothing just proceed
-							}
-						}
-						res.send(response);
-					});
+				if (response.doc && response.doc.length > 0 && response.doc.data && response.doc.data.length > 0) {
+					let footballData = response.doc.data.realcategories[0];
+					res.send(footballData);
+					// cacheService.instance().set(cacheKey, footballData, cacheDuration.provider1, () => {
+					// 	if (helperDataCollection) {
+					// 		try {
+					// 			helperDataCollection.insertOne({
+					// 				date: date,
+					// 				provider: "provider1",
+					// 				data: footballData
+					// 			});
+					// 		} catch (err) {
+					// 			// do nothing just proceed
+					// 		}
+					// 	}
+					// 	res.send(footballData);
+					// });
 				} else {
 					res.send('');
 				}
