@@ -266,7 +266,6 @@ class Eventdetails extends Component {
 		if (res && res.length > 0) {
 			const jsonData = this.state.eventData;
 			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id);
-			console.log(provider1Data[0]);
 			this.setState({
 				provider1MatchData: provider1Data[0]
 			});
