@@ -213,7 +213,6 @@ app.get('/api/helper1/:date', (req, res) => {
 	let end = moment(date, "DD.MM.YYYY"); // another date
 	let duration = moment.duration(now.diff(end));
 	let offset = duration.asDays();
-	console.log(offset);
 	// https://lsc.fn.sportradar.com/tempobet/en/Europe:Istanbul/gismo/event_fullfeed/1
 	const initRemoteRequests = () => {
 		const provider1options = {
