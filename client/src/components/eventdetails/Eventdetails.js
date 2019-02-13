@@ -22,6 +22,7 @@ import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
 import H2h from "./H2h";
+import RefreshButton from "../RefreshButton";
 
 class Eventdetails extends Component {
 	constructor(props) {
@@ -32,6 +33,9 @@ class Eventdetails extends Component {
 		this.swipeByIndex = this.swipeByIndex.bind(this);
 		this.swipeByTabName = this.swipeByTabName.bind(this);
 		this.swipeAdjustHeight = this.swipeAdjustHeight.bind(this);
+		this.handleSocketData = this.handleSocketData.bind(this);
+		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
+		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.state = {
 			loading: false,
 			eventData: null,
@@ -44,6 +48,7 @@ class Eventdetails extends Component {
 			provider1MatchData: null,
 			provider2MatchData: null,
 			provider3MatchData: null,
+			refreshButton: false,
 			eventid: this.props.match.params.eventid
 		};
 		this.tabs = [];
@@ -52,6 +57,10 @@ class Eventdetails extends Component {
 
 	componentDidMount() {
 		this.initGetData({
+			api: '/event/' + this.state.eventid + '/json',
+			page: "eventdetails"
+		});
+		this.initSocket({
 			api: '/event/' + this.state.eventid + '/json',
 			page: "eventdetails"
 		});
@@ -141,6 +150,42 @@ class Eventdetails extends Component {
 		if (this.swipeEl) this.swipeEl.current.slide(index);
 	}
 
+	componentWillUnmount() {
+		const {socket} = this.props;
+		socket.removeListener('connect', this.onSocketConnect);
+		socket.removeListener('return-error-updates', this.onSocketDisconnect);
+		socket.on('disconnect', this.onSocketDisconnect);
+	}
+
+	initSocket = options => {
+		const {socket} = this.props;
+
+		socket.emit('get-updates-details', 'test');
+
+		socket.on('return-updates-details', this.handleSocketData);
+		socket.on('return-error-updates', this.onSocketDisconnect);
+		socket.on('disconnect', this.onSocketDisconnect);
+		socket.on('connect', this.onSocketConnect);
+	};
+
+	handleSocketData(res) {
+		// handle the data provided by socket
+		console.log(res);
+	}
+
+	onSocketConnect() {
+		this.setState({
+			refreshButton: false
+		});
+	}
+
+	onSocketDisconnect() {
+		console.log('disconnected socket');
+		this.setState({
+			refreshButton: true
+		});
+	}
+
 	initGetData = options => {
 		this.setState({loading: true});
 
@@ -218,11 +263,9 @@ class Eventdetails extends Component {
 	}
 
 	handleGetDataHelper1(res) {
-		console.log(res);
 		if (res.data && res.data.length > 0) {
 			const jsonData = this.state.eventData;
 			res.data.forEach(item => {
-				console.log(item, jsonData.event.homeTeam.id);
 				let provider1Data = item.Matches.filter(match => match.HomeTeam.Id === jsonData.event.homeTeam.id);
 				if (provider1Data.length > 0) {
 					this.setState({
@@ -368,31 +411,32 @@ class Eventdetails extends Component {
 		return (
 			<div className="event-details">
 				{this.state.loading ? <Loading/> : null}
+				{this.state.refreshButton ? <RefreshButton/> : null}
 				<Scoreboard eventData={eventData}/>
 				<div className="middle-tabs">
 					<div className="container">
 						<ul className="swipe-tabs" ref={this.swipeTabsEl}>
 							{this.tabs.map((tab, index) => {
 								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
+										   className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
 									<span className="text">{tab}</span></li>;
 							})}
 							<li className="marker" ref={this.swipeMarkerEl}
-							    style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
+								style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
 						</ul>
 						<div className="swipe-shadows"/>
 					</div>
 				</div>
 				<ReactSwipe className="swipe-contents"
-				            childCount={this.tabs.length}
-				            swipeOptions={{
-					            speed: 200,
-					            continuous: true,
-					            callback: this.swipeChanging,
-					            transitionEnd: this.swipeComplete,
-					            swiping: this.swipeSwiping,
-					            disableScroll: false
-				            }} ref={this.swipeEl}>
+							childCount={this.tabs.length}
+							swipeOptions={{
+								speed: 200,
+								continuous: true,
+								callback: this.swipeChanging,
+								transitionEnd: this.swipeComplete,
+								swiping: this.swipeSwiping,
+								disableScroll: false
+							}} ref={this.swipeEl}>
 
 					<div className="swipe-content summary">
 						<div className="event-details-summary">
@@ -421,7 +465,7 @@ class Eventdetails extends Component {
 					{provider1MatchData ? (
 						<div className="swipe-content live-tracker" data-tab="live-tracker">
 							<LiveTracker matchid={provider1MatchData.Id}
-							             isTabLiveTracker={this.state.isTabLiveTracker}/>
+										 isTabLiveTracker={this.state.isTabLiveTracker}/>
 						</div>
 					) : ""}
 
@@ -435,7 +479,7 @@ class Eventdetails extends Component {
 						<div className="swipe-content lineup" data-tab="lineup">
 							{this.state.isTabLineup ?
 								<Lineup eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}
-								        socket={socket}/>
+										socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -444,9 +488,9 @@ class Eventdetails extends Component {
 						<div className="swipe-content injuries" data-tab="injuries">
 							{this.state.isTabInjury ?
 								<Injuries eventData={eventData}
-								          provider2MatchData={provider2MatchData}
-								          swipeAdjustHeight={this.swipeAdjustHeight}
-								          socket={socket}/>
+										  provider2MatchData={provider2MatchData}
+										  swipeAdjustHeight={this.swipeAdjustHeight}
+										  socket={socket}/>
 								: ""}
 						</div>
 					) : ""}
@@ -454,22 +498,22 @@ class Eventdetails extends Component {
 					<div className="swipe-content h2h" data-tab="h2h">
 						{this.state.isTabH2h ?
 							<H2h eventData={eventData}
-							     swipeAdjustHeight={this.swipeAdjustHeight}
-							     socket={socket}/>
+								 swipeAdjustHeight={this.swipeAdjustHeight}
+								 socket={socket}/>
 							: ""}
 					</div>
 
 					<div className="swipe-content iddaa" data-tab="iddaa">
 						<Iddaa eventData={eventData} provider2MatchData={provider2MatchData}
-						       provider3MatchData={provider3MatchData}
-						       swipeAdjustHeight={this.swipeAdjustHeight}/>
+							   provider3MatchData={provider3MatchData}
+							   swipeAdjustHeight={this.swipeAdjustHeight}/>
 					</div>
 
 					{eventData.standingsAvailable ? (
 						<div className="swipe-content standing" data-tab="standing">
 							{this.state.isTabStanding ?
 								<Standings eventData={eventData} socket={socket}
-								           swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
+										   swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
 						</div>
 					) : ""}
 
