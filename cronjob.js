@@ -22,7 +22,6 @@ let fullData = null;
 
 exports.init = () => {
 	cron.schedule('*/15 * * * * *', () => {
-		// console.log('cron job', new Date());
 		request(sofaOptions)
 			.then(res => {
 				// console.log('triggered 1');
@@ -50,7 +49,7 @@ exports.init = () => {
 						events.push(newEvents)
 					});
 				});
-
+				console.log('Cron job init ', new Date());
 				if (previousData && previousData.length > 0) {
 					changes = [];
 
