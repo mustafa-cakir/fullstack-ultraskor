@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Icon from "./common/Icon";
 import DayPicker from "react-day-picker";
 import moment from "moment";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import 'moment/locale/tr';
 import MomentLocaleUtils from 'react-day-picker/moment';
 import {flagImg} from "../Helper";
@@ -292,4 +292,4 @@ const FilterItems = props => {
 
 };
 
-export default withNamespaces('translations')(Headertabs)
+export default withTranslation('translations')(Headertabs)

@@ -3,7 +3,7 @@ import logo from "../logo.png"
 import Icon from "./common/Icon";
 import Link from "react-router-dom/es/Link";
 import {withRouter} from "react-router-dom";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import LanguageSwitcher from "./common/LanguageSwitcher";
 import Search from "./Search";
 
@@ -95,4 +95,4 @@ class Navbar extends Component {
     }
 }
 
-export default withNamespaces('translations')(withRouter(Navbar))
+export default withTranslation('translations')(withRouter(Navbar))

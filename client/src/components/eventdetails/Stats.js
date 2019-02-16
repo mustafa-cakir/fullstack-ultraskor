@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 
 class Stats extends Component {
     constructor(props) {
@@ -123,4 +123,4 @@ class Stats extends Component {
     }
 }
 
-export default withNamespaces('translations')(Stats)
+export default withTranslation('translations')(Stats)
