@@ -10,7 +10,7 @@ import Standings from "./Standings";
 import Stats from "./Stats";
 import Lineup from "./Lineup";
 import Footer from "../Footer";
-import {withNamespaces} from "react-i18next";
+import {withTranslation} from "react-i18next";
 import Iddaa from "./Iddaa";
 import Errors from "../common/Errors";
 import ReactGA from 'react-ga';
@@ -607,4 +607,4 @@ class Eventdetails extends Component {
 	}
 }
 
-export default withNamespaces('translations')(Eventdetails)
+export default withTranslation('translations')(Eventdetails)

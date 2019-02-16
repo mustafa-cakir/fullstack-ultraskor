@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import Link from "react-router-dom/es/Link";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
@@ -176,4 +176,4 @@ class Event extends Component {
 	}
 }
 
-export default withNamespaces('translations')(Event)
+export default withTranslation('translations')(Event)

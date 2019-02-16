@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import Loading from "../Loading";
 import Standings from "../common/Standings";
 import ReactSwipe from "react-swipe";
@@ -241,4 +241,4 @@ class Leaguedetails extends Component {
 	}
 }
 
-export default withNamespaces('translations')(Leaguedetails)
+export default withTranslation('translations')(Leaguedetails)

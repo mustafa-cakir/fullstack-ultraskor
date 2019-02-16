@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
-import {withNamespaces} from "react-i18next";
+import {withTranslation} from "react-i18next";
 
 class FlashScoreBoard extends Component {
 	constructor(props) {
@@ -175,4 +175,4 @@ class FlashScoreBoard extends Component {
 	}
 }
 
-export default withNamespaces('translations')(FlashScoreBoard)
+export default withTranslation('translations')(FlashScoreBoard)

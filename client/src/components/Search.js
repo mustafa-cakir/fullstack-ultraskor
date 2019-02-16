@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Icon from "./common/Icon";
-import {withNamespaces} from "react-i18next";
+import {withTranslation} from "react-i18next";
 import {withRouter} from "react-router-dom";
 
 class Search extends Component {
@@ -70,4 +70,4 @@ class Search extends Component {
     }
 }
 
-export default withNamespaces('translations')(withRouter(Search))
+export default withTranslation('translations')(withRouter(Search))

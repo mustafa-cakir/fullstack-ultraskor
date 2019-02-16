@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Loading from "../Loading";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import Errors from "../common/Errors";
 import Icon from "../common/Icon";
 
@@ -180,5 +180,5 @@ const InjuryTable = props => {
 	)
 };
 
-export default withNamespaces('translations')(Injuries);
+export default withTranslation('translations')(Injuries);
 

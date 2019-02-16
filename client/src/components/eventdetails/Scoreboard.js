@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import moment from "moment";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 
 class Scoreboard extends Component {
     render() {
@@ -99,4 +99,4 @@ const TeamForm = props => {
 };
 
 
-export default withNamespaces('translations')(Scoreboard)
+export default withTranslation('translations')(Scoreboard)

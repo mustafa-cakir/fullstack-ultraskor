@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import iconWhistle from "../../assets/images/icon-whistle.png";
 import Icon from "../common/Icon";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 
 class Incidents extends Component {
 	constructor(props) {
@@ -187,4 +187,4 @@ class Incidents extends Component {
     }
 }
 
-export default withNamespaces('translations')(Incidents)
+export default withTranslation('translations')(Incidents)

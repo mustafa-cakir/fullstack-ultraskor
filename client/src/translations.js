@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import {reactI18nextModule} from "react-i18next";
+import {initReactI18next} from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import tr from "./languages/tr.json";
 import en from "./languages/en.json";
@@ -19,7 +19,7 @@ const detectOptions = {
 	order: ['myCustomDetector'],
 };
 
-i18n.use(reactI18nextModule).use(lngDetector).init({
+i18n.use(initReactI18next).use(lngDetector).init({
 	detection: detectOptions,
 	resources: {
 		tr: {translations: tr},

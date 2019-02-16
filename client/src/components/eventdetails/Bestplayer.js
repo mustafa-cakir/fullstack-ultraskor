@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Icon from "../common/Icon";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 
 class Bestplayer extends Component {
     static ratingClass(value) {
@@ -58,4 +58,4 @@ class Bestplayer extends Component {
     }
 }
 
-export default withNamespaces('translations')(Bestplayer)
+export default withTranslation('translations')(Bestplayer)

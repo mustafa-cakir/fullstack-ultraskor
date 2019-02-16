@@ -7,7 +7,7 @@ import Headertabs from "./Headertabs";
 import Footer from "./Footer";
 import Event from "./common/Event";
 import Icon from "./common/Icon";
-import {Trans, withNamespaces} from "react-i18next";
+import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./RefreshButton";
 import i18n from "i18next";
@@ -350,4 +350,4 @@ class Homepage extends Component {
 	}
 }
 
-export default withNamespaces('translations')(Homepage);
+export default withTranslation('translations')(Homepage);
