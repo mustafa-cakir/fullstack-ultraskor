@@ -246,21 +246,41 @@ class Homepage extends Component {
 	}
 
 	updateMeta() {
+		const {date} = this.props.match.params || null;
+
 		if (i18n.language === "en") {
+			let title = date ? `UltraSkor - Results & Matches on ${moment(date, 'YYYY-MM-DD').format('dddd, MMMM DD, YYYY')}. See all Scores, Results, Stats and Match Highlights`
+				: "UltraSkor - (No Ads) Live Score, Match Results and League Fixtures";
+
+			let description = date ? `No Ads. Get the football coverages for the matches on ${moment(date, 'YYYY-MM-DD').format('dddd, MMMM DD, YYYY')}. See results, league standings and watch highlights`
+				: "No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world";
+
+			let keywords = date ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD').format('DD MMMM dddd').toLowerCase()} maç results, ` : ""
+
+
 			HelperUpdateMeta({
-				title: "UltraSkor - (No Ads) Live Score, Match Results and League Fixtures",
+				title: title,
 				canonical: "https://www.ultraskor.com/en",
-				description: "No Ads. Get the live football scores update, see football match results & match fixtures from across the world",
-				keywords: "live scores, live football results, match results, football fixtures, eufa champions league results",
+				description: description,
+				keywords: keywords + "live scores, live football results, match results, football fixtures, eufa champions league results, highlights",
 				alternate: "https://www.ultraskor.com",
 				hrefLang: "tr"
 			});
 		} else if (i18n.language === "tr") {
+			let title = date ?
+				`UltraSkor - ${moment(date, 'YYYY-MM-DD').format('DD MMMM dddd')} Günü Oynanan Tüm Maçlar burada. Sonuçlar, İstatistikler ve Maç Özetleri için tıklayın.`
+				: "UltraSkor - (Reklamsız) Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları";
+
+			let description = date ? `Tamamen reklamsız olarak, ${moment(date, 'YYYY-MM-DD').format('DD MMMM dddd')} günü oynanmış tüm maçların sonuçlarını, lig puan durumlarını ve fikstürlerini takip edebilir, maç özetlerini izleyebilirsiniz.`
+				: "Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.";
+
+			let keywords = date ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD').format('DD MMMM dddd').toLowerCase()} maç sonucları, ` : ""
+
 			HelperUpdateMeta({
-				title: "UltraSkor - (Reklamsız) Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları",
+				title: title,
 				canonical: "https://www.ultraskor.com",
-				description: "Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.",
-				keywords: "canli skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari",
+				description: description,
+				keywords: keywords + "canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri",
 				alternate: "https://www.ultraskor.com/en",
 				hrefLang: "en"
 			});
@@ -285,10 +305,10 @@ class Homepage extends Component {
 					</div>
 					{this.state.favEventsList.map((event, i) => {
 						return (<Event key={i}
-									   socket={this.props.socket}
-									   favContainer={true}
-									   event={event}
-									   updateParentState={this.updateParentState} {...this.state}/>)
+						               socket={this.props.socket}
+						               favContainer={true}
+						               event={event}
+						               updateParentState={this.updateParentState} {...this.state}/>)
 					})}
 				</div>
 			)
@@ -300,10 +320,10 @@ class Homepage extends Component {
 				if (dataObj.sportItem) {
 					if (dataObj.sportItem.tournaments.length > 0) {
 						mainContent.push(<Tournament key={1}
-													 socket={this.props.socket}
-													 tournaments={dataObj.sportItem.tournaments}
-													 updateParentState={this.updateParentState}
-													 {...this.state}/>)
+						                             socket={this.props.socket}
+						                             tournaments={dataObj.sportItem.tournaments}
+						                             updateParentState={this.updateParentState}
+						                             {...this.state}/>)
 					} else {
 						mainContent.push(<Errors key={1} type="no-matched-game"/>)
 					}
@@ -330,15 +350,15 @@ class Homepage extends Component {
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
 						<div className="col col-yesterday"><a className="pl-3"
-															  href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
-															  title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
+						                                      href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+						                                      title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
 							name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
 						<div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"}
-																	  title={t('Today\'s football matches')}><Trans>Today's
+						                                              title={t('Today\'s football matches')}><Trans>Today's
 							Matches</Trans></a></div>
 						<div className="col text-right col-tomorrow"><a className="pr-3"
-																		href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
-																		title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
+						                                                href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+						                                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
 							<Icon name="fas fa-chevron-right"/></a></div>
 					</div>
 				</div>
