@@ -1,12 +1,10 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
+//const WebSocket = require('ws');
 const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
-
 const bodyParser = require('body-parser');
-const cors = require('cors');
-const _ = require('lodash');
 const moment = require('moment');
 const firebaseAdmin = require('firebase-admin');
 const cacheService = require('./cache.service');
@@ -14,7 +12,6 @@ const helper = require('./helper');
 const webpushHelper = require('./webpush');
 const cronjob = require('./cronjob');
 const cacheDuration = helper.cacheDuration();
-
 
 
 const port = 5001;
@@ -30,7 +27,7 @@ cacheService.start(function (err) {
 });
 
 webpushHelper.init();
-cronjob.init();
+cronjob.start();
 
 const server = http.createServer(app);
 const io = socketIO(server);
@@ -55,6 +52,24 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 
 });
 
+// Connect to an external socket for gathering the changes
+// let swTimeout = null;
+// const ws = new WebSocket('wss://ws.sofascore.com:10014/ServicePush', {
+// 	handshakeTimeout: 1000000
+// });
+//
+// ws.on('open', () => {
+// 	console.log('ws connected');
+// 	ws.send(`{"type":0,"data":["subscribe",{"id":"event","events":["sport_football"]}]}`);
+// 	swTimeout = setInterval(()=>{
+// 		ws.send('primus::ping::1550278364585');
+// 	}, 45000);
+// });
+// ws.on('close', (err) => {
+// 	console.log('ws disconnected. ', err);
+// 	clearInterval(swTimeout);
+// });
+
 
 io.on('connection', socket => {
 	let isFlashScoreActive = false,
@@ -68,6 +83,12 @@ io.on('connection', socket => {
 	socket.on('is-homepage-getupdates', status => {
 		isHomepageGetUpdates = status;
 	});
+
+	// socket.on('get-updates-2', () => {
+	// 	ws.on('message', (data) => {
+	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
+	// 	});
+	// });
 
 	socket.once('get-updates', () => {
 		const getUpdatesHandler = () => {

@@ -49,6 +49,7 @@ class App extends Component {
 		this.state.socket.on('connect', () => {
 			setTimeout(() => {
 				this.state.socket.emit('get-updates'); // init get-updates, after 1 seconds of initial load
+				//this.state.socket.emit('get-updates-2');
 			}, 1000)
 		});
 

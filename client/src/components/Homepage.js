@@ -197,6 +197,7 @@ class Homepage extends Component {
 		const {socket} = this.props;
 		socket.emit('is-homepage-getupdates', true);
 		socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
 		socket.on('disconnect', this.onSocketDisconnect);
 		socket.on('connect', this.onSocketConnect);
 		socket.on('return-error-updates', this.onSocketDisconnect);
@@ -207,6 +208,29 @@ class Homepage extends Component {
 			this.handleGetData(res, true);
 		else return false;
 	}
+
+	// onSocketReturnUpdatesData2(res) {
+	// 	if (res) {
+	// 		//res = JSON.parse(res);
+	// 		let event = res.data[1].data;
+	// 		let changesData = event.changesData;
+	// 		if (changesData) {
+	// 			if (changesData) {
+	// 				console.log(event);
+	// 			}
+	// 			if (changesData.score) {
+	// 				if (changesData.away.score || changesData.away.team) {
+	// 					console.log(`${event.homeTeam.name} Scored. New score ${event.homeScore.current}`);
+	// 				} else if (changesData.home.score || changesData.home.team) {
+	// 					console.log(`${event.awayTEam.name} Scored. New score ${event.awayTeam.current}`);
+	// 				}
+	// 			}
+	// 			if (changesData.status) {
+	// 				console.log(`Status Changed. New statusDescription: ${event.statusDescription} - New status name: ${event.status.description} - New status code: ${event.status.code}`);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	onSocketDisconnect() {
 		this.setState({

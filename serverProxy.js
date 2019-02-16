@@ -8,6 +8,7 @@ app.get('/images*', (req, res) => {
 	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`).pipe(res);
 });
 
+
 function pushDomain(body) {
 	return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
 }

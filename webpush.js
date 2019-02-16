@@ -50,7 +50,7 @@ exports.initWebPush = (changes) => {
 					} else if (change.lhs === 6 && change.rhs === 31) { // half time
 						message.webpush.notification.title = `İlk Yarı Sonucu`;
 						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
-					} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
+					} else if (change.lhs === 31 && change.rhs === 7) { // 2nd half started
 						message.webpush.notification.title = `İkinci Yarı Başladı`;
 						message.webpush.notification.body = `${change.event.homeTeam.name} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${change.event.awayTeam.name}`;
 					} else if (change.rhs === 100) { // full time

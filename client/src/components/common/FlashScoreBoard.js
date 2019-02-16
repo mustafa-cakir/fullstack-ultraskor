@@ -90,7 +90,7 @@ class FlashScoreBoard extends Component {
 							} else if (change.lhs === 6 && change.rhs === 31) { // half time
 								change.desc = t("Half Time Result");
 								this.playSound('half-time');
-							} else if (change.lhs === 31 && change.rhs === 6) { // 2nd half started
+							} else if (change.lhs === 31 && change.rhs === 7) { // 2nd half started
 								change.desc = t("2nd Half Started");
 								this.playSound('half-time');
 							} else if (change.rhs === 100) { // full time
