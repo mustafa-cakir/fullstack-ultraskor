@@ -45,7 +45,7 @@ MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017
 			db = client.db('ultraskor');
 			helperDataCollection = db.collection('helperdata_bydate');
 		} catch (err) {
-			// do nothing, just proceed
+			console.log('DB Error: Can not connected to db');
 		}
 	}
 	server.listen(port, () => console.log(`Listening on port ${port}`));
@@ -124,9 +124,8 @@ io.on('connection', socket => {
 			request(sofaOptions)
 				.then(response => {
 					if (response) {
-						cacheService.instance().set(cacheKey, response, cacheDuration.main.eventdetails || 5, () => {
-							socket.emit('return-updates-details', response);
-						});
+						cacheService.instance().set(cacheKey, response, cacheDuration.main.eventdetails || 5);
+						socket.emit('return-updates-details', response);
 					}
 				})
 				.catch(() => {
@@ -134,17 +133,12 @@ io.on('connection', socket => {
 				});
 		};
 
-		cacheService.instance().get(cacheKey, (err, cachedData) => {
-			if (err) {
-				initRemoteRequests();
-			} else {
-				if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-					socket.emit('return-updates-details', cachedData);
-				} else {
-					initRemoteRequests();
-				}
-			}
-		});
+		let cachedData = cacheService.instance().get(cacheKey);
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			socket.emit('return-updates-details', cachedData);
+		} else {
+			initRemoteRequests();
+		}
 	});
 
 	socket.on('disconnect', () => {
@@ -173,9 +167,8 @@ app.get('/api/', (req, res) => {
 			.then(response => {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
 				if (response) {
-					cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5, () => {
-						res.send(response);
-					});
+					cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5);
+					res.send(response);
 				}
 			})
 			.catch(() => {
@@ -187,20 +180,15 @@ app.get('/api/', (req, res) => {
 			});
 	};
 
-	cacheService.instance().get(cacheKey, (err, cachedData) => {
-		if (err) {
-			initRemoteRequests();
-			//console.log('cache server is broken');
-		} else {
-			if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-				res.send(cachedData);
-				//console.log('served from cache');
-			} else {
-				initRemoteRequests();
-				//console.log('cache not exist, get from remote');
-			}
-		}
-	});
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
+		//console.log('served from cache');
+	} else {
+		initRemoteRequests();
+		//console.log('cache not exist, get from remote');
+	}
+
 });
 
 app.post('/api/webpush', (req, res) => {
@@ -208,9 +196,8 @@ app.post('/api/webpush', (req, res) => {
 	const cacheKey = topic;
 	firebaseAdmin.messaging()[method](token, topic)
 		.then(() => {
-			cacheService.instance().set(cacheKey, "true", cacheDuration.webpushtopic, () => {
-				res.send(`Successfully ${method} to topic`);
-			});
+			cacheService.instance().set(cacheKey, "true", cacheDuration.webpushtopic);
+			res.send(`Successfully ${method} to topic`);
 		})
 		.catch(err => {
 			res.status(500).send(`An error occurred while processing your request, err: ${err}`);
@@ -242,20 +229,21 @@ app.get('/api/helper1/:date', (req, res) => {
 			.then(response => {
 				let matchList = helper.preProcessHelper1Data(response);
 				if (matchList && matchList.length > 0) {
-					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1, () => {
-						if (helperDataCollection) {
-							try {
-								helperDataCollection.insertOne({
-									date: date,
-									provider: "provider1",
-									data: matchList
-								});
-							} catch (err) {
-								// do nothing just proceed
-							}
-						}
+					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
+					if (helperDataCollection) {
+						helperDataCollection.insertOne({
+							date: date,
+							provider: "provider1",
+							data: matchList
+						}).then(() => {
+							res.send(matchList);
+						}).catch(err => {
+							console.log('DB Error: Can not inserted to db ' + err);
+							res.send(matchList);
+						});
+					} else {
 						res.send(matchList);
-					});
+					}
 				} else {
 					res.send({
 						status: "empty",
@@ -272,31 +260,29 @@ app.get('/api/helper1/:date', (req, res) => {
 	};
 
 
-	cacheService.instance().get(cacheKey, (err, cachedData) => {
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			res.send(cachedData);
-		} else { // Cache is not found
-			if (helperDataCollection) {
-				helperDataCollection
-					.findOne({"date": date, "provider": "provider1"})
-					.then(result => {
-						if (result) {
-							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1, () => {
-								res.send(result.data); // Data is found in the db, now caching and serving!
-							});
-						} else {
-							initRemoteRequests(); // data can't be found in db, get it from remote servers
-						}
-					})
-					.catch(() => {
-						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-						initRemoteRequests();
-					})
-			} else {
-				initRemoteRequests();  // db is not initalized, get data from remote servers
-			}
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
+	} else {
+		if (helperDataCollection) {
+			helperDataCollection
+				.findOne({"date": date, "provider": "provider1"})
+				.then(result => {
+					if (result) {
+						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1);
+						res.send(result.data); // Data is found in the db, now caching and serving!
+					} else {
+						initRemoteRequests(); // data can't be found in db, get it from remote servers
+					}
+				})
+				.catch(() => {
+					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+					initRemoteRequests();
+				})
+		} else {
+			initRemoteRequests();  // db is not initalized, get data from remote servers
 		}
-	});
+	}
 });
 
 app.get('/api/helper2/:date', (req, res) => {
@@ -328,20 +314,21 @@ app.get('/api/helper2/:date', (req, res) => {
 		request(provider2options)
 			.then(res => {
 				if (res.initialData && res.initialData.length > 0) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.provider2, () => {
-						if (helperDataCollection) {
-							try {
-								helperDataCollection.insertOne({
-									date: date,
-									provider: "provider2",
-									data: res
-								});
-							} catch (err) {
-								// do nothing
-							}
-						}
-						res.send(res); // return anyway if collection not exist
-					});
+					cacheService.instance().set(cacheKey, res, cacheDuration.provider2);
+					if (helperDataCollection) {
+						helperDataCollection.insertOne({
+							date: date,
+							provider: "provider2",
+							data: res
+						}).then(() => {
+							res.send(res);
+						}).catch(err => {
+							console.log('DB Error: Can not inserted to db ' + err);
+							res.send(res);
+						});
+					} else {
+						res.send(res);
+					}
 				} else {
 					res.send('');
 				}
@@ -355,31 +342,29 @@ app.get('/api/helper2/:date', (req, res) => {
 			});
 	};
 
-	cacheService.instance().get(cacheKey, (err, cachedData) => {
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			res.send(cachedData);
-		} else { // Cache is not found
-			if (helperDataCollection) {
-				helperDataCollection
-					.findOne({"date": date, "provider": "provider2"})
-					.then(result => {
-						if (result) {
-							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider2, () => {
-								res.send(result.data); // Data is found in the db, now caching and serving!
-							});
-						} else {
-							initRemoteRequests(); // data can't be found in db, get it from remote servers
-						}
-					})
-					.catch(() => {
-						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-						initRemoteRequests();
-					})
-			} else {
-				initRemoteRequests();  // db is not initalized, get data from remote servers
-			}
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
+	} else {
+		if (helperDataCollection) {
+			helperDataCollection
+				.findOne({"date": date, "provider": "provider2"})
+				.then(result => {
+					if (result) {
+						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider2);
+						res.send(result.data); // Data is found in the db, now caching and serving!
+					} else {
+						initRemoteRequests(); // data can't be found in db, get it from remote servers
+					}
+				})
+				.catch(() => {
+					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+					initRemoteRequests();
+				})
+		} else {
+			initRemoteRequests();  // db is not initalized, get data from remote servers
 		}
-	});
+	}
 });
 
 app.get('/api/helper3/:date/:code', (req, res) => {
@@ -400,16 +385,21 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 			.then(res => {
 				res = helper.replaceDotWithUnderscore(res.events);
 				if (res && res[code] && date === moment(res[code].startDate * 1e3).format('DD.MM.YYYY')) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.provider3, () => {
-						if (helperDataCollection) {
-							helperDataCollection.insertOne({
-								date: date,
-								provider: "provider3",
-								data: res
-							});
-						}
-					});
-					res.send(res); // return provider3
+					cacheService.instance().set(cacheKey, res, cacheDuration.provider3);
+					if (helperDataCollection) {
+						helperDataCollection.insertOne({
+							date: date,
+							provider: "provider3",
+							data: res
+						}).then(() => {
+							res.send(res);
+						}).catch(err => {
+							console.log('DB Error: Can not inserted to db ' + err);
+							res.send(res);
+						});
+					} else {
+						res.send(res);
+					}
 				} else {
 					res.send('');
 				}
@@ -422,31 +412,29 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 			});
 	};
 
-	cacheService.instance().get(cacheKey, (err, cachedData) => {
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			res.send(cachedData);
-		} else { // Cache is not found
-			if (helperDataCollection) {
-				helperDataCollection
-					.findOne({"date": date, "provider": "provider3"})
-					.then(result => {
-						if (result) {
-							cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3, () => {
-								res.send(result.data); // Data is found in the db, now caching and serving!
-							});
-						} else {
-							initRemoteRequests(); // data can't be found in db, get it from remote servers
-						}
-					})
-					.catch(() => {
-						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-						initRemoteRequests();
-					})
-			} else {
-				initRemoteRequests();  // db is not initalized, get data from remote servers
-			}
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
+	} else {
+		if (helperDataCollection) {
+			helperDataCollection
+				.findOne({"date": date, "provider": "provider3"})
+				.then(result => {
+					if (result) {
+						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3);
+						res.send(result.data); // Data is found in the db, now caching and serving!
+					} else {
+						initRemoteRequests(); // data can't be found in db, get it from remote servers
+					}
+				})
+				.catch(() => {
+					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+					initRemoteRequests();
+				})
+		} else {
+			initRemoteRequests();  // db is not initalized, get data from remote servers
 		}
-	});
+	}
 });
 
 app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
@@ -464,22 +452,27 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 		request(oleyOptions)
 			.then(response => {
 				if (response) {
-					cacheService.instance().set(cacheKey, response, cacheDuration[type], () => {
-						if (helperDataCollection) {
-							helperDataCollection.insertOne({
-								matchid: matchid,
-								type: type,
-								data: response
-							});
-						}
-					});
+					cacheService.instance().set(cacheKey, response, cacheDuration[type]);
+					if (helperDataCollection) {
+						helperDataCollection.insertOne({
+							matchid: matchid,
+							type: type,
+							data: response
+						}).then(() => {
+							res.send(response);
+						}).catch(err => {
+							console.log('DB Error: Can not inserted to db ' + err);
+							res.send(response);
+						});
+					} else {
+						res.send(response);
+					}
 				} else {
 					res.status(500).send({
 						status: "error",
 						message: 'Error while retrieving information from server'
 					})
 				}
-				res.send(response); // return
 			})
 			.catch(() => {
 				res.status(500).send({
@@ -489,31 +482,29 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 			});
 	};
 
-	cacheService.instance().get(cacheKey, (err, cachedData) => {
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			res.send(cachedData);
-		} else { // Cache is not found
-			if (helperDataCollection) {
-				helperDataCollection
-					.findOne({matchid: matchid, type: type})
-					.then(result => {
-						if (result) {
-							cacheService.instance().set(cacheKey, result.data, cacheDuration[type], () => {
-								res.send(result.data); // Data is found in the db, now caching and serving!
-							});
-						} else {
-							initRemoteRequests(); // data can't be found in db, get it from remote servers
-						}
-					})
-					.catch(() => {
-						console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-						initRemoteRequests();
-					})
-			} else {
-				initRemoteRequests();  // db is not initalized, get data from remote servers
-			}
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
+	} else {
+		if (helperDataCollection) {
+			helperDataCollection
+				.findOne({matchid: matchid, type: type})
+				.then(result => {
+					if (result) {
+						cacheService.instance().set(cacheKey, result.data, cacheDuration[type]);
+						res.send(result.data); // Data is found in the db, now caching and serving!
+					} else {
+						initRemoteRequests(); // data can't be found in db, get it from remote servers
+					}
+				})
+				.catch(() => {
+					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+					initRemoteRequests();
+				})
+		} else {
+			initRemoteRequests();  // db is not initalized, get data from remote servers
 		}
-	});
+	}
 });
 
 app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
@@ -604,12 +595,12 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
 app.post('/api/logerrors', (req, res) => {
 	if (db) {
 		let collection = db.collection('console_errors');
-		try {
+		if (collection) {
 			collection.insertOne(req.body, () => {
 				res.send('OK!');
+			}).catch(err => {
+				console.log('DB Error: Can not inserted to db ' + err);
 			});
-		} catch (e) {
-			// do nothing
 		}
 	}
 });
