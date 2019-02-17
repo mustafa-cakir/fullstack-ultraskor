@@ -149,6 +149,7 @@ class Homepage extends Component {
 		}
 		res = this.prepareData(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
+		console.log("updates returned from socket ",res);
 		this.setState({
 			orjData: res,
 			mainData: res,
@@ -204,9 +205,11 @@ class Homepage extends Component {
 	}
 
 	onSocketReturnUpdatesData(res) {
-		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date)
+		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date) {
 			this.handleGetData(res, true);
-		else return false;
+		} else {
+			return false;
+		}
 	}
 
 	// onSocketReturnUpdatesData2(res) {
