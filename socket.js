@@ -103,7 +103,7 @@ io.on('connection', socket => {
 		getUpdatesHandler();
 		intervalUpdates = setInterval(() => {
 			getUpdatesHandler(); // check in every 15 seconds
-		}, 15000);
+		}, 10000);
 	});
 
 	socket.on('get-updates-details', api => {

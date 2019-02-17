@@ -171,9 +171,9 @@ class Eventdetails extends Component {
 		if (nowait) {
 			socket.emit('get-updates-details', api);
 		} else {
-			this.initSocketInterval = setTimeout(() => { // init socket after 15 seconds (15 seconds interval)
+			this.initSocketInterval = setTimeout(() => { // init socket after 10 seconds (10 seconds interval)
 				socket.emit('get-updates-details', api);
-			}, 15000);
+			}, 10000);
 		}
 	}
 
