@@ -149,7 +149,6 @@ class Homepage extends Component {
 		}
 		res = this.prepareData(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
-		console.log("updates returned from socket ",res);
 		this.setState({
 			orjData: res,
 			mainData: res,

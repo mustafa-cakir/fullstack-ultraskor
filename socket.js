@@ -91,7 +91,6 @@ io.on('connection', socket => {
 	// });
 
 	socket.once('get-updates', () => {
-		console.log('get updates triggered');
 		const getUpdatesHandler = () => {
 			if (isFlashScoreActive && cronjob.changes()) {
 				socket.emit('return-flashcore-changes', cronjob.changes());
@@ -99,7 +98,6 @@ io.on('connection', socket => {
 			if (isHomepageGetUpdates && cronjob.fullData()) {
 				let mainData = helper.simplifyHomeData(cronjob.fullData());
 				socket.emit('return-updates-homepage', mainData);
-				console.log('homepage updates returned');
 			}
 		};
 		getUpdatesHandler();
