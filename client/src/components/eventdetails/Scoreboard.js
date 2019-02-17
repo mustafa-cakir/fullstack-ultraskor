@@ -34,7 +34,7 @@ class Scoreboard extends Component {
                         <div className="col-4 pl-0">
                             <div className="team-logo mb-2">
                                 <img alt={eventData.event.awayTeam.name}
-                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
+                                     src={window.ImageServer + '/images/team-logo2/football_' + eventData.event.awayTeam.id + ''}/>
                             </div>
                             <div className="team-name">{eventData.event.awayTeam.name}</div>
                             <div

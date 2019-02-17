@@ -5,7 +5,7 @@ const app = express();
 
 
 app.get('/images*', (req, res) => {
-	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`).pipe(res);
+	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`, {timeout: 1500}).pipe(res);
 });
 
 
@@ -26,7 +26,8 @@ app.get('*', (req, res) => {
             'Origin': 'https://www.aspor.com.tr',
             'Access-Control-Allow-Origin': '*',
 	        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
-        }
+        },
+		timeout: 1500
     };
 
     // if (path.indexOf('common_widgets') > -1) {

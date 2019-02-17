@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-//const WebSocket = require('ws');
 const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const bodyParser = require('body-parser');
@@ -12,7 +11,7 @@ const helper = require('./helper');
 const webpushHelper = require('./webpush');
 const cronjob = require('./cronjob');
 const cacheDuration = helper.cacheDuration();
-
+//const WebSocket = require('ws');
 
 const port = 5001;
 const app = express();
@@ -22,8 +21,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(helper.initCors());
 
-cacheService.start(function (err) {
-	if (err) console.error('cache service failed to start', err);
+cacheService.start(err => {
+	if (err) console.error('Error: Cache service failed to start', err);
 });
 
 webpushHelper.init();
@@ -37,7 +36,7 @@ let db = null,
 	helperDataCollection = null;
 
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(), function (err, client) {
+MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
 	if (err) {
 		// do nothing, just proceed
 	} else {
@@ -118,7 +117,8 @@ io.on('connection', socket => {
 					'Origin': 'https://www.sofascore.com',
 					'referer': 'https://www.sofascore.com/',
 					'x-requested-with': 'XMLHttpRequest'
-				}
+				},
+				timeout: 1500
 			};
 
 			request(sofaOptions)
@@ -160,7 +160,8 @@ app.get('/api/', (req, res) => {
 				'Origin': 'https://www.sofascore.com',
 				'referer': 'https://www.sofascore.com/',
 				'x-requested-with': 'XMLHttpRequest'
-			}
+			},
+			timeout: 1500
 		};
 
 		request(sofaOptions)
@@ -507,7 +508,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 	}
 });
 
-app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
+app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
 	const {lang, sport, type, by, date} = req.params;
 
 	if (type === "index") {
@@ -537,30 +538,15 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 				'Origin': 'https://www.sofascore.com',
 				'referer': 'https://www.sofascore.com/',
 				'x-requested-with': 'XMLHttpRequest'
-			}
+			},
+			timeout: 1500
 		};
 		res.header('Content-Type', 'text/plain');
-
-		function generateSlug(text) {
-			const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
-			const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
-			const p = new RegExp(a.split('').join('|'), 'g');
-
-			return text.toString().toLowerCase()
-				.replace(/\s+/g, '-')           // Replace spaces with -
-				.replace(p, c =>
-					b.charAt(a.indexOf(c)))     // Replace special chars
-				.replace(/&/g, '-and-')         // Replace & with 'and'
-				.replace(/[^\w-]+/g, '')       // Remove all non-word chars
-				.replace(/--+/g, '-')         // Replace multiple - with single -
-				.replace(/^-+/, '')             // Trim - from start of text
-				.replace(/-+$/, '')             // Trim - from end of text
-		}
 
 		request(sofaOptionsGetToday)
 			.then(mainData => {
 				if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
-					let tournaments = mainData.sportItem.tournaments.reduce(function (whole, tournament) {
+					let tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
 						tournament.events = tournament.events.filter((event) => {
 							return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === date;
 						});
@@ -573,7 +559,7 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 					let urls = [];
 					tournaments.forEach(tournament => {
 						tournament.events.forEach(event => {
-							urls.push(`https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/match/"}${generateSlug(event.name)}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
+							urls.push(`https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/match/"}${helper.generateSlug(event.name)}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
 						});
 					});
 					res.send(urls.join('\r'));
@@ -587,7 +573,7 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', function (req, res) {
 	}
 });
 
-app.get('/sitemap/:lang/football-todaysmatches.txt', function (req, res) {
+app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 	res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`)
 });
 
