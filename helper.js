@@ -39,7 +39,7 @@ exports.replaceDotWithUnderscore = obj => {
 
 		// continue recursively looping through if we have an object or array
 		if (_.isObject(value)) {
-			return replaceDotWithUnderscore(value);
+			return this.replaceDotWithUnderscore(value);
 		}
 	});
 	return obj;
@@ -70,12 +70,12 @@ exports.cacheDuration = () => {
 		provider1: 60 * 60 * 24, // 24 hours
 		provider2: 60 * 60 * 24, // 24 hours
 		provider3: 60 * 60 * 24, // 24 hours
-		missings: 60 * 60 * 24, // 7 days
-		teamstats: 60 * 60 * 24, // 7 days
+		missings: 60 * 60 * 2, // 2 hours
+		teamstats: 60 * 60 * 24, // 24 hours
 		webpushtopic: 60 * 60 * 24 * 7, // 7 days
 		main: {
 			default: 60, // 1 min.
-			homepage: 15, // 5 seconds
+			homepage: 15, // 15 seconds
 			eventdetails: 5, // 5 seconds
 			lineup: 60 * 30, // 30 min,
 			h2h: 60 * 30, // 30 min

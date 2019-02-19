@@ -35,21 +35,20 @@ const io = socketIO(server);
 let db = null,
 	helperDataCollection = null;
 
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
-	if (err) {
-		// do nothing, just proceed
-	} else {
-		try {
-			db = client.db('ultraskor');
-			helperDataCollection = db.collection('helperdata_bydate');
-		} catch (err) {
-			console.log('DB Error: Can not connected to db');
-		}
-	}
-	server.listen(port, () => console.log(`Listening on port ${port}`));
-
-});
+// const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
+// MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
+// 	if (err) {
+// 		// do nothing, just proceed
+// 	} else {
+// 		try {
+// 			db = client.db('ultraskor');
+// 			//helperDataCollection = db.collection('helperdata_bydate');
+// 		} catch (err) {
+// 			console.log('DB Error: Can not connected to db');
+// 		}
+// 	}
+// });
+server.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Connect to an external socket for gathering the changes
 // let swTimeout = null;
@@ -118,7 +117,7 @@ io.on('connection', socket => {
 					'referer': 'https://www.sofascore.com/',
 					'x-requested-with': 'XMLHttpRequest'
 				},
-				timeout: 1500
+				timeout: 10000
 			};
 
 			request(sofaOptions)
@@ -161,7 +160,7 @@ app.get('/api/', (req, res) => {
 				'referer': 'https://www.sofascore.com/',
 				'x-requested-with': 'XMLHttpRequest'
 			},
-			timeout: 1500
+			timeout: 10000
 		};
 
 		request(sofaOptions)
@@ -172,11 +171,12 @@ app.get('/api/', (req, res) => {
 					res.send(response);
 				}
 			})
-			.catch(() => {
+			.catch(err => {
 				console.log(`error returning data from main for ${req.query.page}`);
 				res.status(500).send({
 					status: "error",
-					message: 'Error while retrieving information from server'
+					message: 'Error while retrieving information from server',
+					err: err
 				})
 			});
 	};
@@ -224,7 +224,7 @@ app.get('/api/helper1/:date', (req, res) => {
 			},
 			uri: `https://lsc.fn.sportradar.com/betradar/en/Europe:Istanbul/gismo/event_fullfeed/${offset}`,
 			json: true,
-			timeout: 1500
+			timeout: 10000
 		};
 		request(provider1options)
 			.then(response => {
@@ -255,7 +255,8 @@ app.get('/api/helper1/:date', (req, res) => {
 			.catch(err => {
 				res.status(500).send({
 					status: "error",
-					message: 'Error while retrieving information from server. Error: ' + err.toString()
+					message: 'Error while retrieving information from server.',
+					rr: err
 				})
 			});
 	};
@@ -308,37 +309,38 @@ app.get('/api/helper2/:date', (req, res) => {
 				}
 			}),
 			json: true,
-			timeout: 1500
+			timeout: 10000
 		};
 
 
 		request(provider2options)
-			.then(res => {
-				if (res.initialData && res.initialData.length > 0) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.provider2);
+			.then(response => {
+				if (response.initialData && response.initialData.length > 0) {
+					cacheService.instance().set(cacheKey, response, cacheDuration.provider2);
 					if (helperDataCollection) {
 						helperDataCollection.insertOne({
 							date: date,
 							provider: "provider2",
-							data: res
+							data: response
 						}).then(() => {
-							res.send(res);
+							res.send(response);
 						}).catch(err => {
 							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(res);
+							res.send(response);
 						});
 					} else {
-						res.send(res);
+						res.send(response);
 					}
 				} else {
 					res.send('');
 				}
 
 			})
-			.catch(() => {
-				res.status(500).send({
+			.catch(err => {
+				res.send({
 					status: "error",
-					message: 'Error while retrieving information from server'
+					message: 'Error while retrieving information from server',
+					err: err
 				})
 			});
 	};
@@ -372,43 +374,45 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 	const date = req.params.date;
 	const code = req.params.code;
 
-	const cacheKey = `helperData-${date}-provider3`;
+	const cacheKey = `helperData-${date}-${code}-provider3`;
 
 	const initRemoteRequests = () => {
 		const provider3options = {
 			method: 'GET',
 			uri: `https://www.tuttur.com/draw/events/type/football`,
 			json: true,
-			timeout: 1500
+			timeout: 10000
 		};
 
 		request(provider3options)
-			.then(res => {
-				res = helper.replaceDotWithUnderscore(res.events);
-				if (res && res[code] && date === moment(res[code].startDate * 1e3).format('DD.MM.YYYY')) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.provider3);
+			.then(response => {
+				//console.log(response);
+				let matchList = helper.replaceDotWithUnderscore(response.events);
+				if (matchList && matchList[code] && date === moment(matchList[code].startDate * 1e3).format('DD.MM.YYYY')) {
+					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider3);
 					if (helperDataCollection) {
 						helperDataCollection.insertOne({
 							date: date,
 							provider: "provider3",
-							data: res
+							data: matchList
 						}).then(() => {
-							res.send(res);
+							res.send(matchList);
 						}).catch(err => {
 							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(res);
+							res.send(matchList);
 						});
 					} else {
-						res.send(res);
+						res.send(matchList);
 					}
 				} else {
 					res.send('');
 				}
 			})
-			.catch(() => {
+			.catch(err => {
 				res.status(500).send({
 					status: "error",
-					message: 'Error while retrieving information from server'
+					message: 'Error while retrieving information from server',
+					err: err
 				})
 			});
 	};
@@ -448,7 +452,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 			method: 'GET',
 			uri: `https://widget.oley.com/match/${type}/1/${matchid}`,
 			json: true,
-			timeout: 1500
+			timeout: 10000
 		};
 		request(oleyOptions)
 			.then(response => {
@@ -475,10 +479,11 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 					})
 				}
 			})
-			.catch(() => {
+			.catch(err => {
 				res.status(500).send({
 					status: "error",
-					message: 'Error while retrieving information from server'
+					message: 'Error while retrieving information from server',
+					err: err
 				})
 			});
 	};
@@ -539,7 +544,7 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
 				'referer': 'https://www.sofascore.com/',
 				'x-requested-with': 'XMLHttpRequest'
 			},
-			timeout: 1500
+			timeout: 10000
 		};
 		res.header('Content-Type', 'text/plain');
 
