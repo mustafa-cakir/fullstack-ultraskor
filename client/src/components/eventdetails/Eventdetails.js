@@ -587,18 +587,37 @@ class Eventdetails extends Component {
 								"coach": "${eventData.managerDuel ? eventData.managerDuel.awayManager.name : ""}"
 							},
 							"image": [
-								"http://www.example.com/image1.jpg",
-								"http://www.example.com/image2.jpg"
+								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.homeTeam.id + ''}",
+								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.awayTeam.id + ''}"
 							],
 							"location": {
 								"@type": "Place",
-								"name": "Inonu Stadyumu",
+								"name": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.name ? eventData.event.venue.stadium.name : "Vodafone Park"}",
 								"address": {
 									"@type": "PostalAddress",
-									"addressCountry": "Turkey",
-									"addressLocality": "Istanbul"
-								}
-							}
+									"addressCountry": "${eventData.event && eventData.event.venue && eventData.event.country && eventData.event.venue.country.name? eventData.event.venue.country.name : "Turkey"}",
+									"addressLocality": "${eventData.event && eventData.event.venue && eventData.event.venue.city && eventData.event.venue.city.name ? eventData.event.venue.city.name : "Istanbul"}"
+								},
+								"maximumAttendeeCapacity": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.capcity ? eventData.event.venue.stadium.capcity : "45000"}"
+							},
+							"offers": {
+                              "@type": "Offer",
+                              "price": "0.00",
+                              "priceCurrency": "TRY",
+                              "url": "https://www.ultraskor.com${window.location.pathname}",
+                              "availability": "live covarage",
+                              "validFrom": "2019-02-20T20:00:00.000Z"
+                            },
+                            "performer": {
+                            	"@type": "Place",
+								"name": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.name ? eventData.event.venue.stadium.name : "Vodafone Park"}",
+								"address": {
+									"@type": "PostalAddress",
+									"addressCountry": "${eventData.event && eventData.event.venue && eventData.event.country && eventData.event.venue.country.name? eventData.event.venue.country.name : "Turkey"}",
+									"addressLocality": "${eventData.event && eventData.event.venue && eventData.event.venue.city && eventData.event.venue.city.name ? eventData.event.venue.city.name : "Istanbul"}"
+								},
+								"maximumAttendeeCapacity": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.capcity ? eventData.event.venue.stadium.capcity : "45000"}"
+                          	}
 						}
 				    `}</script>
 				</Helmet>
