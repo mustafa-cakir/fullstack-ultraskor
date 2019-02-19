@@ -11,7 +11,7 @@ import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./RefreshButton";
 import i18n from "i18next";
-import {HelperUpdateMeta} from "../Helper";
+import {HelperUpdateMeta, HelperTranslateUrlTo} from "../Helper";
 import FlashScoreBoard from "./common/FlashScoreBoard";
 
 class Homepage extends Component {
@@ -259,13 +259,12 @@ class Homepage extends Component {
 
 			let keywords = date ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD').format('DD MMMM dddd').toLowerCase()} maç results, ` : ""
 
-
 			HelperUpdateMeta({
 				title: title,
-				canonical: "https://www.ultraskor.com/en",
+				canonical: window.location.href,
 				description: description,
 				keywords: keywords + "live scores, live football results, match results, football fixtures, eufa champions league results, highlights",
-				alternate: "https://www.ultraskor.com",
+				alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
 				hrefLang: "tr"
 			});
 		} else if (i18n.language === "tr") {
@@ -280,10 +279,10 @@ class Homepage extends Component {
 
 			HelperUpdateMeta({
 				title: title,
-				canonical: "https://www.ultraskor.com",
+				canonical: window.location.href,
 				description: description,
 				keywords: keywords + "canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri",
-				alternate: "https://www.ultraskor.com/en",
+				alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
 				hrefLang: "en"
 			});
 		}

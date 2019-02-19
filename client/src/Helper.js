@@ -65,20 +65,42 @@ class UpdateMetaHandler {
 	constructor() {
 		this.els = {
 			canonical: document.querySelector('[data-meta="canonical"]'),
+			alternate: document.querySelector('[data-meta="alternate"]'),
 			description: document.querySelector('[data-meta="description"]'),
 			keywords: document.querySelector('[data-meta="keywords"]'),
-			alternate: document.querySelector('[data-meta="alternate"]')
 		}
 	}
 	update(props) {
 		const {title, canonical, description, keywords, alternate, hrefLang} = props;
 
+		if (canonical) {
+			if (this.els.canonical) {
+				this.els.canonical.setAttribute("href", canonical);
+			} else {
+				let link = document.createElement('link');
+				link.rel = "canonical";
+				link.href = canonical;
+				link.setAttribute('data-meta', 'canonical');
+				document.getElementsByTagName('head')[0].appendChild(link);
+			}
+		}
+		if (alternate && hrefLang) {
+			if (this.els.alternate) {
+				this.els.alternate.href = alternate;
+				this.els.alternate.setAttribute("hreflang", hrefLang);
+			} else {
+				let link = document.createElement('link');
+				link.rel = "alternate";
+				link.href = alternate;
+				link.setAttribute('hreflang', hrefLang);
+				link.setAttribute('data-meta', 'alternate');
+				document.getElementsByTagName('head')[0].appendChild(link);
+			}
+		}
+
 		if (title) document.title = title;
-		if (canonical) this.els.canonical.setAttribute("href", canonical);
-		if (description) this.els.description.setAttribute("content", description);
-		if (keywords) this.els.keywords.setAttribute("content", keywords);
-		if (alternate) this.els.alternate.setAttribute("href", alternate);
-		if (hrefLang) this.els.alternate.setAttribute("hrefLang", hrefLang);
+		if (description) this.els.description.content = description;
+		if (keywords) this.els.keywords.content = keywords;
 	}
 }
 
