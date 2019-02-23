@@ -337,10 +337,10 @@ class Eventdetails extends Component {
 							}
 						})
 						.then(res => {
-							this.handleGetDataHelper3(res)
+							if (res) this.handleGetDataHelper3(res)
 						})
-						.catch(err => {
-							console.log(err);
+						.catch(() => {
+							// do nothing
 						});
 				}
 			}

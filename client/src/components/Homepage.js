@@ -185,29 +185,61 @@ class Homepage extends Component {
 	};
 
 	componentWillUnmount() {
+		this.removeSocketEvents();
+	}
+
+	removeSocketEvents() {
 		const {socket} = this.props;
-		socket.emit('is-homepage-getupdates', false);
-		socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
-		socket.removeListener('disconnect', this.onSocketDisconnect);
 		socket.removeListener('connect', this.onSocketConnect);
+		socket.removeListener('disconnect', this.onSocketDisconnect);
 		socket.removeListener('return-error-updates', this.onSocketDisconnect);
+		socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
+		clearTimeout(this.getUpdatesHomepageInterval);
 	}
 
 	initSocket() {
 		const {socket} = this.props;
-		socket.emit('is-homepage-getupdates', true);
-		socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
 		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
 		socket.on('disconnect', this.onSocketDisconnect);
-		socket.on('connect', this.onSocketConnect);
 		socket.on('return-error-updates', this.onSocketDisconnect);
+
+		this.getUpdatesHomepageInterval = null;
+		this.initGetUpdatesHomepage();
+	}
+
+	initGetUpdatesHomepage() {
+		const {socket} = this.props;
+		this.getUpdatesHomepageInterval = setTimeout(() => {  // init after 10 seconds
+			socket.emit('get-updates-homepage');
+			socket.once('return-updates-homepage', this.onSocketReturnUpdatesData);
+		}, 10000);
 	}
 
 	onSocketReturnUpdatesData(res) {
+		this.initGetUpdatesHomepage();
 		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date) {
 			this.handleGetData(res, true);
 		} else {
 			return false;
+		}
+	}
+
+	onSocketDisconnect() {
+		const {socket} = this.props;
+		this.removeSocketEvents();
+		socket.on('connect', this.onSocketConnect);
+		this.setState({
+			refreshButton: true
+		});
+	}
+
+	onSocketConnect() {
+		console.log('socket connected!');
+		if (this.state.refreshButton) {
+			this.initSocket();
+			this.setState({
+				refreshButton: false
+			});
 		}
 	}
 
@@ -233,19 +265,6 @@ class Homepage extends Component {
 	// 		}
 	// 	}
 	// }
-
-	onSocketDisconnect() {
-		this.setState({
-			refreshButton: true
-		});
-	}
-
-	onSocketConnect() {
-		this.props.socket.emit('is-homepage-getupdates', true);
-		this.setState({
-			refreshButton: false
-		});
-	}
 
 	updateMeta() {
 		const {date} = this.props.match.params || null;

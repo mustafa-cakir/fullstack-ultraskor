@@ -46,18 +46,11 @@ class App extends Component {
 
 	initSocket() {
 		this.state.socket.open();
-		this.state.socket.on('connect', () => {
-			setTimeout(() => {
-				this.state.socket.emit('get-updates'); // init get-updates, after 1 seconds of initial load
-				//this.state.socket.emit('get-updates-2');
-			}, 1000)
-		});
-
-		this.state.socket.on('disconnect', () => {
-			setTimeout(() => {
-				this.state.socket.open() // Try reconnecting, just once
-			}, 1000);
-		});
+		// this.state.socket.on('disconnect', () => {
+		// 	setTimeout(() => {
+		// 		this.state.socket.open() // Try reconnecting, just once
+		// 	}, 1000);
+		// });
 
 		this.state.socket.on('connect_error', function (data) {
 			console.log('connection_error', data);
@@ -80,8 +73,10 @@ class App extends Component {
 
 		const handleVisibilityChange = () => {
 			if (document[hidden]) {
+				console.log('visibilityAPI: hidden');
 				// page inactive do nothing
 			} else {
+				console.log('visibilityAPI: visible');
 				this.state.socket.open() // page active again, connect socket
 			}
 		};

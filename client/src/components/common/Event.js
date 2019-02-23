@@ -52,6 +52,12 @@ class Event extends Component {
 						<Trans>Postponed</Trans>
 					</div>;
 				break;
+			case "interrupted":
+				text =
+					<div className="red small-text line-clamp">
+						<Trans>Interrupted</Trans>
+					</div>;
+				break;
 			default:
 				text = from === "h2h" || from === "fixture" ? <div
 						className="full-time in-the-past">{moment(this.props.event.startTimestamp * 1000).format('DD.MM.YY')}</div> :

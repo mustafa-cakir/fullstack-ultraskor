@@ -9,32 +9,65 @@ class FlashScoreBoard extends Component {
 			flashScoreBoardData: null,
 			flashScoreMuted: false,
 			flashScoreShrinked: false,
-			flashData: null
+			flashData: null,
+			disconnected: false
 		};
 		this.handleSocketFlashScoreChanges = this.handleSocketFlashScoreChanges.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
+		this.removeSocketEvents = this.removeSocketEvents.bind(this);
+		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
 		this.flashScoreTimer = null;
 		this.socket = this.props.socket;
 	}
 
+	componentDidMount() {
+		this.analyzeSessionStorage();
+		this.initSocket();
+	}
+
 	componentWillUnmount() {
-		this.socket.emit('is-flashscore-active', false);
+		this.removeSocketEvents();
+	}
+
+	removeSocketEvents() {
 		clearTimeout(this.flashScoreTimer);
+		this.socket.removeListener('disconnect', this.onSocketDisconnect);
+		this.socket.removeListener('return-error-updates', this.onSocketDisconnect);
 		this.socket.removeListener('connect', this.onSocketConnect);
 		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 	}
 
-	componentDidMount() {
-		this.analyzeSessionStorage();
-		this.socket.emit('is-flashscore-active', true);
-		this.socket.on('connect', this.onSocketConnect);
+	initSocket() {
+		this.socket.on('disconnect', this.onSocketDisconnect);
+		this.socket.on('return-error-updates', this.onSocketDisconnect);
 
-		this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
-		this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+		this.getUpdatesFlashScoresInterval = null;
+		this.initGetUpdatesFlashScores();
+	}
+
+	initGetUpdatesFlashScores() {
+		this.getUpdatesFlashScoresInterval = setTimeout(() => {  // init after 10 seconds
+			this.socket.emit('get-flashcore-changes');
+			this.socket.once('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+		}, 10000);
+	}
+
+	onSocketDisconnect() {
+		this.removeSocketEvents();
+		this.socket.on('connect', this.onSocketConnect);
+		this.setState({
+			disconnected: true
+		});
 	}
 
 	onSocketConnect() {
-		this.socket.emit('is-flashscore-active', true);
+		console.log('socket connected!');
+		if (this.state.disconnected) {
+			this.initSocket();
+			this.setState({
+				disconnected: false
+			});
+		}
 	}
 
 	playSound(type) {
@@ -64,6 +97,7 @@ class FlashScoreBoard extends Component {
 
 
 	handleSocketFlashScoreChanges(res) {
+		console.log('changes returned');
 		const {t} = this.props;
 		if (res && res.length > 0) {
 			res.forEach(x => {

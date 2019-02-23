@@ -88,20 +88,17 @@ io.on('connection', socket => {
 	// 	});
 	// });
 
-	socket.once('get-updates', () => {
-		const getUpdatesHandler = () => {
-			if (isFlashScoreActive && cronjob.changes()) {
-				socket.emit('return-flashcore-changes', cronjob.changes());
-			}
-			if (isHomepageGetUpdates && cronjob.fullData()) {
-				let mainData = helper.simplifyHomeData(cronjob.fullData());
-				socket.emit('return-updates-homepage', mainData);
-			}
-		};
-		getUpdatesHandler();
-		intervalUpdates = setInterval(() => {
-			getUpdatesHandler(); // check in every 15 seconds
-		}, 10000);
+	socket.on('get-updates-homepage', () => {
+		if (cronjob.fullData()) {
+			let mainData = helper.simplifyHomeData(cronjob.fullData());
+			socket.emit('return-updates-homepage', mainData);
+		}
+	});
+
+	socket.on('get-flashcore-changes', () => {
+		if (cronjob.changes()) {
+			socket.emit('return-flashcore-changes', cronjob.changes());
+		}
 	});
 
 	socket.on('get-updates-details', api => {
@@ -371,8 +368,7 @@ app.get('/api/helper2/:date', (req, res) => {
 });
 
 app.get('/api/helper3/:date/:code', (req, res) => {
-	const date = req.params.date;
-	const code = req.params.code;
+	const {date, code} = req.params;
 
 	const cacheKey = `helperData-${date}-${code}-provider3`;
 
@@ -405,7 +401,7 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 						res.send(matchList);
 					}
 				} else {
-					res.send('');
+					res.send(null);
 				}
 			})
 			.catch(err => {
