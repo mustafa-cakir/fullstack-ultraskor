@@ -5,7 +5,7 @@ import LanguageSwitcher from "./common/LanguageSwitcher";
 class Footer extends Component {
 	emailLinkAction(e) {
 		e.preventDefault();
-		window.location.href="mailto:contact@ultrascore.com"
+		window.location.href="mailto:contact@ultraskor.com"
 	}
 	render() {
 		return (
