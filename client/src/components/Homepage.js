@@ -45,6 +45,7 @@ class Homepage extends Component {
 		this.initGetData({
 			api: '/football//' + this.todaysDate + '/json',
 			loading: true,
+			today: this.props.match.params.date ? 0 : 1,
 			page: "homepage"
 		});
 		this.once = true;
@@ -162,8 +163,7 @@ class Homepage extends Component {
 	initGetData = options => {
 		this.setState({loading: true});
 		document.body.classList.remove('initial-load');
-
-		fetch('/api/?query=' + options.api + '&page=homepage')
+		fetch(`/api/?query=${options.api}&page=homepage&today=${options.today ? options.today : 0}`)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();

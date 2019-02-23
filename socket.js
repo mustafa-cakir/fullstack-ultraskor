@@ -169,8 +169,7 @@ app.get('/api/', (req, res) => {
 			});
 	};
 
-
-	let cachedData = cacheService.instance().get(req.query.page === "homepage" ? "fullData" : cacheKey);
+	let cachedData = cacheService.instance().get((req.query.page === "homepage" && req.query.today === "1") ? "fullData" : cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
 	} else {
