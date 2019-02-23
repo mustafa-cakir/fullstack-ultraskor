@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-const MongoClient = require('mongodb').MongoClient;
+// const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const bodyParser = require('body-parser');
 const moment = require('moment');
@@ -24,6 +24,7 @@ app.use(helper.initCors());
 cacheService.start(err => {
 	if (err) console.error('Error: Cache service failed to start', err);
 });
+
 
 webpushHelper.init();
 cronjob.start();
@@ -70,17 +71,7 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 
 
 io.on('connection', socket => {
-	let isFlashScoreActive = false,
-		isHomepageGetUpdates = false,
-		intervalUpdates = null;
-
-	socket.on('is-flashscore-active', status => {
-		isFlashScoreActive = status;
-	});
-
-	socket.on('is-homepage-getupdates', status => {
-		isHomepageGetUpdates = status;
-	});
+	let intervalUpdates = null;
 
 	// socket.on('get-updates-2', () => {
 	// 	ws.on('message', (data) => {
@@ -89,15 +80,16 @@ io.on('connection', socket => {
 	// });
 
 	socket.on('get-updates-homepage', () => {
-		if (cronjob.fullData()) {
-			let mainData = helper.simplifyHomeData(cronjob.fullData());
-			socket.emit('return-updates-homepage', mainData);
+		let cachedData = cacheService.instance().get("fullData");
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			socket.emit('return-updates-homepage', cachedData);
 		}
 	});
 
 	socket.on('get-flashcore-changes', () => {
-		if (cronjob.changes()) {
-			socket.emit('return-flashcore-changes', cronjob.changes());
+		let cachedData = cacheService.instance().get("changes");
+		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+			socket.emit('return-updates-homepage', cachedData);
 		}
 	});
 
@@ -139,7 +131,6 @@ io.on('connection', socket => {
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
-		clearInterval(intervalUpdates);
 	});
 });
 
@@ -178,13 +169,12 @@ app.get('/api/', (req, res) => {
 			});
 	};
 
-	let cachedData = cacheService.instance().get(cacheKey);
+
+	let cachedData = cacheService.instance().get(req.query.page === "homepage" ? "fullData" : cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
-		//console.log('served from cache');
 	} else {
 		initRemoteRequests();
-		//console.log('cache not exist, get from remote');
 	}
 
 });

@@ -73,11 +73,9 @@ class App extends Component {
 
 		const handleVisibilityChange = () => {
 			if (document[hidden]) {
-				console.log('visibilityAPI: hidden');
 				// page inactive do nothing
 			} else {
-				console.log('visibilityAPI: visible');
-				this.state.socket.open() // page active again, connect socket
+				if (!this.state.socket.connected) this.state.socket.open() // page active again, connect socket if disconnected
 			}
 		};
 

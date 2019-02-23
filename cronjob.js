@@ -4,6 +4,8 @@ const moment = require('moment');
 const request = require('request-promise-native');
 const webpushHelper = require('./webpush');
 const _ = require('lodash');
+const helper = require('./helper');
+const cacheService = require('./cache.service');
 
 const sofaOptions = {
 	method: 'GET',
@@ -24,7 +26,8 @@ const cron = new CronJob('*/10 * * * * *', function() {
 	request(sofaOptions)
 		.then(res => {
 			// console.log('triggered 1');
-			fullData = res;
+			fullData = helper.simplifyHomeData(res);
+			cacheService.instance().set('fullData', fullData, 10); // cache the homepage full data for 10 seconds
 			const resFlash = _.clone(res, true);
 			let events = [];
 			const neededProperties = [
@@ -63,6 +66,7 @@ const cron = new CronJob('*/10 * * * * *', function() {
 				});
 
 				if (changes.length > 0) {
+					cacheService.instance().set('changes', changes, 10); // cache the changes for 10 seconds
 					console.log('Changes found via Cronjob ', new Date());
 					webpushHelper.initWebPush(changes);
 				}
@@ -78,10 +82,10 @@ exports.start = () => {
 	cron.start();
 };
 
-exports.fullData = () => {
-	return fullData;
-};
-
-exports.changes = () => {
-	return changes;
-};
+// exports.fullData = () => {
+// 	return fullData;
+// };
+//
+// exports.changes = () => {
+// 	return changes;
+// };
