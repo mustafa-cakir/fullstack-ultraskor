@@ -22,7 +22,7 @@
 
 .header-animation {
     animation: background-position 20s ease-in-out infinite alternate;
-    background: url(../images/bg1.jpg) 0 100% no-repeat;
+    background: url(../images/bg1.webp) 0 100% no-repeat;
     background-size: cover;
     height: 50px;
     left: 0;
@@ -31,6 +31,10 @@
     top: 0;
     transition: opacity .5s cubic-bezier(0.52, 0.16, 0.24, 1);
     width: 100%;
+}
+
+.no-webP .header-animation {
+    background-image: url(../images/bg1.jpg);
 }
 
 .col-menu {

@@ -12,8 +12,8 @@ class TranslateUrlHandler {
 				"/lig/": "/league/",
 				"-puan-durumu-": "-standing-",
 				"-sezon-": "-season-",
-                "/maclar/": "/matches/",
-                "tarih-": "date-"
+				"/maclar/": "/matches/",
+				"tarih-": "date-"
 
 			},
 			toTurkish: {
@@ -23,8 +23,8 @@ class TranslateUrlHandler {
 				"/league/": "/lig/",
 				"-standing-": "-puan-durumu-",
 				"-season-": "-sezon-",
-                "/matches/": "/maclar/",
-                "date-": "tarih-"
+				"/matches/": "/maclar/",
+				"date-": "tarih-"
 			}
 		}
 	}
@@ -70,6 +70,7 @@ class UpdateMetaHandler {
 			keywords: document.querySelector('[data-meta="keywords"]'),
 		}
 	}
+
 	update(props) {
 		const {title, canonical, description, keywords, alternate, hrefLang} = props;
 
@@ -145,4 +146,12 @@ export function generateSlug(text) {
 		.replace(/--+/g, '-')         // Replace multiple - with single -
 		.replace(/^-+/, '')             // Trim - from start of text
 		.replace(/-+$/, '')             // Trim - from end of text
+}
+
+export function testWebP() {
+	var webP = new Image();
+	webP.onload = webP.onerror = function () {
+		document.body.classList.add(webP.height === 2 ? "" : "no-webP");
+	};
+	webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
 }

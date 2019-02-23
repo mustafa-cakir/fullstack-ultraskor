@@ -27,7 +27,11 @@
     width: 32px;
     max-width: 32px;
     height: 32px;
-    background: url("../images/flags/sprite-flags.png") no-repeat 43.9299% 0;
+    background: url("../images/flags/sprite-flags.webp") no-repeat 43.9299% 0;
+}
+
+.no-webP .flag {
+    background-image: url("../images/flags/sprite-flags.png");
 }
 
 .flag-img {
@@ -44,8 +48,11 @@
 
 @media (-o-min-device-pixel-ratio: 3/2), (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
     .flag {
-        background-image: url("../images/flags/sprite-flags@2x.png");
+        background-image: url("../images/flags/sprite-flags@2x.webp");
         background-size: 7680px 32px
+    }
+    .no-webP .flag {
+        background-image: url("../images/flags/sprite-flags@2x.png");
     }
 }
 
