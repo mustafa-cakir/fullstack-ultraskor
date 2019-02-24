@@ -147,11 +147,3 @@ export function generateSlug(text) {
 		.replace(/^-+/, '')             // Trim - from start of text
 		.replace(/-+$/, '')             // Trim - from end of text
 }
-
-export function testWebP() {
-	var webP = new Image();
-	webP.onload = webP.onerror = function () {
-		document.body.classList.add(webP.height === 2 ? "" : "no-webP");
-	};
-	webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
-}

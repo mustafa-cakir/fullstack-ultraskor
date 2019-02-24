@@ -43,6 +43,13 @@
 </noscript>
 <div id="root"></div>
 <script>
+    (function testWebP() {
+		var webP = new Image();
+		webP.onload = webP.onerror = function () {
+			document.body.classList.add(webP.height === 2 ? "" : "no-webP");
+		};
+		webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+	})();
     (function logErrors() {
 	    window.addEventListener('error', function(e) {
 		    var client = new XMLHttpRequest();

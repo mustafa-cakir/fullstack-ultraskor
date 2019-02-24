@@ -21,4 +21,3 @@ ReactDOM.render((
 ), document.getElementById('root'));
 serviceWorker.unregister();
 initFirebaseWebPush();
-testWebP(); // check if browser support for webP
