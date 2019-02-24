@@ -150,7 +150,7 @@ app.get('/api/', (req, res) => {
 			},
 			timeout: 10000
 		};
-
+		
 		request(sofaOptions)
 			.then(response => {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);

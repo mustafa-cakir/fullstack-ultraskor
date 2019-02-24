@@ -27,20 +27,22 @@ class App extends Component {
 				autoConnect: false
 			})
 		};
-        this.audioFiles = {
-            goal: new Audio(Mp3Goal),
-            cancel: new Audio(Mp3Cancel),
-            finish: new Audio(Mp3Finish),
-            redcard: new Audio(Mp3RedCard),
-            halftime: new Audio(Mp3HalfTime),
-            start: new Audio(Mp3Start),
-        }
+		this.audioFiles = {
+			goal: new Audio(Mp3Goal),
+			cancel: new Audio(Mp3Cancel),
+			finish: new Audio(Mp3Finish),
+			redcard: new Audio(Mp3RedCard),
+			halftime: new Audio(Mp3HalfTime),
+			start: new Audio(Mp3Start),
+		}
 	}
 
 
 	componentDidMount() {
 		if (("WebSocket" in window && window.WebSocket !== undefined) || ("MozWebSocket" in window)) {
-			this.initSocket()
+			setTimeout(() => {
+				this.initSocket();
+			}, 5000);
 		}
 	}
 
@@ -102,13 +104,15 @@ class App extends Component {
 						<Route exact path='/'
 						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
-                        <Route exact path='/(maclar|matches)/(tarih|date)-:date'
-                               render={props => <Homepage {...this.props} {...props} {...this.state} audioFiles={this.audioFiles}/>}/>
+						<Route exact path='/(maclar|matches)/(tarih|date)-:date'
+						       render={props => <Homepage {...this.props} {...props} {...this.state}
+						                                  audioFiles={this.audioFiles}/>}/>
 
 						<Route exact path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
 
-						<Route exact path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
+						<Route exact
+						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
 						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
 
 						<Route exact path='/test' component={TestComp}/>

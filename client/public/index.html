@@ -43,13 +43,13 @@
 </noscript>
 <div id="root"></div>
 <script>
-    (function testWebP() {
+	document.addEventListener("DOMContentLoaded", function() {
 		var webP = new Image();
 		webP.onload = webP.onerror = function () {
-			document.body.classList.add(webP.height === 2 ? "" : "no-webP");
+			if (webP.height !== 2) document.body.classList.add("no-webP");
 		};
 		webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
-	})();
+	});
     (function logErrors() {
 	    window.addEventListener('error', function(e) {
 		    var client = new XMLHttpRequest();

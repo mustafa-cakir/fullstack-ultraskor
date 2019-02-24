@@ -8,7 +8,6 @@ import {BrowserRouter} from 'react-router-dom';
 import './translations';
 import i18n from "i18next";
 import { initFirebaseWebPush } from './web-push';
-import { testWebP } from './Helper';
 
 const basename = (i18n.language === "en") ? "/en" : "/";
 
