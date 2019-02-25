@@ -115,6 +115,11 @@ class Event extends Component {
 				.catch(err => {
 					// error
 					this.setState({favEventLoading: false});
+                    localStorage.setItem('FavEvents', JSON.stringify(favEvents));
+                    this.props.updateParentState({
+                        favEvents: favEvents,
+                        favEventsList: favEventsList
+                    });
 					console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
 				});
 		})
