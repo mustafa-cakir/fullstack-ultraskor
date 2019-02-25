@@ -166,6 +166,7 @@ class Headertabs extends Component {
         if (selectedDay !== this.state.selectedDay) {
             this.props.initGetData({
                 api: '/football//' + selectedDay + '/json',
+                today: moment(0, "HH").diff(selectedDay, 'days') === 0 ? 1 : 0,
 	            page: "homepage"
             });
             let url = (moment().format('DD') === moment(selectedDay).format('DD')) ? "/" : `/${t('matches')}/${t('date')}-${selectedDay}`
