@@ -1,20 +1,52 @@
 import React, {Component} from 'react';
 import './assets/style/app.scss';
 import Navbar from "./components/Navbar";
-import Homepage from "./components/Homepage";
+// import Homepage from "./components/Homepage";
 import {Route, Switch, withRouter} from "react-router-dom";
-import Eventdetails from "./components/eventdetails/Eventdetails";
-import Errors from "./components/common/Errors";
+// import Eventdetails from "./components/eventdetails/Eventdetails";
+// import Errors from "./components/common/Errors";
 import ReactGA from 'react-ga';
 import TestComp from "./components/TestComp";
 import socketIOClient from 'socket.io-client';
-import Leaguedetails from "./components/leaguedetails/Leaguedetails";
+// import Leaguedetails from "./components/leaguedetails/Leaguedetails";
 import Mp3Goal from "./assets/sound/goal.mp3";
 import Mp3Cancel from "./assets/sound/cancel.mp3";
 import Mp3Finish from "./assets/sound/finish.mp3";
 import Mp3RedCard from "./assets/sound/red-card.mp3";
 import Mp3HalfTime from "./assets/sound/half-time.mp3";
 import Mp3Start from "./assets/sound/start.mp3";
+
+import Loadable from 'react-loadable';
+
+const Loading = ({ error }) => {
+    if (error) {
+        return 'Oh nooess!';
+    } else {
+        return <h3>Loading...</h3>;
+    }
+};
+
+const LoadableEventdetails = Loadable({
+    loader: () => import('./components/eventdetails/Eventdetails'),
+    loading: Loading
+});
+
+const LoadableLeaguedetails = Loadable({
+    loader: () => import('./components/leaguedetails/Leaguedetails'),
+    loading: Loading
+});
+
+const LoadableHomepage = Loadable({
+    loader: () => import('./components/Homepage'),
+    loading: Loading
+});
+
+
+const LoadableErrors = Loadable({
+    loader: () => import('./components/common/Errors'),
+    loading: Loading
+});
+
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -102,25 +134,25 @@ class App extends Component {
 				<main className="main">
 					<Switch>
 						<Route exact path='/'
-						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
+						       render={() => <LoadableHomepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
 
 						<Route exact path='/(maclar|matches)/(tarih|date)-:date'
-						       render={props => <Homepage {...this.props} {...props} {...this.state}
+						       render={props => <LoadableHomepage {...this.props} {...props} {...this.state}
 						                                  audioFiles={this.audioFiles}/>}/>
 
 						<Route exact path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
-						       render={props => <Eventdetails socket={socket} {...props}/>}/>
+						       render={props => <LoadableEventdetails socket={socket} {...props}/>}/>
 
 						<Route exact
 						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
-						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
+						       render={props => <LoadableLeaguedetails socket={socket} {...props}/>}/>
 
 						<Route exact path='/test' component={TestComp}/>
 
 						<Route exact path="/eventdetails/:eventid" socket={socket}
-						       render={props => <Eventdetails socket={socket} {...props}/>}/>
+						       render={props => <LoadableEventdetails socket={socket} {...props}/>}/>
 
-						<Route render={() => <Errors type="page-not-found"/>}/>
+						<Route render={() => <LoadableErrors type="page-not-found"/>}/>
 					</Switch>
 				</main>
 			</div>
