@@ -316,12 +316,10 @@ class Homepage extends Component {
 			favEventContainer.push(
 				<div className="fav-container" key={1}>
 					<div className="tournament-title">
-						<div className="row align-items-center">
 							<Icon name="fas fa-star event-fav-color"/>
 							<div className="col tournament-name px-2">
-								<strong>My Favorites</strong>
+								<strong><Trans>My Favorites</Trans></strong>
 							</div>
-						</div>
 					</div>
 					{this.state.favEventsList.map((event, i) => {
 						return (<Event key={i}

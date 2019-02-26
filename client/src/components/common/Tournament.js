@@ -25,7 +25,8 @@ class Tournament extends Component {
 							</div>
 
 							{tournament.events.map((event, k) => {
-								return (<Event key={i + k}
+								return (<Event key={k}
+											   index={k}
 											   event={event}
 											   updateParentState={this.updateParentState} {...this.props}/>)
 							})}

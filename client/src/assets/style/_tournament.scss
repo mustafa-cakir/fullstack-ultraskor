@@ -39,18 +39,12 @@
     @include line-clamp(1);
 }
 
-.homepage-list {
-    & > div:not(.tournament-title):not(.fav-container):not(.error):nth-child(odd) {
-        background: rgba(0, 0, 0, 0.1);
-    }
-}
-
 .fav-container {
-    & > div:not(.tournament-title):nth-child(even) {
-        background: rgba($color-fav, .12);
-    }
-    & > .fav-container {
-        background: rgba($color-fav, .05);
+    .event-container {
+	    background: rgba($color-fav, .05);
+	    &:nth-child(even) {
+		    background: rgba($color-fav, .12);
+	    }
     }
 }
 
