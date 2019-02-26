@@ -10,7 +10,7 @@ class Tournament extends Component {
 		return (
 			<React.Fragment>
 				{this.props.tournaments.map((tournament, i) => {
-					return (
+					return tournament.events.length > 0 ? (
 						<React.Fragment key={i}>
 							{/*<div className="tournament-container" data-key={i}>*/}
 							<div className="tournament-title">
@@ -32,7 +32,7 @@ class Tournament extends Component {
 							})}
 							{/*</div>*/}
 						</React.Fragment>
-					)
+					) : ""
 				})}
 			</React.Fragment>
 		)

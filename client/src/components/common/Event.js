@@ -127,7 +127,7 @@ class Event extends Component {
 	}
 
 	render() {
-		const {event, t, from} = this.props;
+		const {event, t, from, selected, selectedId} = this.props;
 		let favEvents = this.props.favEvents || [];
 		const favActive = favEvents.indexOf(event.id) > -1;
 		return (
@@ -136,7 +136,7 @@ class Event extends Component {
 				<Link to={{
 					pathname: `/${t('match')}/${generateSlug(event.name)}-${t('live-score')}-${event.id}`,
 					state: {isPrev: true},
-				}} className="event-link col p-0 row m-0"
+				}} className={`event-link col p-0 row m-0 ${event.winnerCode ? "winner-" + event.winnerCode : ""}`}
 					  title={`${event.homeTeam.name} - ${event.awayTeam.name}  ${t('click for live scores, lineup and stats')}`}>
                             <span className="col event-team home text-right pr-0 pl-2">
                                 {event.homeRedCards ? <span className={"red-card"}>{event.homeRedCards}</span> : ""}
@@ -160,7 +160,11 @@ class Event extends Component {
 				</Link>
 				{(from === "h2h" || from === "fixture") ? (
 					<div className="col event-fav half-time-score pl-0 text-right pr-2">
-						{typeof event.homeScore.period1 !== "undefined" ? `(${event.homeScore.period1}-${event.awayScore.period1})` : ""}
+						{selected === "home" || selected === "away" ? (
+							<TeamForm selectedId={selectedId} event={event}/>
+						) : (
+							<span>{typeof event.homeScore.period1 !== "undefined" ? `(${event.homeScore.period1}-${event.awayScore.period1})` : ""}</span>
+						)}
 					</div>
 				) : (
 					<div className="col event-fav pl-0 text-right pr-2"
@@ -176,5 +180,11 @@ class Event extends Component {
 		)
 	}
 }
+
+const TeamForm = props => {
+	const {event, selectedId} = props;
+	let result = event.winnerCode === 3 ? "D" : event.winnerCode === 1 && selectedId === event.homeTeam.id ? "W" : event.winnerCode === 2 && selectedId === event.awayTeam.id ? "W" : "L";
+	return <span className={"team-form team-form-" + result}>{result}</span>
+};
 
 export default withTranslation('translations')(Event)

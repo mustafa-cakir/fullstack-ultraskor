@@ -15,15 +15,25 @@ class H2h extends Component {
 
 	componentDidMount() {
 		const {eventData} = this.props;
-		this.initSocket("/event/" + eventData.event.id + "/matches/json");
+		this.initGetData("/event/" + eventData.event.id + "/matches/json");
 	};
 
 	componentDidUpdate() {
 		this.props.swipeAdjustHeight()
-	}
+	};
 
-	initSocket = api => {
+	preProcessData(res) {
+		console.log(res);
+		res.home.recent.tournaments.forEach(tournament => {
+			tournament.events = tournament.events.filter(x => x.status.type !== "notstarted");
+		});
+		res.away.recent.tournaments.forEach(tournament => {
+			tournament.events = tournament.events.filter(x => x.status.type !== "notstarted");
+		});
+		return res;
+	};
 
+	initGetData = api => {
 		fetch(`/api/?query=${api}&page=h2h`)
 			.then(res => {
 				if (res.status === 200) {
@@ -34,7 +44,7 @@ class H2h extends Component {
 			})
 			.then(res => {
 				this.setState({
-					h2hData: res
+					h2hData: this.preProcessData(res)
 				});
 			})
 			.catch(err => {
@@ -42,22 +52,6 @@ class H2h extends Component {
 					h2hData: {error: err.toString()},
 				});
 			});
-
-
-		// socket.emit('get-main', options);
-		//
-		// socket.once('return-main-h2h', res => {
-		// 	this.setState({
-		// 		h2hData: res
-		// 	});
-		// });
-		//
-		// socket.on('return-error-h2h', err => {
-		// 	this.setState({
-		// 		h2hData: {error: err.toString()},
-		// 	});
-		// });
-
 	};
 
 	tabSwitcherHandler(tab) {
@@ -104,7 +98,7 @@ class H2h extends Component {
 						</li>
 					</ul>
 					<div className="h2h-list">
-						<Tournament tournaments={tournaments} from={"h2h"}/>
+						<Tournament tournaments={tournaments} from={"h2h"} selected={tab} selectedId={tab === "home" ? eventData.event.homeTeam.id : eventData.event.awayTeam.id}/>
 					</div>
 				</div>
 			</div>

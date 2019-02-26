@@ -175,7 +175,6 @@ app.get('/api/', (req, res) => {
 	} else {
 		initRemoteRequests();
 	}
-
 });
 
 app.post('/api/webpush', (req, res) => {

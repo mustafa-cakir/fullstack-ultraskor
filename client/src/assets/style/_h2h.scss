@@ -13,6 +13,12 @@
             @include line-clamp(1);
             display: inline-block;
             max-width: 70px;
+	        @include media(tablet) {
+		        max-width: 120px;
+	        }
+	        @include media(web) {
+		        max-width: 200px;
+	        }
         }
     }
     .h2h-list {
@@ -21,7 +27,7 @@
             //background: $premier-leage-2;
         }
         .event-container:nth-child(even) {
-            background: #eee;
+            background: #fff;
         }
     }
     .event-time {

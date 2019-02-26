@@ -1009,6 +1009,37 @@ code {
 	}
 }
 
+.team-form {
+	display: inline-block;
+	width: 16px;
+	line-height: 16px;
+	height: 16px;
+	text-align: center;
+	margin-right: 2px;
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: bold;
+	&-L {
+		background: #d0021b;
+	}
+	&-D {
+		background: #c2c300;
+	}
+	&-W {
+		background: #2ba774;
+	}
+}
+
+.winner-1 .home {
+	font-weight: bolder;
+	color: $color-cl-3;
+}
+
+.winner-2 .away {
+	font-weight: bolder;
+	color: $color-cl-3;
+}
+
 
 @keyframes spin {
 	from {
