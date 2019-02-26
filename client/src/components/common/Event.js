@@ -131,7 +131,7 @@ class Event extends Component {
 		let favEvents = this.props.favEvents || [];
 		const favActive = favEvents.indexOf(event.id) > -1;
 		return (
-			<div className={favActive ? "fav-active event-container row m-0" : "event-container row m-0"}>
+			<div className={favActive ? "fav-active event-container" : "event-container"}>
 				{this.isInProgress()}
 				<Link to={{
 					pathname: `/${t('match')}/${generateSlug(event.name)}-${t('live-score')}-${event.id}`,

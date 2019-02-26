@@ -1,17 +1,26 @@
 .tournament-title {
     background: $color-cl-1;
     color: #fff;
-    padding: 10px 25px;
+    padding: 0 7px;
     position: sticky;
     top: 47px;
     z-index: 1;
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
 }
 
-.league-link {
+.tournament-name {
     color: #fff;
-    padding: 10px;
+    padding: 0 15px;
+	line-height: 40px;
     margin: 0;
-    display: block;
+	display: inline-block;
+	font-weight: lighter;
+	@include line-clamp(1);
+	strong {
+		font-weight: bold;
+	}
     &:hover {
         color: #fff;
     }
@@ -20,15 +29,6 @@
     }
     .flag {
         padding: 0;
-    }
-}
-
-.tournament-name {
-    display: inline-block;
-    font-weight: lighter;
-    @include line-clamp(1);
-    strong {
-        font-weight: bold;
     }
 }
 
@@ -57,6 +57,9 @@
 .event-container {
     height: 50px;
     line-height: 50px;
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
 }
 
 .event-team {
