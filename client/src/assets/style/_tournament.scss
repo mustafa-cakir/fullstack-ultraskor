@@ -68,7 +68,7 @@
     max-width: 60px;
     text-align: center;
     @include line-clamp(1);
-    .full-time {
+    &.full-time {
         position: relative;
         text-align: center;
         .day {
@@ -82,12 +82,12 @@
             text-align: center;
         }
     }
-    .in-the-past {
+    &.in-the-past {
         font-size: .8rem;
     }
-    & > div {
-        @include line-clamp(1);
-    }
+    //& > div {
+    //    @include line-clamp(1);
+    //}
 }
 
 .event-link,
