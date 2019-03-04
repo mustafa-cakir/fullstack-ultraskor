@@ -7,8 +7,8 @@ const _ = require('lodash');
 const helper = require('./helper');
 const cacheService = require('./cache.service');
 
-const sofaOptions = moment => {
-    return {
+const options = moment => {
+    let sofaOptions = {
         method: 'GET',
         uri: `https://www.sofascore.com/football//${moment.format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`,
         json: true,
@@ -18,14 +18,19 @@ const sofaOptions = moment => {
             'referer': 'https://www.sofascore.com/',
             'x-requested-with': 'XMLHttpRequest'
         }
+    };
+    if (process.env.NODE_ENV === "dev") {
+        sofaOptions.uri = `https://www.ultraskor.com/api/?query=/football//${moment.format('YYYY-MM-DD')}/json?_=${Math.floor(Math.random() * 10e8)}`;
+        sofaOptions.headers = {}
     }
+    return sofaOptions;
 };
 let previousData = null;
 let changes = null;
 let fullData = null;
 
 const cron = new CronJob('*/10 * * * * *', function () {
-    request(sofaOptions(moment()))
+    request(options(moment()))
         .then(res => {
             // console.log('triggered 1');
             fullData = helper.simplifyHomeData(res);
