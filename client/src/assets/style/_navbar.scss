@@ -246,6 +246,32 @@
 		}
 	}
 }
+.popularLeagues {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background: #3f3f3f;
+	li {
+		border-bottom: 1px solid #000;
+		&:last-child {
+			border:none;
+		}
+		a {
+			padding: 10px 20px;
+			color: #eee;
+			display:block;
+			font-size: 1rem;
+		}
+		img {
+			margin-right: 10px;
+			height: 40px;
+			width: 40px;
+			padding: 3px;
+			background: #fff;
+			border-radius: 5px;
+		}
+	}
+}
 
 .nav-list {
 	bottom: 0;
@@ -268,10 +294,13 @@
 	visibility: hidden;
 	width: auto;
 	z-index: 1;
+	.clickable {
+		cursor: pointer;
+	}
 	&::-webkit-scrollbar {
 		display: none;
 	}
-	li {
+	& > li {
 		opacity: 0;
 		pointer-events: none;
 		background: #252525;
@@ -294,12 +323,17 @@
 				color: #929292;
 			}
 		}
+		.col-down {
+			max-width: 50px;
+			text-align: center;
+			padding: 0;
+		}
 		.separator {
 			background: #444444;
 			width: calc(100% - 90px);
 			margin: 0 20px 0 auto;
 		}
-		a {
+		& > a {
 			color: #fff;
 			display: block;
 			padding: 15px 25px;
