@@ -183,8 +183,17 @@ class Event extends Component {
 
 const TeamForm = props => {
 	const {event, selectedId} = props;
-	let result = event.winnerCode === 3 ? "D" : event.winnerCode === 1 && selectedId === event.homeTeam.id ? "W" : event.winnerCode === 2 && selectedId === event.awayTeam.id ? "W" : "L";
-	return <span className={"team-form team-form-" + result}>{result}</span>
+	let result = null;
+
+	if (event.winnerCode === 1) {
+	    result = selectedId === event.homeTeam.id ? "W" : "L"
+    } else if (event.winnerCode === 2) {
+        result = selectedId === event.homeTeam.id ? "L" : "W"
+    } else if (event.winnerCode === 3) {
+	    result = "D"
+    }
+
+	return result ? <span className={"team-form team-form-" + result}>{result}</span> : <span/>;
 };
 
 export default withTranslation('translations')(Event)

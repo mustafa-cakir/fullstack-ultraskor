@@ -633,7 +633,8 @@ code {
 		}
 		span {
 			display: block;
-			padding: 10px 15px;
+			padding: 0 15px;
+			line-height: 40px;
 			background: #fff;
 			position: relative;
 			border: 1px solid transparent;
@@ -642,6 +643,11 @@ code {
 			cursor: pointer;
 			transition: all .2s linear;
 			border-radius: 5px 5px 0 0;
+			i {
+				margin-right: 9px;
+				font-size: 1.2rem;
+				vertical-align: middle;
+			}
 		}
 		&.active {
 			span {

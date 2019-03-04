@@ -110,7 +110,7 @@ io.on('connection', socket => {
 			};
 
             if (process.env.NODE_ENV === "dev") {
-                sofaOptions.uri = `https://www.ultraskor.com/api/?query=${api}?_=${Math.floor(Math.random() * 10e8)}`;
+                sofaOptions.uri = `https://www.ultraskor.com/api/?query=${api}`;
                 sofaOptions.headers = {}
             }
 
@@ -157,7 +157,7 @@ app.get('/api/', (req, res) => {
 		};
 
         if (process.env.NODE_ENV === "dev") {
-            sofaOptions.uri = `https://www.ultraskor.com/api/?query=${req.query.query}?_=${Math.floor(Math.random() * 10e8)}`;
+            sofaOptions.uri = `https://www.ultraskor.com/api/?query=${req.query.query}`;
             sofaOptions.headers = {}
         }
 		

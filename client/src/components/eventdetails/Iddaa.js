@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import IddaLogo from "./../../assets/images/icon-iddaa.png";
 import IddaLogoBig from "./../../assets/images/icon-iddaa2.png";
 import {Trans, withTranslation} from "react-i18next";
+import Icon from "../common/Icon";
 
 class Iddaa extends Component {
 	constructor(props) {
@@ -40,7 +41,7 @@ class Iddaa extends Component {
 							</li>
 							<li className={this.state.tabIndex === 1 ? "active" : ""}
 							    onClick={() => this.tabSwitcherHandler(1)}>
-								<span><img src={IddaLogo} className="tab-logo" alt="International Bets Logo"/><Trans>International Bets</Trans></span>
+								<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>
 							</li>
 						</ul>
 						{this.state.tabIndex === 0 ? (
@@ -59,7 +60,7 @@ class Iddaa extends Component {
 							</div>
 						) : ""}
 						{this.state.tabIndex === 1 ? (
-                            <div className="iddaa-notfound"><Trans>International bets odds will be here.</Trans> <br/><br/><Trans>Coming soon</Trans>.</div>
+                            <div className="iddaa-notfound"><Trans>Coming soon</Trans>.</div>
 						) : ""}
 					</div>
 				</div>
