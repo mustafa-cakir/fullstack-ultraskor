@@ -96,7 +96,7 @@ io.on('connection', socket => {
 	socket.on('get-updates-details', api => {
 		const cacheKey = `mainData-${api}-eventdetails`;
 		const initRemoteRequests = () => {
-			const sofaOptions = {
+			let sofaOptions = {
 				method: 'GET',
 				uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
 				json: true,
@@ -108,6 +108,11 @@ io.on('connection', socket => {
 				},
 				timeout: 10000
 			};
+
+            if (process.env.NODE_ENV === "dev") {
+                sofaOptions.uri = `https://www.ultraskor.com/api/?query=${api}`;
+                sofaOptions.headers = {}
+            }
 
 			request(sofaOptions)
 				.then(response => {
@@ -138,7 +143,7 @@ app.get('/api/', (req, res) => {
 	const cacheKey = `mainData-${req.query.query}`;
 	req.query.page = req.query.page || "default";
 	const initRemoteRequests = () => {
-		const sofaOptions = {
+		let sofaOptions = {
 			method: 'GET',
 			uri: `https://www.sofascore.com${req.query.query}?_=${Math.floor(Math.random() * 10e8)}`,
 			json: true,
@@ -151,6 +156,11 @@ app.get('/api/', (req, res) => {
 			timeout: 10000
 		};
 
+        if (process.env.NODE_ENV === "dev") {
+            sofaOptions.uri = `https://www.ultraskor.com/api/?query=${req.query.query}`;
+            sofaOptions.headers = {}
+        }
+		
 		request(sofaOptions)
 			.then(response => {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
@@ -175,7 +185,6 @@ app.get('/api/', (req, res) => {
 	} else {
 		initRemoteRequests();
 	}
-
 });
 
 app.post('/api/webpush', (req, res) => {

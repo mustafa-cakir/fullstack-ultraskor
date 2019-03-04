@@ -36,26 +36,6 @@
             font-size: 0.8rem;
             font-weight: lighter;
         }
-        .team-form {
-            display: inline-block;
-            width: 16px;
-            line-height: 16px;
-            height: 16px;
-            text-align: center;
-            margin-right: 2px;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: bold;
-            &-L {
-                background: #d0021b;
-            }
-            &-D {
-                background: #c2c300;
-            }
-            &-W {
-                background: #2ba774;
-            }
-        }
         .score {
             font-size: 2rem;
             background: $premier-leage-2;

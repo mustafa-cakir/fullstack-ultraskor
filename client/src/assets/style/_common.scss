@@ -185,6 +185,10 @@ code {
     color: #222;
 }
 
+.bg-gray {
+	background: rgba(0, 0, 0, 0.1);
+}
+
 .gray {
     color: #777;
 }
@@ -629,7 +633,8 @@ code {
 		}
 		span {
 			display: block;
-			padding: 10px 15px;
+			padding: 0 15px;
+			line-height: 40px;
 			background: #fff;
 			position: relative;
 			border: 1px solid transparent;
@@ -638,6 +643,11 @@ code {
 			cursor: pointer;
 			transition: all .2s linear;
 			border-radius: 5px 5px 0 0;
+			i {
+				margin-right: 9px;
+				font-size: 1.2rem;
+				vertical-align: middle;
+			}
 		}
 		&.active {
 			span {
@@ -1003,6 +1013,37 @@ code {
 		display: block;
 		color: #333;
 	}
+}
+
+.team-form {
+	display: inline-block;
+	width: 16px;
+	line-height: 16px;
+	height: 16px;
+	text-align: center;
+	margin-right: 2px;
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: bold;
+	&-L {
+		background: #d0021b;
+	}
+	&-D {
+		background: #c2c300;
+	}
+	&-W {
+		background: #2ba774;
+	}
+}
+
+.winner-1 .home {
+	font-weight: bolder;
+	color: $color-cl-3;
+}
+
+.winner-2 .away {
+	font-weight: bolder;
+	color: $color-cl-3;
 }
 
 

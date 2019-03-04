@@ -212,7 +212,7 @@ class Leaguedetails extends Component {
 					) : ""}
 
 					<div className="swipe-content fixture" data-tab="fixture">
-						{this.state.isFixtureTabClicked ? (
+						{this.state.isFixtureTabClicked || leagueData.standingsTables.length === 0 ? (
 							<Fixture events={leagueData.events} params={this.props.match.params}
 							         socket={this.props.socket}/>
 						) : ""}

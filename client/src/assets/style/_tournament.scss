@@ -1,17 +1,26 @@
 .tournament-title {
     background: $color-cl-1;
     color: #fff;
-    padding: 10px 25px;
+    padding: 0 7px;
     position: sticky;
     top: 47px;
     z-index: 1;
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
 }
 
-.league-link {
+.tournament-name {
     color: #fff;
-    padding: 10px;
+    padding: 0 15px;
+	line-height: 40px;
     margin: 0;
-    display: block;
+	display: inline-block;
+	font-weight: lighter;
+	@include line-clamp(1);
+	strong {
+		font-weight: bold;
+	}
     &:hover {
         color: #fff;
     }
@@ -23,15 +32,6 @@
     }
 }
 
-.tournament-name {
-    display: inline-block;
-    font-weight: lighter;
-    @include line-clamp(1);
-    strong {
-        font-weight: bold;
-    }
-}
-
 .event-score {
     letter-spacing: 0.01rem;
     max-width: 50px;
@@ -39,24 +39,21 @@
     @include line-clamp(1);
 }
 
-.homepage-list {
-    & > div:not(.tournament-title):not(.fav-container):not(.error):nth-child(odd) {
-        background: rgba(0, 0, 0, 0.1);
-    }
-}
-
 .fav-container {
-    & > div:not(.tournament-title):nth-child(even) {
-        background: rgba($color-fav, .12);
-    }
-    & > .fav-container {
-        background: rgba($color-fav, .05);
+    .event-container {
+	    background: rgba($color-fav, .05);
+	    &:nth-child(even) {
+		    background: rgba($color-fav, .12);
+	    }
     }
 }
 
 .event-container {
     height: 50px;
     line-height: 50px;
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
 }
 
 .event-team {
@@ -68,7 +65,7 @@
     max-width: 60px;
     text-align: center;
     @include line-clamp(1);
-    .full-time {
+    &.full-time {
         position: relative;
         text-align: center;
         .day {
@@ -82,12 +79,12 @@
             text-align: center;
         }
     }
-    .in-the-past {
+    &.in-the-past {
         font-size: .8rem;
     }
-    & > div {
-        @include line-clamp(1);
-    }
+    //& > div {
+    //    @include line-clamp(1);
+    //}
 }
 
 .event-link,

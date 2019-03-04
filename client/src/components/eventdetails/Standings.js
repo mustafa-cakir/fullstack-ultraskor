@@ -80,7 +80,7 @@ class Standings extends Component {
 					<div className="row league-heading align-items-center">
 						<div className="col col-img">
 							<img
-								src={"https://www.sofascore.com/u-tournament/" + standingsTables.tournament.uniqueId + "/logo"}
+                                src={window.ImageServer + '/images/?url=/u-tournament/' + standingsTables.tournament.uniqueId + '/logo'}
 								alt={standingsTables.tournament.name}/>
 						</div>
 						<div className="col">
