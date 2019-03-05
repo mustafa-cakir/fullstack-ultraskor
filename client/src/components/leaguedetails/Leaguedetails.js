@@ -20,9 +20,10 @@ class Leaguedetails extends Component {
 		this.swipeByTabName = this.swipeByTabName.bind(this);
 		this.swipeAdjustHeight = this.swipeAdjustHeight.bind(this);
 		this.state = {
-			index: 0,
+			index: this.props.match.params.activeTab ? parseInt(this.props.match.params.activeTab) : 0,
 			leagueData: null,
-			isFixtureTabClicked: false
+			isFixtureTabClicked: this.props.match.params.activeTab === "1",
+            activeTab: this.props.match.params.activeTab || null
 		};
 		smoothscroll.polyfill();
 	}
@@ -47,8 +48,6 @@ class Leaguedetails extends Component {
 
 	initGetData() {
 		const {leagueid, seasonid} = this.props.match.params;
-		// const {socket} = this.props;
-
 		let api = `/u-tournament/${leagueid}/season/${seasonid}/json`;
 
 		fetch(`/api/?query=${api}&page=leaguedetails`)
@@ -201,7 +200,8 @@ class Leaguedetails extends Component {
 					            callback: this.swipeChanging,
 					            transitionEnd: this.swipeComplete,
 					            swiping: this.swipeSwiping,
-					            disableScroll: false
+					            disableScroll: false,
+                                startSlide: this.state.activeTab ? parseInt(this.state.activeTab) : 0
 				            }} ref={this.swipeEl}>
 
 					{leagueData.standingsTables.length > 0 ? (
