@@ -14,7 +14,7 @@ class Fixture extends Component {
 			isDropdown: false,
 			roundName: this.props.events.roundMatches.data.roundName,
 			roundMatches: this.props.events.roundMatches,
-			currentRound: this.props.events.roundMatches.data.index
+			currentRound: this.props.events.roundMatches.data.roundName ? this.props.events.roundMatches.data.roundName : this.props.events.roundMatches.data.index
 		};
 	}
 
@@ -64,8 +64,7 @@ class Fixture extends Component {
 		const {roundMatches, currentRound, loading, roundName} = this.state;
 
 		if (roundMatches.error) return <Errors type="error" message={roundMatches.error}/>;
-
-		const currentRoundIndex = this.props.events.rounds.findIndex(x => x.round === currentRound);
+        const currentRoundIndex = this.props.events.rounds.findIndex(x => x[isNaN(currentRound) ? "name" : "round"] === currentRound);
 		const prevRound = this.props.events.rounds[currentRoundIndex - 1];
 		const nextRound = this.props.events.rounds[currentRoundIndex + 1];
 
@@ -85,9 +84,20 @@ class Fixture extends Component {
 									<div className="dropdown">
 										<ul>
 											{this.props.events.rounds.map((round, index) => {
+											    let isActive = null;
+											    let isThisTournament = null;
+
+											    if (roundName) {
+                                                    if (round.name && round.name === roundName) isActive = true;
+                                                } else if (!round.name && round.round === currentRound) isActive = true;
+
+                                                if (this.props.events.roundMatches.data.roundName) {
+                                                    if (round.name === this.props.events.roundMatches.data.roundName) isThisTournament = true;
+                                                } else if (round.round === this.props.events.roundMatches.data.index) isThisTournament = true;
+
 												return (
 													<li key={index}
-													    className={(round.round === currentRound ? "active" : "") + (round.round === this.props.events.roundMatches.data.index ? " this-round" : "")}
+													    className={(isActive ? "active" : "") + (isThisTournament ? " this-round" : "")}
 													    onClick={() => this.roundClicked(round)}>{round.name? <Trans>{round.name}</Trans> : <span>{round.round}<Trans>th
 														Week</Trans></span>}</li>
 												)

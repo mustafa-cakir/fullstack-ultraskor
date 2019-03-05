@@ -300,33 +300,60 @@
 	&::-webkit-scrollbar {
 		display: none;
 	}
+	.language-switcher {
+		margin: 0;
+	}
 	& > li {
 		opacity: 0;
 		pointer-events: none;
 		background: #252525;
 		border-radius: 25px;
 		margin-bottom: 15px;
+		&.separator {
+			background: none;
+			color: #666;
+			font-weight: 700;
+			padding: 0 0 0 15px;
+			margin: 15px 0 7px 0;
+		}
 		.row {
 			padding: 15px 0;
 		}
 		.col-icon {
 			max-width: 70px;
 			text-align: center;
+			padding: 0;
+			.bg {
+				width: 40px;
+				height: 40px;
+				padding: 5px;
+				background: rgba(0,0,0,.5);
+				border-radius: 5px;
+				margin: 0 auto;
+			}
+			img {
+				width: 30px;
+				height: 30px;
+			}
+			i {
+				font-size: 1.7rem;
+				line-height: 30px;
+			}
+		}
+		.sub-text {
+			font-size: .8rem;
+			color: #929292;
 		}
 		.col-text {
 			padding-left: 0;
-			.text {
-
-			}
-			.sub-text {
-				font-size: .8rem;
-				color: #929292;
-			}
 		}
 		.col-down {
 			max-width: 50px;
 			text-align: center;
 			padding: 0;
+		}
+		.col-switch {
+			max-width: 80px;
 		}
 		.separator {
 			background: #444444;

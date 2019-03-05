@@ -112,7 +112,7 @@ class App extends Component {
 						       render={props => <Eventdetails socket={socket} {...props}/>}/>
 
 						<Route exact
-						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid'
+						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?'
 						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
 
 						<Route exact path='/test' component={TestComp}/>

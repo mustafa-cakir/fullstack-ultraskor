@@ -225,5 +225,16 @@
 	"Head To Head": "Karşılaştırma",
 	"Contact": "İletişim",
 	"My Favorites": "Favorilerim",
-	"Live Scores": "Canlı Skorlar"
+	"Live Scores": "Canlı Skorlar",
+	"Stay updated and be in the games": "Maç skorlarını anlık olarak takip edin",
+	"Live Standings": "Canlı Puan Durumları",
+	"Live standings of top leagues": "En popüler liglerin canlı puan durumları",
+	"League Fixtures": "Lig Fikstürleri",
+	"Fixtures of most popular leagues": "En popüler liglerin fikstürleri",
+	"Language": "Dil",
+	"FlashScore Sound": "FlashScore Ses",
+	"FlashScore Visibility": "FlashScore Görünürlük",
+	"Play sound when there is an incident": "Goller için sesi açın",
+	"Activate FlashScore popup on homepage": "Ana Sayfa'da golleri anında görün",
+	"Settings": "Ayarlar"
 }

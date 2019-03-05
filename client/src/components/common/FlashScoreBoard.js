@@ -90,7 +90,7 @@ class FlashScoreBoard extends Component {
 		if (storageFlashScoreShrinked || storageFlashScoreMuted) {
 			this.setState({
 				flashScoreMuted: storageFlashScoreMuted,
-				flashScoreShrinked: storageFlashScoreShrinked
+                flashScoreShrinked: storageFlashScoreShrinked
 			});
 		}
 	}
