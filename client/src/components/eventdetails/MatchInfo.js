@@ -1,13 +1,12 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import moment from "moment";
 import i18n from "i18next";
 import {Trans} from "react-i18next";
 
-class MatchInfo extends Component {
+class MatchInfo extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			teamStats: null,
 			initSocketOnce: true
 		}
 	}
@@ -16,41 +15,9 @@ class MatchInfo extends Component {
 		moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
 	}
 
-	componentDidUpdate() {
-		setTimeout(() => {
-			this.props.swipeAdjustHeight();
-		}, 100);
-		if (this.state.initSocketOnce && this.props.provider2MatchData) {
-			this.setState({initSocketOnce: false}, () => {
-				this.initGetData();
-			});
-		}
-	}
-
-	initGetData() {
-		const {provider2MatchData} = this.props;
-
-		fetch(`/api/helper2/widget/teamstats/${provider2MatchData.id}`)
-			.then(res => {
-				if (res.status === 200) {
-					return res.json();
-				} else {
-					throw Error(`Can't retrieve information from server, ${res.status}`);
-				}
-			})
-			.then(res => {
-				this.setState({
-					teamStats: res,
-				});
-			})
-			.catch(err => {
-				// do nothing
-			});
-	}
-
 	render() {
 		const {eventData, provider3MatchData} = this.props;
-		const {teamStats} = this.state;
+		const {matchTextInfo} = this.props;
 		const {language} = i18n;
 
 		let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
@@ -71,7 +38,7 @@ class MatchInfo extends Component {
 				<h1 className="title">{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name} <Trans>Match
 					Information</Trans></h1>
 
-				{teamStats ? <Teamstats teamStats={teamStats}/> : ""}
+				{matchTextInfo ? <MatchTextInfo matchTextInfo={matchTextInfo}/> : ""}
 
 				{language === "tr" ? (
 					<React.Fragment>
@@ -133,12 +100,12 @@ class MatchInfo extends Component {
 	}
 }
 
-const Teamstats = props => {
-	const {teamStats} = props;
+const MatchTextInfo = props => {
+	const {matchTextInfo} = props;
 
 	//let generalInfo = [];
 	//console.log(teamStats);
-	let generalInfo = teamStats.textList.filter(item => {
+	let generalInfo = matchTextInfo.textList.filter(item => {
 		return item.textGroupName === "Maça Giriş"
 	});
 

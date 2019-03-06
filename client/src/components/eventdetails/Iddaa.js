@@ -27,7 +27,8 @@ class Iddaa extends Component {
 
 	render() {
 
-		const {provider3MatchData, t} = this.props;
+		const {provider3MatchData, matchTextInfo, t} = this.props;
+		console.log(matchTextInfo);
 		//if (!provider3MatchData) return <Loading type="inside"/>;
 
 		return (
@@ -35,16 +36,21 @@ class Iddaa extends Component {
 				<div className="iddaa container">
 					<div className="white-box mt-2 pb-2">
 						<ul className="horizontal-tab">
-							<li className={this.state.tabIndex === 0 ? "active" : ""}
-							    onClick={() => this.tabSwitcherHandler(0)}>
-								<span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa</span>
-							</li>
-							<li className={this.state.tabIndex === 1 ? "active" : ""}
+                            <li className={this.state.tabIndex === 0 ? "active" : ""}
+                                onClick={() => this.tabSwitcherHandler(0)}>
+                                <span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Tahminleri</span>
+                            </li>
+                            <li className={this.state.tabIndex === 1 ? "active" : ""}
 							    onClick={() => this.tabSwitcherHandler(1)}>
+								<span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Oranlari</span>
+							</li>
+							<li className={this.state.tabIndex === 2 ? "active" : ""}
+							    onClick={() => this.tabSwitcherHandler(2)}>
 								<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>
 							</li>
 						</ul>
-						{this.state.tabIndex === 0 ? (
+                        {(this.state.tabIndex === 1 && matchTextInfo) ? <MatchTextInfo matchTextInfo={matchTextInfo} /> : ""}
+						{this.state.tabIndex === 2 ? (
 							<div>
 								{provider3MatchData ? (
 									<div className="iddaa-body">
@@ -59,7 +65,7 @@ class Iddaa extends Component {
                                 ) : <div className="iddaa-notfound"><Trans>Malesef Iddaa oranları bilgisi bulunamadı</Trans> :(</div>}
 							</div>
 						) : ""}
-						{this.state.tabIndex === 1 ? (
+						{this.state.tabIndex === 3 ? (
                             <div className="iddaa-notfound"><Trans>Coming soon</Trans>.</div>
 						) : ""}
 					</div>
@@ -68,6 +74,26 @@ class Iddaa extends Component {
 		)
 	}
 }
+
+const MatchTextInfo = props => {
+    const {matchTextInfo, tab} = props;
+    let filterBy = "Aralarında Oynanan Maçlar";
+
+    let generalInfo = matchTextInfo.textList.filter(item => {
+        return item.textGroupName === filterBy
+    });
+
+    return (
+        <div className="iddaa-text-info">
+            {generalInfo.map((item, index) =>
+                <p key={index}>
+                    {item.textValue}
+                </p>
+            )}
+        </div>
+    );
+};
+
 
 const IddaaContainer = props => {
 	const {provider3MatchData, t} = props;
