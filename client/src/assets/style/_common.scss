@@ -627,9 +627,8 @@ code {
 			margin-left: 10px;
 		}
 		span {
-			display: block;
-			padding: 0 15px;
-			line-height: 40px;
+			display: flex;
+			padding: 10px 15px;
 			background: #fff;
 			position: relative;
 			border: 1px solid transparent;
@@ -638,6 +637,10 @@ code {
 			cursor: pointer;
 			transition: all .2s linear;
 			border-radius: 5px 5px 0 0;
+			align-items: center;
+			line-height: 20px;
+			height: 100%;
+			overflow: hidden;
 			i {
 				margin-right: 9px;
 				font-size: 1.2rem;
@@ -895,6 +898,11 @@ code {
 		.text {
 			opacity: 0;
 			animation: .2s fadeInToLeft linear forwards;
+			img {
+				height: 21px;
+				width: auto;
+				margin-right: 4px;
+			}
 		}
 		&:nth-child(1) .text {
 			animation-delay: .5s;
@@ -1104,6 +1112,30 @@ code {
 	}
 	input:checked + i::after {
 		transform: translate3d(22px, 2px, 0);
+	}
+}
+
+.match-text-info {
+	margin-top: -10px;
+	p {
+		margin: 0;
+		padding: 10px;
+		border-bottom: 1px solid #eee;
+		strong {
+			display: block;
+			margin-bottom: 2px;
+		}
+		&:nth-child(even) {
+			background: #eee;
+		}
+		&:last-child {
+			border: none;
+		}
+	}
+	.show-more {
+		padding: 10px;
+		text-align: center;
+		color: #007bff;
 	}
 }
 

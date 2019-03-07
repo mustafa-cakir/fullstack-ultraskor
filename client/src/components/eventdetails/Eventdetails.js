@@ -23,6 +23,7 @@ import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
 import H2h from "./H2h";
 import RefreshButton from "../RefreshButton";
+import IddaLogo from "../../assets/images/icon-iddaa.png";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -49,7 +50,8 @@ class Eventdetails extends Component {
             provider2MatchData: null,
             provider3MatchData: null,
             refreshButton: false,
-            eventid: this.props.match.params.eventid
+            eventid: this.props.match.params.eventid,
+            matchTextInfo: null
         };
         this.tabs = [];
         smoothscroll.polyfill();
@@ -321,6 +323,7 @@ class Eventdetails extends Component {
                 if (found.length > 0) provider2Data = found;
             });
             if (provider2Data.length > 0) {
+                this.initFetchMatchTextData(provider2Data[0].id);
                 this.setState({
                     provider2MatchData: provider2Data[0]
                 });
@@ -346,6 +349,25 @@ class Eventdetails extends Component {
             }
         }
     }
+
+    initFetchMatchTextData(id) {
+        fetch(`/api/helper2/widget/teamstats/${id}`)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw Error(`Can't retrieve information from server, ${res.status}`);
+                }
+            })
+            .then(res => {
+                this.setState({
+                    matchTextInfo: res,
+                });
+            })
+            .catch(err => {
+                // do nothing
+            });
+    };
 
     handleGetDataHelper3(res) {
         const provider2Data = this.state.provider2MatchData;
@@ -406,7 +428,7 @@ class Eventdetails extends Component {
     };
 
     render() {
-        const {eventData, provider1MatchData, provider2MatchData, provider3MatchData} = this.state;
+        const {eventData, provider1MatchData, provider2MatchData, provider3MatchData, matchTextInfo} = this.state;
         if (!eventData) return <Loading/>;
         if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
@@ -434,7 +456,7 @@ class Eventdetails extends Component {
                             {this.tabs.map((tab, index) => {
                                 return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                            className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-                                    <span className="text">{tab}</span></li>;
+                                    <span className="text">{tab === "Iddaa" ? <img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> : ""} {tab}</span></li>;
                             })}
                             <li className="marker" ref={this.swipeMarkerEl}
                                 style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
@@ -467,7 +489,7 @@ class Eventdetails extends Component {
                                 <MatchInfo
                                     eventData={eventData}
                                     provider3MatchData={provider3MatchData}
-                                    provider2MatchData={provider2MatchData}
+                                    matchTextInfo={matchTextInfo}
                                     swipeAdjustHeight={this.swipeAdjustHeight}
                                     socket={socket}/>
                                 <small>1: {this.state.provider1MatchData ? "y" : "n"} -
@@ -513,13 +535,16 @@ class Eventdetails extends Component {
                     <div className="swipe-content h2h" data-tab="h2h">
                         {this.state.isTabH2h ?
                             <H2h eventData={eventData}
+                                 matchTextInfo={matchTextInfo}
                                  swipeAdjustHeight={this.swipeAdjustHeight}
                                  socket={socket}/>
                             : ""}
                     </div>
 
                     <div className="swipe-content iddaa" data-tab="iddaa">
-                        <Iddaa eventData={eventData} provider2MatchData={provider2MatchData}
+                        <Iddaa eventData={eventData}
+                               matchTextInfo={matchTextInfo}
+                               provider2MatchData={provider2MatchData}
                                provider3MatchData={provider3MatchData}
                                swipeAdjustHeight={this.swipeAdjustHeight}/>
                     </div>

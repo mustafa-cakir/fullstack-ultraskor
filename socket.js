@@ -511,22 +511,29 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
 	const {lang, sport, type, by, date} = req.params;
 
 	if (type === "index") {
-		res.header('Content-Type', 'application/xml');
-		let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        res.header('Content-Type', 'application/xml');
+        let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-		if (by === "year") {
-			for (let i = 1; i <= 12; i++) {
-				xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/index/month/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
-			}
-		} else if (by === "month") {
-			let daysInMonth = moment(date, "YYYY-MM").daysInMonth();
-			for (let i = 1; i <= daysInMonth; i++) {
-				xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/list/day/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
-			}
-		}
-		xmlString += '</sitemapindex>';
-		res.send(xmlString);
-
+        if (by === "year") {
+            for (let i = 1; i <= 12; i++) {
+                xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/index/month/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
+            }
+        } else if (by === "month") {
+            let daysInMonth = moment(date, "YYYY-MM").daysInMonth();
+            for (let i = 1; i <= daysInMonth; i++) {
+                xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/list/day/${date}-${i < 10 ? `0${i}` : i}</loc></sitemap>`;
+            }
+        }
+        xmlString += '</sitemapindex>';
+        res.send(xmlString);
+    } else if (type === "daily") {  // Sample: /sitemap/tr/football/daily/day/2019-03
+        res.header('Content-Type', 'text/plain');
+        let days = [];
+        let daysInMonth = moment(date, "YYYY-MM").daysInMonth();
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push(`https://www.ultraskor.com${lang === "tr" ? '/maclar/tarih' : '/en/matches/date'}-${date}-${i < 10 ? `0${i}` : i}`);
+        }
+        res.send(days.join('\r'));
 	} else if (type === "list" && by === "day") {
 		const sofaOptionsGetToday = {
 			method: 'GET',

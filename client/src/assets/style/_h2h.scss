@@ -5,9 +5,10 @@
         padding: 0 15px;
         line-height: 40px;
         .team-logo {
-            max-height: 25px;
+            height: 25px;
             display: flex;
             margin-right: 5px;
+	        width: 25px;
         }
         .team-name {
             @include line-clamp(1);
