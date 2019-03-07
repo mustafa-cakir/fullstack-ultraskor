@@ -101,7 +101,6 @@ class MatchTextInfo extends PureComponent {
 
     render() {
         const {matchTextInfo} = this.props;
-        console.log(matchTextInfo.textList);
         let generalInfo = matchTextInfo.textList.filter(item => {
             return item.smartType === "SmartList" || item.smartType === "Smartist"
         });
