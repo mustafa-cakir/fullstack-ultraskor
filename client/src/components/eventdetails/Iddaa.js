@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import IddaLogo from "./../../assets/images/icon-iddaa.png";
-import IddaLogoBig from "./../../assets/images/icon-iddaa2.png";
+import IddaLogo2 from "./../../assets/images/icon-iddaa2.png";
 import {Trans, withTranslation} from "react-i18next";
 import Icon from "../common/Icon";
 
@@ -39,11 +39,11 @@ class Iddaa extends PureComponent {
                             <li className={this.state.tabIndex === 0 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(0)}>
                                 <span><img src={IddaLogo} className="tab-logo"
-                                           alt="Iddaa Logo"/> Iddaa Analiz</span>
+                                           alt="Iddaa Analiz, Bahis Analiz"/> Iddaa Analiz</span>
                             </li>
                             <li className={this.state.tabIndex === 1 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(1)}>
-                                <span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Oranlari</span>
+                                <span><img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari"/> Iddaa Oranlari</span>
                             </li>
                             {/*<li className={this.state.tabIndex === 2 ? "active" : ""}*/}
                             {/*onClick={() => this.tabSwitcherHandler(2)}>*/}
@@ -59,7 +59,7 @@ class Iddaa extends PureComponent {
                                     <div className="iddaa-body">
                                         <div className="row iddaa-bar">
                                             <div className="col text-bold">
-                                                <img src={IddaLogoBig} className="tab-logo"
+                                                <img src={IddaLogo2} className="tab-logo"
                                                      alt="Iddaa Logo"/> {provider3MatchData.code}
                                             </div>
                                             <div
@@ -117,7 +117,7 @@ class MatchTextInfo extends PureComponent {
                     <React.Fragment key={index}>
                         <p className={index >= 4 && !this.state.showMore ? "d-none" : ""}>
                             {item.textTitle ? <strong>{item.textTitle}</strong> : ""}
-                            {item.textValue}
+                            <Icon name="fa fa-angle-right"/> {item.textValue}
                         </p>
                         {index === 4 && !this.state.showMore ?
                             <div className="show-more" onClick={this.showMoreClickHandler.bind(this)}><Trans>Show

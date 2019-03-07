@@ -442,7 +442,6 @@ class Eventdetails extends Component {
             t('Head To Head'),
             t('Iddaa'),
             ...(eventData.standingsAvailable ? [t("Standing")] : []),
-            t('Media'),
             t('Forum')
         ];
 
@@ -557,12 +556,12 @@ class Eventdetails extends Component {
                         </div>
                     ) : ""}
 
-                    <div className="swipe-content media" data-tab="media">
-                        <div className="coming-soon">
-                            <h5><Trans>Media</Trans></h5>
-                            <Trans>Coming soon</Trans>
-                        </div>
-                    </div>
+                    {/*<div className="swipe-content media" data-tab="media">*/}
+                        {/*<div className="coming-soon">*/}
+                            {/*<h5><Trans>Media</Trans></h5>*/}
+                            {/*<Trans>Coming soon</Trans>*/}
+                        {/*</div>*/}
+                    {/*</div>*/}
                     <div className="swipe-content forum" data-tab="forum">
                         <div className="coming-soon">
                             <h5><Trans>Forum</Trans></h5>

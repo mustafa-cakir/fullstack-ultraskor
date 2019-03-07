@@ -145,7 +145,7 @@ class MatchTextInfo extends PureComponent {
                 {generalInfo.map((item, index) =>
                     <React.Fragment key={index}>
                         <p className={index > 2 && !this.state.showMore ? "d-none" : ""}>
-                            {item.textValue}
+                            <Icon name="fa fa-angle-right"/> {item.textValue}
                         </p>
                         {index === 2 && !this.state.showMore ? <div className="show-more" onClick={this.showMoreClickHandler.bind(this)}><Trans>Show More</Trans> <Icon name="fa fa-angle-down"/></div> : ""}
                     </React.Fragment>
