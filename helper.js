@@ -73,6 +73,7 @@ exports.cacheDuration = () => {
 		missings: 60 * 60 * 2, // 2 hours
 		teamstats: 60 * 60 * 24, // 24 hours
 		webpushtopic: 60 * 60 * 24 * 7, // 7 days
+        teamoftheweek: 60 * 60 * 24,
 		main: {
 			default: 60, // 1 min.
 			homepage: 15, // 15 seconds

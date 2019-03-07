@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
 import Errors from "../common/Errors";
+import {ratingClass} from "../../Helper";
 
 class Lineup extends Component {
     constructor(props) {
@@ -73,23 +74,6 @@ class Lineup extends Component {
             defaultFormation: option,
             activeTeam: (option === 1) ? this.state.lineupData.homeTeam : this.state.lineupData.awayTeam
         });
-    }
-
-    static ratingClass(value) {
-        value = Number(value);
-        if (value > 8.0) {
-            return "amazing bg";
-        } else if (value > 7.5) {
-            return "great bg";
-        } else if (value > 6.9) {
-            return "good bg"
-        } else if (value > 5.9) {
-            return "mediocre bg";
-        } else if (value > 4.9) {
-            return "underwhelming bg";
-        } else {
-            return "unrated bg";
-        }
     }
 
     render() {
@@ -176,10 +160,13 @@ class Lineup extends Component {
                                                                     <div className="picture">
                                                                         <img
                                                                             alt={player.name}
-                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ""}/>
+                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ""}
+                                                                            className="player-picture"
+                                                                        />
+
                                                                         {rating ? (
                                                                             <span
-                                                                                className={"text-bold rating " + Lineup.ratingClass(rating)}>{rating}</span>
+                                                                                className={"text-bold rating " + ratingClass(rating)}>{rating}</span>
                                                                         ) : ""}
 
                                                                         {incidents ?
@@ -212,9 +199,12 @@ class Lineup extends Component {
                                                 <div className="picture">
                                                     <img
                                                         alt={activeTeam.lineupsSorted[0].player.name}
-                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ""}/>
+                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ""}
+                                                        className="player-picture"
+                                                    />
+
                                                     {activeTeam.lineupsSorted[0].rating ? <span
-                                                        className={"text-bold rating " + Lineup.ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
+                                                        className={"text-bold rating " + ratingClass(activeTeam.lineupsSorted[0].rating)}>{activeTeam.lineupsSorted[0].rating}</span> : ""}
 
                                                     {activeTeam.incidents && activeTeam.incidents[activeTeam.lineupsSorted[0].player.id] ?
                                                         activeTeam.incidents[activeTeam.lineupsSorted[0].player.id].map((item, index) => {
@@ -257,7 +247,7 @@ class Lineup extends Component {
                                     <div className="confirmed-lineup"><Trans>Confirmed Lineup</Trans></div>}
                                 {activeTeam.rating ?
                                     <div className="team-rating"><Trans>Team Avg. Rating</Trans>: <span
-                                        className={"text-bold rating " + Lineup.ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>
+                                        className={"text-bold rating " + ratingClass(activeTeam.rating)}>{activeTeam.rating}</span>
                                     </div> : ""}
 
                                 {activeTeam.averageAge.startersAverageAge ?
@@ -299,7 +289,7 @@ class Lineup extends Component {
                                             <div className="text-gray"><Trans>{item.positionName}</Trans></div>
                                         </div>
                                         {item.rating ? <div className="col list-rating"><span
-                                            className={"text-bold rating " + Lineup.ratingClass(item.rating)}>{item.rating}</span>
+                                            className={"text-bold rating " + ratingClass(item.rating)}>{item.rating}</span>
                                         </div> : ""}
                                     </div>
                                 )

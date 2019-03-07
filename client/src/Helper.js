@@ -132,6 +132,23 @@ export function flagImg(tournament) {
 	}
 }
 
+export function ratingClass(value) {
+    value = Number(value);
+    if (value > 8.0) {
+        return "amazing bg";
+    } else if (value > 7.5) {
+        return "great bg";
+    } else if (value > 6.9) {
+        return "good bg"
+    } else if (value > 5.9) {
+        return "mediocre bg";
+    } else if (value > 4.9) {
+        return "underwhelming bg";
+    } else {
+        return "unrated bg";
+    }
+}
+
 export function generateSlug(text) {
 	const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;'
 	const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------'
