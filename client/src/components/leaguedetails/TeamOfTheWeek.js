@@ -197,7 +197,7 @@ class TeamOfTheWeek extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="body list px-2 pt-0">
+                        <div className="body list px-3 pt-0">
                             <h4 className="team-of-the-week-title"><Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>} - <span><Trans>Team Of The Week</Trans></span></h4>
                             {teamOfTheWeekData.players.map((item, index) => {
                                 return (
