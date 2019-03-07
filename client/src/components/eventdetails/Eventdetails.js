@@ -23,6 +23,7 @@ import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
 import H2h from "./H2h";
 import RefreshButton from "../RefreshButton";
+import IddaLogo from "../../assets/images/icon-iddaa.png";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -455,7 +456,7 @@ class Eventdetails extends Component {
                             {this.tabs.map((tab, index) => {
                                 return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                            className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-                                    <span className="text">{tab}</span></li>;
+                                    <span className="text">{tab === "Iddaa" ? <img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> : ""} {tab}</span></li>;
                             })}
                             <li className="marker" ref={this.swipeMarkerEl}
                                 style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>

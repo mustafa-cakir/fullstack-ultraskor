@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import IddaLogo from "./../../assets/images/icon-iddaa.png";
 import IddaLogoBig from "./../../assets/images/icon-iddaa2.png";
 import {Trans, withTranslation} from "react-i18next";
 import Icon from "../common/Icon";
 
-class Iddaa extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			tabIndex: 0
-		};
-		this.tabSwitcherHandler = this.tabSwitcherHandler.bind(this);
-	}
+class Iddaa extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            tabIndex: 0
+        };
+        this.tabSwitcherHandler = this.tabSwitcherHandler.bind(this);
+    }
 
     componentDidUpdate() {
         setTimeout(() => {
@@ -19,93 +19,129 @@ class Iddaa extends Component {
         }, 100);
     }
 
-	tabSwitcherHandler(tabIndex) {
-		this.setState({
-			tabIndex: tabIndex
-		});
-	}
+    tabSwitcherHandler(tabIndex) {
+        this.setState({
+            tabIndex: tabIndex
+        });
+    }
 
-	render() {
+    render() {
 
-		const {provider3MatchData, matchTextInfo, t} = this.props;
-		console.log(matchTextInfo);
-		//if (!provider3MatchData) return <Loading type="inside"/>;
+        const {provider3MatchData, matchTextInfo, t} = this.props;
+        // console.log(matchTextInfo);
+        //if (!provider3MatchData) return <Loading type="inside"/>;
 
-		return (
-			<div>
-				<div className="iddaa container">
-					<div className="white-box mt-2 pb-2">
-						<ul className="horizontal-tab">
+        return (
+            <div>
+                <div className="iddaa container">
+                    <div className="white-box mt-2 pb-2">
+                        <ul className="horizontal-tab">
                             <li className={this.state.tabIndex === 0 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(0)}>
-                                <span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Tahminleri</span>
+                                <span><img src={IddaLogo} className="tab-logo"
+                                           alt="Iddaa Logo"/> Iddaa Analiz</span>
                             </li>
                             <li className={this.state.tabIndex === 1 ? "active" : ""}
-							    onClick={() => this.tabSwitcherHandler(1)}>
-								<span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Oranlari</span>
-							</li>
-							<li className={this.state.tabIndex === 2 ? "active" : ""}
-							    onClick={() => this.tabSwitcherHandler(2)}>
-								<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>
-							</li>
-						</ul>
-                        {(this.state.tabIndex === 1 && matchTextInfo) ? <MatchTextInfo matchTextInfo={matchTextInfo} /> : ""}
-						{this.state.tabIndex === 2 ? (
-							<div>
-								{provider3MatchData ? (
-									<div className="iddaa-body">
-										<div className="row iddaa-bar">
-											<div className="col text-bold">
-												<img src={IddaLogoBig} className="tab-logo" alt="Iddaa Logo"/> {provider3MatchData.code}
-											</div>
-											<div className="col text-right text-bold">MBS: {provider3MatchData.mbc}</div>
-										</div>
-										<IddaaContainer provider3MatchData={provider3MatchData} t={t}/>
-									</div>
-                                ) : <div className="iddaa-notfound"><Trans>Malesef Iddaa oranları bilgisi bulunamadı</Trans> :(</div>}
-							</div>
-						) : ""}
-						{this.state.tabIndex === 3 ? (
+                                onClick={() => this.tabSwitcherHandler(1)}>
+                                <span><img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> Iddaa Oranlari</span>
+                            </li>
+                            {/*<li className={this.state.tabIndex === 2 ? "active" : ""}*/}
+                            {/*onClick={() => this.tabSwitcherHandler(2)}>*/}
+                            {/*<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>*/}
+                            {/*</li>*/}
+                        </ul>
+                        {(this.state.tabIndex === 0 && matchTextInfo) ?
+                            <MatchTextInfo matchTextInfo={matchTextInfo}
+                                           swipeAdjustHeight={this.props.swipeAdjustHeight}/> : ""}
+                        {this.state.tabIndex === 1 ? (
+                            <div>
+                                {provider3MatchData ? (
+                                    <div className="iddaa-body">
+                                        <div className="row iddaa-bar">
+                                            <div className="col text-bold">
+                                                <img src={IddaLogoBig} className="tab-logo"
+                                                     alt="Iddaa Logo"/> {provider3MatchData.code}
+                                            </div>
+                                            <div
+                                                className="col text-right text-bold">MBS: {provider3MatchData.mbc}</div>
+                                        </div>
+                                        <IddaaContainer provider3MatchData={provider3MatchData} t={t}/>
+                                    </div>
+                                ) : <div className="iddaa-notfound"><Trans>Malesef Iddaa oranları bilgisi
+                                    bulunamadı</Trans> :(</div>}
+                            </div>
+                        ) : ""}
+                        {this.state.tabIndex === 2 ? (
                             <div className="iddaa-notfound"><Trans>Coming soon</Trans>.</div>
-						) : ""}
-					</div>
-				</div>
-			</div>
-		)
-	}
+                        ) : ""}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 }
 
-const MatchTextInfo = props => {
-    const {matchTextInfo, tab} = props;
-    let filterBy = "Aralarında Oynanan Maçlar";
+class MatchTextInfo extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showMore: false
+        }
+    }
 
-    let generalInfo = matchTextInfo.textList.filter(item => {
-        return item.textGroupName === filterBy
-    });
+    componentDidUpdate() {
+        this.props.swipeAdjustHeight()
+    };
 
-    return (
-        <div className="iddaa-text-info">
-            {generalInfo.map((item, index) =>
-                <p key={index}>
-                    {item.textValue}
-                </p>
-            )}
-        </div>
-    );
-};
+    showMoreClickHandler() {
+        this.setState({
+            showMore: !this.state.showMore
+        })
+    }
+
+    render() {
+        const {matchTextInfo} = this.props;
+        console.log(matchTextInfo.textList);
+        let generalInfo = matchTextInfo.textList.filter(item => {
+            return item.smartType === "SmartList" || item.smartType === "Smartist"
+        });
+
+        if (generalInfo.length === 0) {
+            generalInfo = matchTextInfo.textList.filter(item => {
+                return item.textGroupName !== "Ev Sahibi Takım" && item.textGroupName !== "Misafir Takım";
+            });
+        }
+
+        return (
+            <div className="match-text-info">
+                {generalInfo.map((item, index) =>
+                    <React.Fragment key={index}>
+                        <p className={index >= 4 && !this.state.showMore ? "d-none" : ""}>
+                            {item.textTitle ? <strong>{item.textTitle}</strong> : ""}
+                            {item.textValue}
+                        </p>
+                        {index === 4 && !this.state.showMore ?
+                            <div className="show-more" onClick={this.showMoreClickHandler.bind(this)}><Trans>Show
+                                More</Trans> <Icon name="fa fa-angle-down"/></div> : ""}
+                    </React.Fragment>
+                )}
+            </div>
+        );
+    }
+}
 
 
 const IddaaContainer = props => {
-	const {provider3MatchData, t} = props;
-	const iddaaMap = [
-		{
-			label: t("FT Result"),
-			odds: [
-				{label: "1", key: "F_1"},
-				{label: "0", key: "F_X"},
-				{label: "2", key: "F_2"},
-			]
-		},
+    const {provider3MatchData, t} = props;
+    const iddaaMap = [
+        {
+            label: t("FT Result"),
+            odds: [
+                {label: "1", key: "F_1"},
+                {label: "0", key: "F_X"},
+                {label: "2", key: "F_2"},
+            ]
+        },
         {
             label: t("2.5 U/O"),
             odds: [
@@ -113,20 +149,20 @@ const IddaaContainer = props => {
                 {label: "2.5 Üst", key: "OVER"},
             ]
         },
-		{
-			label: t("1.5 U/O"),
-			odds: [
-				{label: "1.5 Alt", key: "F15_U"},
-				{label: "1.5 Üst", key: "F15_O"},
-			]
-		},
-		{
-			label: t("3.5 U/O"),
-			odds: [
-				{label: "3.5 Alt", key: "F35_U"},
-				{label: "3.5 Üst", key: "F35_O"},
-			]
-		},
+        {
+            label: t("1.5 U/O"),
+            odds: [
+                {label: "1.5 Alt", key: "F15_U"},
+                {label: "1.5 Üst", key: "F15_O"},
+            ]
+        },
+        {
+            label: t("3.5 U/O"),
+            odds: [
+                {label: "3.5 Alt", key: "F35_U"},
+                {label: "3.5 Üst", key: "F35_O"},
+            ]
+        },
         {
             label: t("Double Chance"),
             odds: [
@@ -135,15 +171,15 @@ const IddaaContainer = props => {
                 {label: "X2", key: "DC_X2"},
             ]
         },
-		{
-			label: t("Handicap FT"),
+        {
+            label: t("Handicap FT"),
 
-			odds: [
-				{label: "1", key: "H_1", handicapHome: true},
-				{label: "X", key: "H_X"},
-				{label: "2", key: "H_2", handicapAway: true},
-			]
-		},
+            odds: [
+                {label: "1", key: "H_1", handicapHome: true},
+                {label: "X", key: "H_X"},
+                {label: "2", key: "H_2", handicapAway: true},
+            ]
+        },
         {
             label: t("HT Result"),
             odds: [
@@ -160,13 +196,13 @@ const IddaaContainer = props => {
                 {label: "X2", key: "FHDC_X2"},
             ]
         },
-		{
-			label: t("HT 1.5 U/O"),
-			odds: [
-				{label: "1,5 Alt", key: "H15_U"},
-				{label: "1,5 Üst", key: "H15_O"},
-			]
-		},
+        {
+            label: t("HT 1.5 U/O"),
+            odds: [
+                {label: "1,5 Alt", key: "H15_U"},
+                {label: "1,5 Üst", key: "H15_O"},
+            ]
+        },
         {
             label: t("2. Half Result"),
             odds: [
@@ -175,23 +211,23 @@ const IddaaContainer = props => {
                 {label: "2", key: "SH_2"},
             ]
         },
-		{
-			label: t("Odd/Even"),
-			odds: [
-				{label: "Tek", key: "F_O"},
-				{label: "Çift", key: "F_E"},
-			]
-		},
-		{
-			label: t("Total Goal"),
+        {
+            label: t("Odd/Even"),
+            odds: [
+                {label: "Tek", key: "F_O"},
+                {label: "Çift", key: "F_E"},
+            ]
+        },
+        {
+            label: t("Total Goal"),
             col: "col-3",
-			odds: [
-				{label: "0-1", key: "GS_01"},
-				{label: "2-3", key: "GS_23"},
-				{label: "4-6", key: "GS_46"},
-				{label: "7+", key: "GS_7P"},
-			]
-		},
+            odds: [
+                {label: "0-1", key: "GS_01"},
+                {label: "2-3", key: "GS_23"},
+                {label: "4-6", key: "GS_46"},
+                {label: "7+", key: "GS_7P"},
+            ]
+        },
         {
             label: t("HT / FT"),
             col: "col-4",
@@ -262,7 +298,7 @@ const IddaaContainer = props => {
             ]
         },
 
-	];
+    ];
 
     return iddaaMap.map((item, index) => {
         return (
@@ -272,8 +308,10 @@ const IddaaContainer = props => {
                     <div className="row bets-values text-center">
                         {item.odds.map((odd, index) => {
                             return (
-                                <div key={index} className={"col " + (item.odds.length === 3 ? "col-4" : item.col ? item.col : "")}>
-                                    <span>{odd.label} {provider3MatchData.h1Handicap ? <i className="handicap">{odd.handicapHome ? provider3MatchData.h1Handicap : odd.handicapAway ? parseFloat(provider3MatchData.h1Handicap) * -1 : ""}</i>: "" }</span>
+                                <div key={index}
+                                     className={"col " + (item.odds.length === 3 ? "col-4" : item.col ? item.col : "")}>
+                                    <span>{odd.label} {provider3MatchData.h1Handicap ?
+                                        <i className="handicap">{odd.handicapHome ? provider3MatchData.h1Handicap : odd.handicapAway ? parseFloat(provider3MatchData.h1Handicap) * -1 : ""}</i> : ""}</span>
                                     {provider3MatchData.odds[odd.key] || "-"}
                                 </div>
                             )

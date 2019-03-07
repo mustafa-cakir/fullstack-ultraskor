@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, PureComponent} from 'react';
 import Loading from "../Loading";
 import Errors from "../common/Errors";
 import Tournament from "../common/Tournament";
 import {Trans} from "react-i18next";
+import Icon from "../common/Icon";
 
 class H2h extends Component {
     constructor(props) {
@@ -98,7 +99,7 @@ class H2h extends Component {
                         </li>
                     </ul>
                     <div className="h2h-list">
-                        {matchTextInfo ? <MatchTextInfo matchTextInfo={matchTextInfo} tab={tab}/> : ""}
+                        {matchTextInfo ? <MatchTextInfo matchTextInfo={matchTextInfo} tab={tab} swipeAdjustHeight={this.props.swipeAdjustHeight}/> : ""}
                         <Tournament tournaments={tournaments} from={"h2h"} selected={tab}
                                     selectedId={tab === "home" ? eventData.event.homeTeam.id : eventData.event.awayTeam.id}/>
                     </div>
@@ -108,28 +109,50 @@ class H2h extends Component {
     }
 }
 
-const MatchTextInfo = props => {
-    const {matchTextInfo, tab} = props;
-    let filterBy = "Aralarında Oynanan Maçlar";
+class MatchTextInfo extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showMore: false
+        }
+    }
 
-    if (tab === "home")
-        filterBy = "Ev Sahibi Takım";
-    else if (tab === "away")
-        filterBy = "Misafir Takım";
+    componentDidUpdate() {
+        this.props.swipeAdjustHeight()
+    };
 
-    let generalInfo = matchTextInfo.textList.filter(item => {
-        return item.textGroupName === filterBy
-    });
+    showMoreClickHandler() {
+        this.setState({
+            showMore: !this.state.showMore
+        })
+    }
 
-    return (
-        <div className="h2h-text-info">
-            {generalInfo.map((item, index) =>
-                <p key={index}>
-                    {item.textValue}
-                </p>
-            )}
-        </div>
-    );
-};
+    render() {
+        const {matchTextInfo, tab} = this.props;
+        let filterBy = "Aralarında Oynanan Maçlar";
+
+        if (tab === "home")
+            filterBy = "Ev Sahibi Takım";
+        else if (tab === "away")
+            filterBy = "Misafir Takım";
+
+        let generalInfo = matchTextInfo.textList.filter(item => {
+            return item.textGroupName === filterBy
+        });
+
+        return (
+            <div className="match-text-info">
+                {generalInfo.map((item, index) =>
+                    <React.Fragment key={index}>
+                        <p className={index > 2 && !this.state.showMore ? "d-none" : ""}>
+                            {item.textValue}
+                        </p>
+                        {index === 2 && !this.state.showMore ? <div className="show-more" onClick={this.showMoreClickHandler.bind(this)}><Trans>Show More</Trans> <Icon name="fa fa-angle-down"/></div> : ""}
+                    </React.Fragment>
+                )}
+            </div>
+        );
+    }
+}
 
 export default H2h
