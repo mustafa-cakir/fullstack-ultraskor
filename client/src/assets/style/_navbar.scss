@@ -626,6 +626,9 @@
 		padding: .750rem 1.5rem;
 		cursor: pointer;
 		color: #333;
+		.tournament-name {
+			color: #333;
+		}
 		&.checked,
 		&.checked:hover {
 			color: $color-cl-4;
