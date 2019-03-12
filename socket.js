@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-// const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const bodyParser = require('body-parser');
 const moment = require('moment');
@@ -34,21 +34,24 @@ const io = socketIO(server);
 
 
 let db = null,
-	helperDataCollection = null;
+	helperDataCollection = null,
+    forumCollection = null;
 
-// const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-// MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
-// 	if (err) {
-// 		// do nothing, just proceed
-// 	} else {
-// 		try {
-// 			db = client.db('ultraskor');
-// 			//helperDataCollection = db.collection('helperdata_bydate');
-// 		} catch (err) {
-// 			console.log('DB Error: Can not connected to db');
-// 		}
-// 	}
-// });
+const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
+MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
+	if (err) {
+		// do nothing, just proceed
+	} else {
+		try {
+			db = client.db('ultraskor');
+			helperDataCollection = db.collection('helperdata_bydate');
+			forumCollection = db.collection('forum');
+		} catch (err) {
+			console.log('DB Error: Can not connected to db');
+		}
+	}
+});
+
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Connect to an external socket for gathering the changes
@@ -92,6 +95,46 @@ io.on('connection', socket => {
 			socket.emit('return-updates-homepage', cachedData);
 		}
 	});
+
+	socket.on('forum-post-new', data => {
+        if (forumCollection) {
+            forumCollection.insertOne({
+                topicId: data.topicId,
+                message: data.message,
+                date: data.date,
+                user: data.user
+            }).then(() => {
+                socket.emit('forum-new-submission', data)
+            }).catch(err => {
+                console.log('DB Error: Can not inserted to db ' + err);
+                //socket.emit('post-forum-topic-result', "error");
+            });
+        } else {
+            console.log('DB Error: Db is not connected');
+            //socket.emit('post-forum-topic-result', "error");
+        }
+    });
+
+    socket.on('forum-get-all-by-id', topicId => {
+        if (forumCollection) {
+
+            forumCollection.find( { topicId: topicId } ).toArray(function(err, messages) {
+                // if (err) throw err;
+                socket.emit('forum-get-all-by-id-result', messages);
+            });
+            // forumCollection.find({
+            //     topicId: topicId,
+            // }).then((messages) => {
+            //     socket.emit('forum-get-all-by-id-result', messages);
+            // }).catch(err => {
+            //     console.log('DB Error: Can not retrieve messages from db ' + err);
+            //     socket.emit('forum-get-all-by-id-result', {status: "error", message: "Error: DB Error: Can not retrieve messages from db"});
+            // });
+        } else {
+            console.log('DB Error: Db is not connected');
+            socket.emit('forum-get-all-by-id-result', {status: "error", message: "Error: DB Error: Db is not connected"});
+        }
+    });
 
 	socket.on('get-updates-details', api => {
 		const cacheKey = `mainData-${api}-eventdetails`;
@@ -584,17 +627,17 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 });
 
 // Log Errors
-app.post('/api/logerrors', (req, res) => {
-	if (db) {
-		let collection = db.collection('console_errors');
-		if (collection) {
-			collection.insertOne(req.body, () => {
-				res.send('OK!');
-			}).catch(err => {
-				console.log('DB Error: Can not inserted to db ' + err);
-			});
-		}
-	}
-});
+// app.post('/api/logerrors', (req, res) => {
+// 	if (db) {
+// 		let collection = db.collection('console_errors');
+// 		if (collection) {
+// 			collection.insertOne(req.body, () => {
+// 				res.send('OK!');
+// 			}).catch(err => {
+// 				console.log('DB Error: Can not inserted to db ' + err);
+// 			});
+// 		}
+// 	}
+// });
 
 
