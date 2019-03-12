@@ -15,7 +15,6 @@ class Forum extends PureComponent {
         this.socket = this.props.socket;
         this.handleSocketGetAllMessages = this.handleSocketGetAllMessages.bind(this);
         this.handleSocketNewSubmission = this.handleSocketNewSubmission.bind(this);
-        this.messageAreaOnScroll = this.messageAreaOnScroll.bind(this);
         this.messageAreaOnScrollHandler = this.messageAreaOnScrollHandler.bind(this);
         this.throttle = this.throttle.bind(this);
     }
@@ -73,13 +72,13 @@ class Forum extends PureComponent {
         this.setState({
             messages: messages ? messages : "empty"
         }, () => {
-
+            this.messageArea.current.scrollTop = this.messageArea.current.scrollHeight
         })
     }
 
     messageAreaOnScrollHandler() {
         const {scrollHeight, clientHeight, scrollTop}  = this.messageArea.current;
-        console.log(scrollHeight, clientHeight, scrollTop, scrollHeight - clientHeight <= scrollTop);
+        //console.log(scrollHeight, clientHeight, scrollTop, scrollHeight - clientHeight <= scrollTop);
         if (scrollHeight - clientHeight <= scrollTop) {
             this.setState({
                 messageAreaScrolled: true
@@ -87,17 +86,12 @@ class Forum extends PureComponent {
         }
     }
 
-    messageAreaOnScroll() {
-        console.log('heyoo');
-        this.throttle(this.messageAreaOnScrollHandler, 350, {leading: false, trailing: true});
-    }
-
     handleSocketNewSubmission(message) {
         console.log(message);
         this.setState({
             messages: [...this.state.messages, message]
         }, () => {
-            // this.messageArea.current
+           // if (this.state.messageAreaScrolled)
         });
     }
 
@@ -124,7 +118,7 @@ class Forum extends PureComponent {
         return (
             <div className="forum container">
                 <div className="white-box mt-2">
-                    <div className="messages-area" ref={this.messageArea} onScroll={this.messageAreaOnScroll}>
+                    <div className="messages-area" ref={this.messageArea} onScroll={this.throttle(this.messageAreaOnScrollHandler, 350, {leading: false, trailing: true})}>
                         <ul>
                             {this.state.messages === "empty" ? (<li>Mesaj yok!</li>) :
                                 this.state.messages.map((message, index) =>
