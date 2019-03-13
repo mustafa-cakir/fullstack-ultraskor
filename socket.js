@@ -40,12 +40,14 @@ let db = null,
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
 MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
 	if (err) {
-		// do nothing, just proceed
+        console.log('DB Error: Can not connected to db. Error: ' + err);
+
 	} else {
 		try {
 			db = client.db('ultraskor');
 			helperDataCollection = db.collection('helperdata_bydate');
 			forumCollection = db.collection('forum');
+			if (forumCollection) console.log('MongoDB connected');
 		} catch (err) {
 			console.log('DB Error: Can not connected to db');
 		}
@@ -102,7 +104,7 @@ io.on('connection', socket => {
                 topicId: data.topicId,
                 message: data.message,
                 date: data.date,
-                user: data.user
+                userName: data.userName
             }).then(() => {
                 socket.emit('forum-new-submission', data)
             }).catch(err => {

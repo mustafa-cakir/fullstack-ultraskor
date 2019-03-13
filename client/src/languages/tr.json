@@ -237,5 +237,11 @@
 	"Play sound when there is an incident": "Goller için sesi açın",
 	"Activate FlashScore popup on homepage": "Ana Sayfa'da golleri anında görün",
 	"Settings": "Ayarlar",
-	"Show More": "Daha Fazlasını Göster"
+	"Show More": "Daha Fazlasını Göster",
+	"Please enter a valid name": "Lütfen geçerli bir isim yazın",
+	"Please enter your name or a nickname to label your messages in the forum": "Lütfen Forum'da gözükmek üzere, isminizi veya nickinizi yazınız.",
+	"Enter Your Name": "Adınızı Yazınız",
+	"Enter your name": "Adınızı yazınız",
+	"Close": "Kapat",
+	"Save": "Kaydet"
 }

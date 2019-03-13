@@ -569,7 +569,7 @@ class Eventdetails extends Component {
                         {/*</div>*/}
                     {/*</div>*/}
                     <div className="swipe-content forum" data-tab="forum">
-                        {this.state.isTabForum ? <Forum socket={socket} swipeAdjustHeight={this.swipeAdjustHeight} topicId={eventData.event.id}/> : ""}
+                        {this.state.isTabForum ? <Forum t={t} socket={socket} swipeAdjustHeight={this.swipeAdjustHeight} topicId={eventData.event.id}/> : ""}
                         {/*<div className="coming-soon">*/}
                             {/*<h5><Trans>Forum</Trans></h5>*/}
                             {/*<Trans>Coming soon</Trans>*/}
