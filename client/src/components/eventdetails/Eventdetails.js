@@ -10,7 +10,7 @@ import Standings from "./Standings";
 import Stats from "./Stats";
 import Lineup from "./Lineup";
 import Footer from "../Footer";
-import {Trans, withTranslation} from "react-i18next";
+import {withTranslation} from "react-i18next";
 import Iddaa from "./Iddaa";
 import Errors from "../common/Errors";
 import ReactGA from 'react-ga';
@@ -24,6 +24,7 @@ import {Helmet} from "react-helmet";
 import H2h from "./H2h";
 import RefreshButton from "../RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
+import Forum from "../common/Forum";
 
 class Eventdetails extends Component {
     constructor(props) {
@@ -45,6 +46,7 @@ class Eventdetails extends Component {
             isTabLineup: false,
             isTabInjury: false,
             isTabLiveTracker: false,
+            isTabForum: false,
             isTabH2h: false,
             provider1MatchData: null,
             provider2MatchData: null,
@@ -97,6 +99,8 @@ class Eventdetails extends Component {
             this.setState({isTabLiveTracker: true})
         } else if (tab === "h2h") {
             this.setState({isTabH2h: true})
+        } else if (tab === "forum") {
+            this.setState({isTabForum: true})
         }
         this.swipeMarkerAndScrollHandler(index);
         this.swipeAdjustHeight(index);
@@ -455,7 +459,9 @@ class Eventdetails extends Component {
                             {this.tabs.map((tab, index) => {
                                 return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
                                            className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-                                    <span className="text">{tab === "Iddaa" ? <img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> : ""} {tab}</span></li>;
+                                    <span className="text">{tab === "Iddaa" ?
+                                        <img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> : ""} {tab}</span>
+                                </li>;
                             })}
                             <li className="marker" ref={this.swipeMarkerEl}
                                 style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
@@ -563,10 +569,11 @@ class Eventdetails extends Component {
                         {/*</div>*/}
                     {/*</div>*/}
                     <div className="swipe-content forum" data-tab="forum">
-                        <div className="coming-soon">
-                            <h5><Trans>Forum</Trans></h5>
-                            <Trans>Coming soon</Trans>
-                        </div>
+                        {this.state.isTabForum ? <Forum t={t} socket={socket} swipeAdjustHeight={this.swipeAdjustHeight} topicId={eventData.event.id}/> : ""}
+                        {/*<div className="coming-soon">*/}
+                            {/*<h5><Trans>Forum</Trans></h5>*/}
+                            {/*<Trans>Coming soon</Trans>*/}
+                        {/*</div>*/}
                     </div>
                 </ReactSwipe>
                 <Footer/>
