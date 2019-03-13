@@ -2,7 +2,6 @@ import React, {PureComponent} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import Loading from "../Loading";
-import Errors from "./Errors";
 import {Trans} from "react-i18next";
 
 class Forum extends PureComponent {
@@ -46,21 +45,17 @@ class Forum extends PureComponent {
     }
 
     handleSocketGetAllMessages(messages) {
-        console.log(messages);
         this.setState({
-            messages: messages ? messages.reverse() : "Empty"
-        }, () => {
-            //this.messageArea.current.scrollTop = this.messageArea.current.scrollHeight
+            messages: messages ? messages.reverse() : ""
         })
     }
 
     handleSocketNewSubmission(message) {
-        console.log(message);
-        this.setState({
-            messages: [...this.state.messages.reverse(), message].reverse()
-        }, () => {
-            //
-        });
+        if (message.topicId === this.props.topicId) {
+            this.setState({
+                messages: [...this.state.messages.reverse(), message].reverse()
+            });
+        }
     }
 
     messageSubmit(e) {
@@ -89,7 +84,6 @@ class Forum extends PureComponent {
 
     userNameSave() {
         let userName = this.userNameInputField.current.value;
-        console.log(userName);
         if (userName && userName.length > 3) {
             this.setState({
                 showuserNameModal: false,
@@ -107,15 +101,16 @@ class Forum extends PureComponent {
     textAreaFocused(e) {
         if (!this.state.userName) {
             e.preventDefault();
-            this.setState({showuserNameModal: true});
+            this.setState({showuserNameModal: true}, () => {
+                this.userNameInputField.current.focus();
+            });
         }
     }
 
     render() {
-        const { t } = this.props;
+        const {t} = this.props;
         const {messages, textAreaFilled, showuserNameModal, userName, userNameFieldError} = this.state;
         if (!messages) return <Loading type="inside"/>;
-        if (messages.status === "error") return <Errors message={messages.message}/>;
 
         return (
             <div className="forum container">
@@ -134,7 +129,8 @@ class Forum extends PureComponent {
                                     </button>
                                 </div>
                                 <div className="modal-body">
-                                    <p><Trans>Please enter your name or a nickname to label your messages in the forum</Trans></p>
+                                    <p><Trans>Please enter your name or a nickname to label your messages in the
+                                        forum</Trans></p>
                                     <input type="text" className="form-control" ref={this.userNameInputField}
                                            placeholder={t("Enter your name")} defaultValue={userName}/>
                                     <div className="invalid-feedback"
@@ -148,18 +144,24 @@ class Forum extends PureComponent {
                                         className="btn btn-secondary"
                                         data-dismiss="modal"
                                         onClick={() => {
-                                                this.setState({showuserNameModal: false})
-                                            }}><Trans>Close</Trans>
+                                            this.setState({showuserNameModal: false})
+                                        }}><Trans>Close</Trans>
                                     </button>
-                                    <button type="submit" className="btn btn-primary" onClick={this.userNameSave}><Trans>Save</Trans></button>
+                                    <button type="submit" className="btn btn-primary" onClick={this.userNameSave}>
+                                        <Trans>Save</Trans></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="text-area">
                         <form className="row" onSubmit={this.messageSubmit.bind(this)}>
-                            <div className="col col-userName" onClick={() => {this.setState({showuserNameModal: true});}}>
-                                <div className="userName">{userName ? userName.substring(0, 1) : <Icon name="fas fa-question"/>}</div>
+                            <div className="col col-userName" onClick={() => {
+                                this.setState({showuserNameModal: true}, () => {
+                                    this.userNameInputField.current.focus();
+                                });
+                            }}>
+                                <div className="userName">{userName ? userName.substring(0, 1) :
+                                    <Icon name="fas fa-question"/>}</div>
                             </div>
                             <div className="col col-textarea">
                             <textarea
@@ -177,16 +179,24 @@ class Forum extends PureComponent {
                         </form>
                     </div>
                     <div className="messages-area" ref={this.messageArea}>
-                        <ul>
-                            {messages === "empty" ? (<li>Mesaj yok!</li>) :
-                                messages.map((message, index) =>
-                                    <li key={index} className={message.userName === userName ? "mine" : ""}>
-                                        <strong>{message.userName}</strong>
-                                        {message.message}
-                                        <time>{moment(message.date).format('HH:ss')}</time>
+                        {messages.length > 0 ? (
+                            <ul>
+                                {messages.map((message, index) =>
+                                    <li key={index}>
+                                        <div className={"li-container" + (message.userName === userName ? " mine" : "")}>
+                                            <strong>{message.userName}</strong>
+                                            {message.message}
+                                            <time>{moment(message.date).format('HH:ss')}</time>
+                                        </div>
                                     </li>
                                 )}
-                        </ul>
+                            </ul>
+                        ) : (
+                            <React.Fragment>
+                                <div className="bubble"><span><Trans>No message has yet been posted</Trans></span></div>
+                                <div className="bubble"><span><Trans>Be the first one</Trans> ;)</span></div>
+                            </React.Fragment>
+                        )}
                     </div>
                 </div>
             </div>

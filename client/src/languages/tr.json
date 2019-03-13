@@ -243,5 +243,7 @@
 	"Enter Your Name": "Adınızı Yazınız",
 	"Enter your name": "Adınızı yazınız",
 	"Close": "Kapat",
-	"Save": "Kaydet"
+	"Save": "Kaydet",
+	"No message has yet been posted": "Henüz hiç bir mesaj gönderilmemiş",
+	"Be the first one": "İlk gönderen siz olun"
 }

@@ -106,7 +106,7 @@ io.on('connection', socket => {
                 date: data.date,
                 userName: data.userName
             }).then(() => {
-                socket.emit('forum-new-submission', data)
+                io.sockets.emit('forum-new-submission', data)
             }).catch(err => {
                 console.log('DB Error: Can not inserted to db ' + err);
                 //socket.emit('post-forum-topic-result', "error");
@@ -119,22 +119,12 @@ io.on('connection', socket => {
 
     socket.on('forum-get-all-by-id', topicId => {
         if (forumCollection) {
-
             forumCollection.find( { topicId: topicId } ).toArray(function(err, messages) {
-                // if (err) throw err;
                 socket.emit('forum-get-all-by-id-result', messages);
             });
-            // forumCollection.find({
-            //     topicId: topicId,
-            // }).then((messages) => {
-            //     socket.emit('forum-get-all-by-id-result', messages);
-            // }).catch(err => {
-            //     console.log('DB Error: Can not retrieve messages from db ' + err);
-            //     socket.emit('forum-get-all-by-id-result', {status: "error", message: "Error: DB Error: Can not retrieve messages from db"});
-            // });
         } else {
             console.log('DB Error: Db is not connected');
-            socket.emit('forum-get-all-by-id-result', {status: "error", message: "Error: DB Error: Db is not connected"});
+            socket.emit('forum-get-all-by-id-result', null);
         }
     });
 
