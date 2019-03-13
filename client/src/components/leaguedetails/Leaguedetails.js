@@ -209,15 +209,19 @@ class Leaguedetails extends Component {
 
                     {leagueData.standingsTables.length > 0 ? (
                         <div className="swipe-content standing" data-tab="standing">
-                            <Standings standingsTables={leagueData.standingsTables}
-                                       swipeAdjustHeight={this.swipeAdjustHeight}/>
+                            <Standings
+                                standingsTables={leagueData.standingsTables}
+                                swipeAdjustHeight={this.swipeAdjustHeight}/>
                         </div>
                     ) : ""}
 
                     <div className="swipe-content fixture" data-tab="fixture">
                         {this.state.isFixtureTabClicked || leagueData.standingsTables.length === 0 ? (
-                            <Fixture events={leagueData.events} params={this.props.match.params}
-                                     socket={this.props.socket}/>
+                            <Fixture
+                                events={leagueData.events}
+                                params={this.props.match.params}
+                                socket={this.props.socket}
+                                swipeAdjustHeight={this.swipeAdjustHeight}/>
                         ) : ""}
                     </div>
 

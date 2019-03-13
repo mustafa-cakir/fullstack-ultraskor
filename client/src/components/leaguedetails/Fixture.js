@@ -35,12 +35,16 @@ class Fixture extends Component {
 				this.setState({
 					loading: false,
 					roundMatches: res.roundMatches
-				});
+				}, () => {
+				    this.props.swipeAdjustHeight();
+                });
 			})
 			.catch(err => {
 				this.setState({
 					roundMatches: {error: err.toString()},
-				});
+				}, () => {
+                    this.props.swipeAdjustHeight();
+                });
 			});
 
 	}
