@@ -38,21 +38,23 @@ let db = null,
     forumCollection = null;
 
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(),  (err, client) => {
-	if (err) {
-        console.log('DB Error: Can not connected to db. Error: ' + err);
+if (NODE_ENV !== "dev") {
+    MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(), (err, client) => {
+        if (err) {
+            console.log('DB Error: Can not connected to db. Error: ' + err);
 
-	} else {
-		try {
-			db = client.db('ultraskor');
-			helperDataCollection = db.collection('helperdata_bydate');
-			forumCollection = db.collection('forum');
-			if (forumCollection) console.log('MongoDB connected');
-		} catch (err) {
-			console.log('DB Error: Can not connected to db');
-		}
-	}
-});
+        } else {
+            try {
+                db = client.db('ultraskor');
+                helperDataCollection = db.collection('helperdata_bydate');
+                forumCollection = db.collection('forum');
+                if (forumCollection) console.log('MongoDB connected');
+            } catch (err) {
+                console.log('DB Error: Can not connected to db');
+            }
+        }
+    });
+}
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 

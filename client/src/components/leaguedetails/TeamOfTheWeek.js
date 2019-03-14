@@ -79,20 +79,24 @@ class TeamOfTheWeek extends Component {
         const prevRound = rounds[currentRoundIndex + 1];
         const nextRound = rounds[currentRoundIndex - 1];
 
+        console.log(this.props.leagueData);
+
         return (
             <div>
                 <div className="lineup container pb-4">
                     <div className="white-box mt-2">
                         <div className="px-3">
                             <div className="row heading align-items-center">
-                                <div className={"col col-3 col-nav " + (!prevRound ? "not-exist" : "")} onClick={() => prevRound ? this.roundClicked(prevRound) : ""}>
+                                <div className={"col col-3 col-nav " + (!prevRound ? "not-exist" : "")}
+                                     onClick={() => prevRound ? this.roundClicked(prevRound) : ""}>
                                     <Icon name="fas fa-chevron-left"/> <Trans>Prev</Trans>
                                 </div>
                                 <div
                                     className={"col px-0 col-6 text-center col-dropdown " + (this.state.isDropdown ? "open" : "")}>
                                     <div className="week-label"
                                          onClick={() => this.setState({isDropdown: !this.state.isDropdown})}>
-                                        <Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>} <Icon name="fas fa-caret-down"/>
+                                        <Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>}
+                                        <Icon name="fas fa-caret-down"/>
                                         <div className="dropdown">
                                             <ul>
                                                 {rounds.map((round, index) => {
@@ -101,7 +105,8 @@ class TeamOfTheWeek extends Component {
                                                             className={roundName === round.roundName ? "active this-round" : ""}
                                                             onClick={() => this.roundClicked(round)}
                                                         >
-                                                            <span>{round.roundName}{round.roundName.length > 2 ? "" : <Trans>th Week</Trans>}</span>
+                                                            <span>{round.roundName}{round.roundName.length > 2 ? "" :
+                                                                <Trans>th Week</Trans>}</span>
                                                         </li>
                                                     )
                                                 })}
@@ -109,8 +114,25 @@ class TeamOfTheWeek extends Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div className={"col col-3 text-right col-nav " + (!nextRound ? "not-exist" : "")} onClick={() => nextRound ? this.roundClicked(nextRound) : ""}>
+                                <div className={"col col-3 text-right col-nav " + (!nextRound ? "not-exist" : "")}
+                                     onClick={() => nextRound ? this.roundClicked(nextRound) : ""}>
                                     <Trans>Next</Trans> <Icon name="fas fa-chevron-right"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="container">
+                            <div className="row league-heading align-items-center py-2 bg-gray">
+                                <div className="col col-img">
+                                    <img
+                                        src={window.ImageServer + '/images/?url=/u-tournament/' + this.props.leagueData.uniqueTournament.id + '/logo'}
+                                        alt={this.props.leagueData.uniqueTournament.name}/>
+                                </div>
+                                <div className="col">
+                                    <div className="name">{this.props.leagueData.uniqueTournament.name}</div>
+                                    <div className="country"><Trans>{this.props.leagueData.category.name}</Trans></div>
+                                </div>
+                                <div className="col text-right">
+                                    <strong><Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>}</strong><br/><Trans>Team Of The Week</Trans>
                                 </div>
                             </div>
                         </div>
@@ -197,8 +219,8 @@ class TeamOfTheWeek extends Component {
                                 </div>
                             </div>
                         </div>
+                        <hr />
                         <div className="body list px-3 pt-0">
-                            <h4 className="team-of-the-week-title"><Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>} - <span><Trans>Team Of The Week</Trans></span></h4>
                             {teamOfTheWeekData.players.map((item, index) => {
                                 return (
                                     <div key={index}

@@ -175,10 +175,10 @@ class Leaguedetails extends Component {
         this.tabs = [
             ...(leagueData.standingsTables.length > 0 ? [t('LANG_Standing')] : []),
             t('Fixture'),
-            t('Team Of The Week'),
-            t('Player Stats'),
-            t('Top Scorers'),
-            t('Weekly Highlights'),
+            ...(this.state.leagueData.tournamentInfo.teamOfTheWeek ? [t('Team Of The Week')] : []),
+            //t('Player Stats'),
+            //t('Top Scorers'),
+            //t('Weekly Highlights'),
         ];
         return (
             <div className="league-details">
@@ -226,7 +226,7 @@ class Leaguedetails extends Component {
                     </div>
 
                     <div className="swipe-content team-of-week" data-tab="team-of-week">
-                        {this.state.isTeamOfTheWeekClicked ? (
+                        {this.state.isTeamOfTheWeekClicked &&  this.state.leagueData.tournamentInfo.teamOfTheWeek ? (
                             <TeamOfTheWeek leagueData={this.state.leagueData} swipeAdjustHeight={this.swipeAdjustHeight}/>
                         ) : ""}
                     </div>
