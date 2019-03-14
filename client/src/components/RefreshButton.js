@@ -4,8 +4,9 @@ import {Trans} from "react-i18next";
 
 class RefreshButton extends Component {
     render() {
+        let currentUrl = window.location.href;
         return (
-	        <div className="refresh-btn" onClick={() => window.location.reload()}><div className="icon"><Icon name="fas fa-sync"/></div><Trans>Refresh</Trans></div>
+	        <a href={currentUrl} className="refresh-btn"><div className="icon"><Icon name="fas fa-sync"/></div><Trans>Refresh</Trans></a>
         )
     }
 }

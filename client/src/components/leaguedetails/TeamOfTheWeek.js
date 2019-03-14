@@ -120,134 +120,138 @@ class TeamOfTheWeek extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="container">
-                            <div className="row league-heading align-items-center py-2 bg-gray">
-                                <div className="col col-img">
-                                    <img
-                                        src={window.ImageServer + '/images/?url=/u-tournament/' + this.props.leagueData.uniqueTournament.id + '/logo'}
-                                        alt={this.props.leagueData.uniqueTournament.name}/>
-                                </div>
-                                <div className="col">
-                                    <div className="name">{this.props.leagueData.uniqueTournament.name}</div>
-                                    <div className="country"><Trans>{this.props.leagueData.category.name}</Trans></div>
-                                </div>
-                                <div className="col text-right">
-                                    <strong><Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>}</strong><br/><Trans>Team Of The Week</Trans>
+                        <div className="position-relative">
+                            {loading ? <Loading type="inside"/> : ""}
+                            <div className="container">
+                                <div className="row league-heading align-items-center py-2 bg-gray">
+                                    <div className="col col-img">
+                                        <img
+                                            src={window.ImageServer + '/images/?url=/u-tournament/' + this.props.leagueData.uniqueTournament.id + '/logo'}
+                                            alt={this.props.leagueData.uniqueTournament.name}/>
+                                    </div>
+                                    <div className="col">
+                                        <div className="name">{this.props.leagueData.uniqueTournament.name}</div>
+                                        <div className="country"><Trans>{this.props.leagueData.category.name}</Trans>
+                                        </div>
+                                    </div>
+                                    <div className="col text-right">
+                                        <strong><Trans>{roundName}</Trans>{roundName.length > 2 ? "" :
+                                            <Trans>th Week</Trans>}</strong><br/><Trans>Team Of The Week</Trans>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="pitch">
-                            {loading ? <Loading type="inside"/> : ""}
-                            <div className={"area-container row-" + formationReverse.length}>
-                                {formationReverse.map((item, index) => {
-                                    return (
-                                        <div key={index} className={"area area-" + item}>
-                                            <div className="row">
-                                                {[...Array(parseInt(item))].map((x, i) => {
-                                                        iteration--;
-                                                        const team = teamOfTheWeekData.players[iteration].team,
-                                                            player = teamOfTheWeekData.players[iteration].player,
-                                                            rating = teamOfTheWeekData.players[iteration].rating;
-                                                        return (
-                                                            <div key={i} className="col text-center">
-                                                                <div className="player-container">
-                                                                    <div className="picture">
-                                                                        <img
-                                                                            alt={player.name}
-                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ""}
-                                                                            className="player-picture"
-                                                                        />
+                            <div className="pitch">
+                                <div className={"area-container row-" + formationReverse.length}>
+                                    {formationReverse.map((item, index) => {
+                                        return (
+                                            <div key={index} className={"area area-" + item}>
+                                                <div className="row">
+                                                    {[...Array(parseInt(item))].map((x, i) => {
+                                                            iteration--;
+                                                            const team = teamOfTheWeekData.players[iteration].team,
+                                                                player = teamOfTheWeekData.players[iteration].player,
+                                                                rating = teamOfTheWeekData.players[iteration].rating;
+                                                            return (
+                                                                <div key={i} className="col text-center">
+                                                                    <div className="player-container">
+                                                                        <div className="picture">
+                                                                            <img
+                                                                                alt={player.name}
+                                                                                src={window.ImageServer + "/images/player/image_" + player.id + ""}
+                                                                                className="player-picture"
+                                                                            />
 
-                                                                        {rating ? (
-                                                                            <span
-                                                                                className={"text-bold rating " + ratingClass(rating)}>{rating}</span>
-                                                                        ) : ""}
+                                                                            {rating ? (
+                                                                                <span
+                                                                                    className={"text-bold rating " + ratingClass(rating)}>{rating}</span>
+                                                                            ) : ""}
 
-                                                                        <img
-                                                                            src={window.ImageServer + "/images/team-logo/football_" + team.id}
-                                                                            alt={team.name}
-                                                                            className="team-logo"
-                                                                        />
+                                                                            <img
+                                                                                src={window.ImageServer + "/images/team-logo/football_" + team.id}
+                                                                                alt={team.name}
+                                                                                className="team-logo"
+                                                                            />
 
-                                                                    </div>
-                                                                    <div className="clearfix"/>
-                                                                    <div className="name" style={{
-                                                                        background: '#3F1052',
-                                                                        color: '#f0f0f0'
-                                                                    }}>
-                                                                        <span>{player.shortName}</span>
+                                                                        </div>
+                                                                        <div className="clearfix"/>
+                                                                        <div className="name" style={{
+                                                                            background: '#3F1052',
+                                                                            color: '#f0f0f0'
+                                                                        }}>
+                                                                            <span>{player.shortName}</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        )
-                                                    }
-                                                )}
+                                                            )
+                                                        }
+                                                    )}
+                                                </div>
                                             </div>
+                                        )
+                                    })}
+                                    <div className={"area area-1"}>
+                                        <div className="row">
+                                            <div className="col text-center">
+                                                <div className="player-container">
+                                                    <div className="picture">
+                                                        <img
+                                                            alt={goalie.player.name}
+                                                            src={window.ImageServer + "/images/player/image_" + goalie.player.id + ""}
+                                                            className="player-picture"
+                                                        />
+
+                                                        {goalie.rating ? <span
+                                                            className={"text-bold rating " + ratingClass(goalie.rating)}>{goalie.rating}</span> : ""}
+
+                                                        <img
+                                                            src={window.ImageServer + "/images/team-logo/football_" + goalie.team.id}
+                                                            alt={goalie.team.name}
+                                                            className="team-logo"
+                                                        />
+                                                    </div>
+                                                    <div className="clearfix"/>
+                                                    <div className="name" style={{
+                                                        background: '#3F1052',
+                                                        color: '#f0f0f0'
+                                                    }}>
+                                                        <span>{goalie.player.shortName}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div className="body list px-3 pt-0">
+                                {teamOfTheWeekData.players.map((item, index) => {
+                                    return (
+                                        <div key={index}
+                                             className="row list-row align-items-center">
+                                            <div className="col list-image">
+                                                <img
+                                                    alt={item.player.name}
+                                                    src={window.ImageServer + "/images/player/image_" + item.player.id + ""}/>
+                                                <img
+                                                    src={window.ImageServer + "/images/team-logo/football_" + item.team.id}
+                                                    alt={item.team.name}
+                                                    className="team-logo-list"
+                                                />
+                                            </div>
+
+                                            <div className="col list-text">
+                                                <div className="f-700">{item.player.name}</div>
+                                                <div className="text-gray align-items-center d-flex">
+                                                    <Trans>{item.team.name}</Trans>
+                                                </div>
+                                            </div>
+                                            {item.rating ? <div className="col list-rating"><span
+                                                className={"text-bold rating " + ratingClass(item.rating)}>{item.rating}</span>
+                                            </div> : ""}
                                         </div>
                                     )
                                 })}
-                                <div className={"area area-1"}>
-                                    <div className="row">
-                                        <div className="col text-center">
-                                            <div className="player-container">
-                                                <div className="picture">
-                                                    <img
-                                                        alt={goalie.player.name}
-                                                        src={window.ImageServer + "/images/player/image_" + goalie.player.id + ""}
-                                                        className="player-picture"
-                                                    />
-
-                                                    {goalie.rating ? <span
-                                                        className={"text-bold rating " + ratingClass(goalie.rating)}>{goalie.rating}</span> : ""}
-
-                                                    <img
-                                                        src={window.ImageServer + "/images/team-logo/football_" + goalie.team.id}
-                                                        alt={goalie.team.name}
-                                                        className="team-logo"
-                                                    />
-                                                </div>
-                                                <div className="clearfix"/>
-                                                <div className="name" style={{
-                                                    background: '#3F1052',
-                                                    color: '#f0f0f0'
-                                                }}>
-                                                    <span>{goalie.player.shortName}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                        <hr />
-                        <div className="body list px-3 pt-0">
-                            {teamOfTheWeekData.players.map((item, index) => {
-                                return (
-                                    <div key={index}
-                                         className="row list-row align-items-center">
-                                        <div className="col list-image">
-                                            <img
-                                                alt={item.player.name}
-                                                src={window.ImageServer + "/images/player/image_" + item.player.id + ""}/>
-                                            <img
-                                                src={window.ImageServer + "/images/team-logo/football_" + item.team.id}
-                                                alt={item.team.name}
-                                                className="team-logo-list"
-                                            />
-                                        </div>
-
-                                        <div className="col list-text">
-                                            <div className="f-700">{item.player.name}</div>
-                                            <div className="text-gray align-items-center d-flex">
-                                                <Trans>{item.team.name}</Trans>
-                                            </div>
-                                        </div>
-                                        {item.rating ? <div className="col list-rating"><span
-                                            className={"text-bold rating " + ratingClass(item.rating)}>{item.rating}</span>
-                                        </div> : ""}
-                                    </div>
-                                )
-                            })}
                         </div>
                     </div>
                 </div>
