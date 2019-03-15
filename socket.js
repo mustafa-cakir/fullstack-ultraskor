@@ -35,6 +35,7 @@ const io = socketIO(server);
 
 let db = null,
     helperDataCollection = null,
+    sportradarCollection = null,
     forumCollection = null,
     oleyCollection = null,
     consoleErrorsCollection = null;
@@ -51,6 +52,7 @@ if (NODE_ENV !== "dev2") {
                 consoleErrorsCollection = db.collection('console_errors');
                 helperDataCollection = db.collection('helperdata_bydate');
                 oleyCollection = db.collection('helperdata_oley');
+                sportradarCollection = db.collection('sportradardata');
                 forumCollection = db.collection('forum');
 
                 console.log('MongoDB connected');
@@ -83,7 +85,6 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 
 
 io.on('connection', socket => {
-    let intervalUpdates = null;
 
     // socket.on('get-updates-2', () => {
     // 	ws.on('message', (data) => {
@@ -477,6 +478,90 @@ app.get('/api/helper3/:date/:code', (req, res) => {
     }
 });
 
+
+app.get('/api/helper4/:lang/:type/:id', (req, res) => {
+    const {type, id, lang} = req.params;
+
+    const cacheKey = `helperData-${type}-${lang}-${id}-provider4`,
+        api_key = "wshgqxxcvr7uptt3yetu3b8s";
+
+    let path = null;
+
+    if (type === "teams")
+        path = `teams/sr:competitor:${id}/profile.json`;
+    else if (type === "players")
+        path = `players/sr:player:${id}/profile.json`;
+
+    const initRemoteRequests = () => {
+        const provider4options = {
+            method: 'GET',
+            uri: `https://api.sportradar.us/soccer-xt3/eu/${lang}/${path}?api_key=${api_key}`,
+            json: true,
+            timeout: 10000
+        };
+
+        request(provider4options)
+            .then(response => {
+                if (response) {
+                    delete response.generated_at;
+                    delete response.schema;
+
+                    cacheService.instance().set(cacheKey, response, cacheDuration.provider4[type] || 60);
+                    if (sportradarCollection) {
+                        sportradarCollection.insertOne({
+                            type: type,
+                            id: id,
+                            lang: lang,
+                            data: response
+                        }).then(() => {
+                            res.send(response);
+                        }).catch(err => {
+                            console.log('DB Error: Can not inserted to db ' + err);
+                            res.send(response);
+                        });
+                    } else {
+                        res.send(response);
+                    }
+                } else {
+                    res.send(null);
+                }
+            })
+            .catch(err => {
+                res.status(500).send({
+                    status: "error",
+                    message: 'Error while retrieving information from server',
+                    err: err
+                })
+            });
+    };
+
+    let cachedData = cacheService.instance().get(cacheKey);
+    if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+        res.send(cachedData);
+    } else {
+        if (sportradarCollection) {
+            sportradarCollection.findOne({
+                type: type,
+                id: id,
+                lang: lang
+            }).then(result => {
+                if (result) {
+                    cacheService.instance().set(cacheKey, result.data, cacheDuration.provider4[type] || 60);
+                    res.send(result.data); // Data is found in the db, now caching and serving!
+                } else {
+                    initRemoteRequests(); // data can't be found in db, get it from remote servers
+                }
+            }).catch(() => {
+                console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+                initRemoteRequests();
+            })
+        } else {
+            initRemoteRequests();  // db is not initalized, get data from remote servers
+        }
+    }
+});
+
+
 app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
     const type = req.params.type;
     const matchid = req.params.matchid;
@@ -492,7 +577,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
         request(oleyOptions)
             .then(response => {
                 if (response) {
-                    cacheService.instance().set(cacheKey, response, cacheDuration.oley[type]);
+                    cacheService.instance().set(cacheKey, response, cacheDuration.oley[type] || 60);
                     if (oleyCollection) {
                         oleyCollection.insertOne({
                             matchid: matchid,
@@ -533,7 +618,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
                 .findOne({matchid: matchid, type: type})
                 .then(result => {
                     if (result) {
-                        cacheService.instance().set(cacheKey, result.data, cacheDuration.oley[type]);
+                        cacheService.instance().set(cacheKey, result.data, cacheDuration.oley[type] || 60);
                         res.send(result.data); // Data is found in the db, now caching and serving!
                     } else {
                         initRemoteRequests(); // data can't be found in db, get it from remote servers

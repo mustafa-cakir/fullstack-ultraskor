@@ -23,7 +23,7 @@ class Fixture extends Component {
 
 		let api =  `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? "/" + name : ""}`;
 
-		fetch(`/api/?query=${api}&page=leaguedetails-fixture-round-matches`)
+		fetch(`/api/?query=${api}&page=leaguedetailsFixture`)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();

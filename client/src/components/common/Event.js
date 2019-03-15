@@ -160,7 +160,7 @@ class Event extends Component {
 				</Link>
 				{(from === "h2h" || from === "fixture") ? (
 					<div className="col event-fav half-time-score pl-0 text-right pr-2">
-						{selected === "home" || selected === "away" ? (
+						{selected === "home" || selected === "away" || selectedId ? (
 							<TeamForm selectedId={selectedId} event={event}/>
 						) : (
 							<span>{typeof event.homeScore.period1 !== "undefined" ? `(${event.homeScore.period1}-${event.awayScore.period1})` : ""}</span>

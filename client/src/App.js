@@ -15,6 +15,7 @@ import Mp3Finish from "./assets/sound/finish.mp3";
 import Mp3RedCard from "./assets/sound/red-card.mp3";
 import Mp3HalfTime from "./assets/sound/half-time.mp3";
 import Mp3Start from "./assets/sound/start.mp3";
+import Teamdetails from "./components/teamdetails/Teamdetails";
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -114,6 +115,10 @@ class App extends Component {
 						<Route exact
 						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?'
 						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
+
+                        <Route exact
+                               path='/(takim|team)/:slug-:teamId'
+                               render={props => <Teamdetails socket={socket} {...props}/>}/>
 
 						<Route exact path='/test' component={TestComp}/>
 
