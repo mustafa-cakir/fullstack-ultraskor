@@ -248,7 +248,7 @@ class Teamdetails extends Component {
                                     <span>{tab}</span></li>;
                             })}
                             <li className="marker" ref={this.swipeMarkerEl}
-                                style={{width: i18n.language === "en" ? '102px' : '71px', left: '0px'}}/>
+                                style={{width:'85px', left: '0px'}}/>
                         </ul>
                         <div className="swipe-shadows"/>
                     </div>

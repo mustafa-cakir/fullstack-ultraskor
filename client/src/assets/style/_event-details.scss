@@ -7,8 +7,17 @@
 			background: url(../images/stadium13.jpg) center center no-repeat;
 			background-size: cover;
 			color: #fff;
-			padding-top: 40px;
+			padding-top: 25px;
 			margin-top: -15px;
+		}
+		.team-link {
+			padding: 15px 0;
+			background-color: transparent;
+			transition: background-color .2s linear;
+			border-radius: 10px;
+			&:hover {
+				background-color: rgba(255,255,255,.3);
+			}
 		}
 		.team-logo {
 			img {
@@ -30,6 +39,7 @@
 		}
 		.team-name {
 			font-weight: bolder;
+			color: #fff;
 			@include line-clamp(1);
 		}
 		.team-coach {
