@@ -1,6 +1,10 @@
 //--Breakpoints------------------------------
 @mixin media($point) {
-	@if $point == mobile {
+	@if $point == x-mobile {
+		@media (max-width: 374px) {
+			@content;
+		}
+	} @else if $point == mobile {
 		@media (max-width: 767px) {
 			@content;
 		}
@@ -739,10 +743,14 @@ code {
 			border-bottom: 1px solid #eee;
 		}
 		td, th {
-			padding: 5px 2px;
+			padding: 5px 0;
 			vertical-align: middle;
 		}
+		.order, .team-logo, .team {
+			padding: 5px 3px;
+		}
 		.matches, .win, .draw, .loss, .goal-diff, .points {
+			width: 27px;
 			@include media(tablet) {
 				width: 40px;
 			}
@@ -750,11 +758,24 @@ code {
 				width: 50px;
 			}
 
+			@include media(x-mobile) {
+				width: 22px;
+			}
 
 		}
 		.team {
 			text-align: left;
 			font-weight: 500;
+			.line-clamp {
+				display: inline-block;
+				vertical-align: middle;
+				@include media(mobile) {
+					max-width: 100px;
+				}
+				@include media(x-mobile) {
+					width: 72px;
+				}
+			}
 		}
 		.points {
 			font-weight: 500;

@@ -129,7 +129,7 @@ class Standings extends Component {
 										<td className="team-logo"><img
 											src={`${window.ImageServer}/images/team-logo/football_${row.team.id}`}
 											alt={row.team.name}/></td>
-										<td className="team">{row.team.shortName}<span className="live-pulse"/></td>
+										<td className="team"><span className="line-clamp">{row.team.shortName}</span><span className="live-pulse"/></td>
 										<td className="matches">{row[`${tabLower}Fields`][`matches${tab}`]}</td>
 										<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
 										<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
