@@ -115,6 +115,7 @@ class Standings extends Component {
 								<th scope="col"><Trans>W</Trans></th>
 								<th scope="col"><Trans>D</Trans></th>
 								<th scope="col"><Trans>L</Trans></th>
+								<th scope="col">Av</th>
 								<th scope="col"><Trans>Pts</Trans></th>
 							</tr>
 							</thead>
@@ -133,6 +134,7 @@ class Standings extends Component {
 										<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
 										<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
 										<td className="loss">{row[`${tabLower}Fields`][`loss${tab}`]}</td>
+										<td className="difference">{row[`${tabLower}Fields`][`goalDiff${tab}`]}</td>
 										<td className="points">{row[`${tabLower}Fields`][`points${tab}`]}</td>
 									</tr>
 								)

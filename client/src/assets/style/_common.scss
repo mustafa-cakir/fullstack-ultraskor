@@ -715,11 +715,6 @@ code {
 }
 
 .standing-table {
-	.table th {
-		border-top: none;
-		border-bottom: 1px solid #eee;
-		min-width: 25px;
-	}
 	.live-label {
 		color: #c1272d;
 		font-weight: 300;
@@ -740,9 +735,11 @@ code {
 		}
 		th {
 			text-align: center;
+			border-top: none;
+			border-bottom: 1px solid #eee;
 		}
 		td, th {
-			padding: 5px;
+			padding: 5px 2px;
 			vertical-align: middle;
 		}
 		.team {
@@ -751,6 +748,10 @@ code {
 		}
 		.points {
 			font-weight: 500;
+		}
+
+		.number {
+			max-width: 50px;
 		}
 		.order {
 			width: 35px;
@@ -877,6 +878,14 @@ code {
 	display: flex;
 	.container {
 		padding: 0;
+	}
+}
+
+.event-details {
+	.middle-tabs {
+		position: sticky;
+		top: 48px;
+		z-index: 10;
 	}
 }
 
