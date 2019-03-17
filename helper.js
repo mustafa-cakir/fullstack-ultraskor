@@ -81,13 +81,13 @@ exports.cacheDuration = () => {
         },
         main: {
             default: 60, // 1 min.
-            homepage: 15, // 15 seconds
+            homepage: 10, // 10 seconds
             eventdetails: 5, // 5 seconds
-            lineup: 60 * 30, // 30 min,
+            lineup: 60 * 5, // 5 min,
             h2h: 60 * 30, // 30 min
             standing: 60, // 1 min.
             teamoftheweek: 60 * 60 * 24,  // 24 hours
-            leaguedetails: 60 * 60 * 24,  // 24 hours
+            leaguedetails: 60,  // 24 hours
             leaguedetailsFixture: 60 * 60 * 24  // 24 hours
         }
     }

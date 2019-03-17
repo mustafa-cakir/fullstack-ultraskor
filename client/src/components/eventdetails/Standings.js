@@ -134,7 +134,7 @@ class Standings extends Component {
 										<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
 										<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
 										<td className="loss">{row[`${tabLower}Fields`][`loss${tab}`]}</td>
-										<td className="difference">{row[`${tabLower}Fields`][`goalDiff${tab}`]}</td>
+										<td className="goal-diff">{row[`${tabLower}Fields`][`goalDiff${tab}`]}</td>
 										<td className="points">{row[`${tabLower}Fields`][`points${tab}`]}</td>
 									</tr>
 								)

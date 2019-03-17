@@ -742,6 +742,16 @@ code {
 			padding: 5px 2px;
 			vertical-align: middle;
 		}
+		.matches, .win, .draw, .loss, .goal-diff, .points {
+			@include media(tablet) {
+				width: 40px;
+			}
+			@include media(web) {
+				width: 50px;
+			}
+
+
+		}
 		.team {
 			text-align: left;
 			font-weight: 500;

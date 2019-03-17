@@ -160,7 +160,7 @@ class Event extends Component {
 				</Link>
 				{(from === "h2h" || from === "fixture") ? (
 					<div className="col event-fav half-time-score pl-0 text-right pr-2">
-						{selected === "home" || selected === "away" || selectedId ? (
+						{selected !== "h2h" ? (
 							<TeamForm selectedId={selectedId} event={event}/>
 						) : (
 							<span>{typeof event.homeScore.period1 !== "undefined" ? `(${event.homeScore.period1}-${event.awayScore.period1})` : ""}</span>
@@ -184,11 +184,11 @@ class Event extends Component {
 const TeamForm = props => {
 	const {event, selectedId} = props;
 	let result = null;
-
+	//console.log(typeof selectedId, typeof event.homeTeam.id, event.id, event.winnerCode);
 	if (event.winnerCode === 1) {
-	    result = selectedId === event.homeTeam.id ? "W" : "L"
+	    result = parseInt(selectedId) === event.homeTeam.id ? "W" : "L"
     } else if (event.winnerCode === 2) {
-        result = selectedId === event.homeTeam.id ? "L" : "W"
+        result = parseInt(selectedId) === event.homeTeam.id ? "L" : "W"
     } else if (event.winnerCode === 3) {
 	    result = "D"
     }

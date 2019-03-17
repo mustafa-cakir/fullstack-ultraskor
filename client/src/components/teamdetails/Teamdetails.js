@@ -269,6 +269,7 @@ class Teamdetails extends Component {
                             tournaments={teamTournamentsData.tournaments}
                             from={"h2h"}
                             selectedId={teamId}
+                            selected="home"
                         />
                     </div>
 
