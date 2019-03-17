@@ -16,7 +16,7 @@ class Headertabs extends Component {
             isLive: false,
             isSportDropdown: false,
             isDateDropdown: false,
-            selectedDay: this.props.todaysDateByUrl || moment().format('YYYY-MM-DD'),
+            selectedDay: this.props.todaysDateByUrl || moment().subtract('1', 'hours').format('YYYY-MM-DD'),
         };
     }
 
