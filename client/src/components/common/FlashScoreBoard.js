@@ -31,6 +31,7 @@ class FlashScoreBoard extends Component {
 
 	removeSocketEvents() {
 		clearTimeout(this.flashScoreTimer);
+		clearInterval(this.getUpdatesFlashScoresInterval);
 		this.socket.removeListener('disconnect', this.onSocketDisconnect);
 		this.socket.removeListener('return-error-updates', this.onSocketDisconnect);
 		this.socket.removeListener('connect', this.onSocketConnect);
@@ -41,14 +42,14 @@ class FlashScoreBoard extends Component {
 		this.socket.on('disconnect', this.onSocketDisconnect);
 		this.socket.on('return-error-updates', this.onSocketDisconnect);
 
-		this.getUpdatesFlashScoresInterval = null;
+		clearInterval(this.getUpdatesFlashScoresInterval);
 		this.initGetUpdatesFlashScores();
 	}
 
 	initGetUpdatesFlashScores() {
-		this.getUpdatesFlashScoresInterval = setTimeout(() => {  // init after 10 seconds
+		this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+		this.getUpdatesFlashScoresInterval = setInterval(() => {  // init after 10 seconds
 			this.socket.emit('get-flashcore-changes');
-			this.socket.once('return-flashcore-changes', this.handleSocketFlashScoreChanges);
 		}, 10000);
 	}
 
@@ -97,7 +98,6 @@ class FlashScoreBoard extends Component {
 
 
 	handleSocketFlashScoreChanges(res) {
-		console.log('changes returned');
 		const {t} = this.props;
 		if (res && res.length > 0) {
 			res.forEach(x => {
