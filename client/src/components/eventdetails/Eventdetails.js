@@ -583,10 +583,10 @@ class Eventdetails extends Component {
 				        {
 							"@context": "http://schema.org",
 							"@type": "SportsEvent",
-							"name": "${eventData.event.tournament.name} ${eventData.event.season.year} - ${eventData.event.homeTeam.name} vs ${eventData.event.awayTeam.name}",
+							"name": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} - ${eventData.event.homeTeam.name} vs ${eventData.event.awayTeam.name}",
 							"startDate": "${moment(eventData.event.startTimestamp * 1000).toISOString()}",
 							"endDate": "${moment(eventData.event.startTimestamp * 1000).add('90', 'minute').toISOString()}",
-							"description": "${eventData.event.tournament.name} ${eventData.event.season.year} sezonunda ${eventData.event.homeTeam.name}, ${eventData.event.awayTeam.name} ile evinde oynuyor. Maçın başlama saati ${moment(eventData.event.startTimestamp * 1000).format('HH:mm')}. ${eventData.event.venue ? eventData.event.venue.stadium ? eventData.event.venue.stadium.name : "" : ""} stadında oyanacak mücadeleyi, ${eventData.event.referee ? eventData.event.referee.name : ""} yönetiyor.",
+							"description": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} sezonunda ${eventData.event.homeTeam.name}, ${eventData.event.awayTeam.name} ile evinde oynuyor. Maçın başlama saati ${moment(eventData.event.startTimestamp * 1000).format('HH:mm')}. ${eventData.event.venue ? eventData.event.venue.stadium ? eventData.event.venue.stadium.name : "" : ""} stadında oyanacak mücadeleyi, ${eventData.event.referee ? eventData.event.referee.name : ""} yönetiyor.",
 							"awayTeam": {
 								"@type": "SportsTeam",
 								"name": "${eventData.event.homeTeam.name}",

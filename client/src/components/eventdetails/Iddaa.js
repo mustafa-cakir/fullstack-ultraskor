@@ -39,18 +39,18 @@ class Iddaa extends PureComponent {
                             <li className={this.state.tabIndex === 0 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(0)}>
                                 <span><img src={IddaLogo} className="tab-logo"
-                                           alt="Iddaa Analiz, Bahis Analiz"/> Iddaa Analiz</span>
+                                           alt="Iddaa Analiz, Bahis Analiz"/> <Trans>Iddaa Analyze</Trans></span>
                             </li>
                             <li className={this.state.tabIndex === 1 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(1)}>
-                                <span><img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari"/> Iddaa Oranlari</span>
+	                            <span><img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari"/> <Trans>Iddaa Odds</Trans></span>
                             </li>
                             {/*<li className={this.state.tabIndex === 2 ? "active" : ""}*/}
                             {/*onClick={() => this.tabSwitcherHandler(2)}>*/}
                             {/*<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>*/}
                             {/*</li>*/}
                         </ul>
-                        {(this.state.tabIndex === 0 && matchTextInfo) ?
+                        {(this.state.tabIndex === 0) ?
                             <MatchTextInfo matchTextInfo={matchTextInfo}
                                            swipeAdjustHeight={this.props.swipeAdjustHeight}/> : ""}
                         {this.state.tabIndex === 1 ? (
@@ -67,8 +67,7 @@ class Iddaa extends PureComponent {
                                         </div>
                                         <IddaaContainer provider3MatchData={provider3MatchData} t={t}/>
                                     </div>
-                                ) : <div className="iddaa-notfound"><Trans>Malesef Iddaa oranları bilgisi
-                                    bulunamadı</Trans> :(</div>}
+                                ) : <div className="iddaa-notfound"><Trans>Unfortunately, this event doesn't have Iddaa bettings odds</Trans> :(</div>}
                             </div>
                         ) : ""}
                         {this.state.tabIndex === 2 ? (
@@ -101,6 +100,9 @@ class MatchTextInfo extends PureComponent {
 
     render() {
         const {matchTextInfo} = this.props;
+        if (!matchTextInfo || matchTextInfo.length === 0) {
+        	return <div className="iddaa-notfound"><Trans>Unfortunately, this event doesn't have any Iddaa Analyze</Trans> :(</div>
+        }
         let generalInfo = matchTextInfo.textList.filter(item => {
             return item.smartType === "SmartList" || item.smartType === "Smartist"
         });

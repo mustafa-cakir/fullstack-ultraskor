@@ -247,5 +247,9 @@
 	"No message has yet been posted": "Henüz hiç bir mesaj gönderilmemiş",
 	"Be the first one": "İlk gönderen siz olun",
 	"LANG_Players": "Kadro",
-	"team": "takim"
+	"team": "takim",
+	"Unfortunately, this event doesn't have Iddaa bettings odds": "Malesef bu maç için Iddaa oranları mevcut değil",
+	"Unfortunately, this event doesn't have any Iddaa Analyze": "Malesef bu maç için Iddaa Analiz bilgisine ulaşılamadı",
+	"Iddaa Odds": "Iddaa Oranları",
+	"Iddaa Analyze": "Iddaa Analiz"
 }
