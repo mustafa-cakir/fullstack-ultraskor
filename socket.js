@@ -504,8 +504,8 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
         request(provider4options)
             .then(response => {
                 if (response) {
-                    delete response.generated_at;
-                    delete response.schema;
+                    if (response.generated_at) delete response.generated_at;
+                    if (response.schema) delete response.schema;
 
                     cacheService.instance().set(cacheKey, response, cacheDuration.provider4[type] || 60);
                     if (sportradarCollection) {
@@ -528,10 +528,9 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
                 }
             })
             .catch(err => {
-                res.status(500).send({
+                res.status(404).send({
                     status: "error",
                     message: 'Error while retrieving information from server',
-                    err: err
                 })
             });
     };
