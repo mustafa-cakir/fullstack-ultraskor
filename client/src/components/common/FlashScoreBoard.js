@@ -63,6 +63,7 @@ class FlashScoreBoard extends Component {
 
 	onSocketConnect() {
 		console.log('socket connected!');
+        this.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.disconnected) {
 			this.initSocket();
 			this.setState({

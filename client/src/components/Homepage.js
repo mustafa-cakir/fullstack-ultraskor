@@ -33,6 +33,7 @@ class Homepage extends Component {
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
 		this.todaysDate = null;
+		this.socket = this.props.socket;
 	};
 
 	componentDidMount() {
@@ -52,6 +53,10 @@ class Homepage extends Component {
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 		this.initSocket();
+
+		setTimeout(() => {
+		    this.props.socket.disconnect();
+        }, 15000)
 	}
 
 	analyzeSessionStorage() {
@@ -197,26 +202,22 @@ class Homepage extends Component {
 		clearTimeout(this.getUpdatesHomepageInterval);
 	}
 
-	initSocket() {
-		const {socket} = this.props;
+	initSocket(noInterval = false) {
 		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
-		socket.on('disconnect', this.onSocketDisconnect);
-		socket.on('return-error-updates', this.onSocketDisconnect);
-
-		this.getUpdatesHomepageInterval = null;
-		this.initGetUpdatesHomepage();
+		this.socket.on('disconnect', this.onSocketDisconnect);
+		this.socket.on('return-error-updates', this.onSocketDisconnect);
+        this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+		this.initGetUpdatesHomepage(noInterval);
 	}
 
-	initGetUpdatesHomepage() {
-		const {socket} = this.props;
+	initGetUpdatesHomepage(noInterval = false) {
 		this.getUpdatesHomepageInterval = setTimeout(() => {  // init after 10 seconds
-			socket.emit('get-updates-homepage');
-			socket.once('return-updates-homepage', this.onSocketReturnUpdatesData);
-		}, 10000);
+		    this.socket.emit('get-updates-homepage');
+		}, noInterval ? 100 : 10000);
 	}
 
 	onSocketReturnUpdatesData(res) {
-		this.initGetUpdatesHomepage();
+		if (res) this.initGetUpdatesHomepage();
 		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date) {
 			this.handleGetData(res, true);
 		} else {
@@ -225,18 +226,18 @@ class Homepage extends Component {
 	}
 
 	onSocketDisconnect() {
-		const {socket} = this.props;
 		this.removeSocketEvents();
-		socket.on('connect', this.onSocketConnect);
+		this.socket.on('connect', this.onSocketConnect);
 		this.setState({
 			refreshButton: true
 		});
 	}
 
 	onSocketConnect() {
-		console.log('socket connected!');
+		console.log('Socket connected! - Homepage');
+        this.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.refreshButton) {
-			this.initSocket();
+			this.initSocket(true);
 			this.setState({
 				refreshButton: false
 			});
