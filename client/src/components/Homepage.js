@@ -53,10 +53,6 @@ class Homepage extends Component {
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 		this.initSocket();
-
-		setTimeout(() => {
-		    this.props.socket.disconnect();
-        }, 15000)
 	}
 
 	analyzeSessionStorage() {
