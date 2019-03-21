@@ -32,7 +32,7 @@
         }
     }
     .event-time {
-        .full-time {
+        &.full-time {
             .day {
                 display: block;
             }
