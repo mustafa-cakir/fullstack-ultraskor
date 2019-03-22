@@ -240,7 +240,7 @@
         }
     }
     &.shrink {
-        transform: translateY(84px);
+        transform: translateY(76px);
         box-shadow: none;
         .content {
             opacity: 0;
@@ -293,12 +293,14 @@
         @include line-clamp(1);
         max-width: 22vw;
         margin: 0 auto;
+	    color: #fff;
     }
     .col-score {
         max-width: 85px;
         padding: 0;
         text-align: center;
         font-size: 2rem;
+	    color: #fff;
         .separator {
             margin: 0 2px;
         }
