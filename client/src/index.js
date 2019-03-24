@@ -19,5 +19,5 @@ window.ImageServer = 'https://www.ultraskor.com';
 		<App/>
 	</BrowserRouter>
 ), document.getElementById('root'));
-serviceWorker.unregister();
+serviceWorker.register();
 initFirebaseWebPush();
