@@ -134,13 +134,13 @@ class Event extends Component {
 			<div className={"event-container" + (this.props.index % 2 === 0 ? " " : " bg-gray")}>
 				{this.isInProgress()}
 				<Link to={{
-					pathname: `/${t('match')}/${generateSlug(event.name)}-${t('live-score')}-${event.id}`,
+					pathname: `/${t('match')}/${generateSlug(t(event.homeTeam.name) + '-' + t(event.awayTeam.name))}-${t('live-score')}-${event.id}`,
 					state: {isPrev: true},
 				}} className={`event-link col p-0 row m-0 ${event.winnerCode ? "winner-" + event.winnerCode : ""}`}
-					  title={`${event.homeTeam.name} - ${event.awayTeam.name}  ${t('click for live scores, lineup and stats')}`}>
+					  title={`${t(event.homeTeam.name)} - ${t(event.awayTeam.name)}  ${t('click for live scores, lineup and stats')}`}>
                             <span className="col event-team home text-right pr-0 pl-2">
                                 {event.homeRedCards ? <span className={"red-card"}>{event.homeRedCards}</span> : ""}
-								{event.homeTeam.name}
+								{t(event.homeTeam.name)}
                             </span>
 					<span
 						className={"col event-score text-center font-weight-bold px-0" + (event.status.type === 'inprogress' ? ' live' : '')}>
@@ -155,7 +155,7 @@ class Event extends Component {
                             </span>
 					<span className="col event-team away text-left pl-0 pr-2">
                                 {event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}
-						{event.awayTeam.name}
+						{t(event.awayTeam.name)}
                             </span>
 				</Link>
 				{(from === "h2h" || from === "fixture") ? (

@@ -19,8 +19,8 @@ class Tournament extends Component {
 											pathname: `/${t('league')}/${generateSlug(t(tournament.category.name))}-${generateSlug(t(tournament.tournament.name))}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${tournament.season ? tournament.season.id : "0"}`,
 											state: {isPrev: true}
 										}} className="col tournament-name"
-											  title={`${tournament.category.name} - ${tournament.tournament.name}  ${t('click for standings, highlights and league fixtures')}`}>
-											<strong><Trans>{tournament.category.name}</Trans></strong> - {tournament.tournament.name}
+											  title={`${t(tournament.category.name)} - ${t(tournament.tournament.name)}  ${t('click for standings, highlights and league fixtures')}`}>
+											<strong><Trans>{tournament.category.name}</Trans></strong> - {t(tournament.tournament.name)}
 										</Link>
 							</div>
 

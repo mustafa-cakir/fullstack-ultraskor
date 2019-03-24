@@ -70,12 +70,12 @@ class Injuries extends Component {
 						<div className="row heading align-items-center">
 							<div className="col col-img">
 								<img
-									alt={eventData.event.homeTeam.name}
+									alt={t(eventData.event.homeTeam.name)}
 									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
 								/>
 							</div>
 							<div className="col">
-								<div className="team-name">{eventData.event.homeTeam.name}</div>
+								<div className="team-name">{t(eventData.event.homeTeam.name)}</div>
 								<div className="injury-report">
 									{injuriesData.homeTeamNoMissing || injuriesData.homeTeamMissings.length === 0 ? (
 										<span>-</span>
@@ -95,12 +95,12 @@ class Injuries extends Component {
 						<div className="row heading align-items-center pt-3">
 							<div className="col col-img">
 								<img
-									alt={eventData.event.awayTeam.name}
+									alt={t(eventData.event.awayTeam.name)}
 									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
 								/>
 							</div>
 							<div className="col">
-								<div className="team-name">{eventData.event.awayTeam.name}</div>
+								<div className="team-name">{t(eventData.event.awayTeam.name)}</div>
 								<div className="injury-report">
 									{injuriesData.awayTeamNoMissing || injuriesData.awayTeamMissings.length === 0 ? (
 										<span>-</span>

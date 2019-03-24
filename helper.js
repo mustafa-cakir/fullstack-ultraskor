@@ -53,14 +53,38 @@ exports.simplifyHomeData = res => {
             'hasHighlightsStream', 'hasLineups', 'hasLineupsList', 'hasLiveForm', 'hasLiveOdds', 'hasStatistics',
             'hasSubScore', 'hasTime', 'isAwarded', 'isSyncable', 'roundInfo', 'sport', 'votingEnabled', 'odds'];
 
-        res.sportItem.tournaments.forEach(tournament => {
-            tournament.events.map(event => {
-                for (let i = 0; i < eventIgnoredProperties.length; i++) {
-                    delete event[eventIgnoredProperties[i]]
-                }
-                return event
-            });
-        });
+	    res.sportItem.tournaments = res.sportItem.tournaments.reduce((whole, item) => {
+		    const property = item.season ? "season" : "tournament";
+	    	if (item[property].name.indexOf('Friendly') < 0 && item[property].name.indexOf('Women') < 0) {
+			    item.events.map(event => {
+				    for (let i = 0; i < eventIgnoredProperties.length; i++) {
+					    delete event[eventIgnoredProperties[i]]
+				    }
+				    return event
+			    });
+			    whole.push(item);
+		    }
+	    	return whole;
+	    }, []);
+
+
+	    // res.sportItem.tournaments = res.sportItem.tournaments.filter(tournament => {
+		//     return !(tournament.tournament.name.indexOf('Friendly') > -1 || tournament.tournament.name.indexOf('Women') > -1);
+	    // });
+	    //
+        // res.sportItem.tournaments.forEach((tournament, index) => {
+        // 	// if (tournament.tournament.name.indexOf('Friendly') > -1 || tournament.tournament.name.indexOf('Women') > -1) {
+		//     //     console.log('deleted, index:', index);
+        // 	// 	res.sportItem.tournaments.splice(index, 1);
+	    //     // } else {
+		//         tournament.events.map(event => {
+		// 	        for (let i = 0; i < eventIgnoredProperties.length; i++) {
+		// 		        delete event[eventIgnoredProperties[i]]
+		// 	        }
+		// 	        return event
+		//         });
+	    //     //}
+        // });
     }
     return res;
 };
@@ -107,6 +131,13 @@ exports.generateSlug = text => {
         .replace(/--+/g, '-')         // Replace multiple - with single -
         .replace(/^-+/, '')             // Trim - from start of text
         .replace(/-+$/, '')             // Trim - from end of text
+};
+
+exports.t = text => {
+	const languageJson = require('./client/src/languages/tr.json');
+	if (languageJson[text]) {
+		return languageJson[text]
+	} else return text;
 };
 
 exports.mongoOptions = () => {

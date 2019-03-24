@@ -162,7 +162,6 @@ class Teamdetails extends Component {
 	};
 
 	swipeAdjustHeight(index) {
-		console.log('triggered;');
 		if (this.swipeEl.current && this.swipeEl.current.containerEl) {
 			index = index || this.swipeEl.current.getPos();
 			let container = this.swipeEl.current.containerEl.firstChild;
@@ -227,10 +226,10 @@ class Teamdetails extends Component {
 					<div className="col col-img">
 						<img
 							src={window.ImageServer + '/images/team-logo/football_' + teamId}
-							alt={teamInfoData.team.name}/>
+							alt={t(teamInfoData.team.name)}/>
 					</div>
 					<div className="col col-info">
-						<div className="name">{teamInfoData.team.name}</div>
+						<div className="name">{t(teamInfoData.team.name)}</div>
 						{teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ""}
 					</div>
 					{teamInfoData.venue ? (

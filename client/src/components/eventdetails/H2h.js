@@ -4,6 +4,7 @@ import Errors from "../common/Errors";
 import Tournament from "../common/Tournament";
 import {Trans} from "react-i18next";
 import Icon from "../common/Icon";
+import {withTranslation} from "react-i18next";
 
 class H2h extends Component {
     constructor(props) {
@@ -63,6 +64,7 @@ class H2h extends Component {
 
     render() {
         const {h2hData, tab} = this.state;
+        const { t} = this.props;
         if (!h2hData) return <Loading type="inside"/>;
         if (h2hData.error) return <Errors type="error" message={h2hData.error}/>;
         const {eventData, matchTextInfo} = this.props;
@@ -80,10 +82,10 @@ class H2h extends Component {
 							<span className="tab-container">
 								<img
                                     className="team-logo"
-                                    alt={eventData.event.homeTeam.name}
+                                    alt={t(eventData.event.homeTeam.name)}
                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                                 />
-								<div className="team-name">{eventData.event.homeTeam.name}</div>
+								<div className="team-name">{t(eventData.event.homeTeam.name)}</div>
 							</span>
                         </li>
                         <li className={tab === 'away' ? "active" : ""}
@@ -91,10 +93,10 @@ class H2h extends Component {
 							<span className="tab-container">
 								<img
                                     className="team-logo"
-                                    alt={eventData.event.awayTeam.name}
+                                    alt={t(eventData.event.awayTeam.name)}
                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
                                 />
-								<div className="team-name">{eventData.event.awayTeam.name}</div>
+								<div className="team-name">{t(eventData.event.awayTeam.name)}</div>
 							</span>
                         </li>
                     </ul>
@@ -155,4 +157,4 @@ class MatchTextInfo extends PureComponent {
     }
 }
 
-export default H2h
+export default withTranslation('translations')(H2h)

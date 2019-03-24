@@ -14,14 +14,14 @@ class Scoreboard extends Component {
                         <Link to={{
                             pathname: `/${t('team')}/${generateSlug(t(eventData.event.homeTeam.name))}-${eventData.event.homeTeam.id}`,
                             state: {isPrev: true}
-                        }} className="col-4 team-link">
+                        }} className="col-4 team-link" title={`${t(eventData.event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}>
                             <div className="team-logo mb-2">
                                 <img
-                                    alt={eventData.event.homeTeam.name}
+                                    alt={t(eventData.event.homeTeam.name)}
                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                                 />
                             </div>
-                            <div className="team-name">{eventData.event.homeTeam.name}</div>
+                            <div className="team-name">{t(eventData.event.homeTeam.name)}</div>
                             {eventData.managerDuel ?
                                 <div className="team-coach mb-2">{eventData.managerDuel.homeManager.name}</div> : ''}
                             <div>{(eventData.teamsForm) ?
@@ -40,12 +40,12 @@ class Scoreboard extends Component {
                         <Link to={{
                             pathname: `/${t('team')}/${generateSlug(t(eventData.event.awayTeam.name))}-${eventData.event.awayTeam.id}`,
                             state: {isPrev: true}
-                        }} className="col-4 team-link">
+                        }} className="col-4 team-link" title={`${t(eventData.event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}>
                             <div className="team-logo mb-2">
-                                <img alt={eventData.event.awayTeam.name}
+                                <img alt={t(eventData.event.awayTeam.name)}
                                      src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
                             </div>
-                            <div className="team-name">{eventData.event.awayTeam.name}</div>
+                            <div className="team-name">{t(eventData.event.awayTeam.name)}</div>
                             <div
                                 className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.awayManager.name : ''}</div>
                             <div>{(eventData.teamsForm) ?

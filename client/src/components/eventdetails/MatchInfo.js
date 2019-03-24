@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import moment from "moment";
 import i18n from "i18next";
 import {Trans} from "react-i18next";
+import {withTranslation} from "react-i18next";
 
 class MatchInfo extends PureComponent {
 	constructor(props) {
@@ -16,7 +17,7 @@ class MatchInfo extends PureComponent {
 	}
 
 	render() {
-		const {eventData, provider3MatchData} = this.props;
+		const {eventData, provider3MatchData, t} = this.props;
 		const {matchTextInfo} = this.props;
 		const {language} = i18n;
 
@@ -35,7 +36,7 @@ class MatchInfo extends PureComponent {
 
 		return (
 			<div className="white-box mt-2">
-				<h1 className="title">{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name} <Trans>Match
+				<h1 className="title">{t(eventData.event.homeTeam.name)} - {t(eventData.event.awayTeam.name)} <Trans>Match
 					Information</Trans></h1>
 
 				{matchTextInfo ? <MatchTextInfo matchTextInfo={matchTextInfo}/> : ""}
@@ -45,7 +46,7 @@ class MatchInfo extends PureComponent {
 						<p className="match-facts">Başlama düdüğünden
 							itibaren {broadcast ? "" + broadcast + " kanalindan maçı canlı olarak izleyebilir ve " : ""}
 							Ultraskor.com <a href={window.location.href}
-							                 title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} canlı skor ve maç sonucu`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name} maç
+							                 title={`${t(eventData.event.homeTeam.name)} - ${t(eventData.event.awayTeam.name)} canlı skor ve maç sonucu`}>{t(eventData.event.homeTeam.name)} - {t(eventData.event.awayTeam.name)} maç
 								sonucu</a> sayfasindan maçın canlı skorunu, istatiklerini, kadrolarını ve canlı puan
 							durumunu anlık olarak takip edebilirsiniz.</p>
 					</React.Fragment>) : (
@@ -55,7 +56,7 @@ class MatchInfo extends PureComponent {
 							can {broadcast ? "watch live stream through " + broadcast + " channel when the game kicks off and " : ""} track
 							the live score, stats, lineups and live standings on UltraSkor.com's <a
 							href={window.location.href}
-							title={`${eventData.event.homeTeam.name} - ${eventData.event.awayTeam.name} live score and match result`}>{eventData.event.homeTeam.name} - {eventData.event.awayTeam.name}</a> match
+							title={`${t(eventData.event.homeTeam.name)} - ${t(eventData.event.awayTeam.name)} live score and match result`}>{t(eventData.event.homeTeam.name)} - {t(eventData.event.awayTeam.name)}</a> match
 							details page.
 						</p>
 					</React.Fragment>)}
@@ -122,4 +123,4 @@ const MatchTextInfo = props => {
 	)
 };
 
-export default MatchInfo
+export default withTranslation('translations')(MatchInfo)
