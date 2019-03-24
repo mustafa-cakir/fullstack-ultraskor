@@ -15,7 +15,7 @@ class Footer extends Component {
 				</div>
 				<p>
 					<Trans>This app has no commercial intents.</Trans><br/><Trans>Developed just for fun using
-					React</Trans> ;)
+					React</Trans>
 				</p>
 				<p><a href="#contact" title="Contact" onClick={this.emailLinkAction}><Trans>Contact</Trans></a>
 				</p>
