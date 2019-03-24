@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
 import {withTranslation} from "react-i18next";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
 import {generateSlug} from "../../Helper";
 
 class Standings extends Component {

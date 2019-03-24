@@ -4,7 +4,7 @@ import {Trans} from "react-i18next";
 import Errors from "../common/Errors";
 import {withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
 
 class Standings extends Component {
 	constructor(props) {

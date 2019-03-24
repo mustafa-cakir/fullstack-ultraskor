@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";

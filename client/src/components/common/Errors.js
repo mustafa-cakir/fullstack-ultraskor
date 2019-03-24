@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import {Trans} from "react-i18next";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
 
 class Errors extends Component {
 

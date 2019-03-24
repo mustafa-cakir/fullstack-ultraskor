@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import {withTranslation} from "react-i18next";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
 import {generateSlug} from "../../Helper";
 
 class FlashScoreBoard extends Component {
