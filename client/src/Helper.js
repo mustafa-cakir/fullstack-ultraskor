@@ -116,20 +116,30 @@ export function HelperUpdateMeta(props) {
 }
 
 export function flagImg(tournament) {
-	let uniqueTournamentImages = [7, 11, 384, 480, 679];
-	if (uniqueTournamentImages.indexOf(tournament.tournament.uniqueId) > -1) {
-		return (
-			<div className="col flag-img">
-				<img
-					src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
-					alt={tournament.tournament.name}/>
-			</div>
-		)
-	} else {
-		return (
-			<div className={"col flag flag-" + tournament.category.flag}/>
-		)
-	}
+    const storedCustomLogos = [7, 27];
+    const customLogos = [11, 384, 480, 679];
+
+    if (storedCustomLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+        return (
+            <div className="col flag-img">
+                <img
+                    src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
+                    alt={tournament.tournament.name}/>
+            </div>
+        )
+    } else if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+        return (
+            <div className="col flag-img">
+                <img
+                    src={`${window.ImageServer}/images/?url=/u-tournament/${tournament.tournament.uniqueId}/logo`}
+                    alt={tournament.tournament.name}/>
+            </div>
+        )
+    } else {
+        return (
+            <div className={"col flag flag-" + tournament.category.flag}/>
+        )
+    }
 }
 
 export function ratingClass(value) {
