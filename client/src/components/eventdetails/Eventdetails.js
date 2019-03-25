@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import ReactSwipe from "react-swipe";
 import Scoreboard from "./Scoreboard";
 import Incidents from "./Incidents";
@@ -9,7 +9,7 @@ import Bestplayer from "./Bestplayer";
 import Standings from "./Standings";
 import Stats from "./Stats";
 import Lineup from "./Lineup";
-import Footer from "../Footer";
+import Footer from "../common/Footer";
 import {withTranslation} from "react-i18next";
 import Iddaa from "./Iddaa";
 import Errors from "../common/Errors";
@@ -22,7 +22,7 @@ import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import LiveTracker from "./LiveTracker";
 import {Helmet} from "react-helmet";
 import H2h from "./H2h";
-import RefreshButton from "../RefreshButton";
+import RefreshButton from "../common/RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import Forum from "../common/Forum";
 

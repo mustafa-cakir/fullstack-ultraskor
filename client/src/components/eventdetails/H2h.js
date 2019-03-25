@@ -1,5 +1,5 @@
 import React, {Component, PureComponent} from 'react';
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import Errors from "../common/Errors";
 import Tournament from "../common/Tournament";
 import {Trans} from "react-i18next";

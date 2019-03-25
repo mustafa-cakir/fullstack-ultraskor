@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {Trans, withTranslation} from "react-i18next";
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import Standings from "../common/Standings";
 import ReactSwipe from "react-swipe";
 import smoothscroll from "smoothscroll-polyfill";
-import Footer from "../Footer";
+import Footer from "../common/Footer";
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import Fixture from "./Fixture";

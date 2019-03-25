@@ -145,10 +145,31 @@ a:hover {
 }
 
 footer {
-	background: #f1f2f3;
-	color: #777;
+	color: rgba(#fff, .9);
 	font-size: .8rem;
-	padding: 1rem 0;
+	background: $premier-leage-1;
+	margin: 15px 0 0 0;
+	padding: 10px 0;
+	a {
+		color: rgba(#fff, .9);
+	}
+	.col-switcher {
+		padding: 0 10px;
+		text-align: center;
+		max-width: 105px;
+		border-left: 1px solid rgba(#fff, .5);
+	}
+	.language-switcher {
+		margin-bottom: 0;
+		.btn {
+			font-size: .8rem;
+			padding: 4px 10px;
+			color: rgba(#fff, .9);
+			&.active {
+				border-color: rgba(#fff, .5);
+			}
+		}
+	}
 }
 
 code {
@@ -1033,7 +1054,7 @@ code {
 
 .swipe-contents {
 	.swipe-content {
-		min-height: calc(100vh - 400px);
+		min-height: calc(100vh - 313px);
 	}
 
 	.line-up {

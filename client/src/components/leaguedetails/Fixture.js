@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Tournament from "../common/Tournament";
 import Icon from "../common/Icon";
 import {Trans} from "react-i18next";
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import Errors from "../common/Errors";
 
 class Fixture extends Component {

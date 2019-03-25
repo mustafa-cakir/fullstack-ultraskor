@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import logoBlack from "../logo-black.png";
+import logoBlack from "../../logo-black.png";
 import RefreshButton from "./RefreshButton";
 
 class Loading extends Component {

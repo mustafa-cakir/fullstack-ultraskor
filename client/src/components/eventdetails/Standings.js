@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import {Trans} from "react-i18next";
 import Errors from "../common/Errors";
 import {withTranslation} from "react-i18next";

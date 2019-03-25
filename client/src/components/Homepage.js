@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import Tournament from "./common/Tournament";
 import Errors from "./common/Errors";
-import Loading from "./Loading";
+import Loading from "./common/Loading";
 import moment from "moment";
 import Headertabs from "./Headertabs";
-import Footer from "./Footer";
+import Footer from "./common/Footer";
 import Event from "./common/Event";
 import Icon from "./common/Icon";
 import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
-import RefreshButton from "./RefreshButton";
+import RefreshButton from "./common/RefreshButton";
 import i18n from "i18next";
 import {HelperUpdateMeta, HelperTranslateUrlTo} from "../Helper";
 import FlashScoreBoard from "./common/FlashScoreBoard";

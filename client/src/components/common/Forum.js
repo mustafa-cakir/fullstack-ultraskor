@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
-import Loading from "../Loading";
+import Loading from "./Loading";
 import {Trans} from "react-i18next";
 
 class Forum extends PureComponent {
