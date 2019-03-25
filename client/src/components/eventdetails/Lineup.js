@@ -3,6 +3,7 @@ import Loading from "../Loading";
 import {Trans} from "react-i18next";
 import Errors from "../common/Errors";
 import {ratingClass} from "../../Helper";
+import {withTranslation} from "react-i18next";
 
 class Lineup extends Component {
     constructor(props) {
@@ -78,6 +79,7 @@ class Lineup extends Component {
 
     render() {
         const {lineupData, activeTeam} = this.state;
+        const { t } = this.props;
         if (!lineupData) return <Loading type="inside"/>;
         if (lineupData.error) return <Errors type="error" message={lineupData.error}/>;
 
@@ -119,7 +121,7 @@ class Lineup extends Component {
                                 <div className={"col home" + (this.state.defaultFormation === 1 ? " active" : "")}
                                      onClick={() => this.formationSwitchHandler(1)}>
                                     <img
-                                        alt={eventData.event.homeTeam.name}
+                                        alt={t(eventData.event.homeTeam.name)}
                                         src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                                     />
                                     {homeFormation.map((item, index) => {
@@ -137,7 +139,7 @@ class Lineup extends Component {
                                                 key={index}>{item}{index === awayFormation.length - 1 ? "" : " - "}</span>
                                         )
                                     })}
-                                    <img alt={eventData.event.awayTeam.name}
+                                    <img alt={t(eventData.event.awayTeam.name)}
                                          src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
                                 </div>
                             </div>
@@ -302,4 +304,4 @@ class Lineup extends Component {
     }
 }
 
-export default Lineup
+export default withTranslation('translations')(Lineup)

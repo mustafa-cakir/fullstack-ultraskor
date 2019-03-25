@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import Loading from "../Loading";
 import {Trans} from "react-i18next";
 import Errors from "../common/Errors";
+import {withTranslation} from "react-i18next";
+import {generateSlug} from "../../Helper";
+import { Link } from "react-router-dom"
 
 class Standings extends Component {
 	constructor(props) {
@@ -66,6 +69,7 @@ class Standings extends Component {
 
 	render() {
 		const {standingData, tab} = this.state;
+		const {t} = this.props;
 		if (!standingData) return <Loading type="inside"/>;
 		if (standingData.error) return <Errors type="error" message={standingData.error}/>;
 
@@ -80,11 +84,11 @@ class Standings extends Component {
 					<div className="row league-heading align-items-center">
 						<div className="col col-img">
 							<img
-                                src={window.ImageServer + '/images/?url=/u-tournament/' + standingsTables.tournament.uniqueId + '/logo'}
-								alt={standingsTables.tournament.name}/>
+								src={window.ImageServer + '/images/?url=/u-tournament/' + standingsTables.tournament.uniqueId + '/logo'}
+								alt={t(standingsTables.tournament.name)}/>
 						</div>
 						<div className="col">
-							<div className="name">{standingsTables.tournament.name}</div>
+							<div className="name">{t(standingsTables.tournament.name)}</div>
 							<div className="country"><Trans>{standingsTables.category.name}</Trans></div>
 						</div>
 						{standingsTables.isLive ?
@@ -126,10 +130,18 @@ class Standings extends Component {
 									    className={(row.team.id === eventData.event.homeTeam.id ? "highlight-home " : "") + (row.team.id === eventData.event.awayTeam.id ? "highlight-away " : "") + (row.isLive ? ("live-game " + row.liveMatchStatus) : "")}>
 										<td className={"order " + (row.promotion && standingsTables.promotionsColoring ? "promotion " + standingsTables.promotionsColoring[row.promotion.id].class : "")}>
 											<span>{row.position}</span></td>
-										<td className="team-logo"><img
+										<td className="team-logo"><Link to={{
+											pathname: `/${t('team')}/${generateSlug(t(row.team.shortName))}-${row.team.id}`,
+											state: {isPrev: true}
+										}} title={`${t(row.team.shortName)} - ${t('Fixtures, highlights and standings, click for more')}`}><img
 											src={`${window.ImageServer}/images/team-logo/football_${row.team.id}`}
-											alt={row.team.name}/></td>
-										<td className="team"><span className="line-clamp">{row.team.shortName}</span><span className="live-pulse"/></td>
+											alt={t(row.team.name)}/></Link></td>
+										<td className="team">
+											<Link to={{
+												pathname: `/${t('team')}/${generateSlug(t(row.team.shortName))}-${row.team.id}`,
+												state: {isPrev: true}
+											}} title={`${t(row.team.shortName)} - ${t('Fixtures, highlights and standings, click for more')}`}><span className="line-clamp team-name">{t(row.team.shortName)}</span></Link><span
+											className="live-pulse"/></td>
 										<td className="matches">{row[`${tabLower}Fields`][`matches${tab}`]}</td>
 										<td className="win">{row[`${tabLower}Fields`][`win${tab}`]}</td>
 										<td className="draw">{row[`${tabLower}Fields`][`draw${tab}`]}</td>
@@ -148,4 +160,4 @@ class Standings extends Component {
 	}
 }
 
-export default Standings
+export default withTranslation('translations')(Standings)

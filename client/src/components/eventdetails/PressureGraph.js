@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Trans} from "react-i18next";
+import {withTranslation} from "react-i18next";
 
 class PressureGraph extends Component {
     render() {
-        const {eventData} = this.props;
+        const {eventData, t} = this.props;
         if (!eventData.liveForm || eventData.liveForm.length === 0) return false;
         return (
             <div>
@@ -33,13 +34,13 @@ class PressureGraph extends Component {
                         <div className="pressure-graph-animation"/>
                         <div className="homeLabel">
                             <img
-                                alt={eventData.event.homeTeam.name}
+                                alt={t(eventData.event.homeTeam.name)}
                                 src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
                             />
                         </div>
                         <div className="awayLabel">
                             <img
-                                alt={eventData.event.awayTeam.name}
+                                alt={t(eventData.event.awayTeam.name)}
                                 src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
                             />
                         </div>
@@ -60,4 +61,4 @@ class PressureGraph extends Component {
     }
 }
 
-export default PressureGraph
+export default withTranslation('translations')(PressureGraph)

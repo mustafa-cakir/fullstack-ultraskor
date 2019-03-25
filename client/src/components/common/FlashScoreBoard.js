@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import Icon from "./Icon";
 import {withTranslation} from "react-i18next";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom"
+import {generateSlug} from "../../Helper";
 
 class FlashScoreBoard extends Component {
     constructor(props) {
@@ -169,7 +170,9 @@ class FlashScoreBoard extends Component {
 
     render() {
         const {flashData, flashScoreShrinked, flashScoreMuted} = this.state;
+        const {t} = this.props;
         if (!flashData) return false;
+        const link = `/${t('match')}/${generateSlug(t(flashData.event.homeTeam.name) + '-' + t(flashData.event.awayTeam.name))}-${t('live-score')}-${flashData.event.id}`;
         return (
             <div className={"flash-score-board " + (flashScoreShrinked ? "shrink" : "")}>
                 <div className="container">
@@ -178,17 +181,17 @@ class FlashScoreBoard extends Component {
                     <div className="row align-items-center content">
                         <div className="col col-minute">{flashData.event.statusDescription}'</div>
                         <Link to={{
-                                  pathname: `/eventdetails/${flashData.event.id}`,
+                                  pathname: link,
                                   state: {isPrev: true}
                               }} className="col home-team text-center">
                             <img
                                 src={`${window.ImageServer}/images/team-logo/football_${flashData.event.homeTeam.id}`}
                                 className="team-logo"
-                                alt={flashData.event.homeTeam.name}/>
-                            <div className="team-name">{flashData.event.homeTeam.name}</div>
+                                alt={t(flashData.event.homeTeam.name)}/>
+                            <div className="team-name">{t(flashData.event.homeTeam.name)}</div>
                         </Link>
                         <Link to={{
-                            pathname: `/eventdetails/${flashData.event.id}`,
+                            pathname: link,
                             state: {isPrev: true}
                         }} className="col col-score">
                             {flashData.path[0] === "homeRedCards" ? <div
@@ -203,14 +206,14 @@ class FlashScoreBoard extends Component {
                                 className={"away " + (flashData.path[0] === "awayScore" ? "flash-blinker-5" : "")}>{flashData.event.awayScore.current}</span>
                         </Link>
                         <Link to={{
-                            pathname: `/eventdetails/${flashData.event.id}`,
+                            pathname: link,
                             state: {isPrev: true}
                         }} className="col away-team text-center">
                             <img
                                 src={`${window.ImageServer}/images/team-logo/football_${flashData.event.awayTeam.id}`}
                                 className="team-logo"
-                                alt={flashData.event.awayTeam.name}/>
-                            <div className="team-name">{flashData.event.awayTeam.name}</div>
+                                alt={t(flashData.event.awayTeam.name)}/>
+                            <div className="team-name">{t(flashData.event.awayTeam.name)}</div>
                         </Link>
                         <div className={"col col-sound " + (flashScoreMuted ? "muted" : "")}
                              onClick={this.muteToggle.bind(this)}><Icon

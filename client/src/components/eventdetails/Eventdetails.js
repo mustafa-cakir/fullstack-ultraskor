@@ -583,18 +583,18 @@ class Eventdetails extends Component {
 				        {
 							"@context": "http://schema.org",
 							"@type": "SportsEvent",
-							"name": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} - ${eventData.event.homeTeam.name} vs ${eventData.event.awayTeam.name}",
+							"name": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} - ${t(eventData.event.homeTeam.name)} vs ${t(eventData.event.awayTeam.name)}",
 							"startDate": "${moment(eventData.event.startTimestamp * 1000).toISOString()}",
 							"endDate": "${moment(eventData.event.startTimestamp * 1000).add('90', 'minute').toISOString()}",
-							"description": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} sezonunda ${eventData.event.homeTeam.name}, ${eventData.event.awayTeam.name} ile evinde oynuyor. Maçın başlama saati ${moment(eventData.event.startTimestamp * 1000).format('HH:mm')}. ${eventData.event.venue ? eventData.event.venue.stadium ? eventData.event.venue.stadium.name : "" : ""} stadında oyanacak mücadeleyi, ${eventData.event.referee ? eventData.event.referee.name : ""} yönetiyor.",
+							"description": "${eventData.event.tournament.name} ${eventData.event.season ? eventData.event.season.year : ""} sezonunda ${t(eventData.event.homeTeam.name)}, ${t(eventData.event.awayTeam.name)} ile evinde oynuyor. Maçın başlama saati ${moment(eventData.event.startTimestamp * 1000).format('HH:mm')}. ${eventData.event.venue ? eventData.event.venue.stadium ? eventData.event.venue.stadium.name : "" : ""} stadında oyanacak mücadeleyi, ${eventData.event.referee ? eventData.event.referee.name : ""} yönetiyor.",
 							"awayTeam": {
 								"@type": "SportsTeam",
-								"name": "${eventData.event.homeTeam.name}",
+								"name": "${t(eventData.event.homeTeam.name)}",
 								"coach": "${eventData.managerDuel ? eventData.managerDuel.homeManager.name : ""}"
 							},
 							"homeTeam": {
 								"@type": "SportsTeam",
-								"name": "${eventData.event.awayTeam.name}",
+								"name": "${t(eventData.event.awayTeam.name)}",
 								"coach": "${eventData.managerDuel ? eventData.managerDuel.awayManager.name : ""}"
 							},
 							"image": [

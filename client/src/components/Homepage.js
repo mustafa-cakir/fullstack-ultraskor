@@ -251,9 +251,9 @@ class Homepage extends Component {
 	// 			}
 	// 			if (changesData.score) {
 	// 				if (changesData.away.score || changesData.away.team) {
-	// 					console.log(`${event.homeTeam.name} Scored. New score ${event.homeScore.current}`);
+	// 					console.log(`${t(event.homeTeam.name)} Scored. New score ${event.homeScore.current}`);
 	// 				} else if (changesData.home.score || changesData.home.team) {
-	// 					console.log(`${event.awayTEam.name} Scored. New score ${event.awayTeam.current}`);
+	// 					console.log(`${t(event.awayTEam.name)} Scored. New score ${event.awayTeam.current}`);
 	// 				}
 	// 			}
 	// 			if (changesData.status) {
