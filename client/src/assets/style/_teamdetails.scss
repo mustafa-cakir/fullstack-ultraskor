@@ -3,6 +3,7 @@
 		margin: 0;
 		padding: 15px 10px;
 		background: #f3f5f5;
+		min-height: 72px;
 		.col-info,
 		.col-stadium {
 			padding-right: 10px;
@@ -48,6 +49,24 @@
 		}
 		.day {
 			display: block;
+		}
+	}
+	.sort-by {
+		&-container {
+			margin: 0 0 13px;
+			text-align: right;
+			padding: 0 10px;
+		}
+		&-btn {
+			margin-left: 15px;
+			line-height: 16px;
+			color: $link-color;
+			border: 1px solid #eee;
+			padding: 5px 10px;
+			.checkbox {
+				margin-right: 1.8rem;
+				top: 3px;
+			}
 		}
 	}
 }

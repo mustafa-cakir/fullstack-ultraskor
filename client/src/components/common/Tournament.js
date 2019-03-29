@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import Event from "./Event";
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug, flagImg} from "../../Helper";
 import { Link } from "react-router-dom"
 
-class Tournament extends Component {
+class Tournament extends PureComponent {
 	render() {
 		const {t} = this.props;
 		return (

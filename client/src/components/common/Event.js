@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import { Link } from "react-router-dom"
@@ -6,7 +6,7 @@ import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
-class Event extends Component {
+class Event extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {

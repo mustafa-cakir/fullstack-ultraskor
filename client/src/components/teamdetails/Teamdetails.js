@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {Trans, withTranslation} from "react-i18next";
 import Loading from "../common/Loading";
 import ReactSwipe from "react-swipe";
@@ -9,7 +9,7 @@ import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import Errors from "../common/Errors";
 import Tournament from "../common/Tournament";
 
-class Teamdetails extends Component {
+class Teamdetails extends PureComponent {
     constructor(props) {
         super(props);
         this.swipeEl = React.createRef();
@@ -22,7 +22,9 @@ class Teamdetails extends Component {
             index: 0,
             teamInfoData: null,
             teamTournamentsData: null,
-            isTeamOfTheWeekClicked: false
+            teamTournamentsDataByTournament: null,
+            isTeamOfTheWeekClicked: false,
+            sortBy: 'date'
         };
         smoothscroll.polyfill();
     }
@@ -45,12 +47,27 @@ class Teamdetails extends Component {
         });
     };
 
-    preProcessTournamentsData(data) {
+    static preProcessTournamentsData(data) {
         data.tournaments.reverse();
         data.tournaments.forEach(item => {
             item.events.reverse();
         });
         return data;
+    }
+
+    static preProcessTournamentsSortByTournament(data) {
+        let newData = JSON.parse(JSON.stringify(data));
+        newData.tournaments = newData.tournaments.reduce((whole, item) => {
+            let id = item.tournament.id;
+            let matchedObj = whole.filter(x => x.tournament.id === id);
+            if (matchedObj.length > 0) {
+                matchedObj[0].events.push(...item.events)
+            } else {
+                whole.push(item);
+            }
+            return whole;
+        }, []);
+        return newData;
     }
 
     initGetData() {
@@ -89,7 +106,8 @@ class Teamdetails extends Component {
             .then(res => {
                 this.setState({
                     loading: false,
-                    teamTournamentsData: this.preProcessTournamentsData(res)
+                    teamTournamentsData: Teamdetails.preProcessTournamentsData(res),
+                    teamTournamentsDataByTournament: Teamdetails.preProcessTournamentsSortByTournament(res)
                 }, () => {
                     setTimeout(() => {
                         this.swipeAdjustHeight();
@@ -112,7 +130,7 @@ class Teamdetails extends Component {
         const {t} = this.props;
         if (i18n.language === "en") {
             HelperUpdateMeta({
-                title: `${teamInfoData.team.name} Live Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
+                title: `${teamInfoData.team.name} Live Match Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
                 canonical: window.location.href,
                 description: `See live match results, watch highlights, see league fixtures and follow the transfer news for ${t(teamInfoData.team.name)}`,
                 keywords: `${t(teamInfoData.team.name)} fixtures, ${t(teamInfoData.team.abbreviation)} match results, ${t(teamInfoData.team.name)} highlights, ${t(teamInfoData.team.name)} transfer news, lineups, league fixtures`,
@@ -208,9 +226,15 @@ class Teamdetails extends Component {
         }, 600);
     };
 
+    sortByClickHandler(by) {
+        this.setState({
+            sortBy: by
+        })
+    }
+
     render() {
         const {t} = this.props;
-        const {teamInfoData, teamTournamentsData} = this.state;
+        const {teamInfoData, teamTournamentsData, teamTournamentsDataByTournament, sortBy} = this.state;
         if (!teamTournamentsData) return <Loading/>;
         //if (teamInfoData.error) return <Errors type="error" message={teamInfoData.error}/>;
         if (teamTournamentsData.error) return <Errors type="error" message={teamTournamentsData.error}/>;
@@ -223,25 +247,28 @@ class Teamdetails extends Component {
         const {teamId} = this.props.match.params;
         return (
             <div className="team-details">
-                {teamInfoData ? (
-                    <div className="row team-details-header align-items-center">
-                        <div className="col col-img">
-                            <img
-                                src={window.ImageServer + '/images/team-logo/football_' + teamId}
-                                alt={t(teamInfoData.team.name)}/>
-                        </div>
-                        <div className="col col-info">
-                            <div className="name">{t(teamInfoData.team.name)}</div>
-                            {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ""}
-                        </div>
-                        {teamInfoData.venue ? (
-                            <div className="col col-stadium text-right">
-                                <div className="name">{teamInfoData.venue.name}</div>
-                                <div className="capacity"><Trans>Capacity</Trans>: {teamInfoData.venue.capacity}</div>
+                <div className="row team-details-header align-items-center">
+                    {teamInfoData ? (
+                        <React.Fragment>
+                            <div className="col col-img">
+                                <img
+                                    src={window.ImageServer + '/images/team-logo/football_' + teamId}
+                                    alt={t(teamInfoData.team.name)}/>
                             </div>
-                        ) : ""}
-                    </div>
-                ) : ""}
+                            <div className="col col-info">
+                                <div className="name">{t(teamInfoData.team.name)}</div>
+                                {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ""}
+                            </div>
+                            {teamInfoData.venue ? (
+                                <div className="col col-stadium text-right">
+                                    <div className="name">{teamInfoData.venue.name}</div>
+                                    <div className="capacity"><Trans>Capacity</Trans>: {teamInfoData.venue.capacity}
+                                    </div>
+                                </div>
+                            ) : ""}
+                        </React.Fragment>
+                    ) : ""}
+                </div>
                 <div className="middle-tabs">
                     <div className="container">
                         <ul className="swipe-tabs" ref={this.swipeTabsEl}>
@@ -268,8 +295,20 @@ class Teamdetails extends Component {
                             }} ref={this.swipeEl}>
 
                     <div className="swipe-content fixture" data-tab="standing">
+                        <div className="sort-by-container">
+                            <span className={"sort-by-btn" + (sortBy === "date" ? " checked" : "")} onClick={() => {
+                                this.sortByClickHandler('date');
+                            }}>
+                                <span className="checkbox"/>Tarihe Göre
+                            </span>
+                            <span className={"sort-by-btn" + (sortBy === "league" ? " checked" : "")} onClick={() => {
+                                this.sortByClickHandler('league');
+                            }}>
+                                <span className="checkbox"/>Lig'e Göre
+                            </span>
+                        </div>
                         <Tournament
-                            tournaments={teamTournamentsData.tournaments}
+                            tournaments={sortBy === "league" ? teamTournamentsDataByTournament.tournaments : teamTournamentsData.tournaments}
                             from={"h2h"}
                             selectedId={teamId}
                             selected="home"
