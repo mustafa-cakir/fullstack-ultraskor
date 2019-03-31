@@ -676,21 +676,22 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
         }
         res.send(days.join('\r'));
     } else if (type === "list" && by === "day") {
-        const sofaOptionsGetToday = {
+        const configUltraSkorGetByDate = {
             method: 'GET',
-            uri: `https://www.sofascore.com/${sport}//${date}/json`,
+	        uri: `https://www.ultraskor.com/api/?query=/${sport}//${date}/json`,
+            // uri: `https://www.sofascore.com/${sport}//${date}/json`,
             json: true,
             headers: {
                 'Content-Type': 'application/json',
-                'Origin': 'https://www.sofascore.com',
-                'referer': 'https://www.sofascore.com/',
+                'Origin': 'https://www.ultraskor.com',
+                'referer': 'https://www.ultraskor.com/',
                 'x-requested-with': 'XMLHttpRequest'
             },
             timeout: 10000
         };
         res.header('Content-Type', 'text/plain');
 
-        request(sofaOptionsGetToday)
+        request(configUltraSkorGetByDate)
             .then(mainData => {
                 if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
                     let tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
