@@ -24,7 +24,9 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshButton: false,
-			deviceToken: null
+			deviceToken: null,
+			show: 20,
+			lazyLoadScrollLoading: true
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -32,11 +34,14 @@ class Homepage extends Component {
 		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
+		this.throttle = this.throttle.bind(this);
+		this.lazyLoadScrollHandler = this.lazyLoadScrollHandler.bind(this);
 		this.todaysDate = null;
 		this.socket = this.props.socket;
 	};
 
 	componentDidMount() {
+		this.lazyLoad = !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent);
 		if (this.props.match.params.date) {
 			this.todaysDate = this.props.match.params.date;
 		} else {
@@ -54,6 +59,40 @@ class Homepage extends Component {
 		this.trackPage(page);
 		this.initSocket();
 	}
+
+	throttle(func, wait, options) {
+		let context;
+		let args;
+		let result;
+		let timeout = null;
+		let previous = 0;
+		if (!options) options = {};
+		const later = () => {
+			previous = options.leading === false ? 0 : Date.now();
+			timeout = null;
+			result = func.apply(context, args);
+			if (!timeout) context = args = null;
+		};
+		return function () {
+			const now = Date.now();
+			if (!previous && options.leading === false) previous = now;
+			const remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+	};
 
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
@@ -89,11 +128,11 @@ class Homepage extends Component {
 		});
 	};
 
-	prepareData = data => {
+	prepareRes = res => {
 		// Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
 		let moveToTop = [62, 63]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
 		let moveToBottom = []; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
-		let tournaments = data.sportItem.tournaments;
+		let tournaments = res.sportItem.tournaments;
 		for (let i = 0; i < tournaments.length; i++) {
 			if (moveToTop.length > 0) {
 				for (let k = 0; k < moveToTop.length; k++) {
@@ -116,8 +155,8 @@ class Homepage extends Component {
 		}
 
 		// remove yesterday matches
-		let currentDate = data.params.date;
-		data.sportItem.tournaments = data.sportItem.tournaments.reduce(function (whole, tournament) {
+		let currentDate = res.params.date;
+		res.sportItem.tournaments = res.sportItem.tournaments.reduce(function (whole, tournament) {
 			tournament.events = tournament.events.filter((event) => {
 				return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === currentDate;
 			});
@@ -126,8 +165,57 @@ class Homepage extends Component {
 			});
 			return whole;
 		}, []);
-		return data;
+		return res;
 	};
+
+	lazyLoadScrollHandler() {
+		// console.log('reached');
+		if (this.lazyLoadScrollContinue) {
+			if (2 * window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+				// console.log('reached2');
+				this.lazyLoadScrollContinue = false;
+				// console.log(this.state.orjData.sportItem.tournaments.length, this.state.show);
+				if (this.state.orjData.sportItem.tournaments.length > this.state.show) {
+					// console.log('reached3');
+					this.setState({show: this.state.show + 20}, () => {
+						this.lazyLoadRenderData();
+							// console.log('reached rendered data');
+					});
+				} else {
+					this.setState({lazyLoadScrollLoading: false});
+				}
+			}
+		}
+	}
+
+	initLazyLoadScroll() {
+		this.lazyLoadScrollContinue = true;
+		window.addEventListener('scroll', this.throttle(this.lazyLoadScrollHandler.bind(this), 350, {
+			leading: false,
+			trailing: true
+		}));
+	}
+
+	lazyLoadRenderData(res, updated) {
+		let newState = {};
+		if (res) {
+			newState.orjData = JSON.parse(JSON.stringify(res));
+			if (!updated) {
+				newState.loading = false;
+				newState.refreshButton = false;
+			}
+		} else {
+			res = JSON.parse(JSON.stringify(this.state.orjData));
+		}
+
+		if (this.lazyLoad) {
+			res.sportItem.tournaments = res.sportItem.tournaments.splice(0, this.state.show);
+		}
+
+		this.setState({mainData: res, ...newState}, () => {
+			this.lazyLoadScrollContinue = true;
+		});
+	}
 
 	moveFavEventsToTop(jsonData) {
 		let favEventsList = [];
@@ -149,14 +237,9 @@ class Homepage extends Component {
 				document.body.classList.add('initial-load');
 			}, 0);
 		}
-		res = this.prepareData(res);
+		res = this.prepareRes(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
-		this.setState({
-			orjData: res,
-			mainData: res,
-			loading: false,
-			refreshButton: false
-		});
+		this.lazyLoadRenderData(res, updated);
 		this.updateMeta();
 		this.analyzeSessionStorage();
 	}
@@ -174,6 +257,7 @@ class Homepage extends Component {
 			})
 			.then(res => {
 				this.handleGetData(res);
+				this.initLazyLoadScroll();
 			})
 			.catch(err => {
 				this.setState({
@@ -202,13 +286,13 @@ class Homepage extends Component {
 		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
 		this.socket.on('disconnect', this.onSocketDisconnect);
 		this.socket.on('return-error-updates', this.onSocketDisconnect);
-        this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+		this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
 		this.initGetUpdatesHomepage(noInterval);
 	}
 
 	initGetUpdatesHomepage(noInterval = false) {
 		this.getUpdatesHomepageInterval = setTimeout(() => {  // init after 10 seconds
-		    this.socket.emit('get-updates-homepage');
+			this.socket.emit('get-updates-homepage');
 		}, noInterval ? 100 : 10000);
 	}
 
@@ -231,7 +315,7 @@ class Homepage extends Component {
 
 	onSocketConnect() {
 		console.log('Socket connected! - Homepage');
-        this.socket.removeListener('connect', this.onSocketConnect);
+		this.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.refreshButton) {
 			this.initSocket(true);
 			this.setState({
@@ -313,10 +397,10 @@ class Homepage extends Component {
 			favEventContainer.push(
 				<div className="fav-container" key={1}>
 					<div className="tournament-title">
-							<Icon name="fas fa-star event-fav-color"/>
-							<div className="col tournament-name px-2">
-								<strong><Trans>My Favorites</Trans></strong>
-							</div>
+						<Icon name="fas fa-star event-fav-color"/>
+						<div className="col tournament-name px-2">
+							<strong><Trans>My Favorites</Trans></strong>
+						</div>
 					</div>
 					{this.state.favEventsList.map((event, i) => {
 						return (<Event key={i}
@@ -362,6 +446,11 @@ class Homepage extends Component {
 					{favEventContainer}
 					{mainContent}
 				</div>
+				{this.state.lazyLoadScrollLoading && this.lazyLoad ? (
+					<div className="container lazyload-scroll-loading">
+						<Icon name="fas fa-redo"/>
+					</div>
+				) : ""}
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
 						<div className="col col-yesterday"><a className="pl-3"
@@ -380,8 +469,7 @@ class Homepage extends Component {
 				{this.state.refreshButton ? <RefreshButton/> : ""}
 				<FlashScoreBoard socket={this.props.socket} audioFiles={this.props.audioFiles}/>
 				<Footer/>
-			</div>
-		)
+			</div>)
 	}
 }
 

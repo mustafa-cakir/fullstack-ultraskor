@@ -130,10 +130,10 @@ class Headertabs extends Component {
     }
 
     toggleLive() {
-        let livePrevState = this.state.isLive;
+        const {isLive} = this.state;
         this.setState({isFilterDropdown: false, isSportDropdown: false, isDateDropdown: false}); // close other dropdowns
-        this.applyLiveHandler(livePrevState, true);
-        this.setState({isLive: !livePrevState}, this.setSessionStorage);
+        this.applyLiveHandler(isLive, true);
+        this.setState({isLive: !isLive}, this.setSessionStorage);
     }
 
     openFilterDropdown() {
