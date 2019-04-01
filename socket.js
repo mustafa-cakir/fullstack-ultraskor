@@ -615,7 +615,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 							type: type,
 							data: response
 						}).then(() => {
-							console.log('checkpoint');
+							// console.log('checkpoint');
 							res.send(response);
 						}).catch(err => {
 							console.log('DB Error: Can not inserted to db ' + err);
