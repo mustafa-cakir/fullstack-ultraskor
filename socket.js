@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(helper.initCors());
 
+
 cacheService.start(err => {
     if (err) console.error('Error: Cache service failed to start', err);
 });
@@ -720,6 +721,8 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
             });
     }
 });
+
+
 
 app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
     res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`)
