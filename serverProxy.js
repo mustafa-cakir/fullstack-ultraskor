@@ -1,11 +1,22 @@
 const express = require('express');
 const request = require('request');
+const Agent = require('socks5-https-client/lib/Agent');
 // create express app
+
 const app = express();
 
 
 app.get('/images*', (req, res) => {
-	request.get(`https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`, {timeout: 1500}).pipe(res);
+	request({
+		url: `https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`,
+		strictSSL: true,
+		agentClass: require('socks5-https-client/lib/Agent'),
+		agentOptions: {
+			socksHost: 'localhost', // Defaults to 'localhost'.
+			socksPort: 9050, // Defaults to 1080.
+			// Optional credentials
+		}
+	}).pipe(res);
 });
 
 

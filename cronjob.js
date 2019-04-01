@@ -30,7 +30,7 @@ let previousData = null;
 let changes = null;
 let fullData = null;
 
-const cron = new CronJob('*/10 * * * * *', function () {
+const cron = new CronJob('*/20 * * * * *', function () {
 	tr.request(options(moment()), function (err, status, res) {
 		if (!err && status.statusCode === 200) {
 			// console.log('triggered 1');
