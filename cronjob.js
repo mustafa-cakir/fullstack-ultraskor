@@ -6,6 +6,7 @@ const webpushHelper = require('./webpush');
 const _ = require('lodash');
 const helper = require('./helper');
 const cacheService = require('./cache.service');
+const tr = require('tor-request');
 
 const options = moment => {
     let sofaOptions = {
@@ -30,7 +31,15 @@ let changes = null;
 let fullData = null;
 
 const cron = new CronJob('*/10 * * * * *', function () {
-    request(options(moment()))
+    // tr.request('https://www.sofascore.com/football//2019-04-01/json', function (err, res, body) {
+    //     if (!err && res.statusCode === 200) {
+    //         console.log("Your public (through Tor) IP is: " + body);
+    //     } else {
+    //         console.log(err);
+    //     }
+    //
+    // });
+    /*request(options(moment()))
         .then(res => {
             // console.log('triggered 1');
             fullData = helper.simplifyHomeData(res);
@@ -81,8 +90,9 @@ const cron = new CronJob('*/10 * * * * *', function () {
             previousData = events;
         })
         .catch((err) => {
-            console.log(`Error returning differences within cronJob. Error: ${err}. Time: ${ new Date()}`);
+            //console.log(`Error returning differences within cronJob. Error: ${err}. Time: ${ new Date()}`);
         });
+        */
 });
 
 exports.start = () => {
