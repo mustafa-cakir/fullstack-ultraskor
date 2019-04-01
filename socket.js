@@ -44,7 +44,8 @@ let db = null,
 	consoleErrorsCollection = null;
 
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-if (NODE_ENV !== "dev") {
+if (NODE_ENV !== "dev2") {
+	console.log(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`);
 	MongoClient.connect(`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:27017`, helper.mongoOptions(), (err, client) => {
 		if (err) {
 			console.log('DB Error: Can not connected to db. Error: ' + err);
