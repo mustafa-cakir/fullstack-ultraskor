@@ -41,7 +41,7 @@ const cron = new CronJob('*/20 * * * * *', function () {
 		if (!err && status.statusCode === 200) {
 			// console.log('triggered 1');
 			fullData = helper.simplifyHomeData(res);
-			cacheService.instance().set('fullData', fullData, 10); // cache the homepage full data for 10 seconds
+			cacheService.instance().set('fullData', fullData, 20); // cache the homepage full data for 20 seconds
 			const resFlash = _.clone(res, true);
 			let events = [];
 			const neededProperties = [
@@ -80,7 +80,7 @@ const cron = new CronJob('*/20 * * * * *', function () {
 				});
 
 				if (changes.length > 0) {
-					cacheService.instance().set('changes', changes, 10); // cache the changes for 10 seconds
+					cacheService.instance().set('changes', changes, 20); // cache the changes for 10 seconds
 					console.log('Changes found via Cronjob ', new Date());
 					webpushHelper.initWebPush(changes);
 				}
