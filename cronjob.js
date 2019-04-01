@@ -30,6 +30,12 @@ let previousData = null;
 let changes = null;
 let fullData = null;
 
+tr.request('https://api.ipify.org', function (err, status, response) {
+	if (!err && status.statusCode === 200) {
+		console.log("Your public (through Tor) IP is: " + response);
+	}
+});
+
 const cron = new CronJob('*/20 * * * * *', function () {
 	tr.request(options(moment()), function (err, status, res) {
 		if (!err && status.statusCode === 200) {
