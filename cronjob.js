@@ -7,6 +7,7 @@ const _ = require('lodash');
 const helper = require('./helper');
 const cacheService = require('./cache.service');
 const tr = require('tor-request');
+tr.TorControlPort.password = 'muztafultra';
 
 const options = moment => {
     let sofaOptions = {

@@ -12,6 +12,7 @@ const webpushHelper = require('./webpush');
 const cronjob = require('./cronjob');
 const cacheDuration = helper.cacheDuration();
 const tr = require('tor-request');
+tr.TorControlPort.password = 'muztafultra';
 //const WebSocket = require('ws');
 
 const port = 5001;
@@ -110,7 +111,7 @@ io.on('connection', socket => {
 			socket.emit('return-flashcore-changes', cachedData);
 		}
 	});
-	
+
 
 	socket.on('forum-post-new', data => {
 		if (forumCollection) {
@@ -754,6 +755,14 @@ app.post('/api/logerrors', (req, res) => {
 			});
 		} else res.status(500).send('Error');
 	} else res.send('Console logging is not activated on dev env');
+});
+
+app.get('/api/tor', (req, res) => {
+	tr.request('https://api.ipify.org', function (err, status, response) {
+		if (!err && status.statusCode === 200) {
+			res.send(response);
+		}
+	});
 });
 
 

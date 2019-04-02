@@ -10,7 +10,7 @@ app.get('/images*', (req, res) => {
 	request({
 		url: `https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`,
 		strictSSL: true,
-		agentClass: require('socks5-https-client/lib/Agent'),
+		agentClass: Agent,
 		agentOptions: {
 			socksHost: 'localhost', // Defaults to 'localhost'.
 			socksPort: 9050, // Defaults to 1080.
