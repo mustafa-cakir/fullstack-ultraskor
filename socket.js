@@ -110,6 +110,7 @@ io.on('connection', socket => {
 			socket.emit('return-flashcore-changes', cachedData);
 		}
 	});
+	
 
 	socket.on('forum-post-new', data => {
 		if (forumCollection) {
