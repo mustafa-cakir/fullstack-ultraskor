@@ -12,7 +12,7 @@ import { initFirebaseWebPush } from './web-push';
 const basename = (i18n.language === "en") ? "/en" : "/";
 
 // window.ImageServer = window.location.hostname === 'localhost' ? "http://localhost:5002" : "";
-window.ImageServer = 'https://www.ultraskor.com';
+window.ImageServer = 'http://localhost:5002';
 
     ReactDOM.render((
 	<BrowserRouter basename={basename}>

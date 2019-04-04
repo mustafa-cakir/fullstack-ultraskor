@@ -1,44 +1,82 @@
 const express = require('express');
 const request = require('request');
 const Agent = require('socks5-https-client/lib/Agent');
+const fs = require('fs');
 // create express app
 
 const app = express();
 
 
-app.get('/images*', (req, res) => {
-	request({
-		url: `https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`,
-		strictSSL: true,
-		agentClass: Agent,
-		agentOptions: {
-			socksHost: 'localhost', // Defaults to 'localhost'.
-			socksPort: 9050, // Defaults to 1080.
-			// Optional credentials
-		}
-	}).pipe(res);
+app.get('/images/:type/:filename', (req, res) => {
+    const {type, filename} = req.params;
+    const options = {
+        root: __dirname + `/client/public/static/images/${type}/`,
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+    };
+
+    res.sendFile(filename, options, function (err) {
+        if (err) { // file not exist
+            request({
+                url: `https://www.sofascore.com/images/${type}/${filename}`,
+                strictSSL: true,
+                agentClass: Agent,
+                timeout: 1000,
+                agentOptions: {
+                    socksHost: 'localhost', // Defaults to 'localhost'.
+                    socksPort: 9050, // Defaults to 1080.
+                }
+            })
+                .on('error', (err) => {
+                    console.log('error: ' + err);
+                    res.sendStatus(404);
+                })
+                .pipe(fs.createWriteStream(options.root + filename))
+                .on('close', data => {
+                    console.log(data);
+                    res.sendFile(filename, options);
+                })
+
+        } else {
+            // file is served successfully
+        }
+    });
+
+    // request({
+    // 	url: `https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`,
+    // 	strictSSL: true,
+    // 	agentClass: Agent,
+    // 	agentOptions: {
+    // 		socksHost: 'localhost', // Defaults to 'localhost'.
+    // 		socksPort: 9050, // Defaults to 1080.
+    // 		// Optional credentials
+    // 	}
+    // }).pipe(res);
 });
 
 
 function pushDomain(body) {
-	return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
+    return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
 }
 
 // define a simple route
 app.get('*', (req, res) => {
     let path = req.originalUrl;
-	// path = path.substring(11, path.length);
-	// console.log(path);
+    // path = path.substring(11, path.length);
+    // console.log(path);
 
-	let options = {
+    let options = {
         url: 'https://widgets.sir.sportradar.com/' + path,
         headers: {
             'Referer': 'https://www.aspor.com.tr',
             'Origin': 'https://www.aspor.com.tr',
             'Access-Control-Allow-Origin': '*',
-	        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
         },
-		timeout: 1500
+        timeout: 1500
     };
 
     // if (path.indexOf('common_widgets') > -1) {
@@ -55,9 +93,9 @@ app.get('*', (req, res) => {
         } else {
             res.header("Content-Type", "application/javascript; charset=utf-8");
         }
-		if (path.indexOf('common_widgets') > -1) {
-			body = pushDomain(body);
-		}
+        if (path.indexOf('common_widgets') > -1) {
+            body = pushDomain(body);
+        }
         res.send(body);
     });
 

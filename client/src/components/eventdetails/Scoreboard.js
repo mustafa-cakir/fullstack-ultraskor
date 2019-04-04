@@ -18,7 +18,7 @@ class Scoreboard extends Component {
                             <div className="team-logo mb-2">
                                 <img
                                     alt={t(eventData.event.homeTeam.name)}
-                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
+                                    src={`${window.ImageServer}/images/team-logo/football_${eventData.event.homeTeam.id}.png`}
                                 />
                             </div>
                             <div className="team-name">{t(eventData.event.homeTeam.name)}</div>
@@ -43,7 +43,7 @@ class Scoreboard extends Component {
                         }} className="col-4 team-link" title={`${t(eventData.event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}>
                             <div className="team-logo mb-2">
                                 <img alt={t(eventData.event.awayTeam.name)}
-                                     src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
+                                     src={`${window.ImageServer}/images/team-logo/football_${eventData.event.awayTeam.id}.png`}/>
                             </div>
                             <div className="team-name">{t(eventData.event.awayTeam.name)}</div>
                             <div
