@@ -166,6 +166,18 @@ const corsOptions = {
         }
     }
 };
+let activeUser = 0;
+exports.userConnected = () => {
+    activeUser += 1;
+};
+
+exports.userDisconnected = () => {
+    activeUser -= 1;
+};
+
+exports.userCount = () => {
+    return activeUser;
+};
 
 exports.initCors = () => {
     return cors(corsOptions)

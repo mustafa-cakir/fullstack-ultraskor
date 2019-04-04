@@ -91,7 +91,8 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 
 
 io.on('connection', socket => {
-
+    helper.userConnected();
+    console.log('User connected. Active user: ', helper.userCount());
 	// socket.on('get-updates-2', () => {
 	// 	ws.on('message', (data) => {
 	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
@@ -183,7 +184,8 @@ io.on('connection', socket => {
 	});
 
 	socket.on('disconnect', () => {
-		console.log('user disconnected');
+        helper.userDisconnected();
+		console.log('User disconnected. Active user: ', helper.userCount());
 	});
 });
 
@@ -225,23 +227,6 @@ app.get('/api/', (req, res) => {
 				})
 			}
 		});
-
-		// request(sofaOptions)
-		// 	.then(response => {
-		// 		if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
-		// 		if (response) {
-		// 			cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5);
-		// 			res.send(response);
-		// 		}
-		// 	})
-		// 	.catch(err => {
-		// 		console.log(`error returning data from main for ${req.query.page}`);
-		// 		res.status(500).send({
-		// 			status: "error",
-		// 			message: 'Error while retrieving information from server',
-		// 			err: err
-		// 		})
-		// 	});
 	};
 
 	let cachedData = cacheService.instance().get((req.query.page === "homepage" && req.query.today === "1") ? "fullData" : cacheKey);
