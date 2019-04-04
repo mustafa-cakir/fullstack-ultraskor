@@ -30,6 +30,17 @@ cacheService.start(err => {
 });
 
 
+// refresh TOR session
+setInterval(() => {
+    tr.newTorSession((err, success) => {
+        if (err) {
+            console.log(err, new Date());
+        } else {
+            console.log(success, new Date());
+        }
+    });
+}, 1000 * 60 * 60 * 6); // 6 hours
+
 webpushHelper.init();
 cronjob.start();
 
@@ -748,6 +759,16 @@ app.get('/api/tor', (req, res) => {
 			res.send(response);
 		}
 	});
+});
+
+app.get('/api/tor/new', (req, res) => {
+    tr.newTorSession((err, response) => {
+        if (err) {
+            res.status(500).send(err)
+        } else {
+            res.send(response);
+        }
+    });
 });
 
 
