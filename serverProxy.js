@@ -8,7 +8,7 @@ const app = express();
 
 app.get('/images/:type/:filename', (req, res) => {
 	let {type, filename} = req.params;
-	console.log(type, filename);
+	// console.log(type, filename);
 	const sendFileOptions = {
 	    root: __dirname + `/client/public/static/images/${type}/`,
 	    dotfiles: 'deny',
@@ -45,27 +45,25 @@ app.get('/images/:type/:filename', (req, res) => {
 		        }
 	        };
 
-	        console.log(requestOptions.url);
+	        // console.log(requestOptions.url);
 	    	request(requestOptions)
 	            .on('error', (err) => {
-	                console.log('error: ' + err);
+	                // console.log('error: ' + err);
 	                res.sendStatus(404);
-	                return false;
 	            })
 			    .on('response', (response) => {
-			    	console.log(response.headers['content-type']);
+			    	// console.log(response.headers['content-type']);
 				    if (response.headers['content-type'].indexOf('image') > -1) {
 					    response.pipe(fs.createWriteStream(sendFileOptions.root + filename))
 				    } else {
 					    res.sendStatus(404);
-					    return false;
 				    }
 			    })
 			    .on('close', () => {
 				    res.sendFile(filename, sendFileOptions, (err) => {
 				    	if (err) {
 				    		// do nothing
-						    //res.sendStatus(404);
+						    res.sendStatus(404);
 					    }
 				    });
 			    });
