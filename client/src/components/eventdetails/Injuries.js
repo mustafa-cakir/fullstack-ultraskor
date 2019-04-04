@@ -71,7 +71,7 @@ class Injuries extends Component {
 							<div className="col col-img">
 								<img
 									alt={t(eventData.event.homeTeam.name)}
-									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
 								/>
 							</div>
 							<div className="col">
@@ -96,7 +96,7 @@ class Injuries extends Component {
 							<div className="col col-img">
 								<img
 									alt={t(eventData.event.awayTeam.name)}
-									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
+									src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
 								/>
 							</div>
 							<div className="col">

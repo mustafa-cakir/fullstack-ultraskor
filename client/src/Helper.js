@@ -131,7 +131,7 @@ export function flagImg(tournament) {
         return (
             <div className="col flag-img">
                 <img
-                    src={`${window.ImageServer}/images/?url=/u-tournament/${tournament.tournament.uniqueId}/logo`}
+                    src={`${window.ImageServer}/images/u-tournament/${tournament.tournament.uniqueId}.png`}
                     alt={tournament.tournament.name}/>
             </div>
         )

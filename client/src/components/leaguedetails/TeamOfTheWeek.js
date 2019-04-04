@@ -126,7 +126,7 @@ class TeamOfTheWeek extends Component {
                                 <div className="row league-heading align-items-center py-2 bg-gray">
                                     <div className="col col-img">
                                         <img
-                                            src={window.ImageServer + '/images/?url=/u-tournament/' + this.props.leagueData.uniqueTournament.id + '/logo'}
+                                            src={window.ImageServer + '/images/u-tournament/' + this.props.leagueData.uniqueTournament.id + '.png'}
                                             alt={this.props.leagueData.uniqueTournament.name}/>
                                     </div>
                                     <div className="col">
@@ -157,7 +157,7 @@ class TeamOfTheWeek extends Component {
                                                                         <div className="picture">
                                                                             <img
                                                                                 alt={player.name}
-                                                                                src={window.ImageServer + "/images/player/image_" + player.id + ""}
+                                                                                src={window.ImageServer + "/images/player/image_" + player.id + ".png"}
                                                                                 className="player-picture"
                                                                             />
 
@@ -167,7 +167,7 @@ class TeamOfTheWeek extends Component {
                                                                             ) : ""}
 
                                                                             <img
-                                                                                src={window.ImageServer + "/images/team-logo/football_" + team.id}
+                                                                                src={window.ImageServer + "/images/team-logo/football_" + team.id +".png"}
                                                                                 alt={team.name}
                                                                                 className="team-logo"
                                                                             />
@@ -196,7 +196,7 @@ class TeamOfTheWeek extends Component {
                                                     <div className="picture">
                                                         <img
                                                             alt={goalie.player.name}
-                                                            src={window.ImageServer + "/images/player/image_" + goalie.player.id + ""}
+                                                            src={window.ImageServer + "/images/player/image_" + goalie.player.id + ".png"}
                                                             className="player-picture"
                                                         />
 
@@ -204,7 +204,7 @@ class TeamOfTheWeek extends Component {
                                                             className={"text-bold rating " + ratingClass(goalie.rating)}>{goalie.rating}</span> : ""}
 
                                                         <img
-                                                            src={window.ImageServer + "/images/team-logo/football_" + goalie.team.id}
+                                                            src={window.ImageServer + "/images/team-logo/football_" + goalie.team.id + ".png"}
                                                             alt={goalie.team.name}
                                                             className="team-logo"
                                                         />
@@ -231,9 +231,9 @@ class TeamOfTheWeek extends Component {
                                             <div className="col list-image">
                                                 <img
                                                     alt={item.player.name}
-                                                    src={window.ImageServer + "/images/player/image_" + item.player.id + ""}/>
+                                                    src={window.ImageServer + "/images/player/image_" + item.player.id + ".png"}/>
                                                 <img
-                                                    src={window.ImageServer + "/images/team-logo/football_" + item.team.id}
+                                                    src={window.ImageServer + "/images/team-logo/football_" + item.team.id + ".png"}
                                                     alt={item.team.name}
                                                     className="team-logo-list"
                                                 />

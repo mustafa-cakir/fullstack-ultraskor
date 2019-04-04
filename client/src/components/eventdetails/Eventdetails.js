@@ -598,8 +598,8 @@ class Eventdetails extends Component {
 								"coach": "${eventData.managerDuel ? eventData.managerDuel.awayManager.name : ""}"
 							},
 							"image": [
-								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.homeTeam.id + ''}",
-								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.awayTeam.id + ''}"
+								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}",
+								"${'https://www.ultraskor.com/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}"
 							],
 							"location": {
 								"@type": "Place",

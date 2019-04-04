@@ -122,7 +122,7 @@ class Lineup extends Component {
                                      onClick={() => this.formationSwitchHandler(1)}>
                                     <img
                                         alt={t(eventData.event.homeTeam.name)}
-                                        src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
+                                        src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
                                     />
                                     {homeFormation.map((item, index) => {
                                         return (
@@ -140,7 +140,7 @@ class Lineup extends Component {
                                         )
                                     })}
                                     <img alt={t(eventData.event.awayTeam.name)}
-                                         src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}/>
+                                         src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}/>
                                 </div>
                             </div>
                         </div>
@@ -162,7 +162,7 @@ class Lineup extends Component {
                                                                     <div className="picture">
                                                                         <img
                                                                             alt={player.name}
-                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ""}
+                                                                            src={window.ImageServer + "/images/player/image_" + player.id + ".png"}
                                                                             className="player-picture"
                                                                         />
 
@@ -201,7 +201,7 @@ class Lineup extends Component {
                                                 <div className="picture">
                                                     <img
                                                         alt={activeTeam.lineupsSorted[0].player.name}
-                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ""}
+                                                        src={window.ImageServer + "/images/player/image_" + activeTeam.lineupsSorted[0].player.id + ".png"}
                                                         className="player-picture"
                                                     />
 
@@ -234,7 +234,7 @@ class Lineup extends Component {
                                         <img
                                             alt={activeTeam.manager.name}
                                             className="coach-picture"
-                                            src={window.ImageServer + "/images/?url=/api/v1/manager/" + activeTeam.manager.id + "/image"}
+                                            src={window.ImageServer + "/images/manager/" + activeTeam.manager.id + ".png"}
                                         />
                                     </div>
                                     <div className="col">
@@ -273,7 +273,7 @@ class Lineup extends Component {
                                         <div className="col list-image">
                                             <img
                                                 alt={item.player.name}
-                                                src={window.ImageServer + "/images/player/image_" + item.player.id + ""}/>
+                                                src={window.ImageServer + "/images/player/image_" + item.player.id + ".png"}/>
                                         </div>
 
                                         <div className="col list-text">
