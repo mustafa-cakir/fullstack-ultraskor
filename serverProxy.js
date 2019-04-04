@@ -10,13 +10,13 @@ app.get('/images/:type/:filename', (req, res) => {
 	let {type, filename} = req.params;
 	// console.log(type, filename);
 	const sendFileOptions = {
-	    root: __dirname + `/client/public/static/images/${type}/`,
-	    dotfiles: 'deny',
-	    headers: {
-	    	'X-Powered-By': "ultraskor.com",
-	        'x-timestamp': Date.now(),
-	        'x-sent': true
-	    }
+		root: __dirname + `/client/public/static/images/${type}/`,
+		dotfiles: 'deny',
+		headers: {
+			'X-Powered-By': "ultraskor.com",
+			'x-timestamp': Date.now(),
+			'x-sent': true
+		}
 	};
 
 	if (!fs.existsSync(sendFileOptions.root)) {
@@ -25,51 +25,54 @@ app.get('/images/:type/:filename', (req, res) => {
 
 
 	res.sendFile(filename, sendFileOptions, (err) => {
-	    if (err) { // file not exist
-		    let pathname = `/images/${type}/${filename}`;
+		if (err) { // file not exist
+			let pathname = `/images/${type}/${filename}`;
 
-		    if (type === "u-tournament") {
-			    pathname = `/u-tournament/${filename.slice(0, -4)}/logo`
-		    } else if (type === "manager") {
-			    pathname = `/api/v1/manager/${filename.slice(0, -4)}/image`
-		    }
+			if (type === "u-tournament") {
+				pathname = `/u-tournament/${filename.slice(0, -4)}/logo`
+			} else if (type === "manager") {
+				pathname = `/api/v1/manager/${filename.slice(0, -4)}/image`
+			}
 
-	        const requestOptions = {
-		        url: 'https://www.sofascore.com' + pathname,
-		        strictSSL: true,
-		        agentClass: Agent,
-		        timeout: 1000,
-		        agentOptions: {
-			        socksHost: 'localhost', // Defaults to 'localhost'.
-			        socksPort: 9050, // Defaults to 1080.
-		        }
-	        };
+			const requestOptions = {
+				url: 'https://www.sofascore.com' + pathname,
+				strictSSL: true,
+				agentClass: Agent,
+				timeout: 1000,
+				agentOptions: {
+					socksHost: 'localhost',
+					socksPort: 9050,
+				}
+			};
 
-	        // console.log(requestOptions.url);
-	    	request(requestOptions)
-	            .on('error', (err) => {
-	                // console.log('error: ' + err);
-	                res.sendStatus(404);
-	            })
-			    .on('response', (response) => {
-			    	// console.log(response.headers['content-type']);
-				    if (response.headers['content-type'].indexOf('image') > -1) {
-					    response.pipe(fs.createWriteStream(sendFileOptions.root + filename))
-				    } else {
-					    res.sendStatus(404);
-				    }
-			    })
-			    .on('close', () => {
-				    res.sendFile(filename, sendFileOptions, (err) => {
-				    	if (err) {
-				    		// do nothing
-						    res.sendStatus(404);
-					    }
-				    });
-			    });
-	    } else {
-	        // file is served successfully
-	    }
+			// console.log(requestOptions.url);
+			const stream = request(requestOptions);
+
+			stream.on('error', (err) => {
+				console.log('Error on request: ' + err);
+				res.sendStatus(404);
+			});
+
+			stream.on('response', (response) => {
+				if (response.headers['content-type'].indexOf('image') > -1) {
+					stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
+					stream.pipe(res);
+				} else {
+					console.log('Error on response: ' + err);
+					res.sendStatus(404);
+				}
+			});
+
+			// stream.on('close', () => {
+			// 	console.log('checkpoint5');
+			// 	res.sendFile(filename, sendFileOptions, (err) => {
+			// 		if (err) {
+			// 			console.log('Error on sendFile: ' + err);
+			// 			res.sendStatus(404);
+			// 		}
+			// 	});
+			// });
+		}
 	});
 
 
