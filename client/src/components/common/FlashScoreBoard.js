@@ -52,7 +52,7 @@ class FlashScoreBoard extends Component {
         this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
         this.getUpdatesFlashScoresInterval = setInterval(() => {  // init after 10 seconds
             this.socket.emit('get-flashcore-changes');
-        }, 10000);
+        }, 20000);
     }
 
     onSocketDisconnect() {

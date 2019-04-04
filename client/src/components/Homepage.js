@@ -293,7 +293,7 @@ class Homepage extends Component {
 	initGetUpdatesHomepage(noInterval = false) {
 		this.getUpdatesHomepageInterval = setTimeout(() => {  // init after 10 seconds
 			this.socket.emit('get-updates-homepage');
-		}, noInterval ? 100 : 10000);
+		}, noInterval ? 100 : 20000);
 	}
 
 	onSocketReturnUpdatesData(res) {
