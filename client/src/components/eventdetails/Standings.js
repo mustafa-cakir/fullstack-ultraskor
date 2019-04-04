@@ -84,7 +84,7 @@ class Standings extends Component {
 					<div className="row league-heading align-items-center">
 						<div className="col col-img">
 							<img
-								src={window.ImageServer + '/images/?url=/u-tournament/' + standingsTables.tournament.uniqueId + '/logo'}
+								src={window.ImageServer + '/images/u-tournament/' + standingsTables.tournament.uniqueId + '.png'}
 								alt={t(standingsTables.tournament.name)}/>
 						</div>
 						<div className="col">
@@ -134,7 +134,7 @@ class Standings extends Component {
 											pathname: `/${t('team')}/${generateSlug(t(row.team.shortName))}-${row.team.id}`,
 											state: {isPrev: true}
 										}} title={`${t(row.team.shortName)} - ${t('Fixtures, highlights and standings, click for more')}`}><img
-											src={`${window.ImageServer}/images/team-logo/football_${row.team.id}`}
+											src={`${window.ImageServer}/images/team-logo/football_${row.team.id}.png`}
 											alt={t(row.team.name)}/></Link></td>
 										<td className="team">
 											<Link to={{

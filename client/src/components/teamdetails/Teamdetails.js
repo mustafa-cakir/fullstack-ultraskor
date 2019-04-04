@@ -252,7 +252,7 @@ class Teamdetails extends PureComponent {
                         <React.Fragment>
                             <div className="col col-img">
                                 <img
-                                    src={window.ImageServer + '/images/team-logo/football_' + teamId}
+                                    src={window.ImageServer + '/images/team-logo/football_' + teamId + '.png'}
                                     alt={t(teamInfoData.team.name)}/>
                             </div>
                             <div className="col col-info">

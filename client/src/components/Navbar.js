@@ -335,7 +335,7 @@ const PopularLeagues = props => {
                         document.body.classList.remove('navbar-opened')
                     }}>
                         <img
-                            src={window.ImageServer + '/images/?url=/u-tournament/' + item.uniqueId + '/logo'}
+                            src={window.ImageServer + '/images/u-tournament/' + item.uniqueId + '.png'}
                             alt={t(item.country) + " - " + t(item.name)}/>
                         {item.country !== "World" ? t(item.country) + " - " : ""}{t(item.name)}
                     </Link>

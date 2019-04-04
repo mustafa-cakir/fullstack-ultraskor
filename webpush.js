@@ -32,18 +32,18 @@ exports.initWebPush = (changes) => {
 					if (parseInt(change.rhs) > parseInt(change.lhs)) {
 						message.webpush.notification.title = `GOL ${change.event.statusDescription}' ${change.path[0] === "homeScore" ? helper.t(change.event.homeTeam.name) : helper.t(change.event.awayTeam.name)}`;
 						message.webpush.notification.body = `${helper.t(change.event.homeTeam.name)} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${helper.t(change.event.awayTeam.name)}`;
-						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}.png`;
 						message.webpush.notification.click_action = `http://ultraskor.com/eventdetails/${change.event.id}`;
 					} else {
 						message.webpush.notification.title = `GOL İPTAL ${change.path[0] === "homeScore" ? helper.t(change.event.homeTeam.name) : helper.t(change.event.awayTeam.name)}`;
 						message.webpush.notification.body = `${helper.t(change.event.homeTeam.name)} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${helper.t(change.event.awayTeam.name)}`;
-						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+						message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeScore" ? change.event.homeTeam.id : change.event.awayTeam.id}.png`;
 						message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
 					}
 				} else if (change.path[0] === "homeRedCards" || change.path[0] === "awayRedCards") {
 					message.webpush.notification.title = `Kırmızı Kart ${change.event.statusDescription}' ${change.path[0] === "homeRedCards" ? helper.t(change.event.homeTeam.name) : helper.t(change.event.awayTeam.name)}`;
 					message.webpush.notification.body = `${helper.t(change.event.homeTeam.name)} ${change.event.homeScore.current} - ${change.event.awayScore.current} ${helper.t(change.event.awayTeam.name)}`;
-					message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeRedCards" ? change.event.homeTeam.id : change.event.awayTeam.id}`;
+					message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${change.path[0] === "homeRedCards" ? change.event.homeTeam.id : change.event.awayTeam.id}.png`;
 					message.webpush.notification.click_action = `https://www.ultraskor.com/eventdetails/${change.event.id}`;
 				} else if (change.path[0] === "status" && change.path[1] === "code") {
 					if (change.lhs === 0 && change.rhs === 6) { // game started

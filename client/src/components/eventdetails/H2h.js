@@ -83,7 +83,7 @@ class H2h extends Component {
 								<img
                                     className="team-logo"
                                     alt={t(eventData.event.homeTeam.name)}
-                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + ''}
+                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.homeTeam.id + '.png'}
                                 />
 								<div className="team-name">{t(eventData.event.homeTeam.name)}</div>
 							</span>
@@ -94,7 +94,7 @@ class H2h extends Component {
 								<img
                                     className="team-logo"
                                     alt={t(eventData.event.awayTeam.name)}
-                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + ''}
+                                    src={window.ImageServer + '/images/team-logo/football_' + eventData.event.awayTeam.id + '.png'}
                                 />
 								<div className="team-name">{t(eventData.event.awayTeam.name)}</div>
 							</span>

@@ -185,7 +185,7 @@ class FlashScoreBoard extends Component {
                                   state: {isPrev: true}
                               }} className="col home-team text-center">
                             <img
-                                src={`${window.ImageServer}/images/team-logo/football_${flashData.event.homeTeam.id}`}
+                                src={`${window.ImageServer}/images/team-logo/football_${flashData.event.homeTeam.id}.png`}
                                 className="team-logo"
                                 alt={t(flashData.event.homeTeam.name)}/>
                             <div className="team-name">{t(flashData.event.homeTeam.name)}</div>
@@ -210,7 +210,7 @@ class FlashScoreBoard extends Component {
                             state: {isPrev: true}
                         }} className="col away-team text-center">
                             <img
-                                src={`${window.ImageServer}/images/team-logo/football_${flashData.event.awayTeam.id}`}
+                                src={`${window.ImageServer}/images/team-logo/football_${flashData.event.awayTeam.id}.png`}
                                 className="team-logo"
                                 alt={t(flashData.event.awayTeam.name)}/>
                             <div className="team-name">{t(flashData.event.awayTeam.name)}</div>
