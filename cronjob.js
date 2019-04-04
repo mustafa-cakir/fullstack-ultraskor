@@ -94,7 +94,7 @@ const cron = new CronJob('*/20 * * * * *', function () {
 			}
 			previousData = events;
 		} else { // error
-			console.log(`Error returning differences within cronJob. Error: ${err}. Time: ${ new Date()}`);
+			console.log(`Error returning differences within cronJob. Time: ${ new Date()}`);
 		}
 
 	});
