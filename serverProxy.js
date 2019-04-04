@@ -44,15 +44,15 @@ app.get('/images/:type/:filename', (req, res) => {
 		        }
 	        };
 
-	        // console.log(requestOptions.url);
+	        console.log(requestOptions.url);
 	    	request(requestOptions)
 	            .on('error', (err) => {
-	                // console.log('error: ' + err);
+	                console.log('error: ' + err);
 	                res.sendStatus(404);
 	                return false;
 	            })
 			    .on('response', (response) => {
-			    	// console.log(response.headers['content-type']);
+			    	console.log(response.headers['content-type']);
 				    if (response.headers['content-type'].indexOf('image') > -1) {
 					    response.pipe(fs.createWriteStream(sendFileOptions.root + filename))
 				    } else {
@@ -64,7 +64,7 @@ app.get('/images/:type/:filename', (req, res) => {
 				    res.sendFile(filename, sendFileOptions, (err) => {
 				    	if (err) {
 				    		// do nothing
-						    res.sendStatus(404);
+						    //res.sendStatus(404);
 					    }
 				    });
 			    });
