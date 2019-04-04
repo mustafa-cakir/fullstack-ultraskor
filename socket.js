@@ -103,7 +103,7 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 
 io.on('connection', socket => {
     helper.userConnected();
-    console.log('User connected. Active user: ', helper.userCount());
+    // console.log('User connected. Active user: ', helper.userCount());
 	// socket.on('get-updates-2', () => {
 	// 	ws.on('message', (data) => {
 	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
@@ -196,7 +196,7 @@ io.on('connection', socket => {
 
 	socket.on('disconnect', () => {
         helper.userDisconnected();
-		console.log('User disconnected. Active user: ', helper.userCount());
+		// console.log('User disconnected. Active user: ', helper.userCount());
 	});
 });
 
@@ -552,7 +552,6 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 				}
 			})
 			.catch(() => {
-				console.log(keyIndex);
 				if (keyIndex + 1 <= api_key.length) {
 					initRemoteRequests(keyIndex + 1)
 				} else {

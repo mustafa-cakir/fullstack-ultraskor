@@ -39,7 +39,7 @@ tr.request('https://api.ipify.org', function (err, status, response) {
 
 const cron = new CronJob('*/20 * * * * *', function () {
 	if (helper.userCount() < 1) return false; // if there is no active user, disable cropjob
-    console.log('cronjob init', helper.userCount());
+    //console.log('cronjob init', helper.userCount());
     tr.request(options(moment()), function (err, status, res) {
 		if (!err && status.statusCode === 200) {
 			fullData = helper.simplifyHomeData(res);
@@ -88,7 +88,7 @@ const cron = new CronJob('*/20 * * * * *', function () {
 
 				if (changes.length > 0) {
 					cacheService.instance().set('changes', changes, 20); // cache the changes for 10 seconds
-					console.log('Changes found via Cronjob ', new Date());
+					// console.log('Changes found via Cronjob ', new Date());
 					webpushHelper.initWebPush(changes);
 				}
 			}

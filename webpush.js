@@ -77,7 +77,7 @@ exports.initWebPush = (changes) => {
 									console.log('Error sending message:', error);
 								});
 						} else { // Cache is not found, no one is subscribe to this topic.
-							console.log('subscription not found, dont send any push for ', change.event.id);
+							//console.log('subscription not found, dont send any push for ', change.event.id);
 						}
 					});
 				}
