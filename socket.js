@@ -720,7 +720,7 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
 					let urls = [];
 					tournaments.forEach(tournament => {
 						tournament.events.forEach(event => {
-							urls.push(`https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/match/"}${helper.generateSlug(helper.t(event.homeTeam.name) + '-' + helper.t(event.awayTeam.name))}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
+							urls.push(`https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/en/match/"}${helper.generateSlug(helper.t(event.homeTeam.name) + '-' + helper.t(event.awayTeam.name))}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`)
 						});
 					});
 					res.send(urls.join('\r'));
