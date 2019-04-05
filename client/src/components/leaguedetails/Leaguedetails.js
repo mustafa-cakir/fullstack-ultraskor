@@ -76,6 +76,7 @@ class Leaguedetails extends Component {
     updateMeta(leagueData) {
         const {t} = this.props;
         if (i18n.language === "en") {
+            if (window.location.pathname.split('/')[2] === "lig") window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
                 title: `${leagueData.uniqueTournament.name} Standings, League Fixtures, ${leagueData.uniqueTournament.name} Weekly Highlights - UltraSkor`,
                 canonical: window.location.href,
@@ -85,6 +86,7 @@ class Leaguedetails extends Component {
                 hrefLang: "tr"
             })
         } else if (i18n.language === "tr") {
+            if (window.location.pathname.split('/')[1] === "league") window.location.href = HelperTranslateUrlTo("tr", true);
             HelperUpdateMeta({
                 title: `${t(leagueData.uniqueTournament.name)} Puan Durumu, Lig Fikstürü, ${t(leagueData.uniqueTournament.name)} Maç Özetleri - UltraSkor.com`,
                 canonical: window.location.href,

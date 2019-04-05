@@ -411,6 +411,7 @@ class Eventdetails extends Component {
     updateMeta() {
         const eventData = this.state.eventData;
         if (i18n.language === "en") {
+            if (window.location.pathname.split('/')[2] === "mac") window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
                 title: `Live: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`,
                 canonical: window.location.href,
@@ -420,6 +421,7 @@ class Eventdetails extends Component {
                 hrefLang: "tr"
             })
         } else if (i18n.language === "tr") {
+            if (window.location.pathname.split('/')[1] === "match") window.location.href = HelperTranslateUrlTo('tr', true);
             HelperUpdateMeta({
                 title: `Canlı: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`,
                 canonical: window.location.href,

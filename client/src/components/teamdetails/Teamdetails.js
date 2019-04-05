@@ -129,6 +129,7 @@ class Teamdetails extends PureComponent {
     updateMeta(teamInfoData) {
         const {t} = this.props;
         if (i18n.language === "en") {
+            if (window.location.pathname.split('/')[2] === "takim") window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
                 title: `${teamInfoData.team.name} Live Match Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
                 canonical: window.location.href,
@@ -138,6 +139,7 @@ class Teamdetails extends PureComponent {
                 hrefLang: "tr"
             })
         } else if (i18n.language === "tr") {
+            if (window.location.pathname.split('/')[1] === "team") window.location.href = HelperTranslateUrlTo("tr", true);
             HelperUpdateMeta({
                 title: `${t(teamInfoData.team.name)} Fikstür, Kadro, Puan Durumu ve Maç Özetleri - UltraSkor.com`,
                 canonical: window.location.href,

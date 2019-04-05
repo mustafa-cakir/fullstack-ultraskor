@@ -13,7 +13,8 @@ class TranslateUrlHandler {
 				"-puan-durumu-": "-standing-",
 				"-sezon-": "-season-",
 				"/maclar/": "/matches/",
-				"tarih-": "date-"
+				"tarih-": "date-",
+                "/takim/": "/team/"
 
 			},
 			toTurkish: {
@@ -24,7 +25,8 @@ class TranslateUrlHandler {
 				"-standing-": "-puan-durumu-",
 				"-season-": "-sezon-",
 				"/matches/": "/maclar/",
-				"date-": "tarih-"
+				"date-": "tarih-",
+                "/team/": "/takim/"
 			}
 		}
 	}
@@ -36,27 +38,35 @@ class TranslateUrlHandler {
 		});
 	};
 
-	toEnglish() {
+	toEnglish(force) {
 		let url = window.location.origin;
 		let pathname = window.location.pathname;
-		if (pathname.split('/')[1] !== "en") {
-			pathname = this.replaceAll(pathname, this.regEx.toEnglish);
-			url += '/en' + pathname;
-		} else {
-			url += pathname;
-		}
+        if (force) {
+            url += this.replaceAll(pathname, this.regEx.toEnglish);
+        } else {
+            if (pathname.split('/')[1] !== "en") {
+                pathname = this.replaceAll(pathname, this.regEx.toEnglish);
+                url += '/en' + pathname;
+            } else {
+                url += pathname;
+            }
+        }
 		return url;
 	}
 
-	toTurkish() {
+	toTurkish(force) {
 		let url = window.location.origin;
 		let pathname = window.location.pathname;
-		if (pathname.split('/')[1] === "en") {
-			pathname = this.replaceAll(pathname, this.regEx.toTurkish);
-			url += pathname;
-		} else {
-			url += pathname;
-		}
+		if (force) {
+            url += this.replaceAll(pathname, this.regEx.toTurkish);
+        } else {
+            if (pathname.split('/')[1] === "en") {
+                pathname = this.replaceAll(pathname, this.regEx.toTurkish);
+                url += pathname;
+            } else {
+                url += pathname;
+            }
+        }
 		return url;
 	}
 }
@@ -105,9 +115,9 @@ class UpdateMetaHandler {
 	}
 }
 
-export function HelperTranslateUrlTo(to) {
+export function HelperTranslateUrlTo(to, force = false) {
 	const translateUrlInstance = new TranslateUrlHandler();
-	return (to === "en" ? translateUrlInstance.toEnglish() : translateUrlInstance.toTurkish());
+	return (to === "en" ? translateUrlInstance.toEnglish(force) : translateUrlInstance.toTurkish(force));
 }
 
 export function HelperUpdateMeta(props) {
