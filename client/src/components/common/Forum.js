@@ -22,6 +22,8 @@ class Forum extends PureComponent {
         this.handleSocketGetAllMessages = this.handleSocketGetAllMessages.bind(this);
         this.handleSocketNewSubmission = this.handleSocketNewSubmission.bind(this);
         this.textAreaKeyPress = this.textAreaKeyPress.bind(this);
+        this.textAreaChange = this.textAreaChange.bind(this);
+        this.userNameKeyPress = this.userNameKeyPress.bind(this);
         this.textAreaFocused = this.textAreaFocused.bind(this);
         this.userNameSave = this.userNameSave.bind(this);
     }
@@ -71,15 +73,24 @@ class Forum extends PureComponent {
         this.socket.emit('forum-post-new', data);
     }
 
-    textAreaKeyPress(e) {
-        this.setState({textAreaFilled: e.target.value.length > 2});
+    textAreaChange(e) {
+        this.setState({textAreaFilled: e.target.value.length > 0});
+        this.messageInput.current.style.height = '40px';
+        this.messageInput.current.style.height = this.messageInput.current.scrollHeight + 'px'
+    }
 
+    textAreaKeyPress(e) {
         if (e.which === 13) {
             e.preventDefault();
             this.messageSubmit(e);
         }
-        this.messageInput.current.style.height = '40px';
-        this.messageInput.current.style.height = this.messageInput.current.scrollHeight + 'px'
+    }
+
+    userNameKeyPress(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            this.userNameSave(e);
+        }
     }
 
     userNameSave() {
@@ -131,8 +142,13 @@ class Forum extends PureComponent {
                                 <div className="modal-body">
                                     <p><Trans>Please enter your name or a nickname to label your messages in the
                                         forum</Trans></p>
-                                    <input type="text" className="form-control" ref={this.userNameInputField}
-                                           placeholder={t("Enter your name")} defaultValue={userName}/>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        ref={this.userNameInputField}
+                                        placeholder={t("Enter Your Name")}
+                                        defaultValue={userName}
+                                        onKeyDown={this.userNameKeyPress}/>
                                     <div className="invalid-feedback"
                                          style={{display: userNameFieldError ? "block" : "none"}}>
                                         <Trans>Please enter a valid name</Trans>
@@ -166,10 +182,11 @@ class Forum extends PureComponent {
                             <div className="col col-textarea">
                             <textarea
                                 ref={this.messageInput}
-                                placeholder="Mesajınızı yazın"
+                                placeholder={userName ? t('Enter Your Message') : t('Enter Your Name')}
                                 rows="1"
                                 style={{height: 40}}
                                 onKeyDown={this.textAreaKeyPress}
+                                onChange={this.textAreaChange}
                                 onFocus={this.textAreaFocused}/>
                             </div>
                             <div className="col col-submit">
@@ -186,7 +203,9 @@ class Forum extends PureComponent {
                                         <div className={"li-container" + (message.userName === userName ? " mine" : "")}>
                                             <strong>{message.userName}</strong>
                                             {message.message}
-                                            <time>{moment(message.date).format('HH:ss')}</time>
+                                            <time>
+                                                {moment(message.date).isSame(moment(), 'day') ? moment(message.date).format('HH:mm') : moment(message.date).format('DD MMM, HH:mm')}
+                                                </time>
                                         </div>
                                     </li>
                                 )}
