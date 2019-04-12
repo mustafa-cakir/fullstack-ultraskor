@@ -38,7 +38,7 @@ tr.request('https://api.ipify.org', function (err, status, response) {
 });
 
 const cron = new CronJob('*/20 * * * * *', function () {
-	if (helper.userCount() < 1) return false; // if there is no active user, disable cropjob
+	//if (helper.userCount() < 1) return false; // if there is no active user, disable cropjob
     //console.log('cronjob init', helper.userCount());
     tr.request(options(moment()), function (err, status, res) {
 		if (!err && status.statusCode === 200) {
