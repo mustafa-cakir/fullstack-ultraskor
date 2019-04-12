@@ -24,9 +24,6 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshButton: false,
-			deviceToken: null,
-			show: 20,
-			lazyLoadScrollLoading: true
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -35,13 +32,11 @@ class Homepage extends Component {
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
 		this.throttle = this.throttle.bind(this);
-		this.lazyLoadScrollHandler = this.lazyLoadScrollHandler.bind(this);
 		this.todaysDate = null;
 		this.socket = this.props.socket;
 	};
 
 	componentDidMount() {
-		this.lazyLoad = !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent);
 		if (this.props.match.params.date) {
 			this.todaysDate = this.props.match.params.date;
 		} else {
@@ -93,6 +88,19 @@ class Homepage extends Component {
 			return result;
 		};
 	};
+
+	// localStorageGet() {
+	//     let storageHomepage = JSON.parse(sessionStorage.getItem('ultraskor_homepage'));
+	//     if (storageHomepage) {
+	//         this.setState(storageHomepage)
+	//     }
+	// }
+	//
+	// localStorageSet() {
+	//     const { mainData, orjData, loading, refreshButton,  ...stateToStore} = this.state;
+	//     console.log(stateToStore);
+	//     localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
+	// }
 
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
@@ -168,55 +176,6 @@ class Homepage extends Component {
 		return res;
 	};
 
-	lazyLoadScrollHandler() {
-		// console.log('reached');
-		if (this.lazyLoadScrollContinue) {
-			if (2 * window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-				// console.log('reached2');
-				this.lazyLoadScrollContinue = false;
-				// console.log(this.state.orjData.sportItem.tournaments.length, this.state.show);
-				if (this.state.orjData.sportItem.tournaments.length > this.state.show) {
-					// console.log('reached3');
-					this.setState({show: this.state.show + 20}, () => {
-						this.lazyLoadRenderData();
-							// console.log('reached rendered data');
-					});
-				} else {
-					this.setState({lazyLoadScrollLoading: false});
-				}
-			}
-		}
-	}
-
-	initLazyLoadScroll() {
-		this.lazyLoadScrollContinue = true;
-		window.addEventListener('scroll', this.throttle(this.lazyLoadScrollHandler.bind(this), 350, {
-			leading: false,
-			trailing: true
-		}));
-	}
-
-	lazyLoadRenderData(res, updated) {
-		let newState = {};
-		if (res) {
-			newState.orjData = JSON.parse(JSON.stringify(res));
-			if (!updated) {
-				newState.loading = false;
-				newState.refreshButton = false;
-			}
-		} else {
-			res = JSON.parse(JSON.stringify(this.state.orjData));
-		}
-
-		if (this.lazyLoad) {
-			res.sportItem.tournaments = res.sportItem.tournaments.splice(0, this.state.show);
-		}
-
-		this.setState({mainData: res, ...newState}, () => {
-			this.lazyLoadScrollContinue = true;
-		});
-	}
-
 	moveFavEventsToTop(jsonData) {
 		let favEventsList = [];
 		jsonData.sportItem.tournaments.forEach(tournament => {
@@ -231,19 +190,6 @@ class Homepage extends Component {
 		})
 	};
 
-	handleGetData(res, updated) {
-		if (!updated) {
-			setTimeout(() => {
-				document.body.classList.add('initial-load');
-			}, 0);
-		}
-		res = this.prepareRes(res);
-		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
-		this.lazyLoadRenderData(res, updated);
-		this.updateMeta();
-		this.analyzeSessionStorage();
-	}
-
 	initGetData = options => {
 		this.setState({loading: true});
 		document.body.classList.remove('initial-load');
@@ -256,8 +202,7 @@ class Homepage extends Component {
 				}
 			})
 			.then(res => {
-				this.handleGetData(res);
-				this.initLazyLoadScroll();
+				this.handleGetData(res, false);
 			})
 			.catch(err => {
 				this.setState({
@@ -268,6 +213,29 @@ class Homepage extends Component {
 				});
 			});
 	};
+
+	handleGetData(res, isUpdated) {
+		if (!isUpdated) {
+			setTimeout(() => {
+				document.body.classList.add('initial-load');
+			}, 0);
+		}
+		res = this.prepareRes(res);
+		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
+		this.updateStateGetData(res, isUpdated);
+		this.updateMeta();
+		this.analyzeSessionStorage();
+	}
+
+	updateStateGetData(res, isUpdated) {
+		if (!res) return false;
+		this.setState({
+			orjData: res,
+			mainData: res,
+			...(!isUpdated && {loading: false}),
+			...(!isUpdated && {refreshButton: false}),
+		});
+	}
 
 	componentWillUnmount() {
 		this.removeSocketEvents();
@@ -293,11 +261,11 @@ class Homepage extends Component {
 	initGetUpdatesHomepage(noInterval = false) {
 		this.getUpdatesHomepageInterval = setTimeout(() => {  // init after 10 seconds
 			this.socket.emit('get-updates-homepage');
-		}, noInterval ? 100 : 20000);
+		}, noInterval ? 100 : 10000);
 	}
 
 	onSocketReturnUpdatesData(res) {
-		if (res) this.initGetUpdatesHomepage();
+		this.initGetUpdatesHomepage();
 		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date) {
 			this.handleGetData(res, true);
 		} else {
@@ -446,11 +414,6 @@ class Homepage extends Component {
 					{favEventContainer}
 					{mainContent}
 				</div>
-				{this.state.lazyLoadScrollLoading && this.lazyLoad ? (
-					<div className="container lazyload-scroll-loading">
-						<Icon name="fas fa-redo"/>
-					</div>
-				) : ""}
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
 						<div className="col col-yesterday"><a className="pl-3"
