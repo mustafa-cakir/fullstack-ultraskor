@@ -508,6 +508,7 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 			"wshgqxxcvr7uptt3yetu3b8s", // sporarena
 			"3a97ydredjbxvjghxjbzqz2g", // https://github.com/willisgram/master_thesis
 			"j9xerbvc24veacrq3hpby6dk", // https://github.com/kberkeland/soccer-glance
+            "a4nbj7zwu8r7dzgeaw8yr23t" // https://github.com/salman90/Live_Scores
 		];
 
 	let path = null;
