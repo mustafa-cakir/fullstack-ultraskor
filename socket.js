@@ -112,16 +112,12 @@ io.on('connection', socket => {
 
 	socket.on('get-updates-homepage', () => {
 		let cachedData = cacheService.instance().get("fullData");
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			socket.emit('return-updates-homepage', cachedData);
-		}
+		socket.emit('return-updates-homepage', cachedData || null);
 	});
 
 	socket.on('get-flashcore-changes', () => {
 		let cachedData = cacheService.instance().get("changes");
-		if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
-			socket.emit('return-flashcore-changes', cachedData);
-		}
+		socket.emit('return-flashcore-changes', cachedData || null);
 	});
 
 
