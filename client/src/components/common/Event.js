@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
 import { Link } from "react-router-dom"
@@ -6,12 +6,27 @@ import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
-class Event extends PureComponent {
+class Event extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			favEventLoading: false
 		}
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (
+			this.props.event.status.type !== nextProps.event.status.type
+			|| this.props.event.statusDescription !== nextProps.event.statusDescription
+			|| this.props.event.status.code !== nextProps.event.status.code
+			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
+			|| this.props.favEvents.toString() !== nextProps.favEvents.toString()
+			|| this.state.favEventLoading !== nextState.favEventLoading
+		) {
+			console.log('changed!!');
+			return true;
+		}
+		return false;
 	}
 
 	isInProgress() {
@@ -130,6 +145,7 @@ class Event extends PureComponent {
 		const {event, t, from, selected, selectedId} = this.props;
 		let favEvents = this.props.favEvents || [];
 		const favActive = favEvents.indexOf(event.id) > -1;
+		if (event.homeTeam.id === 2687) console.log('triggered!!', event.homeTeam.name);
 		return (
 			<div className={"event-container" + (this.props.index % 2 === 0 ? " " : " bg-gray")}>
 				{this.isInProgress()}
