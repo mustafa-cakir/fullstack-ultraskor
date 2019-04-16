@@ -5,13 +5,25 @@ import {generateSlug, flagImg} from "../../Helper";
 import { Link } from "react-router-dom"
 
 class Tournament extends PureComponent {
+
+	// shouldComponentUpdate(nextProps, nextState) {
+	// 	return false;
+	// }
+
 	render() {
-		const {t} = this.props;
+		const {t, isLive} = this.props;
 		return (
 			<React.Fragment>
-				{this.props.tournaments.map((tournament, i) => {
+				{this.props.tournaments.map((tournament, index) => {
+					if (isLive) {
+						let checkLive = tournament.events.filter(event => {
+							return event.status.type === "inprogress";
+						});
+						if (checkLive.length < 1) return false;
+					}
+
 					return tournament.events.length > 0 ? (
-						<React.Fragment key={i}>
+						<React.Fragment key={tournament.tournament.id}>
 							{/*<div className="tournament-container" data-key={i}>*/}
 							<div className="tournament-title">
 									{flagImg(tournament)}
@@ -25,10 +37,11 @@ class Tournament extends PureComponent {
 							</div>
 
 							{tournament.events.map((event, k) => {
-								return (<Event key={k}
+								if (isLive && event.status.type !== "inprogress") return false;
+								return (<Event key={event.id}
 											   index={k}
 											   event={event}
-											   updateParentState={this.updateParentState} {...this.props}/>)
+											   updateParentState={this.updateParentState}/>)
 							})}
 							{/*</div>*/}
 						</React.Fragment>

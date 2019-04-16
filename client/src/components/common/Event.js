@@ -15,18 +15,24 @@ class Event extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (
-			this.props.event.status.type !== nextProps.event.status.type
-			|| this.props.event.statusDescription !== nextProps.event.statusDescription
-			|| this.props.event.status.code !== nextProps.event.status.code
-			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
-			|| this.props.favEvents.toString() !== nextProps.favEvents.toString()
-			|| this.state.favEventLoading !== nextState.favEventLoading
-		) {
-			console.log('changed!!');
-			return true;
+		if (this.props.event.statusDescription !== "FT") {
+			//console.log(this.props.event.statusDescription, nextProps.event.statusDescription);
 		}
-		return false;
+		// if (
+		// 	this.props.event.status.type !== nextProps.event.status.type
+		// 	|| this.props.event.statusDescription !== nextProps.event.statusDescription
+		// 	|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
+		// 	|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
+		// 	|| this.props.event.status.code !== nextProps.event.status.code
+		// 	|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
+		// 	|| this.props.favEvents.toString() !== nextProps.favEvents.toString()
+		// 	|| this.state.favEventLoading !== nextState.favEventLoading
+		// ) {
+		// 	console.log('changed!!', this.props.event.homeTeam.name, nextProps.event.homeTeam.name, this.props.event.statusDescription, this.props.event);
+		// 	return true;
+		// }
+
+		return true;
 	}
 
 	isInProgress() {
@@ -142,7 +148,7 @@ class Event extends Component {
 	}
 
 	render() {
-		const {event, t, from, selected, selectedId} = this.props;
+		const {event, t, from, selected, selectedId, isLive} = this.props;
 		let favEvents = this.props.favEvents || [];
 		const favActive = favEvents.indexOf(event.id) > -1;
 		if (event.homeTeam.id === 2687) console.log('triggered!!', event.homeTeam.name);

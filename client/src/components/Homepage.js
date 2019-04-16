@@ -24,6 +24,7 @@ class Homepage extends Component {
 			favEvents: [],
 			favEventsList: [],
 			refreshButton: false,
+			isLive: false
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -35,6 +36,10 @@ class Homepage extends Component {
 		this.todaysDate = null;
 		this.socket = this.props.socket;
 	};
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return true;
+	}
 
 	componentDidMount() {
 		if (this.props.match.params.date) {
@@ -162,9 +167,9 @@ class Homepage extends Component {
 			}
 		}
 
-		// remove yesterday matches
+		// Remove yesterday or tomorrow matches
 		let currentDate = res.params.date;
-		res.sportItem.tournaments = res.sportItem.tournaments.reduce(function (whole, tournament) {
+		tournaments = tournaments.reduce(function (whole, tournament) {
 			tournament.events = tournament.events.filter((event) => {
 				return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === currentDate;
 			});
@@ -173,12 +178,12 @@ class Homepage extends Component {
 			});
 			return whole;
 		}, []);
-		return res;
+		return tournaments;
 	};
 
-	moveFavEventsToTop(jsonData) {
+	moveFavEventsToTop(res) {
 		let favEventsList = [];
-		jsonData.sportItem.tournaments.forEach(tournament => {
+		res.forEach(tournament => {
 			tournament.events.forEach(event => {
 				if (this.state.favEvents.length > 0 && this.state.favEvents.indexOf(event.id) > -1) {
 					favEventsList.push(event)
@@ -202,7 +207,10 @@ class Homepage extends Component {
 				}
 			})
 			.then(res => {
-				this.handleGetData(res, false);
+				if (!res)
+					throw Error(`Response is empty`);
+				else
+					this.handleGetData(res, false);
 			})
 			.catch(err => {
 				this.setState({
@@ -228,7 +236,7 @@ class Homepage extends Component {
 	}
 
 	updateStateGetData(res, isUpdated) {
-		if (!res) return false;
+		console.log(res);
 		this.setState({
 			orjData: res,
 			mainData: res,
@@ -292,29 +300,6 @@ class Homepage extends Component {
 		}
 	}
 
-	// onSocketReturnUpdatesData2(res) {
-	// 	if (res) {
-	// 		//res = JSON.parse(res);
-	// 		let event = res.data[1].data;
-	// 		let changesData = event.changesData;
-	// 		if (changesData) {
-	// 			if (changesData) {
-	// 				console.log(event);
-	// 			}
-	// 			if (changesData.score) {
-	// 				if (changesData.away.score || changesData.away.team) {
-	// 					console.log(`${t(event.homeTeam.name)} Scored. New score ${event.homeScore.current}`);
-	// 				} else if (changesData.home.score || changesData.home.team) {
-	// 					console.log(`${t(event.awayTEam.name)} Scored. New score ${event.awayTeam.current}`);
-	// 				}
-	// 			}
-	// 			if (changesData.status) {
-	// 				console.log(`Status Changed. New statusDescription: ${event.statusDescription} - New status name: ${event.status.description} - New status code: ${event.status.code}`);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	updateMeta() {
 		const {date} = this.props.match.params || null;
 
@@ -357,62 +342,54 @@ class Homepage extends Component {
 	};
 
 	render() {
-		const dataObj = this.state.mainData;
-		let mainContent = [],
-			favEventContainer = [];
+		const {mainData} = this.state;
+		if (!mainData) return <Loading/>;
+		if (mainData.error) return <Errors key={1} type="error" message={mainData.error}/>;
 
-		if (this.state.favEventsList.length > 0) {
-			favEventContainer.push(
-				<div className="fav-container" key={1}>
-					<div className="tournament-title">
-						<Icon name="fas fa-star event-fav-color"/>
-						<div className="col tournament-name px-2">
-							<strong><Trans>My Favorites</Trans></strong>
-						</div>
-					</div>
-					{this.state.favEventsList.map((event, i) => {
-						return (<Event key={i}
-						               socket={this.props.socket}
-						               favContainer={true}
-						               event={event}
-						               updateParentState={this.updateParentState} {...this.state}/>)
-					})}
-				</div>
-			)
-		}
-		if (dataObj) {
-			if (typeof dataObj.error !== "undefined") {
-				mainContent.push(<Errors key={1} type="error" message={dataObj.error}/>);
-			} else {
-				if (dataObj.sportItem) {
-					if (dataObj.sportItem.tournaments.length > 0) {
-						mainContent.push(<Tournament key={1}
-						                             socket={this.props.socket}
-						                             tournaments={dataObj.sportItem.tournaments}
-						                             updateParentState={this.updateParentState}
-						                             {...this.state}/>)
-					} else {
-						mainContent.push(<Errors key={1} type="no-matched-game"/>)
-					}
-				} else if (dataObj.liveList) {
-					mainContent.push(<Errors key={1} type="no-live-game"/>)
-				}
-			}
-		}
 		const {t} = this.props;
 		return (
 			<div>
 				<Headertabs
-					{...this.state}
+					isLive={this.state.isLive}
 					updateParentState={this.updateParentState}
 					initGetData={this.initGetData}
+					orjData={this.state.orjData}
+					mainData={this.state.mainData}
 					todaysDateByUrl={this.props.match.params.date}
 				/>
 
 				{this.state.loading ? <Loading/> : null}
 				<div className="container px-0 homepage-list">
-					{favEventContainer}
-					{mainContent}
+
+					{this.state.favEventsList.length > 0 ? (
+						<div className="fav-container" key={1}>
+							<div className="tournament-title">
+								<Icon name="fas fa-star event-fav-color"/>
+								<div className="col tournament-name px-2">
+									<strong><Trans>My Favorites</Trans></strong>
+								</div>
+							</div>
+							{this.state.favEventsList.map((event, i) => {
+								return (<Event key={i}
+								               socket={this.props.socket}
+								               favContainer={true}
+								               event={event}
+								               updateParentState={this.updateParentState} {...this.state}/>)
+							})}
+						</div>
+					) : ""}
+
+					{mainData.length > 0 ? (
+						<Tournament
+							isLive={this.state.isLive}
+							socket={this.props.socket}
+							tournaments={mainData}
+							updateParentState={this.updateParentState}
+							favEvents={this.state.favEvents}
+							favEventsList={this.state.favEventsList}
+						/>
+					) : <Errors key={1} type="no-matched-game"/>}
+
 				</div>
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">

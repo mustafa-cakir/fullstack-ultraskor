@@ -102,38 +102,12 @@ class Headertabs extends Component {
         this.setState({filteredItems: newfilteredItems});
     }
 
-    applyLiveHandler(livePrevState, clicked = false) {
-        if (livePrevState === false) {
-            let LiveMatches = JSON.parse(JSON.stringify(this.props.mainData));
-            //let LiveMatches = cloneDeep(this.props.mainData);   // requires installing lodash
-            LiveMatches.sportItem.tournaments = LiveMatches.sportItem.tournaments.reduce(function (whole, tournament) {
-                tournament.events = tournament.events.filter((event) => {
-                    return event.status.type === "inprogress";
-                });
-                tournament.events.forEach(() => {
-                    if (whole.indexOf(tournament) < 0) whole.push(tournament);
-                });
-                return whole;
-            }, []);
-            this.props.updateParentState({
-                mainData: LiveMatches
-            });
-        } else {
-            if (this.state.filteredItems.length > 0) {
-                this.applyFilter(clicked);
-            } else {
-                this.props.updateParentState({
-                    mainData: this.props.orjData
-                });
-            }
-        }
-    }
 
     toggleLive() {
-        const {isLive} = this.state;
         this.setState({isFilterDropdown: false, isSportDropdown: false, isDateDropdown: false}); // close other dropdowns
-        this.applyLiveHandler(isLive, true);
-        this.setState({isLive: !isLive}, this.setSessionStorage);
+	    this.props.updateParentState({
+		    isLive: !this.props.isLive
+	    });
     }
 
     openFilterDropdown() {
@@ -141,7 +115,7 @@ class Headertabs extends Component {
             isFilterDropdown: !this.state.isFilterDropdown,
             isSportDropdown: false,
             isDateDropdown: false
-        }, this.setSessionStorage);
+        });
     }
 
     openSportDropdown() {
@@ -149,7 +123,7 @@ class Headertabs extends Component {
             isSportDropdown: !this.state.isSportDropdown,
             isFilterDropdown: false,
             isDateDropdown: false
-        }, this.setSessionStorage);
+        });
     }
 
     openDateDropdown() {
@@ -214,7 +188,7 @@ class Headertabs extends Component {
                     </div>
                 </li>
 
-                <li className={"col col-live p-0" + (this.state.isLive ? ' active' : '')}>
+                <li className={"col col-live p-0" + (this.props.isLive ? ' active' : '')}>
                     <div className="header-tabs-container justify-content-center"
                          onClick={this.toggleLive.bind(this)}>
                         <Icon name="far fa-clock mr-1"/> <Trans>Live</Trans>
