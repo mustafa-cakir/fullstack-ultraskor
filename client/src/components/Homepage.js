@@ -20,10 +20,10 @@ class Homepage extends Component {
 		this.state = {
 			mainData: null,
 			loading: false,
-			orjData: null,
 			favEvents: [],
 			favEventsList: [],
 			refreshButton: false,
+			filteredTournaments: [],
 			isLive: false
 		};
 		this.updateParentState = this.updateParentState.bind(this);
@@ -32,14 +32,9 @@ class Homepage extends Component {
 		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
-		this.throttle = this.throttle.bind(this);
 		this.todaysDate = null;
 		this.socket = this.props.socket;
 	};
-
-	shouldComponentUpdate(nextProps, nextState) {
-		return true;
-	}
 
 	componentDidMount() {
 		if (this.props.match.params.date) {
@@ -47,6 +42,7 @@ class Homepage extends Component {
 		} else {
 			this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
 			this.analyzeSessionStorage();
+			this.getFromLocaleStorage();
 		}
 		this.initGetData({
 			api: '/football//' + this.todaysDate + '/json',
@@ -60,52 +56,26 @@ class Homepage extends Component {
 		this.initSocket();
 	}
 
-	throttle(func, wait, options) {
-		let context;
-		let args;
-		let result;
-		let timeout = null;
-		let previous = 0;
-		if (!options) options = {};
-		const later = () => {
-			previous = options.leading === false ? 0 : Date.now();
-			timeout = null;
-			result = func.apply(context, args);
-			if (!timeout) context = args = null;
-		};
-		return function () {
-			const now = Date.now();
-			if (!previous && options.leading === false) previous = now;
-			const remaining = wait - (now - previous);
-			context = this;
-			args = arguments;
-			if (remaining <= 0 || remaining > wait) {
-				if (timeout) {
-					clearTimeout(timeout);
-					timeout = null;
-				}
-				previous = now;
-				result = func.apply(context, args);
-				if (!timeout) context = args = null;
-			} else if (!timeout && options.trailing !== false) {
-				timeout = setTimeout(later, remaining);
-			}
-			return result;
-		};
-	};
+	getFromLocaleStorage() {
+		console.log('local storage get triggered');
 
-	// localStorageGet() {
-	//     let storageHomepage = JSON.parse(sessionStorage.getItem('ultraskor_homepage'));
-	//     if (storageHomepage) {
-	//         this.setState(storageHomepage)
-	//     }
-	// }
-	//
-	// localStorageSet() {
-	//     const { mainData, orjData, loading, refreshButton,  ...stateToStore} = this.state;
-	//     console.log(stateToStore);
-	//     localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
-	// }
+		const persistState = localStorage.getItem('ultraskor_homepage');
+		if (persistState) {
+			try {
+				this.setState(JSON.parse(persistState));
+			} catch (e) {
+				console.log("Prev state can't implemented, something went seriously wrong!");
+			}
+		}
+	}
+
+	setToLocaleStorage() {
+	    const stateToStore = {
+		    ...(this.state.filteredTournaments.length > 0 && {filteredTournaments: this.state.filteredTournaments}),
+		    ...(this.state.isLive && {isLive: this.state.isLive})
+	    };
+	    localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
+	}
 
 	analyzeSessionStorage() {
 		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
@@ -133,11 +103,9 @@ class Homepage extends Component {
 		ReactGA.pageview(page);
 	};
 
-	updateParentState = (state) => {
-		return new Promise((resolve) => {
-			this.setState(state, () => {
-				resolve()
-			});
+	updateParentState = (state, isSetToLocalStorage = false) => {
+		this.setState(state, () => {
+			if (isSetToLocalStorage) this.setToLocaleStorage()
 		});
 	};
 
@@ -178,6 +146,7 @@ class Homepage extends Component {
 			});
 			return whole;
 		}, []);
+		tournaments[0].currentDate = currentDate;
 		return tournaments;
 	};
 
@@ -214,7 +183,6 @@ class Homepage extends Component {
 			})
 			.catch(err => {
 				this.setState({
-					orjData: {error: err.toString()},
 					mainData: {error: err.toString()},
 					loading: false,
 					refreshBtn: true
@@ -238,7 +206,6 @@ class Homepage extends Component {
 	updateStateGetData(res, isUpdated) {
 		console.log(res);
 		this.setState({
-			orjData: res,
 			mainData: res,
 			...(!isUpdated && {loading: false}),
 			...(!isUpdated && {refreshButton: false}),
@@ -274,7 +241,7 @@ class Homepage extends Component {
 
 	onSocketReturnUpdatesData(res) {
 		this.initGetUpdatesHomepage();
-		if (res && res.params && this.state.mainData && this.state.mainData.params && this.state.mainData.params.date === res.params.date) {
+		if (res && res.params && this.state.mainData[0].currentDate === res.params.date) {
 			this.handleGetData(res, true);
 		} else {
 			return false;
@@ -351,9 +318,9 @@ class Homepage extends Component {
 			<div>
 				<Headertabs
 					isLive={this.state.isLive}
+					filteredTournaments={this.state.filteredTournaments}
 					updateParentState={this.updateParentState}
 					initGetData={this.initGetData}
-					orjData={this.state.orjData}
 					mainData={this.state.mainData}
 					todaysDateByUrl={this.props.match.params.date}
 				/>
@@ -382,6 +349,7 @@ class Homepage extends Component {
 					{mainData.length > 0 ? (
 						<Tournament
 							isLive={this.state.isLive}
+							filteredTournaments={this.state.filteredTournaments}
 							socket={this.props.socket}
 							tournaments={mainData}
 							updateParentState={this.updateParentState}

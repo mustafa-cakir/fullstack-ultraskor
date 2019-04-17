@@ -11,7 +11,7 @@ class Tournament extends PureComponent {
 	// }
 
 	render() {
-		const {t, isLive} = this.props;
+		const {t, isLive, filteredTournaments} = this.props;
 		return (
 			<React.Fragment>
 				{this.props.tournaments.map((tournament, index) => {
@@ -20,6 +20,10 @@ class Tournament extends PureComponent {
 							return event.status.type === "inprogress";
 						});
 						if (checkLive.length < 1) return false;
+					}
+
+					if (filteredTournaments.length > 0) {
+						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
 					}
 
 					return tournament.events.length > 0 ? (
@@ -41,7 +45,7 @@ class Tournament extends PureComponent {
 								return (<Event key={event.id}
 											   index={k}
 											   event={event}
-											   updateParentState={this.updateParentState}/>)
+											   updateParentState={this.props.updateParentState}/>)
 							})}
 							{/*</div>*/}
 						</React.Fragment>
