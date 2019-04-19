@@ -43,6 +43,7 @@ class Tournament extends PureComponent {
 							{tournament.events.map((event, k) => {
 								if (isLive && event.status.type !== "inprogress") return false;
 								return (<Event key={event.id}
+								               favEvents={this.props.favEvents}
 											   index={k}
 											   event={event}
 											   updateParentState={this.props.updateParentState}/>)

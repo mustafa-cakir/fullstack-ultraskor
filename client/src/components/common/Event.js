@@ -10,7 +10,11 @@ class Event extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			favEventLoading: false
+			favEventLoading: false,
+			// incidentHomeRedCard: false,
+			// incidentAwayRedCard: false,
+			// incidentHomeScore: false,
+			// incidentAwayScore: false,
 		}
 	}
 
@@ -18,21 +22,23 @@ class Event extends Component {
 		if (this.props.event.statusDescription !== "FT") {
 			//console.log(this.props.event.statusDescription, nextProps.event.statusDescription);
 		}
-		// if (
-		// 	this.props.event.status.type !== nextProps.event.status.type
-		// 	|| this.props.event.statusDescription !== nextProps.event.statusDescription
-		// 	|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
-		// 	|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
-		// 	|| this.props.event.status.code !== nextProps.event.status.code
-		// 	|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
-		// 	|| this.props.favEvents.toString() !== nextProps.favEvents.toString()
-		// 	|| this.state.favEventLoading !== nextState.favEventLoading
-		// ) {
-		// 	console.log('changed!!', this.props.event.homeTeam.name, nextProps.event.homeTeam.name, this.props.event.statusDescription, this.props.event);
-		// 	return true;
-		// }
+		if (
+			this.props.event.status.type !== nextProps.event.status.type
+			|| this.props.event.statusDescription !== nextProps.event.statusDescription
+			|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
+			|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
+			|| this.props.event.awayScore.current !== nextProps.event.awayScore.current
+			|| this.props.event.homeScore.current !== nextProps.event.homeScore.current
+			|| this.props.event.status.code !== nextProps.event.status.code
+			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
+			|| this.props.favEvents.toString() !== nextProps.favEvents.toString()
+			|| this.state.favEventLoading !== nextState.favEventLoading
+		) {
+			console.log('changed!!', this.props.event.homeTeam.name, nextProps.event.homeTeam.name, this.props.event.statusDescription, this.props.event);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	isInProgress() {
