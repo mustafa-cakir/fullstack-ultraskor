@@ -117,7 +117,7 @@ class Fixture extends Component {
 					</div>
 					<div className="fixture-list position-relative">
 						{loading ? <Loading type="inside"/> : ""}
-						<Tournament tournaments={roundMatches.tournaments} from="fixture"/>
+						<Tournament tournaments={roundMatches.tournaments} from="fixture" selected="h2h"/>
 					</div>
 				</div>
 			</div>

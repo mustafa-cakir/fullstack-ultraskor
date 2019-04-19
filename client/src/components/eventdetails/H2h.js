@@ -25,12 +25,15 @@ class H2h extends Component {
     };
 
     preProcessData(res) {
-        console.log(res);
+    	console.log(res);
+	    res.h2h.events.tournaments.forEach(tournament => {
+		    tournament.events = tournament.events.filter(x => x.status.type === "finished");
+	    });
         res.home.recent.tournaments.forEach(tournament => {
-            tournament.events = tournament.events.filter(x => x.status.type !== "notstarted");
+            tournament.events = tournament.events.filter(x => x.status.type === "finished");
         });
         res.away.recent.tournaments.forEach(tournament => {
-            tournament.events = tournament.events.filter(x => x.status.type !== "notstarted");
+            tournament.events = tournament.events.filter(x => x.status.type === "finished");
         });
         return res;
     };
