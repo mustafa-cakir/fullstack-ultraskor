@@ -1,17 +1,30 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import Icon from "./Icon";
 import moment from "moment";
-import { Link } from "react-router-dom"
+import {Link} from "react-router-dom"
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 
-class Event extends PureComponent {
+class Event extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			favEventLoading: false
-		}
+			favEventLoading: false,
+		};
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props.event.status.type !== nextProps.event.status.type
+			|| this.props.event.statusDescription !== nextProps.event.statusDescription
+			|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
+			|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
+			|| this.props.event.awayScore.current !== nextProps.event.awayScore.current
+			|| this.props.event.homeScore.current !== nextProps.event.homeScore.current
+			|| this.props.event.status.code !== nextProps.event.status.code
+			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
+			|| (this.props.favEvents && this.props.favEvents.toString() !== nextProps.favEvents.toString())
+			|| this.state.favEventLoading !== nextState.favEventLoading;
 	}
 
 	isInProgress() {
@@ -83,6 +96,7 @@ class Event extends PureComponent {
 		}
 
 		this.setState({favEventLoading: true});
+
 		askForPermissioToReceiveNotifications().then(token => {
 			fetch(`/api/webpush`, {
 				method: "POST",
@@ -106,20 +120,18 @@ class Event extends PureComponent {
 				})
 				.then(() => {
 					console.log(`Successfully ${method} for /topics/match_${eventId}`);
-					localStorage.setItem('FavEvents', JSON.stringify(favEvents));
 					this.props.updateParentState({
 						favEvents: favEvents,
 						favEventsList: favEventsList
-					});
+					}, true);
 				})
 				.catch(err => {
 					// error
 					this.setState({favEventLoading: false});
-					localStorage.setItem('FavEvents', JSON.stringify(favEvents));
 					this.props.updateParentState({
 						favEvents: favEvents,
 						favEventsList: favEventsList
-					});
+					}, true);
 					console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
 				});
 		})
@@ -137,21 +149,21 @@ class Event extends PureComponent {
 					pathname: `/${t('match')}/${generateSlug(t(event.homeTeam.name) + '-' + t(event.awayTeam.name))}-${t('live-score')}-${event.id}`,
 					state: {isPrev: true},
 				}} className={`event-link col p-0 row m-0 ${event.winnerCode ? "winner-" + event.winnerCode : ""}`}
-					  title={`${t(event.homeTeam.name)} - ${t(event.awayTeam.name)}  ${t('click for live scores, lineup and stats')}`}>
+				      title={`${t(event.homeTeam.name)} - ${t(event.awayTeam.name)}  ${t('click for live scores, lineup and stats')}`}>
                             <span className="col event-team home text-right pr-0 pl-2">
                                 {event.homeRedCards ? <span className={"red-card"}>{event.homeRedCards}</span> : ""}
-								{t(event.homeTeam.name)}
+	                            {t(event.homeTeam.name)}
                             </span>
 					<span
 						className={"col event-score text-center font-weight-bold px-0" + (event.status.type === 'inprogress' ? ' live' : '')}>
                                 {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ?
-									(
-										<React.Fragment>{event.homeScore.current}<span
-											className="score-separator">:</span>{event.awayScore.current}
-										</React.Fragment>
-									)
-									: (" - ")
-								}
+	                                (
+		                                <React.Fragment>
+			                                {event.homeScore.current}<span className="score-separator">:</span>{event.awayScore.current}
+		                                </React.Fragment>
+	                                )
+	                                : (" - ")
+                                }
                             </span>
 					<span className="col event-team away text-left pl-0 pr-2">
                                 {event.awayRedCards ? <span className={"red-card"}>{event.awayRedCards}</span> : ""}
@@ -168,7 +180,7 @@ class Event extends PureComponent {
 					</div>
 				) : (
 					<div className="col event-fav pl-0 text-right pr-2"
-						 onClick={this.favClickHandler.bind(this)}>
+					     onClick={this.favClickHandler.bind(this)}>
 						{this.state.favEventLoading ? <Icon name="fas fa-spinner fav-loading"/> : ""}
 						{this.props.favContainer || favActive ? (
 							<Icon name="fas fa-star active"/>) : event.status.type !== "finished" ?
@@ -186,12 +198,12 @@ const TeamForm = props => {
 	let result = null;
 	//console.log(typeof selectedId, typeof event.homeTeam.id, event.id, event.winnerCode);
 	if (event.winnerCode === 1) {
-	    result = parseInt(selectedId) === event.homeTeam.id ? "W" : "L"
-    } else if (event.winnerCode === 2) {
-        result = parseInt(selectedId) === event.homeTeam.id ? "L" : "W"
-    } else if (event.winnerCode === 3) {
-	    result = "D"
-    }
+		result = parseInt(selectedId) === event.homeTeam.id ? "W" : "L"
+	} else if (event.winnerCode === 2) {
+		result = parseInt(selectedId) === event.homeTeam.id ? "L" : "W"
+	} else if (event.winnerCode === 3) {
+		result = "D"
+	}
 
 	return result ? <span className={"team-form team-form-" + result}>{result}</span> : <span/>;
 };

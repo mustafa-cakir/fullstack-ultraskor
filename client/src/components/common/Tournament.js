@@ -3,16 +3,33 @@ import Event from "./Event";
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug, flagImg} from "../../Helper";
 import { Link } from "react-router-dom"
+import Errors from "./Errors";
 
 class Tournament extends PureComponent {
+
+	// shouldComponentUpdate(nextProps, nextState) {
+	// 	return false;
+	// }
+
 	render() {
-		const {t} = this.props;
+		const {t, isLive, filteredTournaments} = this.props;
+		let tournamentCount = 0;
 		return (
 			<React.Fragment>
-				{this.props.tournaments.map((tournament, i) => {
+				{this.props.tournaments.map(tournament => {
+					if (isLive) {
+						let checkLive = tournament.events.filter(event => {
+							return event.status.type === "inprogress";
+						});
+						if (checkLive.length < 1) return false;
+					}
+
+					if (filteredTournaments.length > 0) {
+						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
+					}
+					tournamentCount++;
 					return tournament.events.length > 0 ? (
-						<React.Fragment key={i}>
-							{/*<div className="tournament-container" data-key={i}>*/}
+						<React.Fragment key={tournament.tournament.id}>
 							<div className="tournament-title">
 									{flagImg(tournament)}
 										<Link to={{
@@ -25,15 +42,18 @@ class Tournament extends PureComponent {
 							</div>
 
 							{tournament.events.map((event, k) => {
-								return (<Event key={k}
+								if (isLive && event.status.type !== "inprogress") return false;
+								return (<Event key={event.id}
+								               favEvents={this.props.favEvents}
+								               favEventsList={this.props.favEventsList}
 											   index={k}
 											   event={event}
-											   updateParentState={this.updateParentState} {...this.props}/>)
+											   updateParentState={this.props.updateParentState}/>)
 							})}
-							{/*</div>*/}
 						</React.Fragment>
 					) : ""
 				})}
+				{tournamentCount < 1 ? <Errors type="no-matched-game"/> : ""}
 			</React.Fragment>
 		)
 	}

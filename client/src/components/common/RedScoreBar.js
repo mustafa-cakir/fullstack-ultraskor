@@ -4,26 +4,22 @@ import {withTranslation} from "react-i18next";
 import { Link } from "react-router-dom"
 import {generateSlug} from "../../Helper";
 
-class FlashScoreBoard extends Component {
+class RedScoreBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            flashScoreBoardData: null,
-            flashScoreMuted: false,
-            flashScoreShrinked: false,
             flashData: null,
             disconnected: false
         };
-        this.handleSocketFlashScoreChanges = this.handleSocketFlashScoreChanges.bind(this);
+        this.handleSocketRedScoreChanges = this.handleSocketRedScoreChanges.bind(this);
         this.onSocketConnect = this.onSocketConnect.bind(this);
         this.removeSocketEvents = this.removeSocketEvents.bind(this);
         this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
-        this.flashScoreTimer = null;
+        this.redScoreTimer = null;
         this.socket = this.props.socket;
     }
 
     componentDidMount() {
-        this.analyzeSessionStorage();
         this.initSocket();
     }
 
@@ -32,25 +28,25 @@ class FlashScoreBoard extends Component {
     }
 
     removeSocketEvents() {
-        clearTimeout(this.flashScoreTimer);
-        clearInterval(this.getUpdatesFlashScoresInterval);
+        clearTimeout(this.redScoreTimer);
+        clearInterval(this.getUpdatesRedScoresInterval);
         this.socket.removeListener('disconnect', this.onSocketDisconnect);
         this.socket.removeListener('return-error-updates', this.onSocketDisconnect);
         this.socket.removeListener('connect', this.onSocketConnect);
-        this.socket.removeListener('return-flashcore-changes', this.handleSocketFlashScoreChanges);
+        this.socket.removeListener('return-flashcore-changes', this.handleSocketRedScoreChanges);
     }
 
     initSocket() {
         this.socket.on('disconnect', this.onSocketDisconnect);
         this.socket.on('return-error-updates', this.onSocketDisconnect);
 
-        clearInterval(this.getUpdatesFlashScoresInterval);
-        this.initGetUpdatesFlashScores();
+        clearInterval(this.getUpdatesRedScoresInterval);
+        this.initGetUpdatesRedScores();
     }
 
-    initGetUpdatesFlashScores() {
-        this.socket.on('return-flashcore-changes', this.handleSocketFlashScoreChanges);
-        this.getUpdatesFlashScoresInterval = setInterval(() => {  // init after 10 seconds
+    initGetUpdatesRedScores() {
+        this.socket.on('return-flashcore-changes', this.handleSocketRedScoreChanges);
+        this.getUpdatesRedScoresInterval = setInterval(() => {  // init after 10 seconds
             this.socket.emit('get-flashcore-changes');
         }, 20000);
     }
@@ -75,7 +71,7 @@ class FlashScoreBoard extends Component {
     }
 
     playSound(type) {
-        if (!this.state.flashScoreMuted) {
+        if (!this.props.redScoreMuted) {
             setTimeout(() => {
                 if (type === "goal") this.props.audioFiles.goal.play();
                 else if (type === "cancel") this.props.audioFiles.cancel.play();
@@ -87,20 +83,8 @@ class FlashScoreBoard extends Component {
         }
     }
 
-    analyzeSessionStorage() {
-        let storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
-            storageFlashScoreShrinked = JSON.parse(localStorage.getItem('flashScoreShrinked'));
 
-        if (storageFlashScoreShrinked || storageFlashScoreMuted) {
-            this.setState({
-                flashScoreMuted: storageFlashScoreMuted,
-                flashScoreShrinked: storageFlashScoreShrinked
-            });
-        }
-    }
-
-
-    handleSocketFlashScoreChanges(res) {
+    handleSocketRedScoreChanges(res) {
         const {t} = this.props;
         if (res && res.length > 0) {
             res.forEach(x => {
@@ -140,8 +124,8 @@ class FlashScoreBoard extends Component {
                             this.setState({
                                 flashData: change
                             }, () => {
-                                clearTimeout(this.flashScoreTimer);
-                                this.flashScoreTimer = setTimeout(() => {
+                                clearTimeout(this.redScoreTimer);
+                                this.redScoreTimer = setTimeout(() => {
                                     this.setState({flashData: null})
                                 }, 15000);
                             });
@@ -153,31 +137,28 @@ class FlashScoreBoard extends Component {
     }
 
     shrinkToggle() {
-        this.setState({
-            flashScoreShrinked: !this.state.flashScoreShrinked
-        }, () => {
-            localStorage.setItem('flashScoreShrinked', this.state.flashScoreShrinked);
-        })
+    	this.updateParentState({
+		    redScoreShrinked: !this.props.redScoreShrinked
+	    }, true);
     }
 
     muteToggle() {
-        this.setState({
-            flashScoreMuted: !this.state.flashScoreMuted
-        }, () => {
-            localStorage.setItem('FlashScoreMuted', this.state.flashScoreMuted);
-        })
+	    this.updateParentState({
+		    redScoreMuted: !this.props.redScoreMuted
+	    }, true);
     }
 
     render() {
-        const {flashData, flashScoreShrinked, flashScoreMuted} = this.state;
-        const {t} = this.props;
-        if (!flashData) return false;
+        const {flashData} = this.state;
+	    if (!flashData) return false;
+
+        const {t, redScoreShrinked, redScoreMuted} = this.props;
         const link = `/${t('match')}/${generateSlug(t(flashData.event.homeTeam.name) + '-' + t(flashData.event.awayTeam.name))}-${t('live-score')}-${flashData.event.id}`;
         return (
-            <div className={"flash-score-board " + (flashScoreShrinked ? "shrink" : "")}>
+            <div className={"flash-score-board " + (redScoreShrinked ? "shrink" : "")}>
                 <div className="container">
                     <div className="shrink-btn" onClick={this.shrinkToggle.bind(this)}><Icon
-                        name={"fas fa-chevron-" + (flashScoreShrinked ? "up" : "down")}/></div>
+                        name={"fas fa-chevron-" + (redScoreShrinked ? "up" : "down")}/></div>
                     <div className="row align-items-center content">
                         <div className="col col-minute">{flashData.event.statusDescription}'</div>
                         <Link to={{
@@ -215,9 +196,9 @@ class FlashScoreBoard extends Component {
                                 alt={t(flashData.event.awayTeam.name)}/>
                             <div className="team-name">{t(flashData.event.awayTeam.name)}</div>
                         </Link>
-                        <div className={"col col-sound " + (flashScoreMuted ? "muted" : "")}
+                        <div className={"col col-sound " + (redScoreMuted ? "muted" : "")}
                              onClick={this.muteToggle.bind(this)}><Icon
-                            name={"fas fa-volume-" + (flashScoreMuted ? "off" : "up")}/></div>
+                            name={"fas fa-volume-" + (redScoreMuted ? "off" : "up")}/></div>
                     </div>
                 </div>
             </div>
@@ -225,4 +206,4 @@ class FlashScoreBoard extends Component {
     }
 }
 
-export default withTranslation('translations')(FlashScoreBoard)
+export default withTranslation('translations')(RedScoreBar)
