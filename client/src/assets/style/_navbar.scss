@@ -634,6 +634,12 @@
 			color: $color-cl-4;
 			background: rgba($color-cl-4, .05);
 		}
+		&.soon {
+			color: #aaa;
+			small {
+				font-style: italic;
+			}
+		}
 	}
 	.separator {
 		margin: 0;

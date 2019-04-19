@@ -5,14 +5,14 @@ import Loading from "./common/Loading";
 import moment from "moment";
 import Headertabs from "./Headertabs";
 import Footer from "./common/Footer";
-import Event from "./common/Event";
 import Icon from "./common/Icon";
 import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./common/RefreshButton";
 import i18n from "i18next";
 import {HelperUpdateMeta, HelperTranslateUrlTo} from "../Helper";
-import FlashScoreBoard from "./common/FlashScoreBoard";
+import RedScoreBoard from "./common/RedScoreBar";
+import FavTournament from "./common/FavTournament";
 
 class Homepage extends Component {
 	constructor(props) {
@@ -24,7 +24,9 @@ class Homepage extends Component {
 			favEventsList: [],
 			refreshButton: false,
 			filteredTournaments: [],
-			isLive: false
+			isLive: false,
+			redScoreMuted: false,
+			redScoreShrinked: false,
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -32,7 +34,6 @@ class Homepage extends Component {
 		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
-		this.todaysDate = null;
 		this.socket = this.props.socket;
 	};
 
@@ -41,7 +42,7 @@ class Homepage extends Component {
 			this.todaysDate = this.props.match.params.date;
 		} else {
 			this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
-			this.analyzeSessionStorage();
+			//this.analyzeSessionStorage();
 			this.getFromLocaleStorage();
 		}
 		this.initGetData({
@@ -57,8 +58,6 @@ class Homepage extends Component {
 	}
 
 	getFromLocaleStorage() {
-		console.log('local storage get triggered');
-
 		const persistState = localStorage.getItem('ultraskor_homepage');
 		if (persistState) {
 			try {
@@ -72,28 +71,12 @@ class Homepage extends Component {
 	setToLocaleStorage() {
 	    const stateToStore = {
 		    ...(this.state.filteredTournaments.length > 0 && {filteredTournaments: this.state.filteredTournaments}),
-		    ...(this.state.isLive && {isLive: this.state.isLive})
+		    ...(this.state.isLive && {isLive: this.state.isLive}),
+		    ...(this.state.favEvents.length > 0 && {favEvents: this.state.favEvents}),
+		    redScoreMuted: this.state.redScoreMuted,
+		    redScoreShrinked: this.state.redScoreShrinked,
 	    };
 	    localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
-	}
-
-	analyzeSessionStorage() {
-		let storageHeadertabsState = JSON.parse(sessionStorage.getItem('HeadertabsState')),
-			storageFavEvents = JSON.parse(localStorage.getItem('FavEvents')),
-			storageFlashScoreMuted = JSON.parse(localStorage.getItem('FlashScoreMuted')),
-			storageFlashScoreShrink = JSON.parse(localStorage.getItem('FlashScoreShrink'));
-
-		if (storageHeadertabsState && storageHeadertabsState.selectedDay) {
-			this.todaysDate = storageHeadertabsState.selectedDay;
-		}
-
-		if (storageFlashScoreShrink || storageFlashScoreMuted || storageFavEvents) {
-			this.setState({
-				flashScoreMuted: storageFlashScoreMuted,
-				flashScoreShrinked: storageFlashScoreShrink,
-				favEvents: storageFavEvents || []
-			});
-		}
 	}
 
 	trackPage(page) {
@@ -200,11 +183,10 @@ class Homepage extends Component {
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
 		this.updateStateGetData(res, isUpdated);
 		this.updateMeta();
-		this.analyzeSessionStorage();
 	}
 
 	updateStateGetData(res, isUpdated) {
-		console.log(res);
+		//console.log(res);
 		this.setState({
 			mainData: res,
 			...(!isUpdated && {loading: false}),
@@ -329,21 +311,13 @@ class Homepage extends Component {
 				<div className="container px-0 homepage-list">
 
 					{this.state.favEventsList.length > 0 ? (
-						<div className="fav-container" key={1}>
-							<div className="tournament-title">
-								<Icon name="fas fa-star event-fav-color"/>
-								<div className="col tournament-name px-2">
-									<strong><Trans>My Favorites</Trans></strong>
-								</div>
-							</div>
-							{this.state.favEventsList.map((event, i) => {
-								return (<Event key={i}
-								               socket={this.props.socket}
-								               favContainer={true}
-								               event={event}
-								               updateParentState={this.updateParentState} {...this.state}/>)
-							})}
-						</div>
+						<FavTournament
+							isLive={this.state.isLive}
+							socket={this.props.socket}
+							updateParentState={this.updateParentState}
+							favEvents={this.state.favEvents}
+							favEventsList={this.state.favEventsList}
+						/>
 					) : ""}
 
 					{mainData.length > 0 ? (
@@ -375,7 +349,13 @@ class Homepage extends Component {
 					</div>
 				</div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
-				<FlashScoreBoard socket={this.props.socket} audioFiles={this.props.audioFiles}/>
+				<RedScoreBoard
+					socket={this.props.socket}
+					audioFiles={this.props.audioFiles}
+					redScoreMuted={this.state.redScoreMuted}
+					redScoreShrinked={this.state.redScoreShrinked}
+					updateParentState={this.updateParentState}
+				/>
 				<Footer/>
 			</div>)
 	}

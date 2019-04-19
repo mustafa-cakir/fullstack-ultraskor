@@ -20,26 +20,6 @@ class Headertabs extends PureComponent {
 		};
 	}
 
-	// componentDidMount() {
-	//     const persistState = sessionStorage.getItem('HeadertabsState');
-	//     if (persistState) {
-	//         try {
-	//             this.setState(JSON.parse(persistState));
-	//         } catch (e) {
-	//             console.log("Prev state can't implemented, something went seriously wrong!");
-	//         }
-	//     }
-	// }
-
-	setSessionStorage() {
-		const {...obj} = this.state;
-		obj.isSportDropdown = false;
-		obj.isFilterDropdown = false;
-		obj.isDateDropdown = false;
-		delete obj.selectedDay;
-		sessionStorage.setItem('HeadertabsState', JSON.stringify(obj));
-	}
-
 	clearFilter() {
 		this.setState({
 			filteredTournamentsLocale: [],
@@ -132,7 +112,7 @@ class Headertabs extends PureComponent {
 	}
 
 	render() {
-		console.log(this.state.filteredTournamentsLocale);
+		//console.log(this.state.filteredTournamentsLocale);
 		const {i18n} = this.props;
 		moment.locale((i18n.language === "tr") ? "tr-TR" : "en-US");
 		return (
@@ -149,20 +129,19 @@ class Headertabs extends PureComponent {
 					     aria-labelledby="dropdownMenuButton">
 						<a className="dropdown-item" href="/"><Icon name={"far fa-futbol"}/> Futbol</a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-basketball-ball"}/> Basketball</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-basketball-ball"}/> Basketball<small> - <Trans>very soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-table-tennis"}/> Tennis</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-table-tennis"}/> Tennis<small> - <Trans>soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-baseball-ball"}/> Baseball</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-baseball-ball"}/> Baseball<small> - <Trans>soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-football-ball"}/> Amr.
-							Football</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-football-ball"}/> Amr. Football <small> - <Trans>soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-football-ball"}/> Rugby</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-football-ball"}/> Rugby<small> - <Trans>soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-hockey-puck"}/> Hokey</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-hockey-puck"}/> Hokey<small> - <Trans>soon</Trans></small></a>
 						<hr className="separator"/>
-						<a className="dropdown-item" href="/"><Icon name={"fas fa-volleyball-ball"}/> Voleyball</a>
+						<a className="dropdown-item soon" href="/"><Icon name={"fas fa-volleyball-ball"}/> Voleyball<small> - <Trans>soon</Trans></small></a>
 					</div>
 				</li>
 

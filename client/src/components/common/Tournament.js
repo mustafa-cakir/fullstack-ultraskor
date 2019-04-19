@@ -3,6 +3,7 @@ import Event from "./Event";
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug, flagImg} from "../../Helper";
 import { Link } from "react-router-dom"
+import Errors from "./Errors";
 
 class Tournament extends PureComponent {
 
@@ -12,9 +13,10 @@ class Tournament extends PureComponent {
 
 	render() {
 		const {t, isLive, filteredTournaments} = this.props;
+		let tournamentCount = 0;
 		return (
 			<React.Fragment>
-				{this.props.tournaments.map((tournament, index) => {
+				{this.props.tournaments.map(tournament => {
 					if (isLive) {
 						let checkLive = tournament.events.filter(event => {
 							return event.status.type === "inprogress";
@@ -25,10 +27,9 @@ class Tournament extends PureComponent {
 					if (filteredTournaments.length > 0) {
 						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
 					}
-
+					tournamentCount++;
 					return tournament.events.length > 0 ? (
 						<React.Fragment key={tournament.tournament.id}>
-							{/*<div className="tournament-container" data-key={i}>*/}
 							<div className="tournament-title">
 									{flagImg(tournament)}
 										<Link to={{
@@ -44,14 +45,15 @@ class Tournament extends PureComponent {
 								if (isLive && event.status.type !== "inprogress") return false;
 								return (<Event key={event.id}
 								               favEvents={this.props.favEvents}
+								               favEventsList={this.props.favEventsList}
 											   index={k}
 											   event={event}
 											   updateParentState={this.props.updateParentState}/>)
 							})}
-							{/*</div>*/}
 						</React.Fragment>
 					) : ""
 				})}
+				{tournamentCount < 1 ? <Errors type="no-matched-game"/> : ""}
 			</React.Fragment>
 		)
 	}

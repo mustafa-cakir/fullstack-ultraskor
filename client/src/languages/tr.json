@@ -271,10 +271,10 @@
 	"League Fixtures": "Lig Fikstürleri",
 	"Fixtures of most popular leagues": "En popüler liglerin fikstürleri",
 	"Language": "Dil",
-	"FlashScore Sound": "FlashScore Ses",
-	"FlashScore Visibility": "FlashScore Görünürlük",
-	"Play sound when there is an incident": "Goller için sesi açın",
-	"Activate FlashScore popup on homepage": "Ana Sayfa'da golleri anında görün",
+	"Red Score Bar Sound": "Kırmızı Skor Bandı Ses",
+	"Red Score Bar Visibility": "Kırmızı Skor Bandı Görünürlük",
+	"Play sound when there is an incident": "Anlık goller için sesi açın",
+	"Activate RedScore popup on homepage": "Ana Sayfa'da golleri anında görün",
 	"Settings": "Ayarlar",
 	"Show More": "Daha Fazlasını Göster",
 	"Please enter a valid name": "Lütfen geçerli bir isim yazın",
@@ -313,5 +313,7 @@
 	"Africa Cup of Nations, Qualification, Group I": "Afrika Uluslar Kupası Elemeleri, Grup I",
 	"Africa Cup of Nations, Qualification, Group J": "Afrika Uluslar Kupası Elemeleri, Grup J",
 	"Africa Cup of Nations, Qualification, Group K": "Afrika Uluslar Kupası Elemeleri, Grup K",
-	"Africa Cup of Nations, Qualification, Group L": "Afrika Uluslar Kupası Elemeleri, Grup L"
+	"Africa Cup of Nations, Qualification, Group L": "Afrika Uluslar Kupası Elemeleri, Grup L",
+	"very soon": "çok yakında",
+	"soon": "yakında"
 }
