@@ -49,6 +49,7 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	direction: ltr;
 	text-align: left;
+	overscroll-behavior-y: contain;
 }
 
 a:hover {

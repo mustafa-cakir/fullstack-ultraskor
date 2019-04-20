@@ -1,0 +1,91 @@
+.pull {
+	&-container {
+		pointer-events: none;
+		top: 0;
+		height: 0;
+		transition: height 0.1s;
+		text-align: center;
+		width: 100%;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		align-content: stretch;
+		background: #fff;
+		.icon {
+			color: #333;
+			font-family: "Font Awesome 5 Free", serif;
+			font-weight: 900;
+			-moz-osx-font-smoothing: grayscale;
+			-webkit-font-smoothing: antialiased;
+			display: inline-block;
+			font-style: normal;
+			font-variant: normal;
+			text-rendering: auto;
+			line-height: 1;
+			font-size: 1.5rem;
+			transition: transform .2s linear;
+			&:before {
+				content: "\f309";
+			}
+		}
+	}
+	&-refresh {
+		.icon {
+			animation: fa-spinx2 1s infinite linear;
+			&:before {
+				content: "\f1ce"
+			}
+		}
+	}
+	&-release {
+		.icon {
+			transform: rotate(180deg);
+		}
+	}
+}
+
+//.ptr {
+//	&-container {
+//		pointer-events: none;
+//		top: 0;
+//		height: 0;
+//		transition: height 0.3s, min-height 0.3s;
+//		text-align: center;
+//		width: 100%;
+//		overflow: hidden;
+//		display: flex;
+//		align-items: flex-end;
+//		align-content: stretch;
+//		i {
+//			font-size: 1.5rem;
+//		}
+//		.fa-spinx2 {
+//			animation: fa-spinx2 1s infinite linear
+//		}
+//	}
+//	&-box {
+//		padding: 10px;
+//		flex-basis: 100%;
+//	}
+//	&-pull {
+//		transition: none;
+//	}
+//	&-release {
+//		.ptr--icon {
+//			transform: rotate(180deg);
+//		}
+//	}
+//}
+
+
+@keyframes fa-spinx2 {
+	0% {
+		transform: rotate(0deg)
+	}
+
+	to {
+		transform: rotate(1turn)
+	}
+}
+

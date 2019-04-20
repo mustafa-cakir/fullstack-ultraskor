@@ -25,7 +25,6 @@ class H2h extends Component {
     };
 
     preProcessData(res) {
-    	console.log(res);
 	    res.h2h.events.tournaments.forEach(tournament => {
 		    tournament.events = tournament.events.filter(x => x.status.type === "finished");
 	    });

@@ -16,6 +16,7 @@ import Mp3RedCard from "./assets/sound/red-card.mp3";
 import Mp3HalfTime from "./assets/sound/half-time.mp3";
 import Mp3Start from "./assets/sound/start.mp3";
 import Teamdetails from "./components/teamdetails/Teamdetails";
+import PullToRefresh from "./components/common/PullToRefresh";
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -45,6 +46,7 @@ class App extends Component {
 				this.initSocket();
 			}, 5000);
 		}
+		PullToRefresh.init();
 	}
 
 	initSocket() {
