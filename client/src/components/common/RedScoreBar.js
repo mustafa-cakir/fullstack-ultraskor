@@ -137,13 +137,13 @@ class RedScoreBar extends Component {
     }
 
     shrinkToggle() {
-    	this.updateParentState({
+    	this.props.updateParentState({
 		    redScoreShrinked: !this.props.redScoreShrinked
 	    }, true);
     }
 
     muteToggle() {
-	    this.updateParentState({
+	    this.props.updateParentState({
 		    redScoreMuted: !this.props.redScoreMuted
 	    }, true);
     }
