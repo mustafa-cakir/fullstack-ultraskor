@@ -10,7 +10,7 @@ import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./common/RefreshButton";
 import i18n from "i18next";
-import {HelperUpdateMeta, HelperTranslateUrlTo} from "../Helper";
+import {HelperUpdateMeta, HelperTranslateUrlTo, getQueryStringFromUrl} from "../Helper";
 import RedScoreBoard from "./common/RedScoreBar";
 import FavTournament from "./common/FavTournament";
 
@@ -27,6 +27,8 @@ class Homepage extends Component {
 			isLive: false,
 			redScoreMuted: false,
 			redScoreShrinked: false,
+			isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
+			lazyLoadCount: getQueryStringFromUrl("load") || 10
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
@@ -329,21 +331,21 @@ class Homepage extends Component {
 							updateParentState={this.updateParentState}
 							favEvents={this.state.favEvents}
 							favEventsList={this.state.favEventsList}
+							isLazyLoad={this.state.isLazyLoad}
+							lazyLoadCount={this.state.lazyLoadCount}
 						/>
 					) : <Errors key={1} type="no-matched-game"/>}
 
 				</div>
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
-						<div className="col col-yesterday"><a className="pl-3"
-						                                      href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+						<div className="col col-yesterday"><a href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
 						                                      title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
-							name="fas fa-chevron-left"/> <Trans>Yesterday</Trans></a></div>
+							name="fas fa-chevron-left"/><Trans>Yesterday</Trans></a></div>
 						<div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"}
 						                                              title={t('Today\'s football matches')}><Trans>Today's
 							Matches</Trans></a></div>
-						<div className="col text-right col-tomorrow"><a className="pr-3"
-						                                                href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+						<div className="col text-right col-tomorrow"><a href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
 						                                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
 							<Icon name="fas fa-chevron-right"/></a></div>
 					</div>

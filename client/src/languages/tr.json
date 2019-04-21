@@ -258,8 +258,8 @@
 	"Football Results": "Maç sonucları, Canlı Skorlar",
 	"Today's football matches": "Bugünün Tüm Maçları ve Canlı Skorlar",
 	"Today's Matches": "Günün Maçları",
-	"Tomorrow": "Yarının Maçları",
-	"Yesterday": "Dünün Maçları",
+	"Tomorrow": "Yarın",
+	"Yesterday": "Dün",
 	"H2H": "Aralarında",
 	"Head To Head": "Karşılaştırma",
 	"Contact": "İletişim",
@@ -315,5 +315,6 @@
 	"Africa Cup of Nations, Qualification, Group K": "Afrika Uluslar Kupası Elemeleri, Grup K",
 	"Africa Cup of Nations, Qualification, Group L": "Afrika Uluslar Kupası Elemeleri, Grup L",
 	"very soon": "çok yakında",
-	"soon": "yakında"
+	"soon": "yakında",
+	"Load more": "Daha fazla yükle"
 }

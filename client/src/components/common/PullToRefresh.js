@@ -83,6 +83,8 @@ function _setupEvents() {
 			return;
 		}
 
+		if (e.target.classList.contains('ripple-effect')) return;
+
 		if (_state === 'pending') {
 			ptrElement.classList.add(`${classPrefix}pull`);
 			_state = 'pulling';

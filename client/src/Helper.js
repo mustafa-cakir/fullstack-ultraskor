@@ -11,7 +11,7 @@ class TranslateUrlHandler {
 				"-sezon-": "-season-",
 				"/maclar/": "/matches/",
 				"tarih-": "date-",
-                "/takim/": "/team/"
+				"/takim/": "/team/"
 
 			},
 			toTurkish: {
@@ -23,7 +23,7 @@ class TranslateUrlHandler {
 				"-season-": "-sezon-",
 				"/matches/": "/maclar/",
 				"date-": "tarih-",
-                "/team/": "/takim/"
+				"/team/": "/takim/"
 			}
 		}
 	}
@@ -38,16 +38,16 @@ class TranslateUrlHandler {
 	toEnglish(force) {
 		let url = window.location.origin;
 		let pathname = window.location.pathname;
-        if (force) {
-            url += this.replaceAll(pathname, this.regEx.toEnglish);
-        } else {
-            if (pathname.split('/')[1] !== "en") {
-                pathname = this.replaceAll(pathname, this.regEx.toEnglish);
-                url += '/en' + pathname;
-            } else {
-                url += pathname;
-            }
-        }
+		if (force) {
+			url += this.replaceAll(pathname, this.regEx.toEnglish);
+		} else {
+			if (pathname.split('/')[1] !== "en") {
+				pathname = this.replaceAll(pathname, this.regEx.toEnglish);
+				url += '/en' + pathname;
+			} else {
+				url += pathname;
+			}
+		}
 		return url;
 	}
 
@@ -55,15 +55,15 @@ class TranslateUrlHandler {
 		let url = window.location.origin;
 		let pathname = window.location.pathname;
 		if (force) {
-            url += this.replaceAll(pathname, this.regEx.toTurkish);
-        } else {
-            if (pathname.split('/')[1] === "en") {
-                pathname = this.replaceAll(pathname, this.regEx.toTurkish);
-                url += pathname;
-            } else {
-                url += pathname;
-            }
-        }
+			url += this.replaceAll(pathname, this.regEx.toTurkish);
+		} else {
+			if (pathname.split('/')[1] === "en") {
+				pathname = this.replaceAll(pathname, this.regEx.toTurkish);
+				url += pathname;
+			} else {
+				url += pathname;
+			}
+		}
 		return url;
 	}
 }
@@ -123,30 +123,30 @@ export function HelperUpdateMeta(props) {
 }
 
 export function flagImg(tournament) {
-    const storedCustomLogos = [7, 27];
-    const customLogos = [11, 384, 480, 679];
+	const storedCustomLogos = [7, 27];
+	const customLogos = [11, 384, 480, 679];
 
-    if (storedCustomLogos.indexOf(tournament.tournament.uniqueId) > -1) {
-        return (
-            <div className="col flag-img">
-                <img
-                    src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
-                    alt={tournament.tournament.name}/>
-            </div>
-        )
-    } else if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
-        return (
-            <div className="col flag-img">
-                <img
-                    src={`${window.ImageServer}/images/u-tournament/${tournament.tournament.uniqueId}.png`}
-                    alt={tournament.tournament.name}/>
-            </div>
-        )
-    } else {
-        return (
-            <div className={"col flag flag-" + tournament.category.flag}/>
-        )
-    }
+	if (storedCustomLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+		return (
+			<div className="col flag-img">
+				<img
+					src={"/static/media/" + tournament.tournament.uniqueId + ".png"}
+					alt={tournament.tournament.name}/>
+			</div>
+		)
+	} else if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+		return (
+			<div className="col flag-img">
+				<img
+					src={`${window.ImageServer}/images/u-tournament/${tournament.tournament.uniqueId}.png`}
+					alt={tournament.tournament.name}/>
+			</div>
+		)
+	} else {
+		return (
+			<div className={"col flag flag-" + tournament.category.flag}/>
+		)
+	}
 }
 
 export function Throttle(func, wait, options) {
@@ -184,20 +184,20 @@ export function Throttle(func, wait, options) {
 }
 
 export function ratingClass(value) {
-    value = Number(value);
-    if (value > 8.0) {
-        return "amazing bg";
-    } else if (value > 7.5) {
-        return "great bg";
-    } else if (value > 6.9) {
-        return "good bg"
-    } else if (value > 5.9) {
-        return "mediocre bg";
-    } else if (value > 4.9) {
-        return "underwhelming bg";
-    } else {
-        return "unrated bg";
-    }
+	value = Number(value);
+	if (value > 8.0) {
+		return "amazing bg";
+	} else if (value > 7.5) {
+		return "great bg";
+	} else if (value > 6.9) {
+		return "good bg"
+	} else if (value > 5.9) {
+		return "mediocre bg";
+	} else if (value > 4.9) {
+		return "underwhelming bg";
+	} else {
+		return "unrated bg";
+	}
 }
 
 export function generateSlug(text) {
@@ -214,4 +214,27 @@ export function generateSlug(text) {
 		.replace(/--+/g, '-')         // Replace multiple - with single -
 		.replace(/^-+/, '')             // Trim - from start of text
 		.replace(/-+$/, '')             // Trim - from end of text
+}
+
+export function getQueryStringFromUrl(key) {
+	key = key.replace(/[[\]]/g, '\\$&');
+	let url = window.location.href,
+		regex = new RegExp('[?&]' + key + '(=([^&#]*)|&|#|$)'),
+		results = regex.exec(url);
+
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+export function updateQueryString(key, value) {
+	let uri = window.location.href,
+		re = new RegExp("([?&])" + key + "=.*?(&|$)", "i"),
+		separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (uri.match(re)) {
+		return uri.replace(re, '$1' + key + "=" + value + '$2');
+	}
+	else {
+		return uri + separator + key + "=" + value;
+	}
 }

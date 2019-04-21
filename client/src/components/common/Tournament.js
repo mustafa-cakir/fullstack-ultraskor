@@ -1,18 +1,27 @@
 import React, {PureComponent} from 'react';
 import Event from "./Event";
 import {Trans, withTranslation} from "react-i18next";
-import {generateSlug, flagImg} from "../../Helper";
+import {generateSlug, flagImg, updateQueryString} from "../../Helper";
 import {Link} from "react-router-dom"
 import Errors from "./Errors";
 
 class Tournament extends PureComponent {
 
-	// shouldComponentUpdate(nextProps, nextState) {
-	// 	return false;
-	// }
+	lazyLoadLoadMoreBtn() {
+		let newLazyLoadCount = parseInt(this.props.lazyLoadCount) + 10;
+		let newUrl = updateQueryString("load", newLazyLoadCount);
+
+		if (window.history.replaceState) {
+			window.history.replaceState("data", `${document.title} - ${newLazyLoadCount}`, newUrl);
+		}
+
+		this.props.updateParentState({
+			lazyLoadCount: newLazyLoadCount
+		});
+	}
 
 	render() {
-		const {t, isLive, filteredTournaments} = this.props;
+		const {t, isLive, filteredTournaments, isLazyLoad, lazyLoadCount} = this.props;
 		let tournamentCount = 0;
 		return (
 			<React.Fragment>
@@ -26,6 +35,14 @@ class Tournament extends PureComponent {
 
 					if (filteredTournaments && filteredTournaments.length > 0) {
 						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
+					}
+
+					if (isLazyLoad && !isLive) {
+						if (index === parseInt(lazyLoadCount)) {
+							return <div key="more" onClick={(e) => {this.lazyLoadLoadMoreBtn()}} className="load-more"><i className="fas"/><Trans>Load more</Trans></div>
+						} else if (index > parseInt(lazyLoadCount)) {
+							return false
+						}
 					}
 					tournamentCount++;
 					return tournament.events.length > 0 ? (

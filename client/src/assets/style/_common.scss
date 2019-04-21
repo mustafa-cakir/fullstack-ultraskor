@@ -1101,6 +1101,12 @@ code {
 		padding: 10px 0;
 		display: block;
 		color: #333;
+		&:hover {
+			background: #f4f4f4;
+		}
+		i {
+			margin: 0 10px;
+		}
 	}
 }
 
@@ -1148,7 +1154,7 @@ code {
 		border-radius: 23px;
 		vertical-align: text-bottom;
 		transition: all 0.3s linear;
-		box-shadow: 0 0 0 1px rgba(255,255,255,1);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 1);
 		&:before {
 			content: "";
 			position: absolute;
@@ -1230,6 +1236,37 @@ code {
 		animation: 2s spin linear infinite;
 		font-size: 1.5rem;
 		color: #777;
+	}
+}
+
+.load-more {
+	border: 1px solid $color-link;
+	margin: 16px 16px 22px 16px;
+	padding: 10px;
+	text-align: center;
+	font-size: 1rem;
+	color: $color-link;
+	border-radius: 20px;
+	position: relative;
+	cursor: pointer;
+	transition: background-color .2s linear;
+	@include media(web) {
+		&:hover {
+			background-color: rgba($color-link, .1);
+		}
+	}
+	&:active,
+	&:focus {
+		outline: 0;
+		background-color: rgba($color-link, .2);
+	}
+	i {
+		position: absolute;
+		left: 20px;
+		top: 15px;
+		&:after {
+			content: "\f078";
+		}
 	}
 }
 

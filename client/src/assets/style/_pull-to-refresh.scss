@@ -3,7 +3,6 @@
 		pointer-events: none;
 		top: 0;
 		height: 0;
-		transition: height 0.1s;
 		text-align: center;
 		width: 100%;
 		overflow: hidden;
@@ -31,10 +30,13 @@
 		}
 	}
 	&-refresh {
+		transition: height 0.3s;
 		.icon {
-			animation: fa-spinx2 1s infinite linear;
+			font-size: 1rem;
+			color: #555;
+			animation: fa-spinx2 .5s linear infinite;
 			&:before {
-				content: "\f1ce"
+				content: "\f01e"
 			}
 		}
 	}
@@ -44,39 +46,6 @@
 		}
 	}
 }
-
-//.ptr {
-//	&-container {
-//		pointer-events: none;
-//		top: 0;
-//		height: 0;
-//		transition: height 0.3s, min-height 0.3s;
-//		text-align: center;
-//		width: 100%;
-//		overflow: hidden;
-//		display: flex;
-//		align-items: flex-end;
-//		align-content: stretch;
-//		i {
-//			font-size: 1.5rem;
-//		}
-//		.fa-spinx2 {
-//			animation: fa-spinx2 1s infinite linear
-//		}
-//	}
-//	&-box {
-//		padding: 10px;
-//		flex-basis: 100%;
-//	}
-//	&-pull {
-//		transition: none;
-//	}
-//	&-release {
-//		.ptr--icon {
-//			transform: rotate(180deg);
-//		}
-//	}
-//}
 
 
 @keyframes fa-spinx2 {
