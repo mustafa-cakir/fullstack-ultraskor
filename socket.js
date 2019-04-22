@@ -112,7 +112,7 @@ const initWebSocket = () => {
 		ws.send(JSON.stringify({"type":0,"data":["subscribe",{"id":"event","events":["sport_football"]}]}), undefined, undefined);
 		swTimeout = setInterval(()=>{
 			ws.send(JSON.stringify("primus::ping::" + new Date().getTime()), undefined, undefined);
-			console.log('## ping sent')
+			// console.log('## ping sent')
 		}, 20000);
 		wsMaxRetry = 25;
 	});
@@ -125,13 +125,13 @@ const initWebSocket = () => {
 	});
 
 	ws.on('pong', (data) => {
-		console.log('Ws pong ', data);
+		// console.log('Ws pong ', data);
 	});
 
 
 	ws.on('message', res => {
 		if (res.substr(0,15).match('pong')) {
-			console.log('## pong recived', res);
+			// console.log('## pong recived', res);
 		} else {
 			if (!res) return false;
 
