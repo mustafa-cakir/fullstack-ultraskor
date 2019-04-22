@@ -159,7 +159,7 @@ class Event extends Component {
                                 {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ?
 	                                (
 		                                <React.Fragment>
-			                                {event.homeScore.current}<span className="score-separator">:</span>{event.awayScore.current}
+			                                {event.homeScore.current || 0}<span className="score-separator">:</span>{event.awayScore.current || 0}
 		                                </React.Fragment>
 	                                )
 	                                : (" - ")

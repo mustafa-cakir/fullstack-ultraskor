@@ -27,12 +27,15 @@ class Homepage extends Component {
 			isLive: false,
 			redScoreMuted: false,
 			redScoreShrinked: false,
+			isPushServiceEnabled: false,
+			redScoreBarIncident: null,
 			isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
 			lazyLoadCount: getQueryStringFromUrl("load") || 10
 		};
 		this.updateParentState = this.updateParentState.bind(this);
 		this.initGetData = this.initGetData.bind(this);
 		this.onSocketReturnUpdatesData = this.onSocketReturnUpdatesData.bind(this);
+		this.onSocketReturnPushServiceData = this.onSocketReturnPushServiceData.bind(this);
 		this.handleGetData = this.handleGetData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
@@ -54,6 +57,7 @@ class Homepage extends Component {
 			page: "homepage"
 		});
 		this.once = true;
+		this.redScoreBarTimer = null;
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 		this.initSocket();
@@ -71,14 +75,14 @@ class Homepage extends Component {
 	}
 
 	setToLocaleStorage() {
-	    const stateToStore = {
-		    ...(this.state.filteredTournaments.length > 0 && {filteredTournaments: this.state.filteredTournaments}),
-		    ...(this.state.isLive && {isLive: this.state.isLive}),
-		    ...(this.state.favEvents.length > 0 && {favEvents: this.state.favEvents}),
-		    redScoreMuted: this.state.redScoreMuted,
-		    redScoreShrinked: this.state.redScoreShrinked,
-	    };
-	    localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
+		const stateToStore = {
+			...(this.state.filteredTournaments.length > 0 && {filteredTournaments: this.state.filteredTournaments}),
+			...(this.state.isLive && {isLive: this.state.isLive}),
+			...(this.state.favEvents.length > 0 && {favEvents: this.state.favEvents}),
+			redScoreMuted: this.state.redScoreMuted,
+			redScoreShrinked: this.state.redScoreShrinked,
+		};
+		localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
 	}
 
 	trackPage(page) {
@@ -198,6 +202,7 @@ class Homepage extends Component {
 
 	componentWillUnmount() {
 		this.removeSocketEvents();
+		clearTimeout(this.redScoreBarTimer);
 	}
 
 	removeSocketEvents() {
@@ -205,16 +210,123 @@ class Homepage extends Component {
 		socket.removeListener('connect', this.onSocketConnect);
 		socket.removeListener('disconnect', this.onSocketDisconnect);
 		socket.removeListener('return-error-updates', this.onSocketDisconnect);
-		socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
-		clearTimeout(this.getUpdatesHomepageInterval);
+		if (this.state.isPushServiceEnabled) {
+			socket.removeListener('push-service', this.onSocketReturnPushServiceData);
+		} else {
+			socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
+			clearTimeout(this.getUpdatesHomepageInterval);
+		}
 	}
 
 	initSocket(noInterval = false) {
 		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
 		this.socket.on('disconnect', this.onSocketDisconnect);
 		this.socket.on('return-error-updates', this.onSocketDisconnect);
-		this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
-		this.initGetUpdatesHomepage(noInterval);
+		if (this.state.isPushServiceEnabled) {
+			this.initGetPushService();
+		} else {
+			this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+			this.initGetUpdatesHomepage(noInterval);
+		}
+	}
+
+	initGetPushService() {
+		this.socket.on('push-service', this.onSocketReturnPushServiceData);
+	}
+
+	onSocketReturnPushServiceData(res) {
+		if (!res) return false;
+		if (!this.state.mainData) return false;
+
+		let redScoreBarType = null;
+		let redScoreBarIncident = {};
+
+		let newMainData = JSON.parse(JSON.stringify(this.state.mainData));
+		// console.log(res);
+
+		// let resEventId = res.emits[3].split('_')[1];
+		let getTournament = newMainData.filter(x => x.tournament.id === res.info.tournament)[0];
+		if (!getTournament) return;
+
+		let event = getTournament.events.filter(x => x.id === res.info.id)[0];
+		if (!event) return;
+
+		// getEvent = getEvent[0];
+		// console.log('## mainData -> geEvent', getEvent);
+		if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
+			console.log(event.status, res.status);
+			event.status = res.status;
+			redScoreBarType = "status_update";
+		}
+
+		if (res.homeRedCards && res.homeRedCards !== event.homeRedCards) {
+			event.homeRedCards = res.homeRedCards; // home Team Red Card
+			redScoreBarType = "home_redcard";
+		}
+
+		if (res.awayRedCards && res.awayRedCards !== event.awayRedCards) {
+			event.awayRedCards = res.awayRedCards; // home Team Red Card
+			redScoreBarType = "away_redcard";
+		}
+
+		if (res.changesData && res.changesData.score) {
+			if (res.changesData.home.score) {
+				let oldScore = event.homeScore.current || 0,
+					newScore = res.homeScore.current;
+
+				if (typeof newScore === "number" && typeof newScore === "number" && newScore !== oldScore) {
+					if (newScore > oldScore) {
+						console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
+						redScoreBarType = "home_scored";
+					} else if (newScore < oldScore) {// away team scored!!
+						console.log(`${res.homeTeam.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
+						redScoreBarType = "home_scored_cancel";
+					}
+					event.homeScore = res.homeScore; // update score Object
+				}
+
+			} else if (res.changesData.away.score) {
+				let oldScore = event.awayScore.current || 0,
+					newScore = res.awayScore.current;
+
+				if (typeof newScore === "number" && typeof newScore === "number" && newScore !== oldScore) {
+					if (newScore > oldScore) {
+						console.log(`${res.awayTeam.name} Away Team Scored. ${oldScore} -> ${newScore}`);
+						redScoreBarType = "away_scored";
+					} else if (newScore < oldScore) {// away team scored!!
+						console.log(`${res.awayTeam.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
+						redScoreBarType = "away_scored_cancel";
+					}
+					event.awayScore = res.awayScore;  // update score Object
+				}
+			}
+		}
+
+		// update statusDescription in all situations
+		if (event.statusDescription !== res.statusDescription) {
+			event.statusDescription = res.statusDescription
+		}
+
+		if (redScoreBarType) {
+			redScoreBarIncident = {
+				type: redScoreBarType,
+				event: event
+			};
+			clearTimeout(this.redScoreBarTimer);
+			this.redScoreBarTimer = setTimeout(() => {
+				this.setState({
+					redScoreBarIncident: null
+				});
+			}, 15000);
+			console.log(redScoreBarIncident);
+		}
+
+
+		this.setState({
+			mainData: newMainData,
+			...(redScoreBarType && {redScoreBarIncident: redScoreBarIncident})
+		});
+
 	}
 
 	initGetUpdatesHomepage(noInterval = false) {
@@ -339,25 +451,28 @@ class Homepage extends Component {
 				</div>
 				<div className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
-						<div className="col col-yesterday"><a href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
-						                                      title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
+						<div className="col col-yesterday"><a
+							href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+							title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}><Icon
 							name="fas fa-chevron-left"/><Trans>Yesterday</Trans></a></div>
 						<div className="col text-center col-today"><a href={i18n.language === "en" ? "/en/" : "/"}
 						                                              title={t('Today\'s football matches')}><Trans>Today's
 							Matches</Trans></a></div>
-						<div className="col text-right col-tomorrow"><a href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
-						                                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
+						<div className="col text-right col-tomorrow"><a
+							href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+							title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
 							<Icon name="fas fa-chevron-right"/></a></div>
 					</div>
 				</div>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
-				<RedScoreBoard
-					socket={this.props.socket}
-					audioFiles={this.props.audioFiles}
-					redScoreMuted={this.state.redScoreMuted}
-					redScoreShrinked={this.state.redScoreShrinked}
-					updateParentState={this.updateParentState}
-				/>
+				{this.state.redScoreBarIncident ?
+					<RedScoreBoard
+						redScoreBarIncident={this.state.redScoreBarIncident}
+						audioFiles={this.props.audioFiles}
+						redScoreMuted={this.state.redScoreMuted}
+						redScoreShrinked={this.state.redScoreShrinked}
+						updateParentState={this.updateParentState}
+					/> : ""}
 				<Footer/>
 			</div>)
 	}
