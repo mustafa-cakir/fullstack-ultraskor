@@ -27,7 +27,7 @@ class Homepage extends Component {
 			isLive: false,
 			redScoreMuted: false,
 			redScoreShrinked: false,
-			isPushServiceEnabled: false,
+			isPushServiceEnabled: true,
 			redScoreBarIncident: null,
 			isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
 			lazyLoadCount: getQueryStringFromUrl("load") || 10
