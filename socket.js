@@ -13,7 +13,8 @@ const cronjob = require('./cronjob');
 const cacheDuration = helper.cacheDuration();
 const tr = require('tor-request');
 tr.TorControlPort.password = 'muztafultra';
-//const WebSocket = require('ws');
+const WebSocket = require('ws');
+
 
 const port = 5001;
 const app = express();
@@ -55,8 +56,8 @@ let db = null,
 	oleyCollection = null,
 	consoleErrorsCollection = null;
 
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV} = process.env;
-if (NODE_ENV !== "dev2") {
+const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV, TOR_DISABLED} = process.env;
+if (NODE_ENV !== "dev") {
 	MongoClient.connect(`mongodb://bY4b8HC:6X8gBwY@${MONGO_IP}:27017`, helper.mongoOptions(), (err, client) => {
 		if (err) {
 			console.log('DB Error: Can not connected to db. Error: ' + err);
@@ -80,28 +81,79 @@ if (NODE_ENV !== "dev2") {
 	console.log('Working on dev. No MongoDB connection!');
 }
 
+let wsMaxRetry = 25;
+const initWebSocket = () => {
+	let swTimeout = null;
+	let pushServiceUri =
+		[
+			"wss:\/\/ws.sofascore.com:10017",
+			"wss:\/\/ws.sofascore.com:10011",
+			"wss:\/\/ws.sofascore.com:10012",
+			"wss:\/\/ws.sofascore.com:10014",
+			"wss:\/\/ws.sofascore.com:10013",
+			"wss:\/\/ws.sofascore.com:10016",
+			"wss:\/\/ws.sofascore.com:10015",
+			"wss:\/\/ws.sofascore.com:10010"
+		];
+
+	let getPushServiceUri = pushServiceUri.sort(function() {return 0.5 - Math.random()})[0];
+	console.log(getPushServiceUri);
+
+	let ws = new WebSocket(getPushServiceUri + '/ServicePush', {
+		origin: 'https://www.sofascore.com',
+	});
+
+	ws.on('error', (err) => {
+		console.log('errored', err);
+	});
+
+	ws.on('open', () => {
+		console.log('ws connected');
+		ws.send(JSON.stringify({"type":0,"data":["subscribe",{"id":"event","events":["sport_football"]}]}), undefined, undefined);
+		swTimeout = setInterval(()=>{
+			ws.send(JSON.stringify("primus::ping::" + new Date().getTime()), undefined, undefined);
+			console.log('## ping sent')
+		}, 20000);
+		wsMaxRetry = 25;
+	});
+
+	ws.on('close', (err) => {
+		console.log('ws disconnected. ', err);
+		if (wsMaxRetry > 0) initWebSocket();
+		clearInterval(swTimeout);
+		wsMaxRetry--;
+	});
+
+	ws.on('pong', (data) => {
+		console.log('Ws pong ', data);
+	});
+
+
+	ws.on('message', res => {
+		if (res.substr(0,15).match('pong')) {
+			console.log('## pong recived', res);
+		} else {
+			if (!res) return false;
+
+			res = helper.simplifyWebSocketData(res);
+			io.sockets.emit('push-service', res);
+		}
+		// console.log('## message ', data);
+	});
+};
+
+initWebSocket();
+
+
+
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Connect to an external socket for gathering the changes
-// let swTimeout = null;
-// const ws = new WebSocket('wss://ws.sofascore.com:10014/ServicePush', {
-// 	handshakeTimeout: 1000000
-// });
-//
-// ws.on('open', () => {
-// 	console.log('ws connected');
-// 	ws.send(`{"type":0,"data":["subscribe",{"id":"event","events":["sport_football"]}]}`);
-// 	swTimeout = setInterval(()=>{
-// 		ws.send('primus::ping::1550278364585');
-// 	}, 45000);
-// });
-// ws.on('close', (err) => {
-// 	console.log('ws disconnected. ', err);
-// 	clearInterval(swTimeout);
-// });
 
 
 io.on('connection', socket => {
+	socket.emit('heyooo', "mesg heyoo");
+
     helper.userConnected();
     // console.log('User connected. Active user: ', helper.userCount());
 	// socket.on('get-updates-2', () => {
@@ -167,14 +219,17 @@ io.on('connection', socket => {
 				timeout: 10000
 			};
 
-			// if (process.env.NODE_ENV === "dev") {
-			//     sofaOptions.uri = `https://www.ultraskor.com/api/?query=${api}`;
-			//     sofaOptions.headers = {}
-			// }
+			const customRequest = (options, cb) => {
+				if (TOR_DISABLED === "true") {
+					request(options, cb)
+				} else {
+					tr.request(options, cb);
+				}
+			};
 
-			tr.request(sofaOptions, function (err, status, res) {
+			customRequest(sofaOptions, function (err, status, res) {
 				if (!err && status.statusCode === 200) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 5);
+					cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 10);
 					socket.emit('return-updates-details', res);
 				} else {
 					socket.emit('return-error-updates', "Error while retrieving information from server");
@@ -213,12 +268,16 @@ app.get('/api/', (req, res) => {
 			timeout: 10000
 		};
 
-		// if (process.env.NODE_ENV === "dev") {
-		// 	sofaOptions.uri = `https://www.ultraskor.com/api/?query=${req.query.query}`;
-		// 	sofaOptions.headers = {}
-		// }
+		const customRequest = (options, cb) => {
+			if (TOR_DISABLED === "true") {
+				request(options, cb)
+			} else {
+				tr.request(options, cb);
 
-		tr.request(sofaOptions, function (err, status, response) {
+			}
+		};
+
+		customRequest(sofaOptions, function (err, status, response) {
 			if (!err && status.statusCode === 200) {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
 				if (response) {

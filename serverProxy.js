@@ -37,7 +37,7 @@ app.get('/images/:type/:filename', (req, res) => {
 			const requestOptions = {
 				url: 'https://www.sofascore.com' + pathname,
 				strictSSL: true,
-				agentClass: Agent,
+				agentClass: process.env.TOR_DISABLED === "true" ? null : Agent,
 				timeout: 1000,
 				agentOptions: {
 					socksHost: 'localhost',

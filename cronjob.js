@@ -1,7 +1,7 @@
 const CronJob = require('cron').CronJob;
 const diff = require('deep-diff');
 const moment = require('moment');
-// const request = require('request-promise-native');
+const request = require('request-promise-native');
 const webpushHelper = require('./webpush');
 const _ = require('lodash');
 const helper = require('./helper');
@@ -31,17 +31,26 @@ let previousData = null;
 let changes = null;
 let fullData = null;
 
+console.log("TOR_DISABLED: ", process.env.TOR_DISABLED);
 tr.request('https://api.ipify.org', function (err, status, response) {
 	if (!err && status.statusCode === 200) {
 		console.log("Your public (through Tor) IP is: " + response);
 	}
 });
 
+const customRequest = (options, cb) => {
+	if (process.env.TOR_DISABLED === "true") {
+		request(options, cb)
+	} else {
+		tr.request(options, cb);
+	}
+};
+
 const cron = new CronJob('*/20 * * * * *', function () {
 	//if (helper.userCount() < 1) return false; // if there is no active user, disable cropjob
     //console.log('cronjob init', helper.userCount());
-    tr.request(options(moment()), function (err, status, res) {
-		if (!err && status.statusCode === 200) {
+	customRequest(options(moment()), function (err, status, res) {
+		if (!err && status.statusCode === 200 && res.sportItem && res.sportItem.tournaments.length > 0) {
 			fullData = helper.simplifyHomeData(res);
 			cacheService.instance().set('fullData', fullData, 20); // cache the homepage full data for 20 seconds
 			const resFlash = _.clone(res, true);
