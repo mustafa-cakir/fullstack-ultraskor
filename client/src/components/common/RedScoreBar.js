@@ -39,7 +39,7 @@ class RedScoreBar extends Component {
 	    } else if (data.type === "home_scored" || data.type === "away_scored") {
 		    this.playSound('goal');
 		    data.desc = t("GOOAL!")
-	    } else if (data.type === "home_scored" || data.type === "away_scored") {
+	    } else if (data.type === "home_scored_cancel" || data.type === "away_scored_cancel") {
 		    this.playSound('goal-cancelled');
 		    data.desc = t("Goal Cancelled");
 	    }

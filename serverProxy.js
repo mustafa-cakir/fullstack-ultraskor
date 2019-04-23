@@ -1,4 +1,5 @@
 const express = require('express');
+const helper = require('./helper');
 const request = require('request');
 const Agent = require('socks5-https-client/lib/Agent');
 const fs = require('fs');
@@ -37,7 +38,7 @@ app.get('/images/:type/:filename', (req, res) => {
 			const requestOptions = {
 				url: 'https://www.sofascore.com' + pathname,
 				strictSSL: true,
-				agentClass: process.env.TOR_DISABLED === "true" ? null : Agent,
+				agentClass: helper.isTorDisabled ? null : Agent,
 				timeout: 1000,
 				agentOptions: {
 					socksHost: 'localhost',

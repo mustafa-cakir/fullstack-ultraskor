@@ -140,6 +140,7 @@ class Homepage extends Component {
 	};
 
 	moveFavEventsToTop(res) {
+		res = res || this.state.mainData;
 		let favEventsList = [];
 		res.forEach(tournament => {
 			tournament.events.forEach(event => {
@@ -321,12 +322,12 @@ class Homepage extends Component {
 			console.log(redScoreBarIncident);
 		}
 
-
 		this.setState({
 			mainData: newMainData,
 			...(redScoreBarType && {redScoreBarIncident: redScoreBarIncident})
 		});
 
+		if (this.state.favEvents.length > 0) this.moveFavEventsToTop();
 	}
 
 	initGetUpdatesHomepage(noInterval = false) {

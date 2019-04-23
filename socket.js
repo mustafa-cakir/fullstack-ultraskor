@@ -56,8 +56,8 @@ let db = null,
 	oleyCollection = null,
 	consoleErrorsCollection = null;
 
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP, NODE_ENV, TOR_DISABLED} = process.env;
-if (NODE_ENV !== "dev") {
+const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
+if (helper.isProd) {
 	MongoClient.connect(`mongodb://bY4b8HC:6X8gBwY@${MONGO_IP}:27017`, helper.mongoOptions(), (err, client) => {
 		if (err) {
 			console.log('DB Error: Can not connected to db. Error: ' + err);
@@ -128,14 +128,13 @@ const initWebSocket = () => {
 		// console.log('Ws pong ', data);
 	});
 
-
 	ws.on('message', res => {
 		if (res.substr(0,15).match('pong')) {
 			// console.log('## pong recived', res);
 		} else {
 			if (!res) return false;
-
 			res = helper.simplifyWebSocketData(res);
+			cronjob.pushServiceChangesForWebPush(res);
 			io.sockets.emit('push-service', res);
 		}
 		// console.log('## message ', data);
@@ -161,6 +160,7 @@ io.on('connection', socket => {
 	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
 	// 	});
 	// });
+
 
 	socket.on('get-updates-homepage', () => {
 		let cachedData = cacheService.instance().get("fullData");
@@ -192,6 +192,7 @@ io.on('connection', socket => {
 		}
 	});
 
+
 	socket.on('forum-get-all-by-id', topicId => {
 		if (forumCollection) {
 			forumCollection.find({topicId: topicId}).toArray(function (err, messages) {
@@ -220,7 +221,7 @@ io.on('connection', socket => {
 			};
 
 			const customRequest = (options, cb) => {
-				if (TOR_DISABLED === "true") {
+				if (helper.isTorDisabled) {
 					request(options, cb)
 				} else {
 					tr.request(options, cb);
@@ -269,7 +270,7 @@ app.get('/api/', (req, res) => {
 		};
 
 		const customRequest = (options, cb) => {
-			if (TOR_DISABLED === "true") {
+			if (helper.isTorDisabled) {
 				request(options, cb)
 			} else {
 				tr.request(options, cb);
@@ -277,6 +278,7 @@ app.get('/api/', (req, res) => {
 			}
 		};
 
+		
 		customRequest(sofaOptions, function (err, status, response) {
 			if (!err && status.statusCode === 200) {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
@@ -797,7 +799,7 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 
 // Log Console Errors
 app.post('/api/logerrors', (req, res) => {
-	if (NODE_ENV !== "dev") {
+	if (helper.isProd) {
 		if (consoleErrorsCollection) {
 			consoleErrorsCollection.insertOne(req.body, () => {
 				res.send('OK');
