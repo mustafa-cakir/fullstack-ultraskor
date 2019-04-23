@@ -264,8 +264,8 @@ class Homepage extends Component {
 		// console.log('## mainData -> geEvent', getEvent);
 		if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
 			event.status = res.status;
-			event.homeScore = res.homeScore;
-			event.awayScore = res.awayScore;
+			event.homeScore = res.homeScore; // update score in each status updates
+			event.awayScore = res.awayScore; // update score in each status updates
 			redScoreBarType = "status_update";
 		}
 
