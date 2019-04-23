@@ -105,9 +105,9 @@ class RedScoreBar extends Component {
                             {data.type === "away_redcard" ? <div
                                 className="red-card away flash-blinker-5">{data.event.awayRedCards}</div> : ""}
                             <div className="desc">{data.desc ? data.desc : ""}</div>
-                            <span className={"home " + (data.type === "home_scored" || data.type === "home_scored_cancel" ? "flash-blinker-5" : "")}>{data.event.homeScore.current}</span>
+                            <span className={"home " + (data.type === "home_scored" || data.type === "home_scored_cancel" ? "flash-blinker-5" : "")}>{data.event.homeScore.current || 0}</span>
                             <span className="separator">:</span>
-                            <span className={"away " + (data.type === "away_scored" || data.type === "away_scored_cancel" ? "flash-blinker-5" : "")}>{data.event.awayScore.current}</span>
+                            <span className={"away " + (data.type === "away_scored" || data.type === "away_scored_cancel" ? "flash-blinker-5" : "")}>{data.event.awayScore.current || 0}</span>
                         </Link>
                         <Link to={{
                             pathname: link,

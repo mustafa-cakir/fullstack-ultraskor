@@ -50,6 +50,8 @@ exports.pushServiceChangesForWebPush = (res) => {
 	if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
 		//console.log(event.status, res.status);
 		event.status = res.status;
+		event.homeScore = res.homeScore;
+		event.awayScore = res.awayScore;
 		redScoreBarType = "status_update";
 	}
 	if (res.homeRedCards && res.homeRedCards !== event.homeRedCards) {
@@ -67,7 +69,7 @@ exports.pushServiceChangesForWebPush = (res) => {
 			let oldScore = event.homeScore.current || 0,
 				newScore = res.homeScore.current;
 
-			if (typeof newScore === "number" && typeof newScore === "number" && newScore !== oldScore) {
+			if (typeof newScore === "number" && newScore !== oldScore) {
 				if (newScore > oldScore) {
 					if (helper.isDev) console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
 					redScoreBarType = "home_scored";
@@ -100,15 +102,16 @@ exports.pushServiceChangesForWebPush = (res) => {
 		event.statusDescription = res.statusDescription
 	}
 
+	cacheService.instance().set('fullData', fullData, 60 * 30); // cache the new fullData for 30 min.
+
 	if (redScoreBarType) {
 		redScoreBarIncident = {
 			type: redScoreBarType,
 			event: event
 		};
+		if (helper.isDev) console.log(`webPush fn triggered for ${event.id}, for ${redScoreBarType},time: ${new Date()}`);
 		webpushHelper.initWebPushByWebSocket(redScoreBarIncident);
 	}
-
-	cacheService.instance().set('fullData', fullData, 60 * 30); // cache the new fullData for 30 min.
 };
 
 const customRequest = (options, cb) => {

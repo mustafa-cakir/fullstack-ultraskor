@@ -50,17 +50,22 @@ class Homepage extends Component {
 			//this.analyzeSessionStorage();
 			this.getFromLocaleStorage();
 		}
-		this.initGetData({
-			api: '/football//' + this.todaysDate + '/json',
-			loading: true,
-			today: moment(0, "HH").diff(this.todaysDate, 'days') === 0 ? 1 : 0,
-			page: "homepage"
-		});
+		this.initGetDataOnPageLoad(false);
 		this.once = true;
 		this.redScoreBarTimer = null;
 		const page = this.props.location.pathname;
 		this.trackPage(page);
 		this.initSocket();
+	}
+
+	initGetDataOnPageLoad(isUpdated) {
+		this.initGetData({
+			api: '/football//' + this.todaysDate + '/json',
+			loading: true,
+			today: moment(0, "HH").diff(this.todaysDate, 'days') === 0 ? 1 : 0,
+			page: "homepage",
+			isUpdated: isUpdated
+		});
 	}
 
 	getFromLocaleStorage() {
@@ -155,8 +160,10 @@ class Homepage extends Component {
 	};
 
 	initGetData = options => {
-		this.setState({loading: true});
-		document.body.classList.remove('initial-load');
+		if (!options.isUpdated) {
+			this.setState({loading: true});
+			document.body.classList.remove('initial-load');
+		}
 		fetch(`/api/?query=${options.api}&page=homepage&today=${options.today}`)
 			.then(res => {
 				if (res.status === 200) {
@@ -169,7 +176,7 @@ class Homepage extends Component {
 				if (!res)
 					throw Error(`Response is empty`);
 				else
-					this.handleGetData(res, false);
+					this.handleGetData(res, options.isUpdated);
 			})
 			.catch(err => {
 				this.setState({
@@ -189,7 +196,7 @@ class Homepage extends Component {
 		res = this.prepareRes(res);
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
 		this.updateStateGetData(res, isUpdated);
-		this.updateMeta();
+		if (!isUpdated) this.updateMeta();
 	}
 
 	updateStateGetData(res, isUpdated) {
@@ -243,6 +250,7 @@ class Homepage extends Component {
 		let redScoreBarIncident = {};
 
 		let newMainData = JSON.parse(JSON.stringify(this.state.mainData));
+		if (newMainData.length < 1) return false;
 		// console.log(res);
 
 		// let resEventId = res.emits[3].split('_')[1];
@@ -255,8 +263,9 @@ class Homepage extends Component {
 		// getEvent = getEvent[0];
 		// console.log('## mainData -> geEvent', getEvent);
 		if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
-			console.log(event.status, res.status);
 			event.status = res.status;
+			event.homeScore = res.homeScore;
+			event.awayScore = res.awayScore;
 			redScoreBarType = "status_update";
 		}
 
@@ -277,10 +286,10 @@ class Homepage extends Component {
 
 				if (typeof newScore === "number" && typeof newScore === "number" && newScore !== oldScore) {
 					if (newScore > oldScore) {
-						console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
+						//console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
 						redScoreBarType = "home_scored";
 					} else if (newScore < oldScore) {// away team scored!!
-						console.log(`${res.homeTeam.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
+						//console.log(`${res.homeTeam.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
 						redScoreBarType = "home_scored_cancel";
 					}
 					event.homeScore = res.homeScore; // update score Object
@@ -292,10 +301,10 @@ class Homepage extends Component {
 
 				if (typeof newScore === "number" && typeof newScore === "number" && newScore !== oldScore) {
 					if (newScore > oldScore) {
-						console.log(`${res.awayTeam.name} Away Team Scored. ${oldScore} -> ${newScore}`);
+						//console.log(`${res.awayTeam.name} Away Team Scored. ${oldScore} -> ${newScore}`);
 						redScoreBarType = "away_scored";
 					} else if (newScore < oldScore) {// away team scored!!
-						console.log(`${res.awayTeam.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
+						//console.log(`${res.awayTeam.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
 						redScoreBarType = "away_scored_cancel";
 					}
 					event.awayScore = res.awayScore;  // update score Object
@@ -319,7 +328,7 @@ class Homepage extends Component {
 					redScoreBarIncident: null
 				});
 			}, 15000);
-			console.log(redScoreBarIncident);
+			//console.log(redScoreBarIncident);
 		}
 
 		this.setState({
@@ -358,6 +367,7 @@ class Homepage extends Component {
 		this.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.refreshButton) {
 			this.initSocket(true);
+			this.initGetDataOnPageLoad(true);
 			this.setState({
 				refreshButton: false
 			});

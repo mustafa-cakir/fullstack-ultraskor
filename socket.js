@@ -19,7 +19,6 @@ const WebSocket = require('ws');
 const port = 5001;
 const app = express();
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -278,7 +277,7 @@ app.get('/api/', (req, res) => {
 			}
 		};
 
-		
+
 		customRequest(sofaOptions, function (err, status, response) {
 			if (!err && status.statusCode === 200) {
 				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
@@ -305,6 +304,7 @@ app.get('/api/', (req, res) => {
 	}
 });
 
+
 app.post('/api/webpush', (req, res) => {
 	const {method, token, topic} = req.body;
 	const cacheKey = topic;
@@ -317,6 +317,7 @@ app.post('/api/webpush', (req, res) => {
 			res.status(500).send(`An error occurred while processing your request, err: ${err}`);
 		});
 });
+
 
 app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
