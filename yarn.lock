@@ -3417,7 +3417,7 @@ socket.io@^2.2.0:
     socket.io-client "2.2.0"
     socket.io-parser "~3.3.0"
 
-socks-proxy-agent@~4.0.1:
+socks-proxy-agent@^4.0.2, socks-proxy-agent@~4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/socks-proxy-agent/-/socks-proxy-agent-4.0.2.tgz#3c8991f3145b2799e70e11bd5fbc8b1963116386"
   integrity sha512-NT6syHhI9LmuEMSK6Kd2V7gNv5KFZoLE7V5udWmn0de+3Mkj3UMA/AJPLyeNUVmElCurSHtUdM3ETpR3z770Wg==

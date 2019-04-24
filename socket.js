@@ -14,7 +14,7 @@ const cacheDuration = helper.cacheDuration();
 const tr = require('tor-request');
 tr.TorControlPort.password = 'muztafultra';
 const WebSocket = require('ws');
-
+const SocksProxyAgent = require('socks-proxy-agent');
 
 const port = 5001;
 const app = express();
@@ -28,7 +28,6 @@ app.use(helper.initCors());
 cacheService.start(err => {
 	if (err) console.error('Error: Cache service failed to start', err);
 });
-
 
 // refresh TOR session
 setInterval(() => {
@@ -100,6 +99,7 @@ const initWebSocket = () => {
 
 	let ws = new WebSocket(getPushServiceUri + '/ServicePush', {
 		origin: 'https://www.sofascore.com',
+		agent: new SocksProxyAgent('socks://127.0.0.1:9050')
 	});
 
 	ws.on('error', (err) => {
@@ -140,9 +140,8 @@ const initWebSocket = () => {
 	});
 };
 
+
 initWebSocket();
-
-
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 

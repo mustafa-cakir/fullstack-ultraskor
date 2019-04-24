@@ -51,12 +51,6 @@ class App extends Component {
 
 	initSocket() {
 		this.state.socket.open();
-		// this.state.socket.on('disconnect', () => {
-		// 	setTimeout(() => {
-		// 		this.state.socket.open() // Try reconnecting, just once
-		// 	}, 1000);
-		// });
-
 		this.state.socket.on('connect_error', function (data) {
 			console.log('connection_error', data);
 		});
@@ -89,19 +83,11 @@ class App extends Component {
 		}
 	}
 
-	updateParentState = (state) => {
-		return new Promise((resolve) => {
-			this.setState(state, () => {
-				resolve()
-			});
-		});
-	};
-
 	render() {
 		const {socket} = this.state;
 		return (
 			<div className="App">
-				<Navbar updateParentState={this.updateParentState}/>
+				<Navbar/>
 				<main className="main">
 					<Switch>
 						<Route exact path='/'

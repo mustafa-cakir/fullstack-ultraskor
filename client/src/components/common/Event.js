@@ -5,26 +5,55 @@ import {Link} from "react-router-dom"
 import {Trans, withTranslation} from "react-i18next";
 import {generateSlug} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
+import update from 'react-addons-update'
 
 class Event extends Component {
 	constructor(props) {
 		super(props);
+		this.homeTeamEl = React.createRef();
+		this.awayTeamEl = React.createRef();
 		this.state = {
 			favEventLoading: false,
 		};
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
+	shouldComponentUpdate(nextProps, nextState) {  // Custom shouldComponentUpdate to decide re-render or not
 		return this.props.event.status.type !== nextProps.event.status.type
 			|| this.props.event.statusDescription !== nextProps.event.statusDescription
 			|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
+			|| this.props.event.homeTeam.name !== nextProps.event.homeTeam.name
+			|| this.props.event.awayTeam.name !== nextProps.event.awayTeam.name
 			|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
 			|| this.props.event.awayScore.current !== nextProps.event.awayScore.current
 			|| this.props.event.homeScore.current !== nextProps.event.homeScore.current
 			|| this.props.event.status.code !== nextProps.event.status.code
 			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
-			|| (this.props.favEvents && this.props.favEvents.toString() !== nextProps.favEvents.toString())
+			|| (this.props.favEvents && this.props.favEvents !== nextProps.favEvents)
 			|| this.state.favEventLoading !== nextState.favEventLoading;
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.event.awayScore.current !== prevProps.event.awayScore.current) {
+			this.awayTeamEl.current.classList.add('flash-blinker-5');
+			clearTimeout(this.liveBlinkerTimeout);
+			this.liveBlinkerTimeout = setTimeout(() => {
+				if (!this.awayTeamEl) return false;
+				if (!this.awayTeamEl.current) return false;
+				this.awayTeamEl.current.classList.remove('flash-blinker-5');
+			}, 10000);
+		} else if (this.props.event.homeScore.current !== prevProps.event.homeScore.current) {
+			this.homeTeamEl.current.classList.add('flash-blinker-5');
+			clearTimeout(this.liveBlinkerTimeout);
+			this.liveBlinkerTimeout = setTimeout(() => {
+				if (!this.homeTeamEl) return false;
+				if (!this.homeTeamEl.current) return false;
+				this.homeTeamEl.current.classList.remove('flash-blinker-5');
+			}, 10000);
+		}
+	}
+
+	componentWillUnmount() {
+		clearTimeout(this.liveBlinkerTimeout);
 	}
 
 	isInProgress() {
@@ -85,14 +114,16 @@ class Event extends Component {
 
 		let favEvents = this.props.favEvents || [],
 			favEventsList = this.props.favEventsList || [],
+			newFavEvents = [],
+			newFavEventsList = [],
 			method = favEvents.indexOf(eventId) < 0 ? "subscribeToTopic" : "unsubscribeFromTopic";
 
 		if (method === "subscribeToTopic") {
-			favEvents.push(eventId);
-			favEventsList.push(event);
+			newFavEvents = update(favEvents, {$push: eventId});
+			newFavEventsList = update(favEventsList, {$push: event});
 		} else {
-			favEvents = favEvents.filter(item => item !== eventId);
-			favEventsList = favEventsList.filter(item => item !== event);
+			newFavEvents = favEvents.filter(item => item !== eventId);
+			newFavEventsList = favEventsList.filter(item => item !== event);
 		}
 
 		this.setState({favEventLoading: true});
@@ -121,16 +152,16 @@ class Event extends Component {
 				.then(() => {
 					console.log(`Successfully ${method} for /topics/match_${eventId}`);
 					this.props.updateParentState({
-						favEvents: favEvents,
-						favEventsList: favEventsList
+						favEvents: newFavEvents,
+						favEventsList: newFavEventsList
 					}, true);
 				})
 				.catch(err => {
 					// error
 					this.setState({favEventLoading: false});
 					this.props.updateParentState({
-						favEvents: favEvents,
-						favEventsList: favEventsList
+						favEvents: newFavEvents,
+						favEventsList: newFavEventsList
 					}, true);
 					console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
 				});
@@ -159,7 +190,9 @@ class Event extends Component {
                                 {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ?
 	                                (
 		                                <React.Fragment>
-			                                {event.homeScore.current || 0}<span className="score-separator">:</span>{event.awayScore.current || 0}
+			                                <span ref={this.homeTeamEl}>{event.homeScore.current || 0}</span>
+			                                <span className="score-separator">:</span>
+			                                <span ref={this.awayTeamEl}>{event.awayScore.current || 0}</span>
 		                                </React.Fragment>
 	                                )
 	                                : (" - ")
