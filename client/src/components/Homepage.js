@@ -366,10 +366,11 @@ class Homepage extends Component {
 		console.log('Socket connected! - Homepage');
 		this.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.refreshButton) {
-			this.initSocket(true);
-			this.initGetDataOnPageLoad(true);
 			this.setState({
 				refreshButton: false
+			}, () => {
+				this.initSocket(true);
+				this.initGetDataOnPageLoad(true);
 			});
 		}
 	}

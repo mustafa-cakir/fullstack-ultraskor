@@ -9,15 +9,19 @@ import {askForPermissioToReceiveNotifications} from "../../web-push";
 class Event extends Component {
 	constructor(props) {
 		super(props);
+		this.homeTeamEl = React.createRef();
+		this.awayTeamEl = React.createRef();
 		this.state = {
 			favEventLoading: false,
 		};
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
+	shouldComponentUpdate(nextProps, nextState) {  // Custom shouldComponentUpdate to decide re-render or not
 		return this.props.event.status.type !== nextProps.event.status.type
 			|| this.props.event.statusDescription !== nextProps.event.statusDescription
 			|| this.props.event.homeRedCards !== nextProps.event.homeRedCards
+			|| this.props.event.homeTeam.name !== nextProps.event.homeTeam.name
+			|| this.props.event.awayTeam.name !== nextProps.event.awayTeam.name
 			|| this.props.event.awayRedCards !== nextProps.event.awayRedCards
 			|| this.props.event.awayScore.current !== nextProps.event.awayScore.current
 			|| this.props.event.homeScore.current !== nextProps.event.homeScore.current
@@ -25,6 +29,20 @@ class Event extends Component {
 			|| this.props.event.startTimestamp !== nextProps.event.startTimestamp
 			|| (this.props.favEvents && this.props.favEvents.toString() !== nextProps.favEvents.toString())
 			|| this.state.favEventLoading !== nextState.favEventLoading;
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.event.awayScore.current !== prevProps.event.awayScore.current) {
+			this.awayTeamEl.current.classList.add('flash-blinker-5');
+			setTimeout(() => {
+				this.awayTeamEl.current.classList.remove('flash-blinker-5');
+			}, 10000); 
+		} else if (this.props.event.homeScore.current !== prevProps.event.homeScore.current) {
+			this.homeTeamEl.current.classList.add('flash-blinker-5');
+			setTimeout(() => {
+				this.homeTeamEl.current.classList.remove('flash-blinker-5');
+			}, 10000);
+		}
 	}
 
 	isInProgress() {
@@ -159,7 +177,9 @@ class Event extends Component {
                                 {(typeof event.homeScore.current !== "undefined" || typeof event.awayScore.current !== "undefined") ?
 	                                (
 		                                <React.Fragment>
-			                                {event.homeScore.current || 0}<span className="score-separator">:</span>{event.awayScore.current || 0}
+			                                <span ref={this.homeTeamEl}>{event.homeScore.current || 0}</span>
+			                                <span className="score-separator">:</span>
+			                                <span ref={this.awayTeamEl}>{event.awayScore.current || 0}</span>
 		                                </React.Fragment>
 	                                )
 	                                : (" - ")

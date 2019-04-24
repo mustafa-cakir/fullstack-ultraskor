@@ -16,7 +16,7 @@ let settings = {
 	},
 	onRefresh: () => window.location.reload(),
 	resistanceFunction: t => Math.min(1, t / 2.5),
-	ptrOnDesktop: true,
+	ptrOnDesktop: false,
 };
 
 let pullStartY = null;
