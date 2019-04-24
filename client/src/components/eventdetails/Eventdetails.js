@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
+import update from 'react-addons-update';
 import Loading from "../common/Loading";
 import ReactSwipe from "react-swipe";
 import Scoreboard from "./Scoreboard";
@@ -26,7 +27,7 @@ import RefreshButton from "../common/RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import Forum from "../common/Forum";
 
-class Eventdetails extends Component {
+class Eventdetails extends PureComponent {
 	constructor(props) {
 		super(props);
 		this.swipeEl = React.createRef();
@@ -36,6 +37,7 @@ class Eventdetails extends Component {
 		this.swipeByTabName = this.swipeByTabName.bind(this);
 		this.swipeAdjustHeight = this.swipeAdjustHeight.bind(this);
 		this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
+		this.handleSocketData = this.handleSocketData.bind(this);
 		this.onSocketReturnPushServiceData = this.onSocketReturnPushServiceData.bind(this);
 		this.onSocketConnect = this.onSocketConnect.bind(this);
 		this.state = {
@@ -57,9 +59,11 @@ class Eventdetails extends Component {
 		};
 		this.tabs = [];
 		smoothscroll.polyfill();
+		this.initSocketInterval = null;
 	};
 
 	componentDidMount() {
+		this.isPushServiceEnabled = true;
 		this.initGetData(false);
 		this.initSocket();
 		this.tabs = [];
@@ -159,14 +163,28 @@ class Eventdetails extends Component {
 		const {socket} = this.props;
 		socket.removeListener('disconnect', this.onSocketDisconnect);
 		socket.removeListener('connect', this.onSocketConnect);
-		socket.removeListener('push-service', this.onSocketReturnPushServiceData);
+
+		if (this.isPushServiceEnabled) {
+			socket.removeListener('push-service', this.onSocketReturnPushServiceData);
+		} else {
+			socket.removeListener('return-updates-details', this.handleSocketData);
+			socket.removeListener('return-error-updates', this.onSocketDisconnect);
+			clearTimeout(this.initSocketInterval);
+		}
 	}
 
 	initSocket() {
 		const {socket} = this.props;
 		socket.on('disconnect', this.onSocketDisconnect);
 		socket.on('connect', this.onSocketConnect);
-		this.initGetPushService();
+
+		if (this.isPushServiceEnabled) {
+			this.initGetPushService();
+		} else {
+			this.emitSocketMessage();
+			socket.on('return-updates-details', this.handleSocketData);
+			socket.on('return-error-updates', this.onSocketDisconnect);
+		}
 	}
 
 	initGetPushService() {
@@ -176,32 +194,31 @@ class Eventdetails extends Component {
 	onSocketReturnPushServiceData(res) {
 		if (!res) return false;
 		if (!this.state.eventData) return false;
-		// console.log(res);
 
-		if (res.info.id !== this.state.eventData.event.id) return false;
-
-		let newEventData = JSON.parse(JSON.stringify(this.state.eventData));
-		//let newEventData = Object.assign({}, ...this.state.eventData, )
-
-		newEventData.event.awayScore = res.awayScore;
-		newEventData.event.homeScore = res.awayScore;
-		newEventData.event.status = res.status;
-		newEventData.event.statusDescription = res.statusDescription;
-		console.log('a matched!!', res);
-		this.setState({
-			eventData: newEventData
-		});
+		if (res.info.id === this.state.eventData.event.id) { // there is a match
+			let newEventData = update(this.state.eventData, {
+				event: {
+					awayScore: {$set: res.awayScore},
+					homeScore: {$set: res.homeScore},
+					status: {$set: res.status},
+					statusDescription: {$set: res.statusDescription}
+				}
+			});
+			this.setState({
+				eventData: newEventData
+			});
+		}
 	}
 
 	onSocketConnect() {
-		console.log('Socket connected! - Evet Details');
+		// console.log('Socket connected! - Evet Details');
 		this.props.socket.removeListener('connect', this.onSocketConnect);
 		if (this.state.refreshButton) {
 			this.setState({
 				refreshButton: false
 			}, () => {
-				this.initSocket(true);
 				this.initGetData(true);
+				this.initSocket();
 			});
 		}
 	}
@@ -237,6 +254,23 @@ class Eventdetails extends Component {
 				});
 			});
 	};
+
+	emitSocketMessage() {
+		const {socket} = this.props;
+		const api = '/event/' + this.state.eventid + '/json';
+
+		this.initSocketInterval = setTimeout(() => { // init socket after 10 seconds (10 seconds interval)
+			socket.emit('get-updates-details', api);
+		}, 10000);
+	}
+
+	handleSocketData(res) {
+		this.setState({
+			eventData: res,
+		}, () => {
+			this.emitSocketMessage()
+		});
+	}
 
 	initGetDataHelper(date) {
 		// init helperData socket emit
@@ -440,6 +474,10 @@ class Eventdetails extends Component {
 		const {eventData, provider1MatchData, provider2MatchData, provider3MatchData, matchTextInfo} = this.state;
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
+
+		if (eventData.event.id === 7868747) {
+			console.log('## rendered!!', new Date());
+		}
 
 		const {socket, t} = this.props;
 		this.tabs = [

@@ -27,7 +27,6 @@ class Homepage extends Component {
 			isLive: false,
 			redScoreMuted: false,
 			redScoreShrinked: false,
-			isPushServiceEnabled: true,
 			redScoreBarIncident: null,
 			isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
 			lazyLoadCount: getQueryStringFromUrl("load") || 10
@@ -43,6 +42,7 @@ class Homepage extends Component {
 	};
 
 	componentDidMount() {
+		this.isPushServiceEnabled = true;
 		if (this.props.match.params.date) {
 			this.todaysDate = this.props.match.params.date;
 		} else {
@@ -218,7 +218,7 @@ class Homepage extends Component {
 		socket.removeListener('connect', this.onSocketConnect);
 		socket.removeListener('disconnect', this.onSocketDisconnect);
 		socket.removeListener('return-error-updates', this.onSocketDisconnect);
-		if (this.state.isPushServiceEnabled) {
+		if (this.isPushServiceEnabled) {
 			socket.removeListener('push-service', this.onSocketReturnPushServiceData);
 		} else {
 			socket.removeListener('return-updates-homepage', this.onSocketReturnUpdatesData);
@@ -230,7 +230,7 @@ class Homepage extends Component {
 		//socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
 		this.socket.on('disconnect', this.onSocketDisconnect);
 		this.socket.on('return-error-updates', this.onSocketDisconnect);
-		if (this.state.isPushServiceEnabled) {
+		if (this.isPushServiceEnabled) {
 			this.initGetPushService();
 		} else {
 			this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);

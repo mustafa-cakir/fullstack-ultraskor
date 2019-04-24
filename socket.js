@@ -29,7 +29,6 @@ cacheService.start(err => {
 	if (err) console.error('Error: Cache service failed to start', err);
 });
 
-
 // refresh TOR session
 setInterval(() => {
     tr.newTorSession((err, success) => {
@@ -140,6 +139,7 @@ const initWebSocket = () => {
 		// console.log('## message ', data);
 	});
 };
+
 
 initWebSocket();
 
