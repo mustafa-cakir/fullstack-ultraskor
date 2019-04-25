@@ -119,8 +119,8 @@ class Event extends Component {
 			method = favEvents.indexOf(eventId) < 0 ? "subscribeToTopic" : "unsubscribeFromTopic";
 
 		if (method === "subscribeToTopic") {
-			newFavEvents = update(favEvents, {$push: eventId});
-			newFavEventsList = update(favEventsList, {$push: event});
+			newFavEvents = update(favEvents, {$push: [eventId]});
+			newFavEventsList = update(favEventsList, {$push: [event]});
 		} else {
 			newFavEvents = favEvents.filter(item => item !== eventId);
 			newFavEventsList = favEventsList.filter(item => item !== event);
