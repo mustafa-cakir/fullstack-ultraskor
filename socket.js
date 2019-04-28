@@ -253,7 +253,6 @@ io.on('connection', socket => {
 app.get('/api/', (req, res) => {
 	const cacheKey = `mainData-${req.query.query}`;
 	req.query.page = req.query.page || "default";
-	console.log('Cache: ', req.query.page, cacheDuration.main[req.query.page]);
 	const initRemoteRequests = () => {
 		let sofaOptions = {
 			method: 'GET',
@@ -303,21 +302,6 @@ app.get('/api/', (req, res) => {
 		initRemoteRequests();
 	}
 });
-
-app.post('/api/webpushtest', (req, res) => {
-	res.status(200).send('heyoo working!!');
-	// const {method, token, topic} = req.body;
-	// const cacheKey = topic;
-	// firebaseAdmin.messaging()[method](token, topic)
-	// 	.then(() => {
-	// 		cacheService.instance().set(cacheKey, "true", cacheDuration.webpushtopic);
-	// 		res.send(`Successfully ${method} to topic`);
-	// 	})
-	// 	.catch(err => {
-	// 		res.status(500).send(`An error occurred while processing your request, err: ${err}`);
-	// 	});
-});
-
 
 app.post('/api/webpush', (req, res) => {
 	const {method, token, topic} = req.body;
