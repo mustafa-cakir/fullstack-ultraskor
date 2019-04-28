@@ -39,7 +39,7 @@ class Tournament extends PureComponent {
 
 					if (isLazyLoad && !isLive) {
 						if (index === parseInt(lazyLoadCount)) {
-							return <div key="more" onClick={(e) => {this.lazyLoadLoadMoreBtn()}} className="load-more"><i className="fas"/><Trans>Load more</Trans></div>
+							return <div key="more" onClick={(e) => {this.lazyLoadLoadMoreBtn()}} className="load-more-homepage"><i className="fas"/><Trans>Load more</Trans></div>
 						} else if (index > parseInt(lazyLoadCount)) {
 							return false
 						}

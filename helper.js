@@ -112,7 +112,8 @@ exports.cacheDuration = () => {
 			standing: 60 * 3, // 3 min.
 			teamoftheweek: 60 * 60 * 24,  // 24 hours
 			leaguedetails: 60 * 3,  // 3 min
-			leaguedetailsFixture: 60 * 60 * 24  // 24 hours
+			leaguedetailsFixture: 60 * 60 * 24,  // 24 hours
+			popularevents: 60 * 60 * 6 // 6 hours
 		}
 	}
 };

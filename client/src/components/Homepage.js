@@ -13,6 +13,7 @@ import i18n from "i18next";
 import {HelperUpdateMeta, HelperTranslateUrlTo, getQueryStringFromUrl} from "../Helper";
 import RedScoreBoard from "./common/RedScoreBar";
 import FavTournament from "./common/FavTournament";
+import BottomParagrah from "./common/BottomParagrah";
 
 class Homepage extends Component {
 	constructor(props) {
@@ -423,7 +424,7 @@ class Homepage extends Component {
 
 		const {t} = this.props;
 		return (
-			<div>
+			<>
 				<Headertabs
 					isLive={this.state.isLive}
 					filteredTournaments={this.state.filteredTournaments}
@@ -434,7 +435,7 @@ class Homepage extends Component {
 				/>
 
 				{this.state.loading ? <Loading/> : null}
-				<div className="container px-0 homepage-list">
+				<section className="container px-0 homepage-list">
 
 					{this.state.favEventsList.length > 0 ? (
 						<FavTournament
@@ -460,8 +461,8 @@ class Homepage extends Component {
 						/>
 					) : <Errors key={1} type="no-matched-game"/>}
 
-				</div>
-				<div className="container date-prev-next-container">
+				</section>
+				<section className="container date-prev-next-container">
 					<div className="row date-prev-next align-items-center">
 						<div className="col col-yesterday"><a
 							href={`/${i18n.language === "en" ? "en/" : ""}${t('matches')}/${t('date')}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
@@ -475,7 +476,8 @@ class Homepage extends Component {
 							title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}><Trans>Tomorrow</Trans>
 							<Icon name="fas fa-chevron-right"/></a></div>
 					</div>
-				</div>
+				</section>
+				<BottomParagrah page={"homepage"}/>
 				{this.state.refreshButton ? <RefreshButton/> : ""}
 				{this.state.redScoreBarIncident ?
 					<RedScoreBoard
@@ -486,7 +488,8 @@ class Homepage extends Component {
 						updateParentState={this.updateParentState}
 					/> : ""}
 				<Footer/>
-			</div>)
+			</>
+		)
 	}
 }
 
