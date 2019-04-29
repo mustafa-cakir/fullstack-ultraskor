@@ -28,6 +28,7 @@ class Homepage extends Component {
 			isLive: false,
 			redScoreMuted: false,
 			redScoreShrinked: false,
+			redScoreFavOnly: false,
 			redScoreBarIncident: null,
 			isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
 			lazyLoadCount: getQueryStringFromUrl("load") || 10
@@ -318,6 +319,10 @@ class Homepage extends Component {
 			event.statusDescription = res.statusDescription
 		}
 
+		if (this.state.redScoreFavOnly && this.state.favEvents.length > 0 && this.state.favEvents.indexOf(event.id) < 0) {
+			redScoreBarType = null;
+		}
+
 		if (redScoreBarType) {
 			redScoreBarIncident = {
 				type: redScoreBarType,
@@ -329,13 +334,25 @@ class Homepage extends Component {
 					redScoreBarIncident: null
 				});
 			}, 15000);
-			//console.log(redScoreBarIncident);
 		}
 
-		this.setState({
-			mainData: newMainData,
-			...(redScoreBarType && {redScoreBarIncident: redScoreBarIncident})
-		});
+		if (this.state.redScoreBarIncident && redScoreBarType) {
+			this.setState({
+				redScoreBarIncident: null
+			}, () => {
+				this.setState({
+					mainData: newMainData,
+					redScoreBarIncident: redScoreBarIncident
+				});
+			})
+
+		} else {
+			this.setState({
+				mainData: newMainData,
+				...(redScoreBarType && {redScoreBarIncident: redScoreBarIncident})
+			});
+		}
+
 
 		if (this.state.favEvents.length > 0) this.moveFavEventsToTop();
 	}

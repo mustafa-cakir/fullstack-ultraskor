@@ -23,7 +23,8 @@ class Navbar extends Component {
 			standingMenuOpened: false,
 			fixtureMenuOpened: false,
 			redScoreMuted: false,
-			redScoreShrinked: false
+			redScoreShrinked: false,
+			redScoreFavOnly: false,
 		}
 	}
 
@@ -74,10 +75,11 @@ class Navbar extends Component {
 
 	getFromLocaleStorage() {
 		const persistState = JSON.parse(localStorage.getItem('ultraskor_homepage'));
-		if (persistState && (persistState.redScoreMuted || persistState.redScoreShrinked)) {
+		if (persistState && (persistState.redScoreMuted || persistState.redScoreShrinked || persistState.redScoreFavOnly)) {
 			let newState = {};
 			if (persistState.redScoreMuted) newState.redScoreMuted = persistState.redScoreMuted;
 			if (persistState.redScoreShrinked) newState.redScoreShrinked = persistState.redScoreShrinked;
+			if (persistState.redScoreFavOnly) newState.redScoreFavOnly = persistState.redScoreFavOnly;
 			this.setState(newState);
 		}
 	}
@@ -94,6 +96,14 @@ class Navbar extends Component {
 		this.setState({
 			redScoreMuted: newState
 		}, this.setToLocaleStorage("redScoreMuted", newState))
+	}
+
+	redScoreFavOnlyClickHandler(e) {
+		e.preventDefault();
+		let newState = !this.state.redScoreFavOnly;
+		this.setState({
+			redScoreFavOnly: newState
+		}, this.setToLocaleStorage("redScoreFavOnly", newState))
 	}
 
 	redScoreShrinkedClickHandler(e) {
@@ -206,7 +216,7 @@ class Navbar extends Component {
 						<div className="row align-items-center m-0">
 							<div className="col">
 								<div className="text">
-									<Trans>Red Score Bar Visibility</Trans>
+									<Trans>RedScore Visibility</Trans>
 								</div>
 								<div className="sub-text">
 									<Trans>Activate RedScore popup on homepage</Trans>
@@ -221,7 +231,7 @@ class Navbar extends Component {
 						<div className="row align-items-center m-0">
 							<div className="col">
 								<div className="text">
-									<Trans>Red Score Bar Sound</Trans>
+									<Trans>RedScore Sound</Trans>
 								</div>
 								<div className="sub-text">
 									<Trans>Play sound when there is an incident</Trans>
@@ -230,6 +240,21 @@ class Navbar extends Component {
 							<div className="col col-switch text-right">
 								<Switch active={!this.state.redScoreMuted}
 								        handler={this.redScoreMuteClickHandler.bind(this)}/>
+							</div>
+						</div>
+						<hr className="separator"/>
+						<div className="row align-items-center m-0">
+							<div className="col">
+								<div className="text">
+									<Trans>RedScore Favorite Only</Trans>
+								</div>
+								<div className="sub-text">
+									<Trans>Activate RedScore only for favorite matches</Trans>
+								</div>
+							</div>
+							<div className="col col-switch text-right">
+								<Switch active={this.state.redScoreFavOnly}
+								        handler={this.redScoreFavOnlyClickHandler.bind(this)}/>
 							</div>
 						</div>
 					</li>

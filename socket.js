@@ -800,11 +800,13 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 app.post('/api/logerrors', (req, res) => {
 	if (helper.isProd) {
 		if (consoleErrorsCollection) {
-			consoleErrorsCollection.insertOne(req.body, () => {
-				res.send('OK');
-			}).catch(() => {
-				res.status(500).send('Error');
-			});
+			try {
+				consoleErrorsCollection.insertOne(req.body, () => {
+					res.send('OK');
+				})
+			} catch (e) {
+				res.status(500).send('Error saving console error');
+			};
 		} else res.status(500).send('Error');
 	} else res.send('Console logging is not activated on dev env');
 });
