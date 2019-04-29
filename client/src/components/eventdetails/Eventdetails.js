@@ -660,7 +660,7 @@ class Eventdetails extends PureComponent {
                               "price": "0.00",
                               "priceCurrency": "TRY",
                               "url": "https://www.ultraskor.com${window.location.pathname}",
-                              "availability": "live covarage",
+                              "availability": "http://schema.org/InStock",
                               "validFrom": "2019-02-20T20:00:00.000Z"
                             },
                             "performer": {
