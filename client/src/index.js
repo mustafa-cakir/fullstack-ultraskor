@@ -18,5 +18,5 @@ window.ImageServer = window.location.hostname === 'localhost' ? "http://localhos
 		<App/>
 	</BrowserRouter>
 ), document.getElementById('root'));
-serviceWorker.register();
+serviceWorker.unregister();
 initFirebaseWebPush();
