@@ -59,7 +59,7 @@ app.get('/images/:type/:filename', (req, res) => {
 					stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
 					stream.pipe(res);
 				} else {
-					console.log('Error on response: ' + err);
+					//console.log('Error on response: ' + err);
 					res.sendStatus(404);
 				}
 			});
