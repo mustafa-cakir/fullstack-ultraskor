@@ -15,7 +15,7 @@ class Loading extends Component {
 			this.setState({
 				refreshBtn: true
 			})
-		}, 5000);
+		}, 10000);
 	}
 
 	componentWillUnmount() {

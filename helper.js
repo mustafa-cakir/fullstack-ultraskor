@@ -3,8 +3,8 @@ const cors = require('cors');
 
 exports.preProcessHelper1Data = data => {
 	let result = null;
-	if (data.doc && data.doc.length > 0 && data.doc[0].data && data.doc[0].data.length > 0) {
-		result = data.doc[0].data[0].realcategories.reduce((all, current) => {
+	if (data.doc && data.doc.length > 0 && data.doc[0].data && data.doc[0].data) {
+		result = data.doc[0].data.sport.realcategories.reduce((all, current) => {
 			if (current.tournaments && current.tournaments.length > 0) {
 				current.tournaments.forEach(tournament => {
 					if (tournament.matches && tournament.matches.length > 0) {

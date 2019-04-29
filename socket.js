@@ -319,13 +319,9 @@ app.post('/api/webpush', (req, res) => {
 
 app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
-	const cacheKey = `helperData-${date}-provider1`;
-
-	let now = moment(moment().format('YYYY-MM-DD')); //todays date
-	let end = moment(date, "DD.MM.YYYY"); // another date
-	let duration = moment.duration(end.diff(now));
-	let offset = duration.asDays();
-
+	let targetDate = moment(date, "DD.MM.YYYY").format('YYYY-MM-DD'); // another date
+	const cacheKey = `helperData-${targetDate}-provider1`;
+	let isToday = moment(targetDate).isSame(moment(), 'day');
 	const initRemoteRequests = () => {
 		const provider1options = {
 			method: 'GET',
@@ -334,18 +330,20 @@ app.get('/api/helper1/:date', (req, res) => {
 				'Origin': 'https://ls.betradar.com',
 				'Referer': 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page'
 			},
-			uri: `https://lsc.fn.sportradar.com/betradar/en/Europe:Istanbul/gismo/event_fullfeed/${offset}`,
+			uri: `https://ls.fn.sportradar.com/tempobet/tr/Europe:Istanbul/gismo/sport_matches/1/${targetDate}/1`,
+			//uri: `https://lsc.fn.sportradar.com/betradar/en/Europe:Istanbul/gismo/event_fullfeed/${offset}`,
 			json: true,
 			timeout: 10000
 		};
+
 		request(provider1options)
 			.then(response => {
 				let matchList = helper.preProcessHelper1Data(response);
 				if (matchList && matchList.length > 0) {
-					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
-					if (helperDataCollection) {
+					if (isToday) cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
+					if (helperDataCollection && isToday) {
 						helperDataCollection.insertOne({
-							date: date,
+							date: targetDate,
 							provider: "provider1",
 							data: matchList
 						}).then(() => {
@@ -380,7 +378,7 @@ app.get('/api/helper1/:date', (req, res) => {
 	} else {
 		if (helperDataCollection) {
 			helperDataCollection
-				.findOne({"date": date, "provider": "provider1"})
+				.findOne({"date": targetDate, "provider": "provider1"})
 				.then(result => {
 					if (result) {
 						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1);
