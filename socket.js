@@ -31,13 +31,13 @@ cacheService.start(err => {
 
 // refresh TOR session
 setInterval(() => {
-    tr.newTorSession((err, success) => {
-        if (err) {
-            console.log(err, new Date());
-        } else {
-            console.log(success, new Date());
-        }
-    });
+	tr.newTorSession((err, success) => {
+		if (err) {
+			console.log(err, new Date());
+		} else {
+			console.log(success, new Date());
+		}
+	});
 }, 1000 * 60 * 60 * 6); // 6 hours
 
 webpushHelper.init();
@@ -94,7 +94,9 @@ const initWebSocket = () => {
 			"wss:\/\/ws.sofascore.com:10010"
 		];
 
-	let getPushServiceUri = pushServiceUri.sort(function() {return 0.5 - Math.random()})[0];
+	let getPushServiceUri = pushServiceUri.sort(function () {
+		return 0.5 - Math.random()
+	})[0];
 	console.log(getPushServiceUri);
 
 	let ws = new WebSocket(getPushServiceUri + '/ServicePush', {
@@ -108,8 +110,11 @@ const initWebSocket = () => {
 
 	ws.on('open', () => {
 		console.log('ws connected');
-		ws.send(JSON.stringify({"type":0,"data":["subscribe",{"id":"event","events":["sport_football"]}]}), undefined, undefined);
-		swTimeout = setInterval(()=>{
+		ws.send(JSON.stringify({
+			"type": 0,
+			"data": ["subscribe", {"id": "event", "events": ["sport_football"]}]
+		}), undefined, undefined);
+		swTimeout = setInterval(() => {
 			ws.send(JSON.stringify("primus::ping::" + new Date().getTime()), undefined, undefined);
 			// console.log('## ping sent')
 		}, 20000);
@@ -128,7 +133,7 @@ const initWebSocket = () => {
 	});
 
 	ws.on('message', res => {
-		if (res.substr(0,15).match('pong')) {
+		if (res.substr(0, 15).match('pong')) {
 			// console.log('## pong recived', res);
 		} else {
 			if (!res) return false;
@@ -151,8 +156,8 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 io.on('connection', socket => {
 	socket.emit('heyooo', "mesg heyoo");
 
-    helper.userConnected();
-    // console.log('User connected. Active user: ', helper.userCount());
+	helper.userConnected();
+	// console.log('User connected. Active user: ', helper.userCount());
 	// socket.on('get-updates-2', () => {
 	// 	ws.on('message', (data) => {
 	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
@@ -245,7 +250,7 @@ io.on('connection', socket => {
 	});
 
 	socket.on('disconnect', () => {
-        helper.userDisconnected();
+		helper.userDisconnected();
 		// console.log('User disconnected. Active user: ', helper.userCount());
 	});
 });
@@ -562,7 +567,7 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 			"wshgqxxcvr7uptt3yetu3b8s", // sporarena
 			"3a97ydredjbxvjghxjbzqz2g", // https://github.com/willisgram/master_thesis
 			"j9xerbvc24veacrq3hpby6dk", // https://github.com/kberkeland/soccer-glance
-            "a4nbj7zwu8r7dzgeaw8yr23t" // https://github.com/salman90/Live_Scores
+			"a4nbj7zwu8r7dzgeaw8yr23t" // https://github.com/salman90/Live_Scores
 		];
 
 	let path = null;
@@ -790,6 +795,174 @@ app.get('/sitemap/:lang/:sport/:type/:by/:date', (req, res) => {
 });
 
 
+app.get('/sitemap/matches/:year', (req, res) => {
+	const {year} = req.params;
+
+	res.header('Content-Type', 'application/xml');
+	let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
+	let thisMonth = parseInt(moment().format('MM'));
+
+	for (let month = 12; month > 0; month--) {
+		if (year === "2019" && month > 4 && month <= thisMonth) {
+			let day = moment(year + '-' + month, 'YYYY-MM').add(1, 'months').subtract(1, 'days').format('DD');
+			let modifiedDate = moment(year + '-' + month + '-' + day + ' 23:59').utcOffset('+0300').format();
+			if (month === thisMonth) {
+				day = moment().format('DD');
+				modifiedDate = moment().utcOffset('+0300').format();
+			}
+			xmlString += `
+				<sitemap>
+					<loc>https://www.ultraskor.com/sitemap/matches/${year}/${month < 10 ? `0${month}` : month}</loc>
+					<lastmod>${modifiedDate}</lastmod>
+				</sitemap>
+			`;
+		}
+	}
+	xmlString += '</sitemapindex>';
+	res.send(xmlString);
+	//}
+});
+
+app.get('/sitemap/matches/:year/:month', (req, res) => {
+	const {year, month} = req.params;
+	res.header('Content-Type', 'application/xml');
+	let xmlString = '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+	let thisMonth = parseInt(moment().format('MM'));
+	let toDay = parseInt(moment().format('D'));
+	let daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
+
+	for (let day = daysInMonth; day > 0; day--) {
+		if (parseInt(month) === thisMonth && day > toDay) {
+			// do nothing...
+		} else {
+			//let day = moment(year + '-' + month, 'YYYY-MM').add(1, 'months').subtract(1, 'days').format('DD');
+			let modifiedDate = moment(`${year}-${month}-${day < 10 ? `0${day}` : day} 23:59`).utcOffset('+0300').format();
+
+			if (parseInt(month) === thisMonth && day === toDay) {
+				modifiedDate = moment().utcOffset('+0300').format();
+			}
+
+			xmlString += `
+				<sitemap>
+					<loc>https://www.ultraskor.com/sitemap/matches/${year}/${month}/${day < 10 ? `0${day}` : day}</loc>
+					<lastmod>${modifiedDate}</lastmod>
+				</sitemap>
+			`;
+		}
+	}
+	xmlString += '</sitemapindex>';
+	res.send(xmlString);
+	//}
+});
+
+app.get('/sitemap/matches/:year/:month/:day', (req, res) => {
+	const {year, month, day} = req.params;
+
+	let lang = "tr";
+
+	res.header('Content-Type', 'application/xml');
+
+	let xmlString = '<?xml version="1.0" encoding="UTF-8"?> <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+
+	let thisMonth = parseInt(moment().format('MM'));
+	let toDay = parseInt(moment().format('D'));
+	let daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
+
+	const configUltraSkorGetByDate = {
+		method: 'GET',
+		uri: `https://www.ultraskor.com/api/?query=/football//${year}-${month}-${day}/json`,
+		json: true,
+		headers: {
+			'Content-Type': 'application/json',
+			'Origin': 'https://www.ultraskor.com',
+			'referer': 'https://www.ultraskor.com/',
+			'x-requested-with': 'XMLHttpRequest'
+		},
+		timeout: 10000
+	};
+
+	request(configUltraSkorGetByDate)
+		.then(mainData => {
+			if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
+				let tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
+					tournament.events = tournament.events.filter((event) => {
+						return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === `${year}-${month}-${day}`;
+					});
+					tournament.events.forEach(() => {
+						if (whole.indexOf(tournament) < 0) whole.push(tournament);
+					});
+					return whole;
+				}, []);
+
+				//let urls = [];
+				tournaments.forEach(tournament => {
+					tournament.events.forEach(event => {
+						// let startTime = moment.unix(event.startTimestamp).utc().utcOffset('+0300').format();
+						let finishTimeUTC = moment.unix(event.startTimestamp).utc().utcOffset('+0300').add(90, 'minutes').format();
+
+						let notStartedYet = event.startTimestamp > moment().unix();
+						let differenceDays = Math.abs(moment(moment().unix(), "X").diff(moment(event.startTimestamp, "X"), 'days'));
+
+						let stringChangeFreq = '';
+						let stringPriority = '';
+
+						if (differenceDays < 3) { // within + or - 10 days
+							stringPriority = '<priority>1.0</priority>';
+							stringChangeFreq = '<changefreq>always</changefreq>';
+						} else if (differenceDays < 7) {
+							stringChangeFreq = '<changefreq>hourly</changefreq>';
+							stringPriority = '<priority>0.9</priority>';
+						} else if (differenceDays < 14) {
+							stringChangeFreq = '<changefreq>daily</changefreq>';
+							stringPriority = '<priority>0.8</priority>';
+						} else if (differenceDays < 20) {
+							stringChangeFreq = '<changefreq>weekly</changefreq>';
+							stringPriority = '<priority>0.7</priority>';
+						} else if (differenceDays < 30) {
+							stringChangeFreq = '<changefreq>monthly</changefreq>';
+							stringPriority = '<priority>0.6</priority>';
+						} else {
+							stringChangeFreq = '<changefreq>yearly</changefreq>';
+							stringPriority = '<priority>0.5</priority>';
+						}
+
+						let stringLastModified = `<lastmod>${finishTimeUTC}</lastmod>`;
+						if (notStartedYet) {
+							stringLastModified = `<lastmod>${moment().utcOffset('+0300').format()}</lastmod>`;
+						}
+
+						xmlString += `
+								<url>
+									<loc>${`https://www.ultraskor.com/mac/${helper.generateSlug(helper.t(event.homeTeam.name) + '-' + helper.t(event.awayTeam.name))}-canli-skor-${event.id}`}</loc>
+									${stringLastModified}
+									${stringChangeFreq}
+									${stringPriority}
+									<xhtml:link rel="alternate" hreflang="tr" href="${`https://www.ultraskor.com/mac/${helper.generateSlug(helper.t(event.homeTeam.name) + '-' + helper.t(event.awayTeam.name))}-canli-skor-${event.id}`}"/>
+						            <xhtml:link rel="alternate" hreflang="en" href="${`https://www.ultraskor.com/en/match/${helper.generateSlug(event.homeTeam.name + '-' + event.awayTeam.name)}-live-score-${event.id}`}"/>   
+								</url>
+								<url>
+									<loc>${`https://www.ultraskor.com/en/match/${helper.generateSlug(event.homeTeam.name + '-' + event.awayTeam.name)}-live-score-${event.id}`}</loc>
+									${stringLastModified}
+									${stringChangeFreq}
+									${stringPriority}
+									<xhtml:link rel="alternate" hreflang="tr" href="${`https://www.ultraskor.com/mac/${helper.generateSlug(helper.t(event.homeTeam.name) + '-' + helper.t(event.awayTeam.name))}-canli-skor-${event.id}`}"/>
+						            <xhtml:link rel="alternate" hreflang="en" href="${`https://www.ultraskor.com/en/match/${helper.generateSlug(event.homeTeam.name + '-' + event.awayTeam.name)}-live-score-${event.id}`}"/>   
+								</url>`;
+					});
+				});
+				xmlString += '</urlset>';
+				res.send(xmlString);
+			} else {
+				res.status(500).send('Error 2')
+			}
+		})
+		.catch(err => {
+			res.status(500).send('Error 1' + err,)
+		});
+});
+
+
 app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 	res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`)
 });
@@ -804,7 +977,8 @@ app.post('/api/logerrors', (req, res) => {
 				})
 			} catch (e) {
 				res.status(500).send('Error saving console error');
-			};
+			}
+			;
 		} else res.status(500).send('Error');
 	} else res.send('Console logging is not activated on dev env');
 });
@@ -818,13 +992,13 @@ app.get('/api/tor', (req, res) => {
 });
 
 app.get('/api/tor/new', (req, res) => {
-    tr.newTorSession((err, response) => {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            res.send(response);
-        }
-    });
+	tr.newTorSession((err, response) => {
+		if (err) {
+			res.status(500).send(err)
+		} else {
+			res.send(response);
+		}
+	});
 });
 
 

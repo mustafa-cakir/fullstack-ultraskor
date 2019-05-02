@@ -53,7 +53,7 @@ class BottomParagrah extends PureComponent {
 	render() {
 		const {popularEvents} = this.state;
 		const {t} = this.props;
-		console.log(this.props.page);
+		
 		return (
 			<article className="bottom-paragraph">
 				<div className="container">
