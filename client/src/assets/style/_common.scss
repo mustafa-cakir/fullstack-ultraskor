@@ -1256,15 +1256,16 @@ footer {
 		margin-bottom: 0;
 		.btn {
 			font-size: .8rem;
+			margin-right: 2px;
 			padding: 4px 10px;
-			color: rgba(#fff, .2);
+			color: rgba(#fff, .4);
 			&:hover {
-				border-color: rgba(#fff, .4);
-				color: rgba(#fff, .4);
+				border-color: rgba(#fff, .6);
+				color: rgba(#fff, .6);
 			}
 			&.active {
-				border-color: rgba(#fff, .2);
-				color: rgba(#fff, .3);
+				border-color: rgba(#fff, .4);
+				color: rgba(#fff, .5);
 			}
 		}
 	}
@@ -1352,7 +1353,7 @@ footer {
 		color: rgba(#fff, .4);
 		&:hover {
 			text-decoration: none;
-			border-bottom: 1px solid rgba(#fff, .4);
+			color: rgba(#fff, 0.7)
 		}
 	}
 	h1 {
