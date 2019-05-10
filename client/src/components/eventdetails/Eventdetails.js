@@ -493,8 +493,6 @@ class Eventdetails extends PureComponent {
 			t('Forum')
 		];
 
-		console.log('triggered!!');
-
 		return (
 			<div className="event-details">
 				{this.state.loading ? <Loading/> : null}
