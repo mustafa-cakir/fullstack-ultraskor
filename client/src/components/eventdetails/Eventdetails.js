@@ -21,11 +21,11 @@ import smoothscroll from 'smoothscroll-polyfill';
 import i18n from "i18next";
 import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
 import LiveTracker from "./LiveTracker";
-import {Helmet} from "react-helmet";
 import H2h from "./H2h";
 import RefreshButton from "../common/RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import Forum from "../common/Forum";
+import {JsonLd} from "../common/JsonLd";
 
 class Eventdetails extends PureComponent {
 	constructor(props) {
@@ -112,6 +112,7 @@ class Eventdetails extends PureComponent {
 		//console.log(percentage);
 	};
 	swipeTabClick = (event, index) => {
+		if (!this.swipeEl.current) return false;
 		this.rippleEffectHandler(event);
 		this.setState({
 			index: index
@@ -492,6 +493,8 @@ class Eventdetails extends PureComponent {
 			t('Forum')
 		];
 
+		console.log('triggered!!');
+
 		return (
 			<div className="event-details">
 				{this.state.loading ? <Loading/> : null}
@@ -622,8 +625,9 @@ class Eventdetails extends PureComponent {
 				</ReactSwipe>
 				<Footer/>
 				<span>{this.state.refreshButton ? <RefreshButton/> : null}</span>
-				<Helmet>
-					<script type="application/ld+json">{`
+
+
+				<JsonLd data={`
 				        {
 							"@context": "http://schema.org",
 							"@type": "SportsEvent",
@@ -674,8 +678,7 @@ class Eventdetails extends PureComponent {
 								"maximumAttendeeCapacity": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.capcity ? eventData.event.venue.stadium.capcity : "45000"}"
                           	}
 						}
-				    `}</script>
-				</Helmet>
+				    `} />
 			</div>
 		)
 	}

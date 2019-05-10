@@ -17,6 +17,7 @@ import Mp3HalfTime from "./assets/sound/half-time.mp3";
 import Mp3Start from "./assets/sound/start.mp3";
 import Teamdetails from "./components/teamdetails/Teamdetails";
 import PullToRefresh from "./components/common/PullToRefresh";
+import ErrorBoundary from "./ErrorBoundary";
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -91,27 +92,27 @@ class App extends Component {
 				<main className="main">
 					<Switch>
 						<Route exact path='/'
-						       render={() => <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/>}/>
+						       render={() => <ErrorBoundary><Homepage {...this.props} {...this.state} audioFiles={this.audioFiles}/></ErrorBoundary>}/>
 
 						<Route exact path='/(maclar|matches)/(tarih|date)-:date'
-						       render={props => <Homepage {...this.props} {...props} {...this.state}
-						                                  audioFiles={this.audioFiles}/>}/>
+						       render={props => <ErrorBoundary><Homepage {...this.props} {...props} {...this.state}
+						                                                 audioFiles={this.audioFiles}/></ErrorBoundary>}/>
 
 						<Route exact path='/(mac|match)/:slug-(canli-skor|live-score)-:eventid'
-						       render={props => <Eventdetails socket={socket} {...props}/>}/>
+						       render={props => <ErrorBoundary><Eventdetails socket={socket} {...props}/></ErrorBoundary>}/>
 
 						<Route exact
 						       path='/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?'
-						       render={props => <Leaguedetails socket={socket} {...props}/>}/>
+						       render={props => <ErrorBoundary><Leaguedetails socket={socket} {...props}/></ErrorBoundary>}/>
 
                         <Route exact
                                path='/(takim|team)/:slug-:teamId(\d+)'
-                               render={props => <Teamdetails socket={socket} {...props}/>}/>
+                               render={props => <ErrorBoundary><Teamdetails socket={socket} {...props}/></ErrorBoundary>}/>
 
 						<Route exact path='/test' component={TestComp}/>
 
 						<Route exact path="/eventdetails/:eventid" socket={socket}
-						       render={props => <Eventdetails socket={socket} {...props}/>}/>
+						       render={props => <ErrorBoundary><Eventdetails socket={socket} {...props}/></ErrorBoundary>}/>
 
 						<Route render={() => <Errors type="page-not-found"/>}/>
 					</Switch>
