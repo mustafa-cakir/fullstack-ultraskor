@@ -163,12 +163,12 @@ class Teamdetails extends PureComponent {
     };
 
     swipeByIndex(index) {
-        if (this.swipeEl) this.swipeEl.current.slide(index);
+        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     }
 
     swipeByTabName(tab) {
         let index = (this.tabs) ? this.tabs.indexOf(tab) : 0;
-        if (this.swipeEl) this.swipeEl.current.slide(index);
+        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     }
 
     swipeTabClick = (event, index) => {
@@ -176,14 +176,14 @@ class Teamdetails extends PureComponent {
         this.setState({
             index: index
         }, () => {
-            this.swipeEl.current.slide(index);
+	        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
             this.swipeMarkerAndScrollHandler(index);
             this.swipeAdjustHeight(index);
         });
     };
 
     swipeAdjustHeight(index) {
-        if (this.swipeEl.current && this.swipeEl.current.containerEl) {
+        if (this.swipeEl && this.swipeEl.current && this.swipeEl.current.containerEl) {
             index = index || this.swipeEl.current.getPos();
             let container = this.swipeEl.current.containerEl.firstChild;
             let active = container.childNodes[index];

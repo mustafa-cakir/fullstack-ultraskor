@@ -112,12 +112,11 @@ class Eventdetails extends PureComponent {
 		//console.log(percentage);
 	};
 	swipeTabClick = (event, index) => {
-		if (!this.swipeEl.current) return false;
 		this.rippleEffectHandler(event);
 		this.setState({
 			index: index
 		}, () => {
-			this.swipeEl.current.slide(index);
+			if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
 			this.swipeMarkerAndScrollHandler(index);
 			this.swipeAdjustHeight(index);
 		});
@@ -125,7 +124,7 @@ class Eventdetails extends PureComponent {
 	};
 
 	swipeAdjustHeight(index) {
-		if (this.swipeEl.current && this.swipeEl.current.containerEl) {
+		if (this.swipeEl && this.swipeEl.current && this.swipeEl.current.containerEl) {
 			index = index || this.swipeEl.current.getPos();
 			let container = this.swipeEl.current.containerEl.firstChild;
 			let active = container.childNodes[index];
@@ -148,12 +147,12 @@ class Eventdetails extends PureComponent {
 	};
 
 	swipeByIndex(index) {
-		if (this.swipeEl) this.swipeEl.current.slide(index);
+		if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
 	}
 
 	swipeByTabName(tab) {
 		let index = (this.tabs) ? this.tabs.indexOf(tab) : 0;
-		if (this.swipeEl) this.swipeEl.current.slide(index);
+		if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
 	}
 
 	componentWillUnmount() {

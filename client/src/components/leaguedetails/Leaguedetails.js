@@ -36,7 +36,7 @@ class Leaguedetails extends Component {
     }
 
     componentDidUpdate() {
-        if (this.swipeEl.current) {
+        if (this.swipeEl && this.swipeEl.current) {
             this.swipeAdjustHeight(this.state.index);
             this.swipeMarkerAndScrollHandler();
         }
@@ -109,17 +109,17 @@ class Leaguedetails extends Component {
     };
 
     swipeByIndex(index) {
-        if (this.swipeEl) this.swipeEl.current.slide(index);
+        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     }
 
     swipeByTabName(tab) {
         let index = (this.tabs) ? this.tabs.indexOf(tab) : 0;
-        if (this.swipeEl) this.swipeEl.current.slide(index);
+        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     }
 
     swipeTabClick = (event, index) => {
         this.rippleEffectHandler(event);
-        this.swipeEl.current.slide(index);
+        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     };
 
     swipeAdjustHeight(index) {
