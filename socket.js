@@ -608,9 +608,6 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 			json: true,
 			timeout: 10000
 		};
-
-		console.log(provider4options.uri);
-
 		request(provider4options)
 			.then(response => {
 				if (response) {
