@@ -564,10 +564,34 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 
 	const cacheKey = `helperData-${type}-${lang}-${id}-provider4`,
 		api_key = [
-			"wshgqxxcvr7uptt3yetu3b8s", // sporarena
-			"3a97ydredjbxvjghxjbzqz2g", // https://github.com/willisgram/master_thesis
-			"j9xerbvc24veacrq3hpby6dk", // https://github.com/kberkeland/soccer-glance
-			"a4nbj7zwu8r7dzgeaw8yr23t" // https://github.com/salman90/Live_Scores
+			{
+				region: "eu",
+				key: "wshgqxxcvr7uptt3yetu3b8s" // sporarena - Europe
+			},
+			{
+				region: "intl",
+				key: "efrefsb22mebrc54gbu78ves" // sporarena - Intl
+			},
+			{
+				region: "other",
+				key: "v4j6ksqubsne2ur9aexuawt7" // sporarena - Other
+			},
+			{
+				region: "eu",
+				key: "3a97ydredjbxvjghxjbzqz2g" // https://github.com/willisgram/master_thesis
+			},
+			{
+				region: "eu",
+				key: "j9xerbvc24veacrq3hpby6dk" // https://github.com/kberkeland/soccer-glance
+			},
+			{
+				region: "eu",
+				key: "a4nbj7zwu8r7dzgeaw8yr23t" // https://github.com/antoine-lizee/sportcal
+			},
+			{
+				region: "eu",
+				key: "ha3v5v65eexxag3av2hnuhwq" // https://github.com/salman90/Live_Scores
+			}
 		];
 
 	let path = null;
@@ -580,10 +604,12 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 	const initRemoteRequests = (keyIndex = 0) => {
 		const provider4options = {
 			method: 'GET',
-			uri: `https://api.sportradar.us/soccer-xt3/eu/${lang}/${path}?api_key=${api_key[keyIndex]}`,
+			uri: `https://api.sportradar.us/soccer-xt3/${api_key[keyIndex].region}/${lang}/${path}?api_key=${api_key[keyIndex].key}`,
 			json: true,
 			timeout: 10000
 		};
+
+		console.log(provider4options.uri);
 
 		request(provider4options)
 			.then(response => {
@@ -612,7 +638,7 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 				}
 			})
 			.catch(() => {
-				if (keyIndex + 1 <= api_key.length) {
+				if (keyIndex + 1 < api_key.length) {
 					initRemoteRequests(keyIndex + 1)
 				} else {
 					res.status(404).send({
