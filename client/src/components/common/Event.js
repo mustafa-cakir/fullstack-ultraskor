@@ -33,6 +33,8 @@ class Event extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
+		if (this.props.event.homeTeam.name !== prevProps.event.homeTeam.name) return false;
+
 		if (this.props.event.awayScore.current !== prevProps.event.awayScore.current) {
 			if (typeof prevProps.event.awayScore.current === 'undefined') return false;
 			if (!this.awayTeamEl.current) return false;
@@ -44,7 +46,9 @@ class Event extends Component {
 				if (!this.awayTeamEl.current) return false;
 				this.awayTeamEl.current.classList.remove('flash-blinker-5');
 			}, 10000);
-		} else if (this.props.event.homeScore.current !== prevProps.event.homeScore.current) {
+		}
+
+		if (this.props.event.homeScore.current !== prevProps.event.homeScore.current) {
 			if (typeof prevProps.event.homeScore.current === 'undefined') return false;
 			if (!this.homeTeamEl.current) return false;
 

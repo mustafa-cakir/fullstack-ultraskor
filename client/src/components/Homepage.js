@@ -88,6 +88,7 @@ class Homepage extends Component {
 			...(this.state.favEvents.length > 0 && {favEvents: this.state.favEvents}),
 			redScoreMuted: this.state.redScoreMuted,
 			redScoreShrinked: this.state.redScoreShrinked,
+			redScoreFavOnly: this.state.redScoreFavOnly,
 		};
 		localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore))
 	}

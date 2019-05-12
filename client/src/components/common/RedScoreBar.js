@@ -50,15 +50,20 @@ class RedScoreBar extends Component {
     }
 
     playSound(type) {
-        if (!this.props.redScoreMuted) {
+    	const { audioFiles } = this.props;
+    	let audio = null;
+        if (!this.props.redScoreMuted && audioFiles) {
             setTimeout(() => {
-                if (type === "goal") this.props.audioFiles.goal.play();
-                else if (type === "cancel") this.props.audioFiles.cancel.play();
-                else if (type === "finish") this.props.audioFiles.finish.play();
-                else if (type === "red-card") this.props.audioFiles.redcard.play();
-                else if (type === "half-time") this.props.audioFiles.halftime.play();
-                else if (type === "start") this.props.audioFiles.start.play();
-            }, 100);
+                if (type === "goal" && audioFiles.goal) audio = audioFiles.goal.play();
+                else if (type === "cancel" && audioFiles.cancel) audio = audioFiles.cancel.play();
+                else if (type === "finish" && audioFiles.finish) audio = audioFiles.finish.play();
+                else if (type === "red-card" && audioFiles.redcard) audio = audioFiles.redcard.play();
+                else if (type === "half-time" && audioFiles.halftime) audio = audioFiles.halftime.play();
+                else if (type === "start" && audioFiles.start) audio = audioFiles.start.play();
+                if (audio) {
+	                audio.catch(err => { console.log("AudioFile can't be played", err); });
+                }
+            }, 500);
         }
     }
 
