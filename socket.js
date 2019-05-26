@@ -25,9 +25,7 @@ AWS.config.update({
 	secretAccessKey: "TThjNHdluCGZPvO0+C+qD0hLUew/DQp8Ce87uCXI"
 });
 
-
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-
 
 const port = 5001;
 const app = express();
@@ -753,7 +751,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 			}
 		};
 
-		
+
 		dynamoDB.get(params, (err, result) => {
 			if (err) {
 				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
