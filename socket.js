@@ -750,15 +750,16 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 				type: type
 			}
 		};
-
-
+		
 		dynamoDB.get(params, (err, result) => {
 			if (err) {
 				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
 				initRemoteRequests();
-			} else {
+			} else if (result && result.Item) {
 				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.oley[type] || 60);
 				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			} else {
+				initRemoteRequests();
 			}
 		});
 	} else {
