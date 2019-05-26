@@ -45,7 +45,7 @@ class App extends Component {
 		if (("WebSocket" in window && window.WebSocket !== undefined) || ("MozWebSocket" in window)) {
 			setTimeout(() => {
 				this.initSocket();
-			}, 5000);
+			}, 2000);
 		}
 		PullToRefresh.init();
 	}

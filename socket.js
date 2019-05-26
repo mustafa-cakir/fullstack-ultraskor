@@ -60,10 +60,7 @@ const io = socketIO(server);
 
 let db = null,
 	helperDataCollection = null,
-	sportradarCollection = null,
-	forumCollection = null,
-	oleyCollection = null,
-	consoleErrorsCollection = null;
+	sportradarCollection = null;
 
 const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
 if (helper.isProd) {
@@ -74,11 +71,8 @@ if (helper.isProd) {
 		} else {
 			try {
 				db = client.db('ultraskor');
-				consoleErrorsCollection = db.collection('console_errors');
 				helperDataCollection = db.collection('helperdata_bydate');
-				oleyCollection = db.collection('helperdata_oley');
 				sportradarCollection = db.collection('sportradardata');
-				forumCollection = db.collection('forum');
 
 				console.log('MongoDB connected');
 			} catch (err) {
@@ -188,34 +182,63 @@ io.on('connection', socket => {
 
 
 	socket.on('forum-post-new', data => {
-		if (forumCollection) {
-			forumCollection.insertOne({
+		if (!dynamoDB) return false;
+		const params = {
+			TableName: "ultraskor_forum",
+			Item: {
 				topicId: data.topicId,
 				message: data.message,
 				date: data.date,
 				userName: data.userName
-			}).then(() => {
+			}
+		};
+		dynamoDB.put(params, err => {
+			if (!err) {
 				io.sockets.emit('forum-new-submission', data)
-			}).catch(err => {
-				console.log('DB Error: Can not inserted to db ' + err);
-				//socket.emit('post-forum-topic-result', "error");
-			});
-		} else {
-			console.log('DB Error: Db is not connected');
-			//socket.emit('post-forum-topic-result', "error");
-		}
+			}
+		});
 	});
 
+	
 
 	socket.on('forum-get-all-by-id', topicId => {
-		if (forumCollection) {
-			forumCollection.find({topicId: topicId}).toArray(function (err, messages) {
-				socket.emit('forum-get-all-by-id-result', messages);
+		if (dynamoDB) {
+			const params = {
+				TableName: "ultraskor_forum",
+				KeyConditionExpression: "#topicid = :id",
+				ExpressionAttributeNames:{
+					"#topicid": "topicId"
+				},
+				ExpressionAttributeValues: {
+					":id": topicId
+				}
+			};
+			dynamoDB.query(params, (err, result) => {
+				if (err) {
+					console.log(err);
+					console.log('DB Error: Db is not connected');
+					socket.emit('forum-get-all-by-id-result', []);
+				} else if (result && result.Count > 0) {
+					console.log("check1", result);
+					socket.emit('forum-get-all-by-id-result', result.Items)
+				} else {
+					console.log("check2", result);
+					socket.emit('forum-get-all-by-id-result', []);
+				}
 			});
 		} else {
 			console.log('DB Error: Db is not connected');
 			socket.emit('forum-get-all-by-id-result', null);
 		}
+
+		// if (forumCollection) {
+		// 	forumCollection.find({topicId: topicId}).toArray(function (err, messages) {
+		// 		socket.emit('forum-get-all-by-id-result', messages);
+		// 	});
+		// } else {
+		// 	console.log('DB Error: Db is not connected');
+		// 	socket.emit('forum-get-all-by-id-result', null);
+		// }
 	});
 
 	socket.on('get-updates-details', api => {
@@ -706,14 +729,13 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 							Item: {
 								matchid: parseInt(matchid),
 								type: type,
-								data: response
+								data: JSON.stringify(response)
 							}
 						};
 
-						console.log("Adding a new item...");
 						dynamoDB.put(params, err => {
 							if (err) {
-								console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
+								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
 								res.send(response);
 							} else {
 								res.send(response);
@@ -750,7 +772,7 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 				type: type
 			}
 		};
-		
+
 		dynamoDB.get(params, (err, result) => {
 			if (err) {
 				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
@@ -1015,16 +1037,24 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 // Log Console Errors
 app.post('/api/logerrors', (req, res) => {
 	if (helper.isProd) {
-		if (consoleErrorsCollection) {
-			try {
-				consoleErrorsCollection.insertOne(req.body, () => {
+		if (dynamoDB) {
+			const params = {
+				TableName: "ultraskor_errors",
+				Item: {
+					type: "console_error",
+					data: JSON.stringify(req.body)
+				}
+			};
+			dynamoDB.put(params, err => {
+				if (err) {
+					res.status(500).send('Error saving console error');
+				} else {
 					res.send('OK');
-				})
-			} catch (e) {
-				res.status(500).send('Error saving console error');
-			}
-			;
-		} else res.status(500).send('Error');
+				}
+			});
+		} else {
+			res.status(500).send('Error');
+		}
 	} else res.send('Console logging is not activated on dev env');
 });
 
