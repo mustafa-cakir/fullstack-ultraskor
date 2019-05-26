@@ -16,6 +16,19 @@ tr.TorControlPort.password = 'muztafultra';
 const WebSocket = require('ws');
 const SocksProxyAgent = require('socks-proxy-agent');
 
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+	region: "eu-central-1",
+	endpoint: "https://dynamodb.eu-central-1.amazonaws.com",
+	accessKeyId: "AKIA6RK5WADCQXEQOSCI",
+	secretAccessKey: "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"
+});
+
+
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+
 const port = 5001;
 const app = express();
 
@@ -273,12 +286,11 @@ app.get('/api/', (req, res) => {
 		};
 
 		const customRequest = (options, cb) => {
-			if (helper.isTorDisabled) {
-				request(options, cb)
-			} else {
-				tr.request(options, cb);
-
-			}
+			// if (helper.isTorDisabled) {
+			request(options, cb);
+			// } else {
+			// 	tr.request(options, cb);
+			// }
 		};
 
 
@@ -689,21 +701,30 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 			.then(response => {
 				if (response) {
 					cacheService.instance().set(cacheKey, response, cacheDuration.oley[type] || 60);
-					if (oleyCollection) {
-						oleyCollection.insertOne({
-							matchid: matchid,
-							type: type,
-							data: response
-						}).then(() => {
-							// console.log('checkpoint');
-							res.send(response);
-						}).catch(err => {
-							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(response);
+
+					if (dynamoDB) {
+						const params = {
+							TableName: "ultraskor_oley",
+							Item: {
+								matchid: parseInt(matchid),
+								type: type,
+								data: response
+							}
+						};
+
+						console.log("Adding a new item...");
+						dynamoDB.put(params, err => {
+							if (err) {
+								console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
+								res.send(response);
+							} else {
+								res.send(response);
+							}
 						});
 					} else {
 						res.send(response);
 					}
+
 				} else {
 					res.status(500).send({
 						status: "error",
@@ -723,25 +744,27 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
+	} else if (dynamoDB) {
+		const params = {
+			TableName: "ultraskor_oley",
+			Key: {
+				matchid: parseInt(matchid),
+				type: type
+			}
+		};
+
+		
+		dynamoDB.get(params, (err, result) => {
+			if (err) {
+				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+				initRemoteRequests();
+			} else {
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.oley[type] || 60);
+				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			}
+		});
 	} else {
-		if (oleyCollection) {
-			oleyCollection
-				.findOne({matchid: matchid, type: type})
-				.then(result => {
-					if (result) {
-						cacheService.instance().set(cacheKey, result.data, cacheDuration.oley[type] || 60);
-						res.send(result.data); // Data is found in the db, now caching and serving!
-					} else {
-						initRemoteRequests(); // data can't be found in db, get it from remote servers
-					}
-				})
-				.catch(() => {
-					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-					initRemoteRequests();
-				})
-		} else {
-			initRemoteRequests();  // db is not initalized, get data from remote servers
-		}
+		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
 });
 
