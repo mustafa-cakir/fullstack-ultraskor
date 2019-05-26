@@ -199,7 +199,7 @@ io.on('connection', socket => {
 		});
 	});
 
-	
+
 
 	socket.on('forum-get-all-by-id', topicId => {
 		if (dynamoDB) {
@@ -230,15 +230,6 @@ io.on('connection', socket => {
 			console.log('DB Error: Db is not connected');
 			socket.emit('forum-get-all-by-id-result', null);
 		}
-
-		// if (forumCollection) {
-		// 	forumCollection.find({topicId: topicId}).toArray(function (err, messages) {
-		// 		socket.emit('forum-get-all-by-id-result', messages);
-		// 	});
-		// } else {
-		// 	console.log('DB Error: Db is not connected');
-		// 	socket.emit('forum-get-all-by-id-result', null);
-		// }
 	});
 
 	socket.on('get-updates-details', api => {
