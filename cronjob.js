@@ -24,6 +24,7 @@ const options = moment => {
 if (helper.isTorDisabled) {
 	console.log("Tor Disabled");
 } else {
+	console.log("TOR IP is requested");
 	tr.request('https://api.ipify.org', function (err, status, response) {
 		if (!err && status.statusCode === 200) {
 			console.log("Your public (through Tor) IP is: " + response);

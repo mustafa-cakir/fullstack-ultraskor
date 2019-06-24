@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-const MongoClient = require('mongodb').MongoClient;
+// const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const bodyParser = require('body-parser');
 const moment = require('moment');
@@ -57,32 +57,6 @@ cronjob.start();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-
-let db = null,
-	helperDataCollection = null,
-	sportradarCollection = null;
-
-const {MONGO_USER, MONGO_PASSWORD, MONGO_IP} = process.env;
-if (helper.isProd) {
-	MongoClient.connect(`mongodb://bY4b8HC:6X8gBwY@${MONGO_IP}:27017`, helper.mongoOptions(), (err, client) => {
-		if (err) {
-			console.log('DB Error: Can not connected to db. Error: ' + err);
-
-		} else {
-			try {
-				db = client.db('ultraskor');
-				helperDataCollection = db.collection('helperdata_bydate');
-				sportradarCollection = db.collection('sportradardata');
-
-				console.log('MongoDB connected');
-			} catch (err) {
-				console.log('DB Error: Can not connected to db');
-			}
-		}
-	});
-} else {
-	console.log('Working on dev. No MongoDB connection!');
-}
 
 let wsMaxRetry = 25;
 const initWebSocket = () => {
@@ -200,13 +174,12 @@ io.on('connection', socket => {
 	});
 
 
-
 	socket.on('forum-get-all-by-id', topicId => {
 		if (dynamoDB) {
 			const params = {
 				TableName: "ultraskor_forum",
 				KeyConditionExpression: "#topicid = :id",
-				ExpressionAttributeNames:{
+				ExpressionAttributeNames: {
 					"#topicid": "topicId"
 				},
 				ExpressionAttributeValues: {
@@ -250,7 +223,9 @@ io.on('connection', socket => {
 
 			const customRequest = (options, cb) => {
 				if (helper.isTorDisabled) {
-					request(options, cb)
+					request(options, cb).catch(err => {
+						console.log(err)
+					});
 				} else {
 					tr.request(options, cb);
 				}
@@ -298,11 +273,13 @@ app.get('/api/', (req, res) => {
 		};
 
 		const customRequest = (options, cb) => {
-			// if (helper.isTorDisabled) {
-			request(options, cb);
-			// } else {
-			// 	tr.request(options, cb);
-			// }
+			if (helper.isTorDisabled) {
+				request(options, cb).catch(err => {
+					console.log(err)
+				});
+			} else {
+				tr.request(options, cb);
+			}
 		};
 
 
@@ -365,25 +342,36 @@ app.get('/api/helper1/:date', (req, res) => {
 			timeout: 10000
 		};
 
+
 		request(provider1options)
 			.then(response => {
 				let matchList = helper.preProcessHelper1Data(response);
 				if (matchList && matchList.length > 0) {
 					if (isToday) cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
-					if (helperDataCollection && isToday) {
-						helperDataCollection.insertOne({
-							date: targetDate,
-							provider: "provider1",
-							data: matchList
-						}).then(() => {
-							res.send(matchList);
-						}).catch(err => {
-							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(matchList);
+
+					if (dynamoDB && isToday) {
+						const params = {
+							TableName: "ultraskor_helper1",
+							Item: {
+								date: targetDate,
+								data: JSON.stringify(matchList)
+							}
+						};
+
+						dynamoDB.put(params, err => {
+							if (err) {
+								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
+								res.send(matchList);
+							} else {
+								if (helper.isDev) console.log("Helper1: DynamoDB write completed, now serving...");
+								res.send(matchList);
+							}
 						});
 					} else {
+						console.log('dynamoDB is missing, nothing is backed up');
 						res.send(matchList);
 					}
+
 				} else {
 					res.send({
 						status: "empty",
@@ -404,31 +392,38 @@ app.get('/api/helper1/:date', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
+	} else if (dynamoDB) {
+		const params = {
+			TableName: "ultraskor_helper1",
+			Key: {
+				date: targetDate,
+			}
+		};
+
+		dynamoDB.get(params, (err, result) => {
+			if (err) {
+				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+				initRemoteRequests();
+			} else if (result && result.Item) {
+				if (helper.isDev) console.log("Helper1: DynamoDB read completed, now serving...");
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider1);
+				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			} else {
+				initRemoteRequests();
+			}
+		});
 	} else {
-		if (helperDataCollection) {
-			helperDataCollection
-				.findOne({"date": targetDate, "provider": "provider1"})
-				.then(result => {
-					if (result) {
-						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider1);
-						res.send(result.data); // Data is found in the db, now caching and serving!
-					} else {
-						initRemoteRequests(); // data can't be found in db, get it from remote servers
-					}
-				})
-				.catch(() => {
-					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-					initRemoteRequests();
-				})
-		} else {
-			initRemoteRequests();  // db is not initalized, get data from remote servers
-		}
+		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
 });
 
 app.get('/api/helper2/:date', (req, res) => {
-	const date = req.params.date.replace(/\./g, '/');
+	const date = req.params.date;
 	const cacheKey = `helperData-${date}-provider2`;
+	let argumentDate = moment(date, 'MM.DD.YYYY').format('MM/DD/YYYY');
+	let targetDate = moment(date, 'MM.DD.YYYY').format('YYYY-MM-DD');
+
+	let isToday = moment(date, 'MM.DD.YYYY').isSame(moment(), 'day');
 
 	const initRemoteRequests = () => {
 		const provider2options = {
@@ -442,7 +437,7 @@ app.get('/api/helper2/:date', (req, res) => {
 				"coverageId": "6bf0cf44-e13a-44e1-8008-ff17ba6c2128",
 				"options": {
 					"sportId": 1,
-					"day": date,
+					"day": argumentDate,
 					"origin": "broadage.com",
 					"timeZone": 3
 				}
@@ -454,24 +449,27 @@ app.get('/api/helper2/:date', (req, res) => {
 		request(provider2options)
 			.then(response => {
 				if (response.initialData && response.initialData.length > 0) {
-					if (moment(date, 'MM/DD/YYYY').isSame(moment(), 'day')) { // if it is today
-						cacheService.instance().set(cacheKey, response, cacheDuration.provider2);
-						if (helperDataCollection) {
-							helperDataCollection.insertOne({
-								date: date,
-								provider: "provider2",
-								data: response
-							}).then(() => {
-								res.send(response);
-							}).catch(err => {
-								console.log('DB Error: Can not inserted to db ' + err);
-								res.send(response);
-							});
-						} else {
-							res.send(response);
-						}
+					if (isToday) cacheService.instance().set(cacheKey, response, cacheDuration.provider2);
+					if (dynamoDB && isToday) {
+						const params = {
+							TableName: "ultraskor_helper2",
+							Item: {
+								date: targetDate,
+								data: JSON.stringify(response)
+							}
+						};
 
+						dynamoDB.put(params, err => {
+							if (err) {
+								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
+								res.send(response);
+							} else {
+								if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
+								res.send(response);
+							}
+						});
 					} else {
+						console.log('dynamoDB is missing, nothing is backed up');
 						res.send(response);
 					}
 				} else {
@@ -490,30 +488,35 @@ app.get('/api/helper2/:date', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
+	} else if (dynamoDB) {
+		const params = {
+			TableName: "ultraskor_helper2",
+			Key: {
+				date: targetDate,
+			}
+		};
+
+
+		dynamoDB.get(params, (err, result) => {
+			if (err) {
+				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+				initRemoteRequests();
+			} else if (result && result.Item) {
+				if (helper.isDev) console.log("Helper2: DynamoDB read completed, now serving...");
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider2);
+				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			} else {
+				initRemoteRequests();
+			}
+		});
 	} else {
-		if (helperDataCollection) {
-			helperDataCollection
-				.findOne({"date": date, "provider": "provider2"})
-				.then(result => {
-					if (result) {
-						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider2);
-						res.send(result.data); // Data is found in the db, now caching and serving!
-					} else {
-						initRemoteRequests(); // data can't be found in db, get it from remote servers
-					}
-				})
-				.catch(() => {
-					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-					initRemoteRequests();
-				})
-		} else {
-			initRemoteRequests();  // db is not initalized, get data from remote servers
-		}
+		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
 });
 
 app.get('/api/helper3/:date/:code', (req, res) => {
 	const {date, code} = req.params;
+	let targetDate = moment(date, "DD.MM.YYYY").format('YYYY-MM-DD'); // another date
 
 	const cacheKey = `helperData-${date}-${code}-provider3`;
 
@@ -525,23 +528,33 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 			timeout: 10000
 		};
 
+
 		request(provider3options)
 			.then(response => {
-				let matchList = helper.replaceDotWithUnderscore(response.events);
-				if (matchList && matchList[code] && date === moment(matchList[code].startDate * 1e3).format('DD.MM.YYYY')) {
+				let tempObj = helper.replaceDotWithUnderscore(response.events);
+				let matchList = tempObj[code];
+				if (matchList && moment(matchList.startDate * 1e3).format('DD.MM.YYYY') === date) {
 					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider3);
-					if (helperDataCollection) {
-						helperDataCollection.insertOne({
-							date: date,
-							provider: "provider3",
-							data: matchList
-						}).then(() => {
-							res.send(matchList);
-						}).catch(err => {
-							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(matchList);
+					if (dynamoDB) {
+						const params = {
+							TableName: "ultraskor_helper3",
+							Item: {
+								date: targetDate,
+								data: JSON.stringify(matchList)
+							}
+						};
+
+						dynamoDB.put(params, err => {
+							if (err) {
+								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
+								res.send(matchList);
+							} else {
+								if (helper.isDev) console.log("Helper3: DynamoDB write completed, now serving...");
+								res.send(matchList);
+							}
 						});
 					} else {
+						console.log('dynamoDB is missing, nothing is backed up');
 						res.send(matchList);
 					}
 				} else {
@@ -560,25 +573,28 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
+	} else if (dynamoDB) {
+		const params = {
+			TableName: "ultraskor_helper3",
+			Key: {
+				date: targetDate,
+			}
+		};
+
+		dynamoDB.get(params, (err, result) => {
+			if (err) {
+				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+				initRemoteRequests();
+			} else if (result && result.Item) {
+				if (helper.isDev) console.log("Helper3: DynamoDB read completed, now serving...");
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider3);
+				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			} else {
+				initRemoteRequests();
+			}
+		});
 	} else {
-		if (helperDataCollection) {
-			helperDataCollection
-				.findOne({"date": date, "provider": "provider3"})
-				.then(result => {
-					if (result) {
-						cacheService.instance().set(cacheKey, result.data, cacheDuration.provider3);
-						res.send(result.data); // Data is found in the db, now caching and serving!
-					} else {
-						initRemoteRequests(); // data can't be found in db, get it from remote servers
-					}
-				})
-				.catch(() => {
-					console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
-					initRemoteRequests();
-				})
-		} else {
-			initRemoteRequests();  // db is not initalized, get data from remote servers
-		}
+		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
 });
 
@@ -639,23 +655,36 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 					if (response.schema) delete response.schema;
 
 					cacheService.instance().set(cacheKey, response, cacheDuration.provider4[type] || 60);
-					if (sportradarCollection) {
-						sportradarCollection.insertOne({
-							type: type,
-							id: id,
-							lang: lang,
-							data: response
-						}).then(() => {
-							res.send(response);
-						}).catch(err => {
-							console.log('DB Error: Can not inserted to db ' + err);
-							res.send(response);
+
+					if (dynamoDB) {
+						const params = {
+							TableName: "ultraskor_sportradar",
+							Item: {
+								id: parseInt(id),
+								type_lang: `${type}_${lang}`,
+								data: JSON.stringify(response)
+							}
+						};
+
+						dynamoDB.put(params, err => {
+							if (err) {
+								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
+								res.send(response);
+							} else {
+								if (helper.isDev) console.log("DynamoDB write completed, now serving...");
+								res.send(response);
+							}
 						});
 					} else {
+						console.log('dynamoDB is missing, nothing is backed up');
 						res.send(response);
 					}
+
 				} else {
-					throw Error('response is empty')
+					res.status(500).send({
+						status: "error",
+						message: 'Error while retrieving information from server'
+					})
 				}
 			})
 			.catch(() => {
@@ -673,26 +702,29 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
-	} else {
-		if (sportradarCollection) {
-			sportradarCollection.findOne({
-				type: type,
-				id: id,
-				lang: lang
-			}).then(result => {
-				if (result) {
-					cacheService.instance().set(cacheKey, result.data, cacheDuration.provider4[type] || 60);
-					res.send(result.data); // Data is found in the db, now caching and serving!
-				} else {
-					initRemoteRequests(); // data can't be found in db, get it from remote servers
-				}
-			}).catch(() => {
-				console.log('findOne returned err, connection to db is lost. initRemoteRequests() is triggered');
+	} else if (dynamoDB) {
+		const params = {
+			TableName: "ultraskor_sportradar",
+			Key: {
+				id: parseInt(id),
+				type_lang: `${type}_${lang}`
+			}
+		};
+
+		dynamoDB.get(params, (err, result) => {
+			if (err) {
+				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
 				initRemoteRequests();
-			})
-		} else {
-			initRemoteRequests();  // db is not initalized, get data from remote servers
-		}
+			} else if (result && result.Item) {
+				if (helper.isDev) console.log("DynamoDB read completed, now serving...");
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider4[type] || 60);
+				res.send(result.Item.data); // Data is found in the db, now caching and serving!
+			} else {
+				initRemoteRequests();
+			}
+		});
+	} else {
+		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
 });
 
