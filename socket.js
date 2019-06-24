@@ -221,24 +221,28 @@ io.on('connection', socket => {
 				timeout: 10000
 			};
 
-			const customRequest = (options, cb) => {
-				if (helper.isTorDisabled) {
-					request(options, cb).catch(err => {
-						console.log(err)
-					});
-				} else {
-					tr.request(options, cb);
-				}
-			};
+			function onSuccess(res) {
+				cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 10);
+				socket.emit('return-updates-details', res);
+			}
 
-			customRequest(sofaOptions, function (err, status, res) {
-				if (!err && status.statusCode === 200) {
-					cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 10);
-					socket.emit('return-updates-details', res);
-				} else {
-					socket.emit('return-error-updates', "Error while retrieving information from server");
-				}
-			});
+			function onError() {
+				socket.emit('return-error-updates', "Error while retrieving information from server");
+			}
+
+			if (helper.isTorDisabled) {
+				request(sofaOptions)
+					.then(onSuccess)
+					.catch(onError);
+			} else {
+				tr.request(sofaOptions, function (err, status, res) {
+					if (!err && status.statusCode === 200) {
+						onSuccess(res);
+					} else {
+						onError(err);
+					}
+				});
+			}
 		};
 
 		let cachedData = cacheService.instance().get(cacheKey);
@@ -272,33 +276,40 @@ app.get('/api/', (req, res) => {
 			timeout: 10000
 		};
 
-		const customRequest = (options, cb) => {
-			//if (helper.isTorDisabled) {
-				request(options, cb).catch(err => {
-					console.log(err)
-				});
-			//} else {
-				tr.request(options, cb);
-			//}
-		};
+		request(sofaOptions)
+			.then(onSuccess)
+			.catch(onError);
 
-
-		customRequest(sofaOptions, function (err, status, response) {
-			if (!err && status.statusCode === 200) {
-				if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
-				if (response) {
-					cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5);
-					res.send(response);
-				}
-			} else {
-				console.log(`error returning data from main for ${req.query.page}`);
-				res.status(500).send({
-					status: "error",
-					message: 'Error while retrieving information from server',
-					err: err
-				})
+		function onSuccess(response) {
+			if (req.query.page === "homepage") response = helper.simplifyHomeData(response);
+			if (response) {
+				cacheService.instance().set(cacheKey, response, cacheDuration.main[req.query.page] || 5);
+				res.send(response);
 			}
-		});
+		}
+
+		function onError() {
+			console.log(`Error returning data from main for ${req.query.page}. Trying TOR...`);
+			requestUsingTor();
+		}
+
+		function requestUsingTor() {
+			tr.request(sofaOptions, function (err, status, response) {
+				if (!err && status.statusCode === 200) {
+					onSuccess(response);
+				} else {
+					onErrorUsingTor(err);
+				}
+			});
+		}
+
+		function onErrorUsingTor(err) {
+			res.status(500).send({
+				status: "error",
+				message: 'Error while retrieving information from server',
+				err: err
+			});
+		}
 	};
 
 	let cachedData = cacheService.instance().get((req.query.page === "homepage" && req.query.today === "1") ? "fullData" : cacheKey);
