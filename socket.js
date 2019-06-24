@@ -273,13 +273,13 @@ app.get('/api/', (req, res) => {
 		};
 
 		const customRequest = (options, cb) => {
-			if (helper.isTorDisabled) {
+			//if (helper.isTorDisabled) {
 				request(options, cb).catch(err => {
 					console.log(err)
 				});
-			} else {
+			//} else {
 				tr.request(options, cb);
-			}
+			//}
 		};
 
 

@@ -117,7 +117,7 @@ exports.pushServiceChangesForWebPush = (res) => {
 
 const customRequest = (options, cb) => {
 	if (helper.isTorDisabled) {
-		request(options, cb)
+		request(options, cb).catch(() => { console.log(`Error returning differences within cronJob.. Time: ${ new Date()}`)})
 	} else {
 		tr.request(options, cb);
 	}
