@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 const request = require('request');
 const requestPromise = require('request-promise-native');
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 const MongoClient = require('mongodb').MongoClient;
 const cacheService = require('./cache.service');
 const cacheDuration = 60 * 60 * 24; // Cache duration, 24 hours
