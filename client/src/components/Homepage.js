@@ -48,8 +48,9 @@ class Homepage extends Component {
 		if (this.props.match.params.date) {
 			this.todaysDate = this.props.match.params.date;
 		} else {
-			this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
-			//this.analyzeSessionStorage();
+			//this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
+			this.todaysDate = moment().format('YYYY-MM-DD')
+//this.analyzeSessionStorage();
 			this.getFromLocaleStorage();
 		}
 		this.initGetDataOnPageLoad(false);
