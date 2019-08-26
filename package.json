@@ -15,7 +15,7 @@
 		"cron": "^1.7.1",
 		"deep-diff": "^1.0.2",
 		"express": "^4.16.4",
-		"firebase-admin": "^7.3.0",
+		"firebase-admin": "^8.4.0",
 		"fs": "^0.0.1-security",
 		"lodash": "^4.17.11",
 		"moment": "^2.24.0",
