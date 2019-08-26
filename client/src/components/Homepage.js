@@ -107,30 +107,7 @@ class Homepage extends Component {
 	};
 
 	prepareRes = res => {
-		// Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
-		let moveToTop = [62, 63]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
-		let moveToBottom = []; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
 		let tournaments = res.sportItem.tournaments;
-		for (let i = 0; i < tournaments.length; i++) {
-			if (moveToTop.length > 0) {
-				for (let k = 0; k < moveToTop.length; k++) {
-					if (tournaments[i].tournament.id === moveToTop[k]) {
-						let a = tournaments.splice(i, 1); // removes the item
-						tournaments.unshift(a[0]); // adds it back to the beginning
-						break;
-					}
-				}
-			}
-			if (moveToBottom.length > 0) {
-				for (let k = 0; k < moveToBottom.length; k++) {
-					if (tournaments[i].tournament.id === moveToBottom[k]) {
-						let a = tournaments.splice(i, 1); // removes the item
-						tournaments.push(a[0]); // adds it back to the end
-						break;
-					}
-				}
-			}
-		}
 
 		// Remove yesterday or tomorrow matches
 		let currentDate = res.params.date;
@@ -143,6 +120,75 @@ class Homepage extends Component {
 			});
 			return whole;
 		}, []);
+
+		// UEFA - CL - 7
+		// UEFA - Europa League - 679
+		// Turkey - Super Lig - 52
+		// Turkey - TFF 1. Lig - 98
+		// England - Premier League - 17
+		// England - Championship - 18
+
+		// Spain - LaLiga - 8
+		// Germany - Bundesliga - 35
+		// Italy - Seria A - 23
+		// France - Liga 1 - 34
+		// Holland - Eredivisie - 37
+		// Belgium - First Division A - 38
+
+		// Portugal - Primeira Liga - 238
+		// Norway - Eliteserien - 20
+		// Sweeden - Allsvenskan - 40
+		// Denmark - Superliga - 39
+		// Russia - Premier Liga - 203
+		// Croatia - 1. HNL - 170
+		// Czech Republic - 1. Liga - 172
+		// Greece - Super League - 185
+		// Israel - Premier League - 266
+		// Ukraine - Premier League - 218
+
+		// Spain - LaLiga 2 - 54
+		// Germany - Bundesliga 2 - 44
+		// Italy - Serie B - 53
+		// France - Ligue 2 - 182
+		// Holland - Eerste Divisie - 131
+		// England - League One - 24
+		// Switzerland - Super League - 215
+		//
+		// Mexico - Primera Division, Apertura - 11621
+		// Argentina - Superliga - 155
+		// Brasileiro Série A - 325
+		//
+
+		// Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
+		const moveToTop = [7,679,52,98,17,18,8,35,23,34,37,38,238,20,40,39,203,170,172,185,266,218,54,44,53,182,131,24,215]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
+		const moveToBottom = []; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
+
+		const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) > -1);
+		priorityTournaments.sort((a,b) => {
+			if (moveToTop.indexOf(a.tournament.uniqueId) < moveToTop.indexOf(b.tournament.uniqueId)) {
+				return -1;
+			}
+			if (moveToTop.indexOf(a.tournament.uniqueId) > moveToTop.indexOf(b.tournament.uniqueId)) {
+				return 1;
+			}
+			return 0;
+		});
+
+		const otherTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) === -1);
+		tournaments = priorityTournaments.concat(otherTournaments);
+
+		for (let i = 0; i < tournaments.length; i++) {
+			if (moveToBottom.length > 0) {
+				for (let k = 0; k < moveToBottom.length; k++) {
+					if (tournaments[i].tournament.id === moveToBottom[k]) {
+						let a = tournaments.splice(i, 1); // removes the item
+						tournaments.push(a[0]); // adds it back to the end
+						break;
+					}
+				}
+			}
+		}
+
 		tournaments[0].currentDate = currentDate;
 		return tournaments;
 	};
