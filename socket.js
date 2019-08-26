@@ -379,7 +379,7 @@ app.get('/api/helper1/:date', (req, res) => {
 							}
 						});
 					} else {
-						console.log('dynamoDB is missing, nothing is backed up');
+						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
 						res.send(matchList);
 					}
 
@@ -480,7 +480,7 @@ app.get('/api/helper2/:date', (req, res) => {
 							}
 						});
 					} else {
-						console.log('dynamoDB is missing, nothing is backed up');
+						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
 						res.send(response);
 					}
 				} else {
