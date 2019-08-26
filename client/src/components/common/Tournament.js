@@ -37,7 +37,7 @@ class Tournament extends PureComponent {
 						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
 					}
 
-					if (isLazyLoad && !isLive) {
+					if (isLazyLoad && !isLive && filteredTournaments.length < 1) {
 						if (index === parseInt(lazyLoadCount)) {
 							return <div key="more" onClick={(e) => {this.lazyLoadLoadMoreBtn()}} className="load-more-homepage"><i className="fas"/><Trans>Load more</Trans></div>
 						} else if (index > parseInt(lazyLoadCount)) {
