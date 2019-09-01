@@ -245,7 +245,7 @@ class Eventdetails extends PureComponent {
 			})
 			.then(res => {
 				this.handleGetData(res, isUpdated);
-				if (!isUpdated) this.initGetDataHelper(res.event.formatedStartDate);
+				if (!isUpdated) this.initGetDataHelper(moment(res.event.startTimestamp * 1e3).format('DD.MM.YYYY'));
 			})
 			.catch(err => {
 				this.setState({
@@ -274,10 +274,10 @@ class Eventdetails extends PureComponent {
 
 	initGetDataHelper(date) {
 		// init helperData socket emit
-		let date1 = moment(date, 'DD.MM.YYYY').format('DD.MM.YYYY'),
-			date2 = moment(date1, 'DD.MM.YYYY').format('MM/DD/YYYY');
+		// let date1 = moment(date, 'DD.MM.YYYY').format('DD.MM.YYYY'),
+		let	date2 = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
 
-		fetch('/api/helper1/' + date1)
+		fetch('/api/helper1/' + date)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
