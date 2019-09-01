@@ -273,10 +273,7 @@ class Eventdetails extends PureComponent {
 	}
 
 	initGetDataHelper(date) {
-		// init helperData socket emit
-		// let date1 = moment(date, 'DD.MM.YYYY').format('DD.MM.YYYY'),
 		let	date2 = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
-
 		fetch('/api/helper1/' + date)
 			.then(res => {
 				if (res.status === 200) {
