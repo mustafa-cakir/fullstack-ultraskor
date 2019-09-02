@@ -92,7 +92,9 @@ app.get('/images/:type/:filename', (req, res) => {
 
 
 function pushDomain(body) {
-	return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
+	// console.log(body);
+	// return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
+	return body.replace("P=location.hostname", 'P="sportradar.com"');
 }
 
 // define a simple route
