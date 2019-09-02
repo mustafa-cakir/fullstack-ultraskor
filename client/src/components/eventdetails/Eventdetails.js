@@ -289,7 +289,7 @@ class Eventdetails extends PureComponent {
 				console.log(err);
 			});
 
-		fetch('/api/helper2/' + date2.replace(/\//g, "."))
+		fetch('/api/helper2/' + date2)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -325,7 +325,7 @@ class Eventdetails extends PureComponent {
 	handleGetDataHelper1(res) {
 		if (res && res.length > 0) {
 			const jsonData = this.state.eventData;
-			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id);
+			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id || match.awayTeam.uid === jsonData.event.awayTeam.id);
 			this.setState({
 				provider1MatchData: provider1Data[0]
 			});
