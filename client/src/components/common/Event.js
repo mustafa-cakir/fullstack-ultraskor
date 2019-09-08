@@ -3,7 +3,7 @@ import Icon from "./Icon";
 import moment from "moment";
 import {Link} from "react-router-dom"
 import {Trans, withTranslation} from "react-i18next";
-import {generateSlug} from "../../Helper";
+import {generateSlug, storeScrollY} from "../../Helper";
 import {askForPermissioToReceiveNotifications} from "../../web-push";
 import update from 'react-addons-update'
 
@@ -186,9 +186,11 @@ class Event extends Component {
 		return (
 			<div className={"event-container" + (this.props.index % 2 === 0 ? " " : " bg-gray")}>
 				{this.isInProgress()}
-				<Link to={{
+				<Link
+					onClick={storeScrollY}
+					to={{
 					pathname: `/${t('match')}/${generateSlug(t(event.homeTeam.name) + '-' + t(event.awayTeam.name))}-${t('live-score')}-${event.id}`,
-					state: {isPrev: true},
+					state: {isPrev: true, scrollY: 123},
 				}} className={`event-link col p-0 row m-0 ${event.winnerCode ? "winner-" + event.winnerCode : ""}`}
 				      title={`${t(event.homeTeam.name)} - ${t(event.awayTeam.name)}  ${t('click for live scores, lineup and stats')}`}>
                             <span className="col event-team home text-right pr-0 pl-2">

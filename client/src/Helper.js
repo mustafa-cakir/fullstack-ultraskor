@@ -238,3 +238,23 @@ export function updateQueryString(key, value) {
 		return uri + separator + key + "=" + value;
 	}
 }
+
+export function storeScrollY() {
+	try {
+		sessionStorage.setItem('ultraskor_homepage_scrollY', window.scrollY)
+	} catch (err) {
+		console.log('error setting to sessionStorage', err);
+	}
+}
+
+export function restoreScrollY() {
+	let prev_scrollY;
+	try {
+		prev_scrollY = sessionStorage.getItem('ultraskor_homepage_scrollY')
+	} catch (err) {
+		console.log('error setting to sessionStorage', err);
+	}
+	if (prev_scrollY) {
+		window.scroll(0, prev_scrollY)
+	}
+}

@@ -10,7 +10,7 @@ import {Trans, withTranslation} from "react-i18next";
 import ReactGA from "react-ga";
 import RefreshButton from "./common/RefreshButton";
 import i18n from "i18next";
-import {HelperUpdateMeta, HelperTranslateUrlTo, getQueryStringFromUrl} from "../Helper";
+import {HelperUpdateMeta, HelperTranslateUrlTo, getQueryStringFromUrl, restoreScrollY} from "../Helper";
 import RedScoreBoard from "./common/RedScoreBar";
 import FavTournament from "./common/FavTournament";
 import BottomParagrah from "./common/BottomParagrah";
@@ -222,10 +222,12 @@ class Homepage extends Component {
 				}
 			})
 			.then(res => {
-				if (!res)
+				if (!res) {
 					throw Error(`Response is empty`);
-				else
+				} else {
 					this.handleGetData(res, options.isUpdated);
+					restoreScrollY();
+				}
 			})
 			.catch(err => {
 				this.setState({

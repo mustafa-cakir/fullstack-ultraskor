@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import Event from "./Event";
 import {Trans, withTranslation} from "react-i18next";
-import {generateSlug, flagImg, updateQueryString} from "../../Helper";
+import {generateSlug, flagImg, updateQueryString, storeScrollY} from "../../Helper";
 import {Link} from "react-router-dom"
 import Errors from "./Errors";
 
@@ -49,7 +49,9 @@ class Tournament extends PureComponent {
 						<React.Fragment key={tournament.tournament.uniqueId + "_" + index}>
 							<div className="tournament-title">
 								{flagImg(tournament)}
-								<Link to={{
+								<Link
+									onClick={storeScrollY}
+									to={{
 									pathname: `/${t('league')}/${generateSlug(t(tournament.category.name))}-${generateSlug(t(tournament.tournament.name))}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${tournament.season ? tournament.season.id : "0"}`,
 									state: {isPrev: true}
 								}} className="col tournament-name"
