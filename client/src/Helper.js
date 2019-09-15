@@ -239,6 +239,14 @@ export function updateQueryString(key, value) {
 	}
 }
 
+export function removeScrollY() {
+	try {
+		sessionStorage.removeItem('ultraskor_homepage_scrollY')
+	} catch (err) {
+		console.log('error removing item from sessionStorage', err);
+	}
+}
+
 export function storeScrollY() {
 	try {
 		sessionStorage.setItem('ultraskor_homepage_scrollY', window.scrollY)
@@ -252,9 +260,10 @@ export function restoreScrollY() {
 	try {
 		prev_scrollY = sessionStorage.getItem('ultraskor_homepage_scrollY')
 	} catch (err) {
-		console.log('error setting to sessionStorage', err);
+		console.log('error getting from sessionStorage', err);
 	}
 	if (prev_scrollY) {
 		window.scroll(0, prev_scrollY)
+		removeScrollY();
 	}
 }
