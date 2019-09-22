@@ -91,8 +91,6 @@ class Iddaa extends PureComponent {
 
 		const {matchTextInfo, eventData, t} = this.props;
 		const {IddaaFullMarketData, loading, selectedGroup} = this.state;
-
-		console.log(eventData);
 		return (
 			<div>
 				<div className="iddaa container">

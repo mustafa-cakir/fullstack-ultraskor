@@ -585,7 +585,7 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 				}
 			})
 			.catch(() => {
-				console.log('## error, retry: ', retry);
+				if (helper.isDev) console.log('## error, retry: ', retry);
 				if (retry > 0) {
 					setTimeout(() => {
 						initRemoteRequests();
@@ -662,7 +662,7 @@ app.get('/api/iddaaOdds/:id', (req, res) => {
 				}
 			})
 			.catch(() => {
-				console.log('## error, retry: ', retry);
+				if (helper.isDev) console.log('## error, retry: ', retry);
 				if (retry > 0) {
 					setTimeout(() => {
 						initRemoteRequests();
