@@ -338,7 +338,7 @@ app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
 	let targetDate = moment(date, "DD.MM.YYYY").format('YYYY-MM-DD'); // another date
 	const cacheKey = `helperData-${targetDate}-provider1`;
-	let isToday = moment(targetDate).isSame(moment(), 'day');
+	let isToday = moment(date, "DD.MM.YYYY").isSame(moment(), 'day');
 	const initRemoteRequests = () => {
 		const provider1options = {
 			method: 'GET',
@@ -530,7 +530,7 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 	const date = req.params.date;
 	const cacheKey = `helperData-${date}-iddaahelper`;
 
-	let isToday = moment(date, 'MM.DD.YYYY').isSame(moment(), 'day');
+	let isToday = moment(date, 'DD.MM.YYYY').isSame(moment(), 'day');
 	let retry = 5;
 
 	const initRemoteRequests = () => {
