@@ -25,7 +25,7 @@ class Loading extends Component {
 	render() {
 		const {type} = this.props;
 		return (
-			<div className={"loadingAbstract " + type}>
+			<div className={"loadingAbstract " + (type || "")}>
 				<div className="loading-ball">
 					<div className="lds-ripple">
 						<div/>

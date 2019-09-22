@@ -81,9 +81,10 @@ class Fixture extends Component {
 								<Icon name="fas fa-chevron-left"/> <Trans>Prev</Trans>
 							</div>
 							<div
-								className={"col px-0 col-6 text-center col-dropdown " + (this.state.isDropdown ? "open" : "")}>
-								<div className="week-label"
-								     onClick={() => this.setState({isDropdown: !this.state.isDropdown})}>
+								className="col px-0 col-6 text-center col-dropdown">
+								<div onClick={() => this.setState({isDropdown: !this.state.isDropdown})}
+								     className={"pure-dropdown" + (this.state.isDropdown ? " open" : "")}
+									>
 									{roundName ? <Trans>{roundName}</Trans> : <span>{currentRound}<Trans>th Week</Trans></span>} <Icon name="fas fa-caret-down"/>
 									<div className="dropdown">
 										<ul>

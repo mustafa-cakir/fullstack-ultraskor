@@ -25,7 +25,7 @@ AWS.config.update({
 	secretAccessKey: "TThjNHdluCGZPvO0+C+qD0hLUew/DQp8Ce87uCXI"
 });
 
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = helper.isDev ? null : new AWS.DynamoDB.DocumentClient();
 
 const port = 5001;
 const app = express();
@@ -525,59 +525,77 @@ app.get('/api/helper2/:date', (req, res) => {
 	}
 });
 
-app.get('/api/helper3/:date/:code', (req, res) => {
-	const {date, code} = req.params;
-	let targetDate = moment(date, "DD.MM.YYYY").format('YYYY-MM-DD'); // another date
 
-	const cacheKey = `helperData-${date}-${code}-provider3`;
+app.get('/api/iddaaHelper/:date', (req, res) => {
+	const date = req.params.date;
+	const cacheKey = `helperData-${date}-iddaahelper`;
+
+	let isToday = moment(date, 'MM.DD.YYYY').isSame(moment(), 'day');
+	let retry = 5;
 
 	const initRemoteRequests = () => {
-		const provider3options = {
+		retry -= 1;
+		const idaaHelperOptions = {
 			method: 'GET',
-			uri: `https://www.tuttur.com/draw/events/type/football`,
+			uri: 'https://mobile-bulletin.oley.com/iddia-ws/api/events/getEventsBySport?sportId=1',
 			json: true,
-			timeout: 10000
+			headers: {
+				'Content-Type': 'application/json',
+				'Origin': 'https://mobil.oley.com',
+				'Referer': 'https://mobil.oley.com/iddaa/',
+				'Sec-Fetch-Mode': 'no-cors',
+			},
 		};
 
 
-		request(provider3options)
+		request(idaaHelperOptions)
 			.then(response => {
-				let tempObj = helper.replaceDotWithUnderscore(response.events);
-				let matchList = tempObj[code];
-				if (matchList && moment(matchList.startDate * 1e3).format('DD.MM.YYYY') === date) {
-					cacheService.instance().set(cacheKey, matchList, cacheDuration.provider3);
-					if (dynamoDB) {
+				const responseData = response
+				&& response.bulletin
+				&& response.bulletin.Soccer
+				&& response.bulletin.Soccer.eventList
+				&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
+
+				if (responseData) {
+					if (isToday) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+					if (dynamoDB && isToday) {
 						const params = {
-							TableName: "ultraskor_helper3",
+							TableName: "ultraskor_iddaahelper",
 							Item: {
-								date: targetDate,
-								data: JSON.stringify(matchList)
+								date: date,
+								data: JSON.stringify(responseData)
 							}
 						};
 
 						dynamoDB.put(params, err => {
 							if (err) {
 								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(matchList);
+								res.send(responseData);
 							} else {
-								if (helper.isDev) console.log("Helper3: DynamoDB write completed, now serving...");
-								res.send(matchList);
+								if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
+								res.send(responseData);
 							}
 						});
 					} else {
-						console.log('dynamoDB is missing, nothing is backed up');
-						res.send(matchList);
+						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
+						res.send(responseData);
 					}
 				} else {
-					res.send(null);
+					res.send('nothing found!');
 				}
 			})
-			.catch(err => {
-				res.status(500).send({
-					status: "error",
-					message: 'Error while retrieving information from server',
-					err: err
-				})
+			.catch(() => {
+				console.log('## error, retry: ', retry);
+				if (retry > 0) {
+					setTimeout(() => {
+						initRemoteRequests();
+					}, 500);
+				} else {
+					res.status(403).send({
+						status: "error",
+						message: 'Error while retrieving information from server',
+					})
+				}
 			});
 	};
 
@@ -586,24 +604,81 @@ app.get('/api/helper3/:date/:code', (req, res) => {
 		res.send(cachedData);
 	} else if (dynamoDB) {
 		const params = {
-			TableName: "ultraskor_helper3",
+			TableName: "ultraskor_iddaahelper",
 			Key: {
-				date: targetDate,
+				date: date,
 			}
 		};
+
 
 		dynamoDB.get(params, (err, result) => {
 			if (err) {
 				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
 				initRemoteRequests();
 			} else if (result && result.Item) {
-				if (helper.isDev) console.log("Helper3: DynamoDB read completed, now serving...");
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider3);
+				if (helper.isDev) console.log("Helper2: DynamoDB read completed, now serving...");
+				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.iddaaHelper);
 				res.send(result.Item.data); // Data is found in the db, now caching and serving!
 			} else {
 				initRemoteRequests();
 			}
 		});
+	} else {
+		initRemoteRequests();  // db is not initalized, get data from remote servers
+	}
+});
+
+app.get('/api/iddaaOdds/:id', (req, res) => {
+	const id = req.params.id;
+	const cacheKey = `helperData-iddaaOdds-${id}`;
+	let retry = 5;
+
+	const initRemoteRequests = () => {
+		retry -= 1;
+		const idaaOddsOptions = {
+			method: 'GET',
+			uri: `https://mobile-bulletin.oley.com/iddia-ws/api/events/getEvent?eventId=${id}`,
+			json: true,
+			timeout: 10000,
+			headers: {
+				'Origin': 'https://mobil.oley.com',
+				'Referer': 'https://mobil.oley.com/iddaa/',
+			},
+		};
+
+		request(idaaOddsOptions)
+			.then(response => {
+				const responseData = response
+				&& response.bulletin
+				&& response.bulletin.Soccer
+				&& response.bulletin.Soccer.eventList
+				&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList[0] : null;
+
+				if (responseData) {
+					cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaOdds);
+					res.send(responseData);
+				} else {
+					res.send('Nothing is found!');
+				}
+			})
+			.catch(() => {
+				console.log('## error, retry: ', retry);
+				if (retry > 0) {
+					setTimeout(() => {
+						initRemoteRequests();
+					}, 500);
+				} else {
+					res.status(403).send({
+						status: "error",
+						message: 'Error while retrieving information from server'
+					})
+				}
+			});
+	};
+
+	let cachedData = cacheService.instance().get(cacheKey);
+	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+		res.send(cachedData);
 	} else {
 		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
