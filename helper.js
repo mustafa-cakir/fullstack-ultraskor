@@ -45,7 +45,7 @@ exports.replaceDotWithUnderscore = obj => {
 	return obj;
 };
 
-exports.simplifyIddaaHelperData = res => {
+exports.simplifyIddaaHelperData = response => {
 const data = response && response.bulletin && response.bulletin.Soccer
 	&& response.bulletin.Soccer.eventList
 	&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
