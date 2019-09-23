@@ -188,19 +188,19 @@ io.on('connection', socket => {
 			};
 			dynamoDB.query(params, (err, result) => {
 				if (err) {
-					console.log(err);
-					console.log('DB Error: Db is not connected');
+					if (helper.isDev) console.log(err);
+					if (helper.isDev) console.log('DB Error: Db is not connected');
 					socket.emit('forum-get-all-by-id-result', []);
 				} else if (result && result.Count > 0) {
-					console.log("check1", result);
+					if (helper.isDev) console.log("check1", result);
 					socket.emit('forum-get-all-by-id-result', result.Items)
 				} else {
-					console.log("check2", result);
+					if (helper.isDev) console.log("check2", result);
 					socket.emit('forum-get-all-by-id-result', []);
 				}
 			});
 		} else {
-			console.log('DB Error: Db is not connected');
+			if (helper.isDev) console.log('DB Error: Db is not connected');
 			socket.emit('forum-get-all-by-id-result', null);
 		}
 	});
@@ -550,11 +550,7 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 
 		request(idaaHelperOptions)
 			.then(response => {
-				const responseData = response
-				&& response.bulletin
-				&& response.bulletin.Soccer
-				&& response.bulletin.Soccer.eventList
-				&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
+				const responseData = helper.simplifyIddaaHelperData(response);
 
 				const shouldCached = response.bulletin.Soccer.eventList.length > 200;
 				const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;

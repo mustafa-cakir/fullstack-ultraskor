@@ -45,6 +45,18 @@ exports.replaceDotWithUnderscore = obj => {
 	return obj;
 };
 
+exports.simplifyIddaaHelperData = res => {
+const data = response && response.bulletin && response.bulletin.Soccer
+	&& response.bulletin.Soccer.eventList
+	&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
+
+	data.forEach(item => {
+		delete item.helperInfo;
+		delete item.mappingMarket
+	});
+	return data;
+};
+
 exports.simplifyHomeData = res => {
 	if (res && res.sportItem && res.sportItem.tournaments) {
 		let eventIgnoredProperties = [
