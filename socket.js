@@ -547,55 +547,68 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 			},
 		};
 
+		const onSuccess = response => {
+			const responseData = helper.simplifyIddaaHelperData(response);
 
-		request(idaaHelperOptions)
-			.then(response => {
-				const responseData = helper.simplifyIddaaHelperData(response);
+			const shouldCached = response.bulletin.Soccer.eventList.length > 200;
+			const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;
 
-				const shouldCached = response.bulletin.Soccer.eventList.length > 200;
-				const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;
+			if (responseData) {
+				if (isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+				if (dynamoDB && isToday && shouldCached && isMidnight) {
+					const params = {
+						TableName: "ultraskor_iddaahelper",
+						Item: {
+							date: date,
+							data: JSON.stringify(responseData)
+						}
+					};
 
-				if (responseData) {
-					if (isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
-					if (dynamoDB && isToday && shouldCached && isMidnight) {
-						const params = {
-							TableName: "ultraskor_iddaahelper",
-							Item: {
-								date: date,
-								data: JSON.stringify(responseData)
-							}
-						};
-
-						dynamoDB.put(params, err => {
-							if (err) {
-								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(responseData);
-							} else {
-								if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
-								res.send(responseData);
-							}
-						});
-					} else {
-						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
-						res.send(responseData);
-					}
+					dynamoDB.put(params, err => {
+						if (err) {
+							console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
+							res.send(responseData);
+						} else {
+							if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
+							res.send(responseData);
+						}
+					});
 				} else {
-					res.send('nothing found!');
+					if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
+					res.send(responseData);
 				}
-			})
-			.catch(() => {
-				if (helper.isDev) console.log('## error, retry: ', retry);
-				if (retry > 0) {
-					setTimeout(() => {
-						initRemoteRequests();
-					}, 500);
+			} else {
+				res.send('nothing found!');
+			}
+		};
+
+		const onError = () => {
+			if (helper.isDev) console.log('## error, retry: ', retry);
+			if (retry > 0) {
+				setTimeout(() => {
+					initRemoteRequests();
+				}, 500);
+			} else {
+				res.status(403).send({
+					status: "error",
+					message: 'Error while retrieving information from server',
+				})
+			}
+		};
+
+		if (helper.isTorDisabled) {
+			request(idaaHelperOptions)
+				.then(onSuccess)
+				.catch(onError);
+		} else {
+			tr.request(idaaHelperOptions, function (err, status, res) {
+				if (!err && status.statusCode === 200) {
+					onSuccess(res);
 				} else {
-					res.status(403).send({
-						status: "error",
-						message: 'Error while retrieving information from server',
-					})
+					onError(err);
 				}
 			});
+		}
 	};
 
 	let cachedData = cacheService.instance().get(cacheKey);
