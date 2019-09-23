@@ -94,7 +94,7 @@ exports.cacheDuration = () => {
 		provider1: 60 * 60 * 24, // 24 hours
 		provider2: 60 * 60 * 24, // 24 hours
 		provider3: 60 * 60 * 24, // 24 hours
-		iddaaHelper: 60 * 60, // 1 hour
+		iddaaHelper: 60 * 60 * 24, // 24 hours
 		iddaaOdds: 1, // 15 seconds
 		webpushtopic: 60 * 60 * 24 * 7, // 7 days
 		oley: {

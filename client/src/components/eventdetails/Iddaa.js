@@ -12,15 +12,21 @@ class Iddaa extends PureComponent {
 		this.state = {
 			loading: true,
 			tabIndex: 0,
+			isDropdown: false,
 			selectedGroup: {
 				"id": 1,
-				"name": "Tüm Oranlar",
+				"name": "All Bets",
 				"priority": 1,
 				"markets": []
 			},
 			IddaaFullMarketData: null
 		};
+		this.timeout = null;
 		this.tabSwitcherHandler = this.tabSwitcherHandler.bind(this);
+	}
+
+	componentWillUnmount() {
+		clearTimeout(this.timeout);
 	}
 
 	componentDidMount() {
@@ -50,7 +56,12 @@ class Iddaa extends PureComponent {
 					this.setState({
 						IddaaFullMarketData: res,
 						loading: false
-					})
+					});
+					if (this.props.eventData.event.status.type === "inprogress" && res.liveEvent > 0) {
+						this.timeout = setTimeout(() => {
+							this.initGetIddaaOdds();
+						}, 7000);
+					}
 				}
 			})
 			.catch(err => {
@@ -90,7 +101,7 @@ class Iddaa extends PureComponent {
 	render() {
 
 		const {matchTextInfo, eventData, t} = this.props;
-		const {IddaaFullMarketData, loading, selectedGroup} = this.state;
+		const {IddaaFullMarketData, loading, selectedGroup, isDropdown} = this.state;
 		return (
 			<div>
 				<div className="iddaa container">
@@ -109,10 +120,6 @@ class Iddaa extends PureComponent {
 								<span><img src={IddaLogo2} className="tab-logo"
 								           alt="Iddaa Oranlari"/> <Trans>Iddaa Analyze</Trans></span>
 							</li>
-							{/*<li className={this.state.tabIndex === 2 ? "active" : ""}*/}
-							{/*onClick={() => this.tabSwitcherHandler(2)}>*/}
-							{/*<span><Icon name="fas fa-chart-line"/><Trans>International Bets</Trans></span>*/}
-							{/*</li>*/}
 						</ul>
 						{this.state.tabIndex === 0 ? (
 							<div className="tab-container">
@@ -120,25 +127,37 @@ class Iddaa extends PureComponent {
 									<>
 										{IddaaFullMarketData ? (
 											<div className="iddaa-body">
-												{eventData.event.status.type === "inprogress" && (
-													<div className="iddaa-live-text"><span
-														className="live-pulse"/> Canlı Iddaa Oranları</div>
-												)}
-												<div className="iddaa-groups-wrapper">
-													<ul className="iddaa-groups">
-														{marketGroups.map(group => {
-															const count = this.getCountByGroup(group);
-															if (count < 1) return null;
-															return (
-																<li className={group.id === selectedGroup.id ? "active" : ""}
-																    key={group.id}
-																    onClick={() => this.clickGroupHandler(group)}>
-																	{group.name} ({count})
-																</li>
-															)
-														})}
-													</ul>
+												<div className="row align-items-center row-dropdown">
+													<div className="col p-0 col-6 col-md-3">
+														<div className={"pure-dropdown" + (isDropdown ? " open" : "")}
+														     onClick={() => this.setState({isDropdown: !isDropdown})}>
+															<Trans>{selectedGroup.name}</Trans> ({this.getCountByGroup(selectedGroup)})
+															<Icon name="fas fa-caret-down"/>
+															<div className="dropdown">
+																<ul>
+																	{marketGroups.map(group => {
+																		const count = this.getCountByGroup(group);
+																		if (count < 1) return null;
+																		return (
+																			<li key={group.id}
+																			    className={group.name === selectedGroup.name ? "active this-round" : ""}
+																			    onClick={() => this.clickGroupHandler(group)}
+																			>
+																				<span><Trans>{group.name}</Trans> ({count})</span>
+																			</li>
+																		)
+																	})}
+																</ul>
+															</div>
+														</div>
+													</div>
+													<div className="col">{eventData.event.status.type === "inprogress" && IddaaFullMarketData.liveEvent > 0 && (
+														<div className="iddaa-live-text"><span
+															className="live-pulse"/> <Trans>Live Iddaa Odds</Trans></div>
+													)}
+													</div>
 												</div>
+
 
 												<IddaaContainer selectedGroup={selectedGroup}
 												                IddaaFullMarketData={IddaaFullMarketData} t={t}/>

@@ -556,9 +556,12 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 				&& response.bulletin.Soccer.eventList
 				&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
 
+				const shouldCached = response.bulletin.Soccer.eventList.length > 200;
+				const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;
+
 				if (responseData) {
-					if (isToday) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
-					if (dynamoDB && isToday) {
+					if (isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+					if (dynamoDB && isToday && shouldCached && isMidnight) {
 						const params = {
 							TableName: "ultraskor_iddaahelper",
 							Item: {

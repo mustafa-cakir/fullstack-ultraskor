@@ -557,6 +557,86 @@
 
 		}
 	}
+	.pre-iddaa{
+		padding-bottom: 15px;
+		.title-logo {
+			max-height: 20px;
+		}
+		.item {
+			margin: 10px 0;
+		}
+		.col-mbs {
+			max-width: 16px;
+			padding: 0;
+		}
+		.item-title {
+			font-size: 1rem;
+		}
+		&-link {
+			cursor: pointer;
+			font-weight: 700;
+			font-size: .9rem;
+			margin: 15px 0 0;
+			span {
+				border-bottom: 1px solid #333;
+				display: inline-block;
+
+			}
+		}
+		.row-odds {
+			margin: 0;
+			.col {
+				//max-width: 70px;
+				padding: 0 5px;
+			}
+			.odd-box {
+				align-items: center;
+				cursor: pointer;
+				display: flex;
+				flex-direction: column;
+				div {
+					padding: 3px 5px;
+					align-items: center;
+					display: flex;
+					justify-content: center;
+					text-align: center;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					width: 100%;
+				}
+				&-name {
+					font-size: 11px;
+					background-color: rgba(0,0,0,.1);
+					border-radius: 4px 4px 0 0;
+				}
+				&-value {
+					font-weight: bolder;
+					background-color: rgba(0,0,0,.2);
+					border-radius: 0 0 4px 4px
+				}
+			}
+			//.col {
+			//	position: relative;
+			//	display: flex;
+			//	align-items: center;
+			//	justify-content: center;
+			//	height: 40px;
+			//	padding-top: 10px;
+			//	background-color: rgba(0,0,0,.05);
+			//	border-right: 1px solid #fff;
+			//	span {
+			//		position: absolute;
+			//		top:0;
+			//		height: 20px;
+			//		width: 100%;
+			//		display: block;
+			//		text-align: center;
+			//		background-color: rgba(0,0,0,.1);
+			//		font-size: 12px;
+			//	}
+			//}
+		}
+	}
 	.iddaa {
 		&-groups {
 			&-wrapper {
@@ -583,29 +663,16 @@
 				}
 			}
 		}
-		.mbs {
-			display: inline-block;
-			width: 16px;
-			color: #fff;
+		.pure-dropdown {
+			margin: 0;
 			text-align: center;
-			border-radius: 3px;
-		}
-		.mbs-1 {
-			background: #d00000;
-		}
-		.mbs-2 {
-			background: #ff7800;
-		}
-		.mbs-3 {
-			background: #008530;
-		}
-		.mbs-4 {
-			background: #0d5b9f;
 		}
 		.iddaa-live-text {
 			text-align: right;
-			padding: 0 0 10px;
 			color: #c1272d;
+		}
+		.row-dropdown {
+			margin-bottom: 10px;
 		}
 
 		.tab-container {
@@ -1075,6 +1142,26 @@
 	span {
 		color: #aaa;
 	}
+}
+
+.mbs {
+	display: inline-block;
+	width: 16px;
+	color: #fff;
+	text-align: center;
+	border-radius: 3px;
+}
+.mbs-1 {
+	background: #d00000;
+}
+.mbs-2 {
+	background: #ff7800;
+}
+.mbs-3 {
+	background: #008530;
+}
+.mbs-4 {
+	background: #0d5b9f;
 }
 
 @keyframes fadeIn {

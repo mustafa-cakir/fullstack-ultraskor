@@ -26,6 +26,7 @@ import RefreshButton from "../common/RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import Forum from "../common/Forum";
 import {JsonLd} from "../common/JsonLd";
+import PreIddaa from "./PreIddaa";
 
 class Eventdetails extends PureComponent {
 	constructor(props) {
@@ -312,7 +313,8 @@ class Eventdetails extends PureComponent {
 
 	initGetIddaaHelper(provider1Data) {
 		const {date, id} = provider1Data;
-		fetch('/api/iddaaHelper/' + date.replace(/\//g, '.'))
+		const date2 = moment(date, 'DD/MM/YYYY').format('DD.MM.YYYY');
+		fetch('/api/iddaaHelper/' + date2)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -504,7 +506,7 @@ class Eventdetails extends PureComponent {
 									{tab === "Iddaa" ? (
 										<span className="text">
 	                                        <img src={IddaLogo} className="tab-logo"
-	                                             alt="Iddaa Logo"/> {tab} {eventData.event.status.type === "inprogress" &&
+	                                             alt="Iddaa Logo"/> {tab} {eventData.event.status.type === "inprogress" && iddaaMatchData.liveEvent > 0 &&
 										<span className="live-pulse"/>}
 										</span>
 									) : (
@@ -537,6 +539,7 @@ class Eventdetails extends PureComponent {
 										eventData={eventData}/>
 									<Bestplayer
 										eventData={eventData} swipeByTabName={this.swipeByTabName}/>
+									<PreIddaa iddaaMatchData={iddaaMatchData} swipeByTabName={this.swipeByTabName}/>
 									<Incidents
 										eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
 								</div>
