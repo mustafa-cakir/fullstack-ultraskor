@@ -4,7 +4,7 @@ import IddaLogo2 from "./../../assets/images/icon-iddaa2.png";
 import {Trans, withTranslation} from "react-i18next";
 import Icon from "../common/Icon";
 import Loading from "../common/Loading";
-import {marketGroups} from "../../Helper";
+import {lockedOddsPlaceholder, marketGroups} from "../../Helper";
 
 class Iddaa extends PureComponent {
 	constructor(props) {
@@ -19,7 +19,8 @@ class Iddaa extends PureComponent {
 				"priority": 1,
 				"markets": []
 			},
-			IddaaFullMarketData: null
+			iddaaFullMarketData: null,
+			error: null
 		};
 		this.timeout = null;
 		this.tabSwitcherHandler = this.tabSwitcherHandler.bind(this);
@@ -40,7 +41,7 @@ class Iddaa extends PureComponent {
 	}
 
 	initGetIddaaOdds = () => {
-		fetch(`/api/iddaaOdds/${this.props.iddaaMatchData.id}`)
+		fetch(`/api/iddaaOdds/${this.props.iddaaMatchData.eid}${this.props.eventData.event.status.type === "inprogress" ? "/live" : ""}`)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -49,24 +50,28 @@ class Iddaa extends PureComponent {
 				}
 			})
 			.then(res => {
-				if (res.marketList) {
-					res.marketList = Object.keys(res.marketList).map(function (key) {
-						return res.marketList[key];
-					});
-					this.setState({
-						IddaaFullMarketData: res,
-						loading: false
-					});
-					if (this.props.eventData.event.status.type === "inprogress" && res.liveEvent > 0) {
-						this.timeout = setTimeout(() => {
-							this.initGetIddaaOdds();
-						}, 7000);
-					}
+				// res.m = [];
+				this.setState({
+					iddaaFullMarketData: res,
+					loading: false,
+					...(!res.m || res.m.length === 0 && {
+						selectedGroup: {
+							"id": 1,
+							"name": "All Bets",
+							"priority": 1,
+							"markets": []
+						}
+					})
+				});
+				if (this.props.eventData.event.status.type === "inprogress" && res.min) {
+					this.timeout = setTimeout(() => {
+						this.initGetIddaaOdds();
+					}, 5000);
 				}
 			})
 			.catch(err => {
 				this.setState({
-					IddaaFullMarketData: {error: err.toString()},
+					error: err.toString(),
 					loading: false
 				});
 			});
@@ -85,23 +90,25 @@ class Iddaa extends PureComponent {
 	}
 
 	getCountByGroup(group) {
-		const {IddaaFullMarketData} = this.state;
+		const {iddaaFullMarketData} = this.state;
 		const {markets} = group;
 		let count = 0;
 
 		markets.forEach(market => {
-			count += IddaaFullMarketData.marketList.filter(x => x.name === market).length;
+			count += iddaaFullMarketData.m.filter(x => x.muk === market).length;
 		});
 
-		if (group.id === 1) count = IddaaFullMarketData.marketList.length;
+		if (group.id === 1) count = iddaaFullMarketData.m.length;
 
 		return count;
 	}
 
+
 	render() {
 
-		const {matchTextInfo, eventData, t} = this.props;
-		const {IddaaFullMarketData, loading, selectedGroup, isDropdown} = this.state;
+		const {matchTextInfo, eventData, t, iddaaMatchData} = this.props;
+		const {iddaaFullMarketData, loading, selectedGroup, isDropdown, error} = this.state;
+
 		return (
 			<div>
 				<div className="iddaa container">
@@ -111,8 +118,8 @@ class Iddaa extends PureComponent {
 							    onClick={() => this.tabSwitcherHandler(0)}>
                                 <span><img src={IddaLogo} className="tab-logo"
                                            alt="Iddaa Analiz, Bahis Analiz"/>
-                                           <Trans>Iddaa Odds</Trans> {IddaaFullMarketData &&
-	                                <em>({IddaaFullMarketData.marketCount})</em>}
+                                           <Trans>Iddaa Odds</Trans> {iddaaFullMarketData && iddaaFullMarketData.m &&
+	                                <em>({iddaaFullMarketData.m.length})</em>}
                                 </span>
 							</li>
 							<li className={this.state.tabIndex === 1 ? "active" : ""}
@@ -125,45 +132,50 @@ class Iddaa extends PureComponent {
 							<div className="tab-container">
 								{loading ? <Loading type="inside"/> : (
 									<>
-										{IddaaFullMarketData ? (
+										{iddaaFullMarketData ? (
 											<div className="iddaa-body">
 												<div className="row align-items-center row-dropdown">
 													<div className="col p-0 col-6 col-md-3">
-														<div className={"pure-dropdown" + (isDropdown ? " open" : "")}
-														     onClick={() => this.setState({isDropdown: !isDropdown})}>
-															<Trans>{selectedGroup.name}</Trans> ({this.getCountByGroup(selectedGroup)})
-															<Icon name="fas fa-caret-down"/>
-															<div className="dropdown">
-																<ul>
-																	{marketGroups.map(group => {
-																		const count = this.getCountByGroup(group);
-																		if (count < 1) return null;
-																		return (
-																			<li key={group.id}
-																			    className={group.name === selectedGroup.name ? "active this-round" : ""}
-																			    onClick={() => this.clickGroupHandler(group)}
-																			>
-																				<span><Trans>{group.name}</Trans> ({count})</span>
-																			</li>
-																		)
-																	})}
-																</ul>
+														{iddaaFullMarketData.m && iddaaFullMarketData.m.length > 0 && (
+															<div className={"pure-dropdown" + (isDropdown ? " open" : "")}
+															     onClick={() => this.setState({isDropdown: !isDropdown})}>
+																<Trans>{selectedGroup.name}</Trans> ({this.getCountByGroup(selectedGroup)})
+																<Icon name="fas fa-caret-down"/>
+																<div className="dropdown">
+																	<ul>
+																		{marketGroups.map(group => {
+																			const count = this.getCountByGroup(group);
+																			if (count < 1) return null;
+																			return (
+																				<li key={group.id}
+																				    className={group.name === selectedGroup.name ? "active this-round" : ""}
+																				    onClick={() => this.clickGroupHandler(group)}
+																				>
+																					<span><Trans>{group.name}</Trans> ({count})</span>
+																				</li>
+																			)
+																		})}
+																	</ul>
+																</div>
 															</div>
-														</div>
+														)}
 													</div>
-													<div className="col">{eventData.event.status.type === "inprogress" && IddaaFullMarketData.liveEvent > 0 && (
+													<div
+														className="col">{eventData.event.status.type === "inprogress" && iddaaFullMarketData.min && (
 														<div className="iddaa-live-text"><span
-															className="live-pulse"/> <Trans>Live Iddaa Odds</Trans></div>
+															className="live-pulse"/> <Trans>Live Iddaa Odds</Trans>
+														</div>
 													)}
 													</div>
 												</div>
 
 
-												<IddaaContainer selectedGroup={selectedGroup}
-												                IddaaFullMarketData={IddaaFullMarketData} t={t}/>
+												<IddaaContainer
+													iddaaMatchData={iddaaMatchData}
+													selectedGroup={selectedGroup}
+												                iddaaFullMarketData={iddaaFullMarketData} t={t}/>
 											</div>
-										) : <div className="iddaa-notfound"><Trans>Unfortunately, this event doesn't
-											have Iddaa bettings odds</Trans> :(</div>}
+										) : <PrintErrorOrGetFromParent iddaaMatchData={iddaaMatchData}/>}
 									</>
 								)}
 							</div>
@@ -181,37 +193,47 @@ class Iddaa extends PureComponent {
 	}
 }
 
-const IddaaContainer = props => {
-	const {IddaaFullMarketData, selectedGroup} = props;
-	const isLocked = IddaaFullMarketData.bettingStatus === -1;
-
-	let markets = IddaaFullMarketData.marketList.sort((a, b) => a.typePriority - b.typePriority);
-	if (selectedGroup.id > 1) {
-		markets = markets.filter(x => selectedGroup.markets.indexOf(x.name) > -1);
+const PrintErrorOrGetFromParent = ({iddaaMatchData}) => {
+	if (iddaaMatchData && iddaaMatchData.m && iddaaMatchData.m.length > 0) {
+		return <IddaaContainer iddaaFullMarketData={iddaaMatchData}/>
 	}
 
+	return <div className="iddaa-notfound"><Trans>Unfortunately, this event doesn't
+		have Iddaa bettings odds</Trans> :(</div>
+};
+
+const IddaaContainer = props => {
+	const {iddaaFullMarketData, selectedGroup} = props;
+	const {m} = iddaaFullMarketData;
+
+	let markets = selectedGroup && selectedGroup.id > 1 ? m.filter(x => selectedGroup.markets.indexOf(x.muk) > -1) : m;
+
+	if (markets.length === 0) { markets = lockedOddsPlaceholder}
+
 	return markets.map(market => {
+		const mbs = market.mbs || props.iddaaMatchData.m[0].mbs;
 		return (
-			<div className="row iddaa-container" key={market.id}>
+			<div className="row iddaa-container" key={market.mid || Math.random()}>
 				<div className="col col-labels">
 					<div className="row m-0">
 						<div className="col col-mbs p-0"><span
-							className={"mbs mbs-" + market.minCombinCount}>{market.minCombinCount}</span>
+							className={"mbs mbs-" + mbs}>{mbs}</span>
 						</div>
-						<div className="col p-0"> {market.sgName}</div>
+						<div className="col p-0"> {market.mn}</div>
 					</div>
 
 				</div>
 				<div className="col col-8 col-right px-0">
 					<div className="row bets-values text-center">
-						{market.outcomeList.map(odd => {
+						{market.o.map(odd => {
 							return (
-								<div key={odd.oddVersion}
-								     className={`col${market.outcomeCount > 4 ? " col-4" : ""}
-								        ${odd.fixedOddsWeb && odd.fixedOddsWeb === 1 ? " locked" : ""}`}>
-									<span>{odd.outcomeLabel}</span>
-									{isLocked && odd.fixedOddsWeb > 1 && <i className="fas fa-lock"/>}
-									{odd.fixedOddsWeb > 1 ? odd.fixedOddsWeb.toFixed(2) : "-"}
+								<div key={odd.ov || Math.random()}
+								     className={`col${market.o.length > 4 ? " col-4" : ""}
+								        ${odd.locked ? " locked" : ""}`}>
+									<span>{odd.ona}</span>
+									{odd.locked && <i className="fas fa-lock"/>}
+									{odd.lock}
+									{odd.odd > 1 ? odd.odd.toFixed(2) : "-"}
 								</div>
 							)
 						})}

@@ -331,14 +331,10 @@ class Eventdetails extends PureComponent {
 	}
 
 	handleGetIddaaHelper(data, betRadarId) {
-		const filteredData = data.filter(x => x.betRadarId === betRadarId);
+		const filteredData = data.filter(x => x.bid === betRadarId);
 		this.setState({
 			iddaaMatchData: filteredData[0]
 		});
-
-		// this.setState({
-		// 	iddaaMatchData: {id: 14369, mbc: 1, code: 123}
-		// });
 	}
 
 	handleGetData(jsonData, isUpdated) {
@@ -506,7 +502,7 @@ class Eventdetails extends PureComponent {
 									{tab === "Iddaa" ? (
 										<span className="text">
 	                                        <img src={IddaLogo} className="tab-logo"
-	                                             alt="Iddaa Logo"/> {tab} {eventData.event.status.type === "inprogress" && iddaaMatchData.liveEvent > 0 &&
+	                                             alt="Iddaa Logo"/> {tab} {eventData.event.status.type === "inprogress" &&
 										<span className="live-pulse"/>}
 										</span>
 									) : (
@@ -539,7 +535,7 @@ class Eventdetails extends PureComponent {
 										eventData={eventData}/>
 									<Bestplayer
 										eventData={eventData} swipeByTabName={this.swipeByTabName}/>
-									<PreIddaa iddaaMatchData={iddaaMatchData} swipeByTabName={this.swipeByTabName}/>
+									<PreIddaa eventData={eventData} iddaaMatchData={iddaaMatchData} swipeByTabName={this.swipeByTabName}/>
 									<Incidents
 										eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
 								</div>

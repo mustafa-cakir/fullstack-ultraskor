@@ -2,36 +2,36 @@ import React from 'react';
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import {Trans, withTranslation} from "react-i18next";
 
-const PreIddaa = ({iddaaMatchData, swipeByTabName, t}) => {
+const PreIddaa = ({iddaaMatchData, swipeByTabName, t, eventData}) => {
 	if (!iddaaMatchData) return false;
-	iddaaMatchData.marketList = Object.keys(iddaaMatchData.marketList).map(function (key) {
-		return iddaaMatchData.marketList[key];
-	});
+	const { m } = iddaaMatchData;
 
-	const markets = iddaaMatchData.marketList.sort((a, b) => a.typePriority - b.typePriority);
+	if (!m || m.length < 1) return false;
+
+	const isLive = eventData.event.status.type === "inprogress";
 	return (
 		<div className="pre-iddaa">
 			<div className="title">
-				<img src={IddaLogo} className="title-logo" alt="Iddaa Oranlari, Iddaa Tahminleri"/> <Trans>Live Iddaa Odds</Trans>
+				<img src={IddaLogo} className="title-logo" alt="Iddaa Oranlari, Iddaa Tahminleri"/> <Trans>{isLive ? "Live " : ""}Iddaa Odds</Trans>
 
 			</div>
 			<div className="pre-iddaa-container" onClick={() => swipeByTabName(t('Iddaa'))}>
-				{markets.map(market => {
+				{m.map(market => {
 					// if (market.name !== "1-1") return false;
-					return (<div key={market.id} className="item">
+					return (<div key={market.mid} className="item">
 						<div className="row align-items-center">
 							<div className="col col-4 item-title">
-								{market.sgName}
+								{market.mn}
 							</div>
 							<div className="col col-mbs"><span
-								className={"mbs mbs-" + market.minCombinCount}>{market.minCombinCount}</span></div>
+								className={"mbs mbs-" + market.mbs}>{market.mbs}</span></div>
 							<div className="col px-1 pr-2">
 								<div className="row row-odds">
-									{market.outcomeList.map(odd => (
-										<div key={odd.oddVersion} className="col">
+									{market.o.map(odd => (
+										<div key={odd.ov} className="col">
 											<div className="odd-box">
-												<div className="odd-box-name">{odd.outcomeName}</div>
-												<div className="odd-box-value">{odd.fixedOddsWeb.toFixed(2)}</div>
+												<div className="odd-box-name">{odd.ona}</div>
+												<div className="odd-box-value">{odd.odd.toFixed(2)}</div>
 											</div>
 										</div>))}
 								</div>
@@ -40,7 +40,8 @@ const PreIddaa = ({iddaaMatchData, swipeByTabName, t}) => {
 					</div>)
 				})}
 			</div>
-			<div  onClick={() => swipeByTabName(t('Iddaa'))} className="pre-iddaa-link text-center"><span><Trans>See All Live Iddaa Odds</Trans> <i className="fas fa-angle-right"/></span>
+			<div  onClick={() => swipeByTabName(t('Iddaa'))} className="pre-iddaa-link text-center">
+				<span className="live-pulse"/> <span><Trans>See All {isLive ? "Live " : ""}Iddaa Odds</Trans> <i className="fas fa-angle-right"/></span>
 			</div>
 		</div>
 	);

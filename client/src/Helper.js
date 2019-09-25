@@ -309,3 +309,87 @@ export const marketGroups = [
 		"markets": ["2-3", "2-12", "2-17", "2-658", "2-661"]
 	}];
 
+export const lockedOddsPlaceholder = [
+	{
+		mn: "Maç Sonucu",
+		muk: "1_1",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "0",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Karşılıklı Gol",
+		o: [
+			{
+				ona: "Var",
+				locked: true,
+			},
+			{
+				ona: "Yok",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Maçın Geri Kalanını Kim Kazanır ",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "0",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Sıradaki Golü Kim Atar",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "Olmaz",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Toplam Korner Sayısı",
+		o: [
+			{
+				ona: "0-8",
+				locked: true,
+			},
+			{
+				ona: "9-11",
+				locked: true,
+			},
+			{
+				ona: "12+",
+				locked: true,
+			}
+		]
+	}
+];

@@ -46,14 +46,13 @@ exports.replaceDotWithUnderscore = obj => {
 };
 
 exports.simplifyIddaaHelperData = response => {
-const data = response && response.bulletin && response.bulletin.Soccer
-	&& response.bulletin.Soccer.eventList
-	&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList : null;
+const data = response && response.data && response.data.events
+	&& response.data.events.length > 0 ? response.data.events : null;
 
-	data.forEach(item => {
-		delete item.helperInfo;
-		delete item.mappingMarket
-	});
+	// data.forEach(item => {
+	// 	delete item.helperInfo;
+	// 	delete item.mappingMarket
+	// });
 	return data;
 };
 
@@ -107,7 +106,7 @@ exports.cacheDuration = () => {
 		provider2: 60 * 60 * 24, // 24 hours
 		provider3: 60 * 60 * 24, // 24 hours
 		iddaaHelper: 60 * 60 * 24, // 24 hours
-		iddaaOdds: 1, // 15 seconds
+		iddaaOdds: 15, // 15 seconds
 		webpushtopic: 60 * 60 * 24 * 7, // 7 days
 		oley: {
 			missings: 60 * 60 * 6, // 6 hours

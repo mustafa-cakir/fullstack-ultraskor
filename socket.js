@@ -531,31 +531,29 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 	const date = req.params.date;
 	const cacheKey = `helperData-${date}-iddaahelper`;
 
-	let isToday = moment(date, 'DD.MM.YYYY').isSame(moment(), 'day');
-	let retry = 5;
-
 	const initRemoteRequests = () => {
-		retry -= 1;
 		const idaaHelperOptions = {
-			method: 'GET',
-			uri: 'https://mobile-bulletin.oley.com/iddia-ws/api/events/getEventsBySport?sportId=1',
+			method: 'POST',
+			uri: `https://api.iddaa.com.tr/sportsprogram/1`,
+			body: ["1_1", "2_87", "2_101_2.5", "2_89"],
 			json: true,
 			headers: {
 				'Content-Type': 'application/json',
-				'Origin': 'https://mobil.oley.com',
-				'Referer': 'https://mobil.oley.com/iddaa/',
-				'Sec-Fetch-Mode': 'no-cors',
+				'Origin': 'https://www.iddaa.com.tr',
+				'Referer': 'https://www.iddaa.com.tr/futbol-programi',
+				'Sec-Fetch-Mode': 'cors',
 			},
 		};
 
 		const onSuccess = response => {
 			const responseData = helper.simplifyIddaaHelperData(response);
 
-			const shouldCached = response.bulletin.Soccer.eventList.length > 200;
+			const shouldCached = responseData.length > 200;
 			const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;
+			let isToday = moment(date, 'DD.MM.YYYY').isSame(moment(), 'day');
 
 			if (responseData) {
-				if (isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+				if (!isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
 				if (dynamoDB && isToday && shouldCached && isMidnight) {
 					const params = {
 						TableName: "ultraskor_iddaahelper",
@@ -584,32 +582,16 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 		};
 
 		const onError = () => {
-			if (helper.isDev) console.log('## error, retry: ', retry);
-			if (retry > 0) {
-				setTimeout(() => {
-					initRemoteRequests();
-				}, 500);
-			} else {
-				res.status(403).send({
-					status: "error",
-					message: 'Error while retrieving information from server',
-				})
-			}
+			if (helper.isDev) console.log('error getting iddaaHelper');
+			res.status(403).send({
+				status: "error",
+				message: 'Error while retrieving information from server',
+			})
 		};
 
-		if (helper.isTorDisabled) {
-			request(idaaHelperOptions)
-				.then(onSuccess)
-				.catch(onError);
-		} else {
-			tr.request(idaaHelperOptions, function (err, status, res) {
-				if (!err && status.statusCode === 200) {
-					onSuccess(res);
-				} else {
-					onError(err);
-				}
-			});
-		}
+		request(idaaHelperOptions)
+			.then(onSuccess)
+			.catch(onError);
 	};
 
 	let cachedData = cacheService.instance().get(cacheKey);
@@ -622,8 +604,6 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 				date: date,
 			}
 		};
-
-
 		dynamoDB.get(params, (err, result) => {
 			if (err) {
 				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
@@ -641,52 +621,56 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 	}
 });
 
-app.get('/api/iddaaOdds/:id', (req, res) => {
+app.get('/api/iddaaOdds/:id/:live', (req, res) => {
 	const id = req.params.id;
+	const isLive = req.params.live;
 	const cacheKey = `helperData-iddaaOdds-${id}`;
-	let retry = 5;
 
 	const initRemoteRequests = () => {
-		retry -= 1;
 		const idaaOddsOptions = {
 			method: 'GET',
-			uri: `https://mobile-bulletin.oley.com/iddia-ws/api/events/getEvent?eventId=${id}`,
+			uri: `https://api.iddaa.com.tr/sportsprogram/${isLive ? "live/" : ""}markets/1/${id}`,
 			json: true,
 			timeout: 10000,
 			headers: {
-				'Origin': 'https://mobil.oley.com',
-				'Referer': 'https://mobil.oley.com/iddaa/',
+				'Origin': 'https://www.iddaa.com.tr',
+				'Referer': 'https://www.iddaa.com.tr/canli-futbol-programi',
 			},
 		};
 
-		request(idaaOddsOptions)
-			.then(response => {
-				const responseData = response
-				&& response.bulletin
-				&& response.bulletin.Soccer
-				&& response.bulletin.Soccer.eventList
-				&& response.bulletin.Soccer.eventList.length > 0 ? response.bulletin.Soccer.eventList[0] : null;
+		const onSuccess = response => {
+			const {data} = response;
 
-				if (responseData) {
-					cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaOdds);
-					res.send(responseData);
-				} else {
-					res.send('Nothing is found!');
-				}
+			if (data) {
+				cacheService.instance().set(cacheKey, data, cacheDuration.iddaaOdds);
+				res.send(data);
+			} else {
+				res.sendStatus(404)
+			}
+		};
+
+		const onError = () => {
+			res.status(403).send({
+				status: "error",
+				message: 'Error while retrieving information from server'
 			})
-			.catch(() => {
-				if (helper.isDev) console.log('## error, retry: ', retry);
-				if (retry > 0) {
-					setTimeout(() => {
-						initRemoteRequests();
-					}, 500);
+		};
+
+
+		if (helper.isTorDisabled) {
+
+			request(idaaOddsOptions)
+				.then(onSuccess)
+				.catch(onError);
+		} else {
+			tr.request(idaaOddsOptions, function (err, status, res) {
+				if (!err && status.statusCode === 200) {
+					onSuccess(res);
 				} else {
-					res.status(403).send({
-						status: "error",
-						message: 'Error while retrieving information from server'
-					})
+					onError(err);
 				}
 			});
+		}
 	};
 
 	let cachedData = cacheService.instance().get(cacheKey);
