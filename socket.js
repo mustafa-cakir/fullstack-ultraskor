@@ -80,6 +80,7 @@ const initWebSocket = () => {
 
 	let ws = new WebSocket(getPushServiceUri + '/ServicePush', {
 		origin: 'https://www.sofascore.com',
+		rejectUnauthorized: false,
 		...(!helper.isTorDisabled && {agent: new SocksProxyAgent('socks://127.0.0.1:9050')})
 	});
 
