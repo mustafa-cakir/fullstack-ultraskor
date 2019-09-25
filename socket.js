@@ -621,7 +621,7 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 	}
 });
 
-app.get('/api/iddaaOdds/:id/:live', (req, res) => {
+app.get('/api/iddaaOdds/:id/:live?', (req, res) => {
 	const id = req.params.id;
 	const isLive = req.params.live;
 	const cacheKey = `helperData-iddaaOdds-${id}`;
