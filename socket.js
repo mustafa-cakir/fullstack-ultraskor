@@ -549,12 +549,16 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 			const responseData = helper.simplifyIddaaHelperData(response);
 
 			const shouldCached = responseData.length > 200;
-			const isMidnight = moment().format('H') > 0 && moment().format('H') < 5;
 			let isToday = moment(date, 'DD.MM.YYYY').isSame(moment(), 'day');
 
+			console.log('cache? the date: ', shouldCached, isToday);
+
 			if (responseData) {
-				if (!isToday && shouldCached && isMidnight) cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
-				if (dynamoDB && isToday && shouldCached && isMidnight) {
+				if (shouldCached) {
+					cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+				}
+				if (dynamoDB && isToday && shouldCached) {
+					console.log('cache the date');
 					const params = {
 						TableName: "ultraskor_iddaahelper",
 						Item: {
@@ -658,7 +662,6 @@ app.get('/api/iddaaOdds/:id/:live?', (req, res) => {
 
 
 		if (helper.isTorDisabled) {
-
 			request(idaaOddsOptions)
 				.then(onSuccess)
 				.catch(onError);

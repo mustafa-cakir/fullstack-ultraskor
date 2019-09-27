@@ -66,7 +66,7 @@ class Iddaa extends PureComponent {
 				if (this.props.eventData.event.status.type === "inprogress" && res.min) {
 					this.timeout = setTimeout(() => {
 						this.initGetIddaaOdds();
-					}, 5000);
+					}, 15000);
 				}
 			})
 			.catch(err => {
