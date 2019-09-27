@@ -35,6 +35,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(helper.initCors());
 
+console.log('gCloud active!');
 
 cacheService.start(err => {
 	if (err) console.error('Error: Cache service failed to start', err);
