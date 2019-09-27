@@ -26,6 +26,7 @@ import RefreshButton from "../common/RefreshButton";
 import IddaLogo from "../../assets/images/icon-iddaa.png";
 import Forum from "../common/Forum";
 import {JsonLd} from "../common/JsonLd";
+import PreIddaa from "./PreIddaa";
 
 class Eventdetails extends PureComponent {
 	constructor(props) {
@@ -50,9 +51,10 @@ class Eventdetails extends PureComponent {
 			isTabLiveTracker: false,
 			isTabForum: false,
 			isTabH2h: false,
+			isTabIddaa: false,
 			provider1MatchData: null,
 			provider2MatchData: null,
-			provider3MatchData: null,
+			iddaaMatchData: null,
 			refreshButton: false,
 			eventid: this.props.match.params.eventid,
 			matchTextInfo: null,
@@ -102,6 +104,8 @@ class Eventdetails extends PureComponent {
 			this.setState({isTabLiveTracker: true})
 		} else if (tab === "h2h") {
 			this.setState({isTabH2h: true})
+		} else if (tab === "iddaa") {
+			this.setState({isTabIddaa: true})
 		} else if (tab === "forum") {
 			this.setState({isTabForum: true})
 		}
@@ -245,7 +249,7 @@ class Eventdetails extends PureComponent {
 			})
 			.then(res => {
 				this.handleGetData(res, isUpdated);
-				if (!isUpdated) this.initGetDataHelper(res.event.formatedStartDate);
+				if (!isUpdated) this.initGetDataHelper(moment(res.event.startTimestamp * 1e3).format('DD.MM.YYYY'));
 			})
 			.catch(err => {
 				this.setState({
@@ -273,11 +277,8 @@ class Eventdetails extends PureComponent {
 	}
 
 	initGetDataHelper(date) {
-		// init helperData socket emit
-		let date1 = moment(date, 'DD.MM.YYYY').format('DD.MM.YYYY'),
-			date2 = moment(date1, 'DD.MM.YYYY').format('MM/DD/YYYY');
-
-		fetch('/api/helper1/' + date1)
+		let date2 = moment(date, 'DD.MM.YYYY').format('MM.DD.YYYY');
+		fetch('/api/helper1/' + date)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -292,7 +293,7 @@ class Eventdetails extends PureComponent {
 				console.log(err);
 			});
 
-		fetch('/api/helper2/' + date2.replace(/\//g, "."))
+		fetch('/api/helper2/' + date2)
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();
@@ -309,6 +310,32 @@ class Eventdetails extends PureComponent {
 		// socket.emit('get-eventdetails-helper-1', date1);
 		// socket.emit('get-eventdetails-helper-2', date2);
 	};
+
+	initGetIddaaHelper(provider1Data) {
+		const {date, id} = provider1Data;
+		const date2 = moment(date, 'DD/MM/YYYY').format('DD.MM.YYYY');
+		fetch('/api/iddaaHelper/' + date2)
+			.then(res => {
+				if (res.status === 200) {
+					return res.json();
+				} else {
+					throw Error(`Can't retrieve information from server, ${res.status}`);
+				}
+			})
+			.then(res => {
+				this.handleGetIddaaHelper(res, id)
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
+
+	handleGetIddaaHelper(data, betRadarId) {
+		const filteredData = data.filter(x => x.bid === betRadarId);
+		this.setState({
+			iddaaMatchData: filteredData[0]
+		});
+	}
 
 	handleGetData(jsonData, isUpdated) {
 		if (window.location.pathname.split('/')[1] === "eventdetails") {
@@ -328,10 +355,11 @@ class Eventdetails extends PureComponent {
 	handleGetDataHelper1(res) {
 		if (res && res.length > 0) {
 			const jsonData = this.state.eventData;
-			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id);
+			let provider1Data = res.filter(match => match.homeTeam.uid === jsonData.event.homeTeam.id || match.awayTeam.uid === jsonData.event.awayTeam.id);
 			this.setState({
 				provider1MatchData: provider1Data[0]
 			});
+			if (provider1Data[0] && provider1Data[0].id) this.initGetIddaaHelper(provider1Data[0]);
 		}
 	}
 
@@ -368,25 +396,6 @@ class Eventdetails extends PureComponent {
 				this.setState({
 					provider2MatchData: provider2Data[0]
 				});
-				if (provider2Data[0].code) {
-					let date = moment(provider2Data[0].date, 'MM/DD/YYYY HH:mm:ss').format('DD.MM.YYYY'),
-						code = provider2Data[0].code;
-
-					fetch(`/api/helper3/${date}/${code}`)
-						.then(res => {
-							if (res.status === 200) {
-								return res.json();
-							} else {
-								throw Error(`Can't retrieve information from server, ${res.status}`);
-							}
-						})
-						.then(res => {
-							if (res) this.handleGetDataHelper3(res)
-						})
-						.catch(() => {
-							// do nothing
-						});
-				}
 			}
 		}
 	}
@@ -409,18 +418,6 @@ class Eventdetails extends PureComponent {
 				// do nothing
 			});
 	};
-
-	handleGetDataHelper3(res) {
-		const provider2Data = this.state.provider2MatchData;
-		if (provider2Data && provider2Data.code) {
-			const provider3Data = res[provider2Data.code] ? res[provider2Data.code] : null;
-			if (provider3Data && provider3Data.startDate && moment(provider3Data.startDate * 1e3).format('MM/DD/YYYY HH:mm:ss') === provider2Data.date) {
-				this.setState({
-					provider3MatchData: provider3Data
-				});
-			}
-		}
-	}
 
 	rippleEffectHandler(e) {
 		let el = e.target,
@@ -452,7 +449,7 @@ class Eventdetails extends PureComponent {
 			HelperUpdateMeta({
 				title: `Live: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`,
 				canonical: window.location.href,
-				description: `${ eventData.event.tournament.name} Match Report and Live Scores for ${ eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`,
+				description: `${eventData.event.tournament.name} Match Report and Live Scores for ${eventData.event.name} on ${moment(eventData.event.startTimestamp * 1e3).format('ll')} at ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}, including lineups, all goals and incidents`,
 				keywords: `${eventData.event.homeTeam.slug} match results, ${eventData.event.awayTeam.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`,
 				alternate: HelperTranslateUrlTo('tr'),
 				hrefLang: "tr"
@@ -462,7 +459,7 @@ class Eventdetails extends PureComponent {
 			HelperUpdateMeta({
 				title: `Canlı: ${typeof eventData.event.homeScore.current !== "undefined" ? eventData.event.homeScore.current : " "} - ${typeof eventData.event.awayScore.current !== "undefined" ? eventData.event.awayScore.current : " "} | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`,
 				canonical: window.location.href,
-				description: `${ eventData.event.tournament.name}, ${ eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`,
+				description: `${eventData.event.tournament.name}, ${eventData.event.name} (${moment(eventData.event.startTimestamp * 1e3).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format('HH:mm')}) maçının canlı skorlarını takip edebilirsiniz. İşte ${eventData.event.name} maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`,
 				keywords: `${eventData.event.homeTeam.slug} mac sonuclari, ${eventData.event.awayTeam.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`,
 				alternate: HelperTranslateUrlTo('en'),
 				hrefLang: "en"
@@ -471,7 +468,7 @@ class Eventdetails extends PureComponent {
 	};
 
 	render() {
-		const {eventData, provider1MatchData, provider2MatchData, provider3MatchData, matchTextInfo} = this.state;
+		const {eventData, provider1MatchData, provider2MatchData, matchTextInfo, iddaaMatchData} = this.state;
 		if (!eventData) return <Loading/>;
 		if (eventData.error) return <Errors type="error" message={eventData.error}/>;
 
@@ -487,7 +484,7 @@ class Eventdetails extends PureComponent {
 			...(eventData.event.hasLineups ? [t("Lineup")] : []),
 			...(provider2MatchData ? [t('Injuries & Susp.')] : []),
 			t('Head To Head'),
-			t('Iddaa'),
+			...(iddaaMatchData ? [t('Iddaa')] : []),
 			...(eventData.standingsAvailable ? [t("Standing")] : []),
 			t('Forum')
 		];
@@ -502,8 +499,15 @@ class Eventdetails extends PureComponent {
 							{this.tabs.map((tab, index) => {
 								return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
 								           className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}>
-                                    <span className="text">{tab === "Iddaa" ?
-	                                    <img src={IddaLogo} className="tab-logo" alt="Iddaa Logo"/> : ""} {tab}</span>
+									{tab === "Iddaa" ? (
+										<span className="text">
+	                                        <img src={IddaLogo} className="tab-logo"
+	                                             alt="Iddaa Logo"/> {tab} {eventData.event.status.type === "inprogress" &&
+										<span className="live-pulse"/>}
+										</span>
+									) : (
+										<span className="text">{tab}</span>
+									)}
 								</li>;
 							})}
 							<li className="marker" ref={this.swipeMarkerEl}
@@ -531,18 +535,18 @@ class Eventdetails extends PureComponent {
 										eventData={eventData}/>
 									<Bestplayer
 										eventData={eventData} swipeByTabName={this.swipeByTabName}/>
+									<PreIddaa eventData={eventData} iddaaMatchData={iddaaMatchData} swipeByTabName={this.swipeByTabName}/>
 									<Incidents
 										eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
 								</div>
 								<MatchInfo
 									eventData={eventData}
-									provider3MatchData={provider3MatchData}
 									matchTextInfo={matchTextInfo}
 									swipeAdjustHeight={this.swipeAdjustHeight}
 									socket={socket}/>
 								<small>1: {this.state.provider1MatchData ? "y" : "n"} -
 									2: {this.state.provider2MatchData ? "y" : "n"} -
-									3: {this.state.provider3MatchData ? "y" : "n"}</small>
+									3: {this.state.iddaaHelper ? "y" : "n"}</small>
 							</div>
 						</div>
 					</div>
@@ -590,11 +594,12 @@ class Eventdetails extends PureComponent {
 					</div>
 
 					<div className="swipe-content iddaa" data-tab="iddaa">
+						{this.state.isTabIddaa && iddaaMatchData &&
 						<Iddaa eventData={eventData}
 						       matchTextInfo={matchTextInfo}
 						       provider2MatchData={provider2MatchData}
-						       provider3MatchData={provider3MatchData}
-						       swipeAdjustHeight={this.swipeAdjustHeight}/>
+						       iddaaMatchData={iddaaMatchData}
+						       swipeAdjustHeight={this.swipeAdjustHeight}/>}
 					</div>
 
 					{eventData.standingsAvailable ? (
@@ -675,7 +680,7 @@ class Eventdetails extends PureComponent {
 								"maximumAttendeeCapacity": "${eventData.event && eventData.event.venue && eventData.event.venue.stadium && eventData.event.venue.stadium.capcity ? eventData.event.venue.stadium.capcity : "45000"}"
                           	}
 						}
-				    `} />
+				    `}/>
 			</div>
 		)
 	}

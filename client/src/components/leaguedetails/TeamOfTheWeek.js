@@ -92,8 +92,8 @@ class TeamOfTheWeek extends Component {
                                     <Icon name="fas fa-chevron-left"/> <Trans>Prev</Trans>
                                 </div>
                                 <div
-                                    className={"col px-0 col-6 text-center col-dropdown " + (this.state.isDropdown ? "open" : "")}>
-                                    <div className="week-label"
+                                    className="col px-0 col-6 text-center col-dropdown">
+                                    <div className={"pure-dropdown" + (this.state.isDropdown ? " open" : "")}
                                          onClick={() => this.setState({isDropdown: !this.state.isDropdown})}>
                                         <Trans>{roundName}</Trans>{roundName.length > 2 ? "" : <Trans>th Week</Trans>}
                                         <Icon name="fas fa-caret-down"/>

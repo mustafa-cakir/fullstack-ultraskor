@@ -233,8 +233,163 @@ export function updateQueryString(key, value) {
 		separator = uri.indexOf('?') !== -1 ? "&" : "?";
 	if (uri.match(re)) {
 		return uri.replace(re, '$1' + key + "=" + value + '$2');
-	}
-	else {
+	} else {
 		return uri + separator + key + "=" + value;
 	}
 }
+
+export function removeScrollY() {
+	try {
+		sessionStorage.removeItem('ultraskor_homepage_scrollY')
+	} catch (err) {
+		console.log('error removing item from sessionStorage', err);
+	}
+}
+
+export function storeScrollY() {
+	try {
+		sessionStorage.setItem('ultraskor_homepage_scrollY', window.scrollY)
+	} catch (err) {
+		console.log('error setting to sessionStorage', err);
+	}
+}
+
+export function restoreScrollY() {
+	let prev_scrollY;
+	try {
+		prev_scrollY = sessionStorage.getItem('ultraskor_homepage_scrollY')
+	} catch (err) {
+		console.log('error getting from sessionStorage', err);
+	}
+	if (prev_scrollY) {
+		window.scroll(0, prev_scrollY)
+		removeScrollY();
+	}
+}
+
+export const marketGroups = [
+	{
+		"id": 1,
+		"name": "All Bets",
+		"markets": []
+	},
+	{
+		"id": 2,
+		"name": "Side Bets",
+		"markets": ["1-1", "2-7", "2-10", "2-11", "2-36", "2-42", "2-69", "2-72", "2-77", "2-88", "2-90", "2-92", "2-100", "2-643", "2-644", "4-4", "4-12", "4-23", "4-27", "4-47", "4-129", "4-321", "4-625"]
+	},
+	{
+		"id": 3,
+		"name": "Over/Under",
+		"markets": ["2-101-0.5", "2-101-1.5", "2-101-2.5", "2-101-3.5", "2-101-4.5", "2-101-5.5"]
+	},
+	{
+		"id": 4,
+		"name": "Goal",
+		"markets": ["2-4", "2-6", "2-7", "2-43", "2-44", "2-45", "2-46", "2-47", "2-60", "2-84", "2-85", "2-87", "2-89", "2-91", "2-101", "2-603", "2-604", "4-14", "4-34", "4-54", "4-63", "4-131", "4-136", "4-199", "4-203", "4-207", "4-262"]
+	},
+	{
+		"id": 5,
+		"name": "Corner",
+		"markets": ["2-48", "2-49", "2-52", "2-53", "2-56", "2-67", "2-68", "4-210", "4-211", "4-215", "4-217", "4-218", "4-222"]
+	},
+	{
+		"id": 6,
+		"name": "Handicap",
+		"markets": ["2-100-1", "2-100-2", "2-100-3","2-100-4", "2-100--1", "2-100--2", "2-100--3", "2-100--4"]
+	},
+	{
+		"id": 7,
+		"name": "Score",
+		"markets": ["2-86", "4-252"]
+	},
+	{
+		"id": 8,
+		"name": "Special",
+		"markets": ["2-3", "2-12", "2-17", "2-658", "2-661"]
+	}];
+
+export const lockedOddsPlaceholder = [
+	{
+		mn: "Maç Sonucu",
+		muk: "1_1",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "0",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Karşılıklı Gol",
+		o: [
+			{
+				ona: "Var",
+				locked: true,
+			},
+			{
+				ona: "Yok",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Maçın Geri Kalanını Kim Kazanır ",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "0",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Sıradaki Golü Kim Atar",
+		o: [
+			{
+				ona: "1",
+				locked: true,
+			},
+			{
+				ona: "Olmaz",
+				locked: true,
+			},
+			{
+				ona: "2",
+				locked: true,
+			}
+		]
+	},
+	{
+		mn: "Toplam Korner Sayısı",
+		o: [
+			{
+				ona: "0-8",
+				locked: true,
+			},
+			{
+				ona: "9-11",
+				locked: true,
+			},
+			{
+				ona: "12+",
+				locked: true,
+			}
+		]
+	}
+];

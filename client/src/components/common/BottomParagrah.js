@@ -53,7 +53,7 @@ class BottomParagrah extends PureComponent {
 	render() {
 		const {popularEvents} = this.state;
 		const {t} = this.props;
-		
+
 		return (
 			<article className="bottom-paragraph">
 				<div className="container">
@@ -113,73 +113,73 @@ const popularLeagues = [
 	{
 		name: "UEFA Champions League",
 		country: "World",
-		seasonId: 17351,
+		seasonId: 23766,
 		uniqueId: 7,
 	},
 	{
 		name: "UEFA Europa League",
 		country: "World",
-		seasonId: 17352,
+		seasonId: 23755,
 		uniqueId: 679,
 	},
 	{
 		name: "Süper Lig",
 		country: "Turkey",
-		seasonId: 17762,
+		seasonId: 24407,
 		uniqueId: 52,
 	},
 	{
 		name: "Premier League",
 		country: "England",
-		seasonId: 17359,
+		seasonId: 23776,
 		uniqueId: 17,
 	},
 	{
 		name: "LaLiga",
 		country: "Spain",
-		seasonId: 18020,
+		seasonId: 24127,
 		uniqueId: 8,
 	},
 	{
 		name: "Bundesliga",
 		country: "Germany",
-		seasonId: 17597,
+		seasonId: 23538,
 		uniqueId: 35,
 	},
 	{
 		name: "Serie A",
 		country: "Italy",
-		seasonId: 17932,
+		seasonId: 24644,
 		uniqueId: 23,
 	},
 	{
 		name: "Ligue 1",
 		country: "France",
-		seasonId: 17279,
+		seasonId: 23872,
 		uniqueId: 34,
 	},
 	{
 		name: "Eredivisie",
 		country: "Netherlands",
-		seasonId: 17353,
+		seasonId: 23873,
 		uniqueId: 37,
 	},
 	{
 		name: "Primeira Liga",
 		country: "Portugal",
-		seasonId: 17714,
+		seasonId: 24150,
 		uniqueId: 238,
 	},
 	{
 		name: "Premier Liga",
 		country: "Russia",
-		seasonId: 17753,
+		seasonId: 23682,
 		uniqueId: 203,
 	},
 	{
 		name: "Championship",
 		country: "England",
-		seasonId: 17473,
+		seasonId: 23976,
 		uniqueId: 18,
 	}
 ];

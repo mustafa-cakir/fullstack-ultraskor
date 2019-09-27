@@ -17,7 +17,7 @@ class MatchInfo extends PureComponent {
 	}
 
 	render() {
-		const {eventData, provider3MatchData, t} = this.props;
+		const {eventData, t} = this.props;
 		const {matchTextInfo} = this.props;
 		const {language} = i18n;
 
@@ -25,7 +25,6 @@ class MatchInfo extends PureComponent {
 		tournament = eventData.event.tournament ? eventData.event.tournament.name : null;
 		attendance = eventData.event.attendance ? eventData.event.attendance.toLocaleString() : null;
 		date = moment(eventData.event.startTimestamp * 1000).format('DD MMM YYYY, HH:mm');
-		broadcast = provider3MatchData && provider3MatchData.broadcast && provider3MatchData.broadcast.length > 0 ? provider3MatchData.broadcast.join(', ') : null;
 		referee = eventData.event.referee ? eventData.event.referee.name : null;
 		if (eventData.event.hasVenue) {
 			country = eventData.event.venue.country ? eventData.event.venue.country.name : null;
@@ -90,11 +89,6 @@ class MatchInfo extends PureComponent {
 						<div className="col col-3 f-500 text-right pr-0"><Trans>Referee</Trans></div>
 						<div className="col col-7">{referee}</div>
 					</div> : ''}
-
-					{broadcast ? <div className="row">
-						<div className="col col-3 f-500 text-right pr-0"><Trans>Broadcast</Trans></div>
-						<div className="col col-7">{broadcast}</div>
-					</div> : ""}
 				</div>
 			</div>
 		)

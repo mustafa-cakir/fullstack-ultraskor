@@ -45,6 +45,17 @@ exports.replaceDotWithUnderscore = obj => {
 	return obj;
 };
 
+exports.simplifyIddaaHelperData = response => {
+const data = response && response.data && response.data.events
+	&& response.data.events.length > 0 ? response.data.events : null;
+
+	// data.forEach(item => {
+	// 	delete item.helperInfo;
+	// 	delete item.mappingMarket
+	// });
+	return data;
+};
+
 exports.simplifyHomeData = res => {
 	if (res && res.sportItem && res.sportItem.tournaments) {
 		let eventIgnoredProperties = [
@@ -94,6 +105,8 @@ exports.cacheDuration = () => {
 		provider1: 60 * 60 * 24, // 24 hours
 		provider2: 60 * 60 * 24, // 24 hours
 		provider3: 60 * 60 * 24, // 24 hours
+		iddaaHelper: 60 * 60 * 24, // 24 hours
+		iddaaOdds: 15, // 15 seconds
 		webpushtopic: 60 * 60 * 24 * 7, // 7 days
 		oley: {
 			missings: 60 * 60 * 6, // 6 hours
@@ -179,6 +192,7 @@ exports.userDisconnected = () => {
 exports.isDev = process.env.NODE_ENV === "dev";
 exports.isProd = process.env.NODE_ENV !== "dev";
 exports.isTorDisabled = process.env.TOR_DISABLED === "true";
+// exports.isTorDisabled = false
 
 exports.userCount = () => {
 	return activeUser;
