@@ -54,7 +54,7 @@ class Iddaa extends PureComponent {
 				this.setState({
 					iddaaFullMarketData: res,
 					loading: false,
-					...(!res.m || res.m.length === 0 && {
+					...((!res.m || res.m.length === 0) && {
 						selectedGroup: {
 							"id": 1,
 							"name": "All Bets",
@@ -107,7 +107,7 @@ class Iddaa extends PureComponent {
 	render() {
 
 		const {matchTextInfo, eventData, t, iddaaMatchData} = this.props;
-		const {iddaaFullMarketData, loading, selectedGroup, isDropdown, error} = this.state;
+		const {iddaaFullMarketData, loading, selectedGroup, isDropdown} = this.state;
 
 		return (
 			<div>

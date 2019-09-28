@@ -535,7 +535,8 @@ class Eventdetails extends PureComponent {
 										eventData={eventData}/>
 									<Bestplayer
 										eventData={eventData} swipeByTabName={this.swipeByTabName}/>
-									<PreIddaa eventData={eventData} iddaaMatchData={iddaaMatchData} swipeByTabName={this.swipeByTabName}/>
+									<PreIddaa eventData={eventData} iddaaMatchData={iddaaMatchData}
+									          swipeByTabName={this.swipeByTabName}/>
 									<Incidents
 										eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight}/>
 								</div>
@@ -593,14 +594,16 @@ class Eventdetails extends PureComponent {
 							: ""}
 					</div>
 
-					<div className="swipe-content iddaa" data-tab="iddaa">
-						{this.state.isTabIddaa && iddaaMatchData &&
-						<Iddaa eventData={eventData}
-						       matchTextInfo={matchTextInfo}
-						       provider2MatchData={provider2MatchData}
-						       iddaaMatchData={iddaaMatchData}
-						       swipeAdjustHeight={this.swipeAdjustHeight}/>}
-					</div>
+					{iddaaMatchData && (
+						<div className="swipe-content iddaa" data-tab="iddaa">
+							{this.state.isTabIddaa &&
+							<Iddaa eventData={eventData}
+							       matchTextInfo={matchTextInfo}
+							       provider2MatchData={provider2MatchData}
+							       iddaaMatchData={iddaaMatchData}
+							       swipeAdjustHeight={this.swipeAdjustHeight}/>}
+						</div>
+					)}
 
 					{eventData.standingsAvailable ? (
 						<div className="swipe-content standing" data-tab="standing">
@@ -609,20 +612,9 @@ class Eventdetails extends PureComponent {
 								           swipeAdjustHeight={this.swipeAdjustHeight}/> : ""}
 						</div>
 					) : ""}
-
-					{/*<div className="swipe-content media" data-tab="media">*/}
-					{/*<div className="coming-soon">*/}
-					{/*<h5><Trans>Media</Trans></h5>*/}
-					{/*<Trans>Coming soon</Trans>*/}
-					{/*</div>*/}
-					{/*</div>*/}
 					<div className="swipe-content forum" data-tab="forum">
 						{this.state.isTabForum ? <Forum t={t} socket={socket} swipeAdjustHeight={this.swipeAdjustHeight}
 						                                topicId={eventData.event.id}/> : ""}
-						{/*<div className="coming-soon">*/}
-						{/*<h5><Trans>Forum</Trans></h5>*/}
-						{/*<Trans>Coming soon</Trans>*/}
-						{/*</div>*/}
 					</div>
 				</ReactSwipe>
 				<Footer/>

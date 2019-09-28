@@ -16,16 +16,8 @@ tr.TorControlPort.password = 'muztafultra';
 const WebSocket = require('ws');
 const SocksProxyAgent = require('socks-proxy-agent');
 
-const AWS = require("aws-sdk");
-
-AWS.config.update({
-	region: "eu-central-1",
-	endpoint: "https://dynamodb.eu-central-1.amazonaws.com",
-	accessKeyId: "AKIA6RK5WADCQXEQOSCI",
-	secretAccessKey: "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"
-});
-
-const dynamoDB = helper.isDev ? null : new AWS.DynamoDB.DocumentClient();
+webpushHelper.init();
+const db = firebaseAdmin.firestore();
 
 const port = 5001;
 const app = express();
@@ -34,8 +26,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(helper.initCors());
-
-console.log('gCloud active!');
 
 cacheService.start(err => {
 	if (err) console.error('Error: Cache service failed to start', err);
@@ -52,7 +42,6 @@ setInterval(() => {
 	});
 }, 1000 * 60 * 60 * 6); // 6 hours
 
-webpushHelper.init();
 cronjob.start();
 
 const server = http.createServer(app);
@@ -97,7 +86,6 @@ const initWebSocket = () => {
 		}), undefined, undefined);
 		swTimeout = setInterval(() => {
 			ws.send(JSON.stringify("primus::ping::" + new Date().getTime()), undefined, undefined);
-			// console.log('## ping sent')
 		}, 20000);
 		wsMaxRetry = 25;
 	});
@@ -137,15 +125,6 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 io.on('connection', socket => {
 	socket.emit('heyooo', "mesg heyoo");
 
-	helper.userConnected();
-	// console.log('User connected. Active user: ', helper.userCount());
-	// socket.on('get-updates-2', () => {
-	// 	ws.on('message', (data) => {
-	// 		socket.emit('return-updates-homepage-2', JSON.parse(data));
-	// 	});
-	// });
-
-
 	socket.on('get-updates-homepage', () => {
 		let cachedData = cacheService.instance().get("fullData");
 		socket.emit('return-updates-homepage', cachedData || null);
@@ -158,52 +137,33 @@ io.on('connection', socket => {
 
 
 	socket.on('forum-post-new', data => {
-		if (!dynamoDB) return false;
-		const params = {
-			TableName: "ultraskor_forum",
-			Item: {
-				topicId: data.topicId,
-				message: data.message,
-				date: data.date,
-				userName: data.userName
-			}
-		};
-		dynamoDB.put(params, err => {
-			if (!err) {
-				io.sockets.emit('forum-new-submission', data)
-			}
-		});
+		if (db) {
+			db.collection('ultraskor_forum').doc(String(data.topicId)).update(
+				{
+					messages: firebaseAdmin.firestore.FieldValue.arrayUnion(data)
+				}, {merge: true}
+			);
+		}
+		io.sockets.emit('forum-new-submission', data)
 	});
 
 
 	socket.on('forum-get-all-by-id', topicId => {
-		if (dynamoDB) {
-			const params = {
-				TableName: "ultraskor_forum",
-				KeyConditionExpression: "#topicid = :id",
-				ExpressionAttributeNames: {
-					"#topicid": "topicId"
-				},
-				ExpressionAttributeValues: {
-					":id": topicId
-				}
-			};
-			dynamoDB.query(params, (err, result) => {
-				if (err) {
-					if (helper.isDev) console.log(err);
-					if (helper.isDev) console.log('DB Error: Db is not connected');
-					socket.emit('forum-get-all-by-id-result', []);
-				} else if (result && result.Count > 0) {
-					if (helper.isDev) console.log("check1", result);
-					socket.emit('forum-get-all-by-id-result', result.Items)
-				} else {
-					if (helper.isDev) console.log("check2", result);
-					socket.emit('forum-get-all-by-id-result', []);
-				}
-			});
+		console.log(topicId);
+		socket.emit('forum-get-all-by-id-result', []);
+		if (db) {
+			db
+				.collection('ultraskor_forum').doc(String(topicId))
+				.get()
+				.then(doc => {
+					if (doc.exists) {
+						socket.emit('forum-get-all-by-id-result', doc.data().messages);
+					} else {
+						socket.emit('forum-get-all-by-id-result', []);
+					}
+				});
 		} else {
-			if (helper.isDev) console.log('DB Error: Db is not connected');
-			socket.emit('forum-get-all-by-id-result', null);
+			socket.emit('forum-get-all-by-id-result', []);
 		}
 	});
 
@@ -257,7 +217,6 @@ io.on('connection', socket => {
 
 	socket.on('disconnect', () => {
 		helper.userDisconnected();
-		// console.log('User disconnected. Active user: ', helper.userCount());
 	});
 });
 
@@ -305,12 +264,8 @@ app.get('/api/', (req, res) => {
 			});
 		}
 
-		function onErrorUsingTor(err) {
-			res.status(500).send({
-				status: "error",
-				message: 'Error while retrieving information from server',
-				err: err
-			});
+		function onErrorUsingTor() {
+			res.statusCode(500)
 		}
 	};
 
@@ -335,7 +290,6 @@ app.post('/api/webpush', (req, res) => {
 		});
 });
 
-
 app.get('/api/helper1/:date', (req, res) => {
 	const date = req.params.date;
 	let targetDate = moment(date, "DD.MM.YYYY").format('YYYY-MM-DD'); // another date
@@ -355,86 +309,53 @@ app.get('/api/helper1/:date', (req, res) => {
 			timeout: 10000
 		};
 
-
 		request(provider1options)
 			.then(response => {
 				let matchList = helper.preProcessHelper1Data(response);
 				if (matchList && matchList.length > 0) {
-					if (isToday) cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
-
-					if (dynamoDB && isToday) {
-						const params = {
-							TableName: "ultraskor_helper1",
-							Item: {
-								date: targetDate,
-								data: JSON.stringify(matchList)
-							}
-						};
-
-						dynamoDB.put(params, err => {
-							if (err) {
-								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(matchList);
-							} else {
-								if (helper.isDev) console.log("Helper1: DynamoDB write completed, now serving...");
-								res.send(matchList);
-							}
-						});
-					} else {
-						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
-						res.send(matchList);
+					if (isToday) {
+						cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
+						if (db) db.collection('ultraskor_helper1').doc(targetDate).set(matchList);
 					}
-
+					res.send(matchList);
 				} else {
-					res.send({
-						status: "empty",
-						message: 'Error while retrieving information from server'
-					})
+					res.statusCode(501)
 				}
 			})
-			.catch(err => {
-				res.status(500).send({
-					status: "error",
-					message: 'Error while retrieving information from server.',
-					rr: err
-				})
+			.catch(() => {
+				res.status(500)
 			});
 	};
 
 
 	let cachedData = cacheService.instance().get(cacheKey);
-	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+	if (typeof cachedData !== "undefined") {
 		res.send(cachedData);
-	} else if (dynamoDB) {
-		const params = {
-			TableName: "ultraskor_helper1",
-			Key: {
-				date: targetDate,
-			}
-		};
-
-		dynamoDB.get(params, (err, result) => {
-			if (err) {
-				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+	} else if (db) {
+		let ref = db.collection('ultraskor_helper1').doc(targetDate);
+		ref
+			.get()
+			.then(doc => {
+				if (doc.exists) {
+					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.provider1);
+					res.send(doc.data());
+				} else {
+					initRemoteRequests();
+				}
+			})
+			.catch(() => {
+				console.error("helper1: failed to get data from db");
 				initRemoteRequests();
-			} else if (result && result.Item) {
-				if (helper.isDev) console.log("Helper1: DynamoDB read completed, now serving...");
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider1);
-				res.send(result.Item.data); // Data is found in the db, now caching and serving!
-			} else {
-				initRemoteRequests();
-			}
-		});
+			});
 	} else {
-		initRemoteRequests();  // db is not initalized, get data from remote servers
+		initRemoteRequests();
 	}
 });
 
 app.get('/api/helper2/:date', (req, res) => {
 	const date = req.params.date;
-	const cacheKey = `helperData-${date}-provider2`;
-	let argumentDate = moment(date, 'MM.DD.YYYY').format('MM/DD/YYYY');
 	let targetDate = moment(date, 'MM.DD.YYYY').format('YYYY-MM-DD');
+	const cacheKey = `helperData-${date}-provider2`;
 
 	let isToday = moment(date, 'MM.DD.YYYY').isSame(moment(), 'day');
 
@@ -450,7 +371,7 @@ app.get('/api/helper2/:date', (req, res) => {
 				"coverageId": "6bf0cf44-e13a-44e1-8008-ff17ba6c2128",
 				"options": {
 					"sportId": 1,
-					"day": argumentDate,
+					"day": moment(targetDate, 'YYYY-MM-DD').format('MM/DD/YYYY'),
 					"origin": "broadage.com",
 					"timeZone": 3
 				}
@@ -462,75 +383,48 @@ app.get('/api/helper2/:date', (req, res) => {
 		request(provider2options)
 			.then(response => {
 				if (response.initialData && response.initialData.length > 0) {
-					if (isToday) cacheService.instance().set(cacheKey, response, cacheDuration.provider2);
-					if (dynamoDB && isToday) {
-						const params = {
-							TableName: "ultraskor_helper2",
-							Item: {
-								date: targetDate,
-								data: JSON.stringify(response)
-							}
-						};
-
-						dynamoDB.put(params, err => {
-							if (err) {
-								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(response);
-							} else {
-								if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
-								res.send(response);
-							}
-						});
-					} else {
-						if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
-						res.send(response);
+					if (isToday) {
+						cacheService.instance().set(cacheKey, response, cacheDuration.provider2);
+						if (db) db.collection('ultraskor_helper2').doc(targetDate).set(response);
 					}
+					res.send(response);
 				} else {
-					res.send('');
+					res.statusCode(501)
 				}
 			})
-			.catch(err => {
-				res.send({
-					status: "error",
-					message: 'Error while retrieving information from server',
-					err: err
-				})
+			.catch(() => {
+				res.statusCode(500)
 			});
 	};
 
 	let cachedData = cacheService.instance().get(cacheKey);
-	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+	if (typeof cachedData !== "undefined") {
 		res.send(cachedData);
-	} else if (dynamoDB) {
-		const params = {
-			TableName: "ultraskor_helper2",
-			Key: {
-				date: targetDate,
-			}
-		};
-
-
-		dynamoDB.get(params, (err, result) => {
-			if (err) {
-				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+	} else if (db) {
+		let ref = db.collection('ultraskor_helper2').doc(targetDate);
+		ref
+			.get()
+			.then(doc => {
+				if (doc.exists) {
+					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.provider1);
+					res.send(doc.data());
+				} else {
+					initRemoteRequests();
+				}
+			})
+			.catch(() => {
 				initRemoteRequests();
-			} else if (result && result.Item) {
-				if (helper.isDev) console.log("Helper2: DynamoDB read completed, now serving...");
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider2);
-				res.send(result.Item.data); // Data is found in the db, now caching and serving!
-			} else {
-				initRemoteRequests();
-			}
-		});
+			});
 	} else {
-		initRemoteRequests();  // db is not initalized, get data from remote servers
+		initRemoteRequests();
 	}
 });
 
 
 app.get('/api/iddaaHelper/:date', (req, res) => {
 	const date = req.params.date;
-	const cacheKey = `helperData-${date}-iddaahelper`;
+	let targetDate = moment(date, 'DD.MM.YYYY').format('YYYY-MM-DD');
+	const cacheKey = `helperData-${targetDate}-iddaahelper`;
 
 	const initRemoteRequests = () => {
 		const idaaHelperOptions = {
@@ -548,50 +442,22 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 
 		const onSuccess = response => {
 			const responseData = helper.simplifyIddaaHelperData(response);
-
 			const shouldCached = responseData.length > 200;
 			let isToday = moment(date, 'DD.MM.YYYY').isSame(moment(), 'day');
-
-			console.log('cache? the date: ', shouldCached, isToday);
 
 			if (responseData) {
 				if (shouldCached) {
 					cacheService.instance().set(cacheKey, responseData, cacheDuration.iddaaHelper);
+					if (db && isToday) db.collection('ultraskor_iddaahelper').doc(targetDate).set(responseData);
 				}
-				if (dynamoDB && isToday && shouldCached) {
-					console.log('cache the date');
-					const params = {
-						TableName: "ultraskor_iddaahelper",
-						Item: {
-							date: date,
-							data: JSON.stringify(responseData)
-						}
-					};
-
-					dynamoDB.put(params, err => {
-						if (err) {
-							console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-							res.send(responseData);
-						} else {
-							if (helper.isDev) console.log("Helper2: DynamoDB write completed, now serving...");
-							res.send(responseData);
-						}
-					});
-				} else {
-					if (!dynamoDB) console.log('dynamoDB is missing, nothing is backed up');
-					res.send(responseData);
-				}
+				res.send(responseData);
 			} else {
-				res.send('nothing found!');
+				res.statusCode(501)
 			}
 		};
 
 		const onError = () => {
-			if (helper.isDev) console.log('error getting iddaaHelper');
-			res.status(403).send({
-				status: "error",
-				message: 'Error while retrieving information from server',
-			})
+			res.status(500)
 		};
 
 		request(idaaHelperOptions)
@@ -602,27 +468,24 @@ app.get('/api/iddaaHelper/:date', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
-	} else if (dynamoDB) {
-		const params = {
-			TableName: "ultraskor_iddaahelper",
-			Key: {
-				date: date,
-			}
-		};
-		dynamoDB.get(params, (err, result) => {
-			if (err) {
-				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+	} else if (db) {
+		let ref = db.collection('ultraskor_iddaahelper').doc(targetDate);
+		ref
+			.get()
+			.then(doc => {
+				if (doc.exists) {
+					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.iddaaHelper);
+					res.send(doc.data());
+				} else {
+					initRemoteRequests();
+				}
+			})
+			.catch(() => {
+				console.error("iddaaHelper: failed to get data from db");
 				initRemoteRequests();
-			} else if (result && result.Item) {
-				if (helper.isDev) console.log("Helper2: DynamoDB read completed, now serving...");
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.iddaaHelper);
-				res.send(result.Item.data); // Data is found in the db, now caching and serving!
-			} else {
-				initRemoteRequests();
-			}
-		});
+			});
 	} else {
-		initRemoteRequests();  // db is not initalized, get data from remote servers
+		initRemoteRequests();
 	}
 });
 
@@ -650,15 +513,12 @@ app.get('/api/iddaaOdds/:id/:live?', (req, res) => {
 				cacheService.instance().set(cacheKey, data, cacheDuration.iddaaOdds);
 				res.send(data);
 			} else {
-				res.sendStatus(404)
+				res.sendStatus(501)
 			}
 		};
 
 		const onError = () => {
-			res.status(403).send({
-				status: "error",
-				message: 'Error while retrieving information from server'
-			})
+			res.status(500);
 		};
 
 
@@ -740,48 +600,18 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 				if (response) {
 					if (response.generated_at) delete response.generated_at;
 					if (response.schema) delete response.schema;
-
 					cacheService.instance().set(cacheKey, response, cacheDuration.provider4[type] || 60);
-
-					if (dynamoDB) {
-						const params = {
-							TableName: "ultraskor_sportradar",
-							Item: {
-								id: parseInt(id),
-								type_lang: `${type}_${lang}`,
-								data: JSON.stringify(response)
-							}
-						};
-
-						dynamoDB.put(params, err => {
-							if (err) {
-								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(response);
-							} else {
-								if (helper.isDev) console.log("DynamoDB write completed, now serving...");
-								res.send(response);
-							}
-						});
-					} else {
-						console.log('dynamoDB is missing, nothing is backed up');
-						res.send(response);
-					}
-
+					if (db) db.collection('ultraskor_helper4').doc(`${id}_${type}_${lang}`).set(response);
+					res.send(response);
 				} else {
-					res.status(500).send({
-						status: "error",
-						message: 'Error while retrieving information from server'
-					})
+					res.statusCode(501);
 				}
 			})
 			.catch(() => {
 				if (keyIndex + 1 < api_key.length) {
 					initRemoteRequests(keyIndex + 1)
 				} else {
-					res.status(404).send({
-						status: "error",
-						message: 'Error while retrieving information from server',
-					})
+					res.statusCode(500);
 				}
 			});
 	};
@@ -789,27 +619,21 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 	let cachedData = cacheService.instance().get(cacheKey);
 	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
 		res.send(cachedData);
-	} else if (dynamoDB) {
-		const params = {
-			TableName: "ultraskor_sportradar",
-			Key: {
-				id: parseInt(id),
-				type_lang: `${type}_${lang}`
-			}
-		};
-
-		dynamoDB.get(params, (err, result) => {
-			if (err) {
-				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+	} else if (db) {
+		let ref = db.collection('ultraskor_helper4').doc(`${id}_${type}_${lang}`);
+		ref
+			.get()
+			.then(doc => {
+				if (doc.exists) {
+					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.provider4[type] || 60);
+					res.send(doc.data());
+				} else {
+					initRemoteRequests();
+				}
+			})
+			.catch(() => {
 				initRemoteRequests();
-			} else if (result && result.Item) {
-				if (helper.isDev) console.log("DynamoDB read completed, now serving...");
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.provider4[type] || 60);
-				res.send(result.Item.data); // Data is found in the db, now caching and serving!
-			} else {
-				initRemoteRequests();
-			}
-		});
+			});
 	} else {
 		initRemoteRequests();  // db is not initalized, get data from remote servers
 	}
@@ -819,7 +643,6 @@ app.get('/api/helper4/:lang/:type/:id', (req, res) => {
 app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 	const type = req.params.type;
 	const matchid = req.params.matchid;
-
 	const cacheKey = `helperData-${matchid}-${type}`;
 	const initRemoteRequests = () => {
 		const oleyOptions = {
@@ -833,69 +656,38 @@ app.get('/api/helper2/widget/:type/:matchid', (req, res) => {
 				if (response) {
 					cacheService.instance().set(cacheKey, response, cacheDuration.oley[type] || 60);
 
-					if (dynamoDB) {
-						const params = {
-							TableName: "ultraskor_oley",
-							Item: {
-								matchid: parseInt(matchid),
-								type: type,
-								data: JSON.stringify(response)
-							}
-						};
-
-						dynamoDB.put(params, err => {
-							if (err) {
-								console.error("Unable to add item. Check. Error JSON:", JSON.stringify(err, null, 2));
-								res.send(response);
-							} else {
-								res.send(response);
-							}
-						});
-					} else {
-						res.send(response);
-					}
+					if (db) db.collection('ultraskor_helper2_widget').doc(`${matchid}_${type}`).set(response);
+					res.send(response);
 
 				} else {
-					res.status(500).send({
-						status: "error",
-						message: 'Error while retrieving information from server'
-					})
+					res.statusCode(501);
 				}
 			})
-			.catch(err => {
-				res.status(500).send({
-					status: "error",
-					message: 'Error while retrieving information from server',
-					err: err
-				})
+			.catch(() => {
+				res.statusCode(500);
 			});
 	};
 
 	let cachedData = cacheService.instance().get(cacheKey);
-	if (typeof cachedData !== "undefined") { // Cache is found, serve the data from cache
+	if (typeof cachedData !== "undefined") {
 		res.send(cachedData);
-	} else if (dynamoDB) {
-		const params = {
-			TableName: "ultraskor_oley",
-			Key: {
-				matchid: parseInt(matchid),
-				type: type
-			}
-		};
-
-		dynamoDB.get(params, (err, result) => {
-			if (err) {
-				console.error("Unable to get item. Error JSON:", JSON.stringify(err, null, 2));
+	} else if (db) {
+		let ref = db.collection('ultraskor_helper2_widget').doc(`${matchid}_${type}`);
+		ref
+			.get()
+			.then(doc => {
+				if (doc.exists) {
+					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.oley[type] || 60);
+					res.send(doc.data());
+				} else {
+					initRemoteRequests();
+				}
+			})
+			.catch(() => {
 				initRemoteRequests();
-			} else if (result && result.Item) {
-				cacheService.instance().set(cacheKey, result.Item.data, cacheDuration.oley[type] || 60);
-				res.send(result.Item.data); // Data is found in the db, now caching and serving!
-			} else {
-				initRemoteRequests();
-			}
-		});
+			});
 	} else {
-		initRemoteRequests();  // db is not initalized, get data from remote servers
+		initRemoteRequests();
 	}
 });
 
@@ -1147,25 +939,13 @@ app.get('/sitemap/:lang/football-todaysmatches.txt', (req, res) => {
 // Log Console Errors
 app.post('/api/logerrors', (req, res) => {
 	if (helper.isProd) {
-		if (dynamoDB) {
-			const params = {
-				TableName: "ultraskor_errors",
-				Item: {
-					type: "console_error",
-					data: JSON.stringify(req.body)
-				}
-			};
-			dynamoDB.put(params, err => {
-				if (err) {
-					res.status(500).send('Error saving console error');
-				} else {
-					res.send('OK');
-				}
-			});
+		if (db) {
+			db.collection('ultraskor_errors').add(req.body);
+			res.statusCode(200);
 		} else {
-			res.status(500).send('Error');
+			res.statusCode(501)
 		}
-	} else res.send('Console logging is not activated on dev env');
+	} else res.statusCode(204);
 });
 
 app.get('/api/tor', (req, res) => {
