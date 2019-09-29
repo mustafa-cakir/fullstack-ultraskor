@@ -10,7 +10,7 @@ app.get('/images/:type/:filename', (req, res) => {
 	let {type, filename} = req.params;
 	// console.log(type, filename);
 	const sendFileOptions = {
-		root: __dirname + `/../client/public/static/images/${type}/`,
+		root: `../client/public/static/images/${type}/`,
 		dotfiles: 'deny',
 		headers: {
 			'X-Powered-By': "ultraskor.com",
@@ -20,7 +20,9 @@ app.get('/images/:type/:filename', (req, res) => {
 	};
 
 	if (!fs.existsSync(sendFileOptions.root)) {
-		fs.mkdirSync(sendFileOptions.root);
+		fs.mkdirSync(sendFileOptions.root, err => {
+			console.log(err);
+		});
 	}
 
 

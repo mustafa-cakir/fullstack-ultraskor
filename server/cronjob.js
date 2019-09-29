@@ -1,11 +1,13 @@
 const { CronJob } = require('cron');
 const moment = require('moment');
 const request = require('request-promise-native');
+const tor = require('tor-request');
+tor.TorControlPort.password = 'muztafultra';
 const helper = require('./helper');
 const cacheService = require('./cache.service');
-const tor = require('./utils/tor');
+const { initWebPushByWebSocket } = require('./utils/webpush');
 
-const { initWebPushByWebSocket } = require('./webpush');
+
 
 const options = date => {
     return {
@@ -20,6 +22,7 @@ const options = date => {
         }
     };
 };
+
 if (helper.isTorDisabled) {
     console.log('Tor Disabled');
 } else {
@@ -123,7 +126,7 @@ const customRequest = (opt, cb) => {
             console.log(`Error returning differences within cronJob.. Time: ${new Date()}`);
         });
     } else {
-        tr.request(opt, cb);
+        tor.request(opt, cb);
     }
 };
 

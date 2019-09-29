@@ -15,6 +15,7 @@
         "cron": "^1.7.2",
         "deep-diff": "^1.0.2",
         "express": "^4.16.4",
+        "express-jwt": "^5.3.1",
         "firebase-admin": "^8.6.0",
         "fs": "^0.0.1-security",
         "lodash": "^4.17.11",
@@ -33,7 +34,7 @@
         "ws": "^7.0.0"
     },
     "scripts": {
-        "start-dev": "yarn install && concurrently \"nodemon --watch -e js socket.js\" \"nodemon --watch ./serverProxy.js serverProxy.js\"",
-        "start-prod": "yarn install && concurrently \"pm2 restart socket.js\" \"pm2 restart serverProxy.js\""
+        "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch ./serverProxy.js serverProxy.js\"",
+        "prod": "yarn install && concurrently \"pm2 restart server.js\" \"pm2 restart serverProxy.js\""
     }
 }

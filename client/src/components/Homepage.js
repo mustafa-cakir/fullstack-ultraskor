@@ -214,7 +214,11 @@ class Homepage extends Component {
 			this.setState({loading: true});
 			document.body.classList.remove('initial-load');
 		}
-		fetch(`/api/?query=${options.api}&page=homepage&today=${options.today}`)
+		fetch(`/api/?query=${options.api}&page=homepage&today=${options.today}`, {
+			headers: {
+				Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGcsdfiOiJIUzI1NiJ9.eyJpc3MiOiJVbHRyYVNrb3IgQVBJIEFVVEgiLCJpYXQiOjE1Njk4MDA0ODEsImV4cCI6MTYwMTMzNjQ4MSwiYXVkIjoidWx0cmFza29yLmNvbSIsInN1YiI6ImNvbnRhY3RAdWx0cmFza29yLmNvbSJ9.2BO51xRBwQ2YCoqQRjUjvImQru35VgSzUW9vpKoo82A'
+			},
+		})
 			.then(res => {
 				if (res.status === 200) {
 					return res.json();

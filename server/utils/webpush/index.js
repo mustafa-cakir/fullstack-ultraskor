@@ -1,6 +1,6 @@
-const { firebase } = require('./utils/firebase');
-const cacheService = require('./cache.service');
-const helper = require('./helper');
+const { firebase } = require('../firebase');
+const cacheService = require('../../cache.service');
+const helper = require('../../helper');
 
 exports.initWebPushByWebSocket = data => {
     const message = {

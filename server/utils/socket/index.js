@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
+const tor = require('tor-request');
 const cacheService = require('../../cache.service');
 const firebase = require('../firebase');
-const tor = require('../tor');
 const { cacheDuration, isTorDisabled, userDisconnected } = require('../../helper');
 const { db } = require('../firebase/db');
 

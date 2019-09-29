@@ -25,7 +25,7 @@
         "extends": "react-app"
     },
     "scripts": {
-        "dev": "concurrently \"cd server && yarn start-dev\" \"cd client && yarn start\"",
-        "prod": "concurrently \"cd server && yarn install && yarn start-prod\" \"cd client && yarn install && yarn build\""
+        "dev": "concurrently \"cd server && yarn dev\" \"cd client && yarn dev\"",
+        "prod": "concurrently \"cd server && yarn install && yarn prod\" \"cd client && yarn install && yarn build\""
     }
 }
