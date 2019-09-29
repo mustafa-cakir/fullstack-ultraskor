@@ -315,7 +315,7 @@ app.get('/api/helper1/:date', (req, res) => {
 				if (matchList && matchList.length > 0) {
 					if (isToday) {
 						cacheService.instance().set(cacheKey, matchList, cacheDuration.provider1);
-						if (db) db.collection('ultraskor_helper1').doc(targetDate).set(matchList);
+						if (db) db.collection('ultraskor_helper1').doc(targetDate).set({data: matchList});
 					}
 					res.send(matchList);
 				} else {
@@ -338,7 +338,8 @@ app.get('/api/helper1/:date', (req, res) => {
 			.then(doc => {
 				if (doc.exists) {
 					cacheService.instance().set(cacheKey, doc.data(), cacheDuration.provider1);
-					res.send(doc.data());
+					res.send(doc.data().data);
+					console.log('taken from firestore')
 				} else {
 					initRemoteRequests();
 				}
