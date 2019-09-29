@@ -1,39 +1,39 @@
 {
-	"name": "ultraskor.com",
-	"version": "1.0.0",
-	"description": "ultraskor.com - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
-	"author": "Mustafa Cakir",
-	"license": "MIT",
-	"engines": {
-		"node": ">=8.0.0"
-	},
-	"dependencies": {
-		"aws-sdk": "^2.538.0",
-		"body-parser": "^1.19.0",
-		"concurrently": "^4.1.0",
-		"cors": "^2.8.5",
-		"cron": "^1.7.2",
-		"deep-diff": "^1.0.2",
-		"express": "^4.16.4",
-		"firebase-admin": "^8.6.0",
-		"fs": "^0.0.1-security",
-		"lodash": "^4.17.11",
-		"moment": "^2.24.0",
-		"mongodb": "^3.3.2",
-		"node-cache": "^4.2.0",
-		"nodemon": "^1.19.3",
-		"pm2": "^3.5.1",
-		"request": "^2.88.0",
-		"request-promise-native": "^1.0.7",
-		"socket.io": "^2.3.0",
-		"socket.io-client": "^2.3.0",
-		"socks-proxy-agent": "^4.0.2",
-		"socks5-https-client": "^1.2.1",
-		"tor-request": "^3.1.0",
-		"ws": "^7.0.0"
-	},
-	"scripts": {
-		"start-dev": "yarn install && concurrently \"nodemon --watch ./ ./socket.js\" \"nodemon --watch ./serverProxy.js serverProxy.js\"",
-		"start-prod": "yarn install && concurrently \"pm2 restart socket.js\" \"pm2 restart serverProxy.js\""
-	}
+    "name": "ultraskor.com",
+    "version": "1.0.0",
+    "description": "ultraskor.com - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
+    "author": "Mustafa Cakir",
+    "license": "MIT",
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.538.0",
+        "body-parser": "^1.19.0",
+        "concurrently": "^4.1.0",
+        "cors": "^2.8.5",
+        "cron": "^1.7.2",
+        "deep-diff": "^1.0.2",
+        "express": "^4.16.4",
+        "firebase-admin": "^8.6.0",
+        "fs": "^0.0.1-security",
+        "lodash": "^4.17.11",
+        "moment": "^2.24.0",
+        "mongodb": "^3.3.2",
+        "node-cache": "^4.2.0",
+        "nodemon": "^1.19.3",
+        "pm2": "^3.5.1",
+        "request": "^2.88.0",
+        "request-promise-native": "^1.0.7",
+        "socket.io": "^2.3.0",
+        "socket.io-client": "^2.3.0",
+        "socks-proxy-agent": "^4.0.2",
+        "socks5-https-client": "^1.2.1",
+        "tor-request": "^3.1.0",
+        "ws": "^7.0.0"
+    },
+    "scripts": {
+        "start-dev": "yarn install && concurrently \"nodemon --watch -e js socket.js\" \"nodemon --watch ./serverProxy.js serverProxy.js\"",
+        "start-prod": "yarn install && concurrently \"pm2 restart socket.js\" \"pm2 restart serverProxy.js\""
+    }
 }

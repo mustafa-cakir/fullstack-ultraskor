@@ -1,41 +1,35 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-// const MongoClient = require('mongodb').MongoClient;
 const request = require('request-promise-native');
 const bodyParser = require('body-parser');
 const moment = require('moment');
-const tr = require('tor-request');
-const firebaseAdmin = require('firebase-admin');
-const WebSocket = require('ws');
-const SocksProxyAgent = require('socks-proxy-agent');
 const cacheService = require('./cache.service');
 const helper = require('./helper');
-const webpushHelper = require('./webpush');
+const { cacheDuration } = require('./helper');
 const cronjob = require('./cronjob');
+const { socketHandler } = require('./utils/socket');
+const { tor } = require('./utils/tor');
+const { firebase } = require('./utils/firebase');
+const { db } = require('./utils/firebase');
+const { initWebSocket } = require('./utils/Websocket');
 
-const cacheDuration = helper.cacheDuration();
+// const db = firebase.firestore();
 
-tr.TorControlPort.password = 'muztafultra';
-
-webpushHelper.init();
-const db = firebaseAdmin.firestore();
-
-const port = 5001;
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(helper.initCors());
 
-cacheService.start(err => {
-    if (err) console.error('Error: Cache service failed to start', err);
-});
+cacheService.start();
+cronjob.start();
 
 // refresh TOR session
 setInterval(() => {
-    tr.newTorSession((err, success) => {
+    tor.newTorSession((err, success) => {
         if (err) {
             console.log(err, new Date());
         } else {
@@ -44,195 +38,17 @@ setInterval(() => {
     });
 }, 1000 * 60 * 60 * 6); // 6 hours
 
-cronjob.start();
-
-const server = http.createServer(app);
-const io = socketIO(server);
-
-let wsMaxRetry = 25;
-const initWebSocket = () => {
-    let swTimeout = null;
-    const pushServiceUri = [
-        'wss://ws.sofascore.com:10017',
-        'wss://ws.sofascore.com:10011',
-        'wss://ws.sofascore.com:10012',
-        'wss://ws.sofascore.com:10014',
-        'wss://ws.sofascore.com:10013',
-        'wss://ws.sofascore.com:10016',
-        'wss://ws.sofascore.com:10015',
-        'wss://ws.sofascore.com:10010'
-    ];
-
-    const getPushServiceUri = pushServiceUri.sort(() => {
-        return 0.5 - Math.random();
-    })[0];
-
-    console.log(getPushServiceUri);
-    const ws = new WebSocket(`${getPushServiceUri}/ServicePush`, {
-        origin: 'https://www.sofascore.com',
-        rejectUnauthorized: false,
-        ...(!helper.isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
-    });
-
-    /**
-     * @namespace ws.on
-     * */
-
-    ws.on('error', err => {
-        console.log('errored', err);
-    });
-
-    ws.on('open', () => {
-        console.log('ws connected');
-        ws.send(
-            JSON.stringify({
-                type: 0,
-                data: ['subscribe', { id: 'event', events: ['sport_football'] }]
-            }),
-            undefined,
-            undefined
-        );
-        swTimeout = setInterval(() => {
-            ws.send(JSON.stringify(`primus::ping::${new Date().getTime()}`), undefined, undefined);
-        }, 20000);
-        wsMaxRetry = 25;
-    });
-
-    ws.on('close', err => {
-        console.log('ws disconnected. ', err);
-        if (wsMaxRetry > 0) initWebSocket();
-        clearInterval(swTimeout);
-        wsMaxRetry -= 1;
-    });
-
-    ws.on('pong', () => {
-        // console.log('Ws pong ', data);
-    });
-
-    ws.on('message', res => {
-        if (res.substr(0, 15).match('pong')) {
-            // console.log('## pong recived', res);
-        } else {
-            if (!res) return false;
-            res = helper.simplifyWebSocketData(res);
-            cronjob.pushServiceChangesForWebPush(res);
-            io.sockets.emit('push-service', res);
-        }
-        return false;
-    });
-};
-
-initWebSocket();
-
-server.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(5001, () => console.log(`Listening on port ${5001}`));
 
 // Connect to an external socket for gathering the changes
 
+initWebSocket(io);
 /**
  * @namespace io.on
  * */
 
 io.on('connection', socket => {
-    socket.emit('heyooo', 'mesg heyoo');
-
-    socket.on('get-updates-homepage', () => {
-        const cachedData = cacheService.instance().get('fullData');
-        socket.emit('return-updates-homepage', cachedData || null);
-    });
-
-    socket.on('get-flashcore-changes', () => {
-        const cachedData = cacheService.instance().get('changes');
-        socket.emit('return-flashcore-changes', cachedData || null);
-    });
-
-    /**
-     * @param firebaseAdmin.firestore.FieldValue.arrayUnion
-     */
-    socket.on('forum-post-new', data => {
-        if (db) {
-            db.collection('ultraskor_forum')
-                .doc(String(data.topicId))
-                .update(
-                    {
-                        messages: firebaseAdmin.firestore.FieldValue.arrayUnion(data)
-                    },
-                    { merge: true }
-                );
-        }
-        io.sockets.emit('forum-new-submission', data);
-    });
-
-    socket.on('forum-get-all-by-id', topicId => {
-        console.log(topicId);
-        socket.emit('forum-get-all-by-id-result', []);
-        if (db) {
-            db.collection('ultraskor_forum')
-                .doc(String(topicId))
-                .get()
-                .then(doc => {
-                    if (doc.exists) {
-                        socket.emit('forum-get-all-by-id-result', doc.data().messages);
-                    } else {
-                        socket.emit('forum-get-all-by-id-result', []);
-                    }
-                });
-        } else {
-            socket.emit('forum-get-all-by-id-result', []);
-        }
-    });
-
-    socket.on('get-updates-details', api => {
-        const cacheKey = `mainData-${api}-eventdetails`;
-        const initRemoteRequests = () => {
-            const sofaOptions = {
-                method: 'GET',
-                uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
-                json: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Origin: 'https://www.sofascore.com',
-                    referer: 'https://www.sofascore.com/',
-                    'x-requested-with': 'XMLHttpRequest'
-                },
-                timeout: 10000
-            };
-
-            function onSuccess(res) {
-                cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 10);
-                socket.emit('return-updates-details', res);
-            }
-
-            function onError() {
-                socket.emit('return-error-updates', 'Error while retrieving information from server');
-            }
-
-            if (helper.isTorDisabled) {
-                request(sofaOptions)
-                    .then(onSuccess)
-                    .catch(onError);
-            } else {
-                tr.request(sofaOptions, (err, status, res) => {
-                    if (!err && status.statusCode === 200) {
-                        onSuccess(res);
-                    } else {
-                        onError(err);
-                    }
-                });
-            }
-        };
-
-        const cachedData = cacheService.instance().get(cacheKey);
-        if (typeof cachedData !== 'undefined') {
-            // Cache is found, serve the data from cache
-            socket.emit('return-updates-details', cachedData);
-        } else {
-            initRemoteRequests();
-        }
-    });
-
-    socket.on('disconnect', () => {
-        helper.userDisconnected();
-    });
+    socketHandler(socket, io);
 });
 
 /**
@@ -269,7 +85,7 @@ app.get('/api/', (req, res) => {
         };
 
         const requestUsingTor = () => {
-            tr.request(sofaOptions, (err, status, response) => {
+            tor.request(sofaOptions, (err, status, response) => {
                 if (!err && status.statusCode === 200) {
                     onSuccess(response);
                 } else {
@@ -306,7 +122,7 @@ app.get('/api/', (req, res) => {
 app.post('/api/webpush', (req, res) => {
     const { method, token, topic } = req.body;
     const cacheKey = topic;
-    firebaseAdmin
+    firebase
         .messaging()
         [method](token, topic)
         .then(() => {
@@ -568,7 +384,7 @@ app.get('/api/iddaaOdds/:id/:live?', (req, res) => {
                 .then(onSuccess)
                 .catch(onError);
         } else {
-            tr.request(idaaOddsOptions, (err, status, response) => {
+            tor.request(idaaOddsOptions, (err, status, response) => {
                 if (!err && status.statusCode === 200) {
                     onSuccess(response);
                 } else {
@@ -1046,7 +862,7 @@ app.post('/api/logerrors', (req, res) => {
 });
 
 app.get('/api/tor', (req, res) => {
-    tr.request('https://api.ipify.org', (err, status, response) => {
+    tor.request('https://api.ipify.org', (err, status, response) => {
         if (!err && status.statusCode === 200) {
             res.send(response);
         }
@@ -1054,7 +870,7 @@ app.get('/api/tor', (req, res) => {
 });
 
 app.get('/api/tor/new', (req, res) => {
-    tr.newTorSession((err, response) => {
+    tor.newTorSession((err, response) => {
         if (err) {
             res.status(500).send(err);
         } else {
