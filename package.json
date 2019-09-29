@@ -8,37 +8,10 @@
 		"node": ">=8.0.0"
 	},
 	"dependencies": {
-		"aws-sdk": "^2.463.0",
-		"body-parser": "^1.19.0",
-		"concurrently": "^4.1.0",
-		"cors": "^2.8.5",
-		"cron": "^1.7.1",
-		"deep-diff": "^1.0.2",
-		"express": "^4.16.4",
-		"firebase-admin": "^8.4.0",
-		"fs": "^0.0.1-security",
-		"lodash": "^4.17.11",
-		"moment": "^2.24.0",
-		"mongodb": "^3.2.4",
-		"node-cache": "^4.2.0",
-		"nodemon": "^1.19.0",
-		"request": "^2.88.0",
-		"request-promise-native": "^1.0.7",
-		"socket.io": "^2.2.0",
-		"socket.io-client": "^2.2.0",
-		"socks-proxy-agent": "^4.0.2",
-		"socks5-https-client": "^1.2.1",
-		"tor-request": "^3.1.0",
-		"ws": "^7.0.0"
+		"concurrently": "*"
 	},
 	"scripts": {
-		"dev-client": "cd client && yarn install && yarn start",
-		"dev-server": "yarn install && nodemon --watch socket.js ./socket.js",
-		"dev-server-proxy": "nodemon --watch ./serverProxy.js serverProxy.js",
-		"prod-client": "cd client && yarn install && yarn build",
-		"prod-server": "yarn install && pm2 restart socket.js",
-		"prod-server-proxy": "pm2 restart serverProxy.js",
-		"dev": "concurrently \"yarn dev-server\" \"yarn dev-server-proxy\" \"yarn dev-client\"",
-		"start": "concurrently \"yarn prod-server\" \"yarn prod-server-proxy\" \"yarn prod-client\""
+		"dev": "concurrently \"cd server && yarn start-dev\" \"cd client && yarn start\"",
+		"prod": "concurrently \"cd server && yarn install && yarn start-prod\" \"cd client && yarn install && yarn build\""
 	}
 }

@@ -148,7 +148,7 @@ exports.generateSlug = text => {
 };
 
 exports.t = text => {
-	const languageJson = require('./client/src/languages/tr.json');
+	const languageJson = require('./../client/src/languages/tr.json');
 	if (languageJson[text]) {
 		return languageJson[text]
 	} else return text;

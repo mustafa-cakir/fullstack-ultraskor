@@ -6,12 +6,11 @@ const fs = require('fs');
 
 const app = express();
 
-
 app.get('/images/:type/:filename', (req, res) => {
 	let {type, filename} = req.params;
 	// console.log(type, filename);
 	const sendFileOptions = {
-		root: __dirname + `/client/public/static/images/${type}/`,
+		root: __dirname + `/../client/public/static/images/${type}/`,
 		dotfiles: 'deny',
 		headers: {
 			'X-Powered-By': "ultraskor.com",
