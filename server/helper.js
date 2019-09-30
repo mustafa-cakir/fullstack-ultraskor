@@ -2,7 +2,7 @@ const _ = require('lodash');
 const cors = require('cors');
 const languageJson = require('./../client/src/languages/tr.json');
 
-exports.preProcessHelper1Data = data => {
+exports.preProcessSportRadarData = data => {
     let result = null;
     if (data.doc && data.doc.length > 0 && data.doc[0].data && data.doc[0].data) {
         result = data.doc[0].data.sport.realcategories.reduce((all, current) => {
@@ -240,5 +240,49 @@ exports.simplifyWebSocketData = res => {
         };
     }
 
+    return result;
+};
+
+exports.mergeSofaAndRadar = (sofa, radar) => {
+    const result = {};
+    result.radar = radar.doc[0].data.sport.realcategories;
+    result.date = sofa.params.date;
+    result.tournaments = [];
+
+    // let provider1Data = res.filter(
+    //     match =>
+    //         match.homeTeam.uid === jsonData.event.homeTeam.id ||
+    //         match.awayTeam.uid === jsonData.event.awayTeam.id
+    // );
+
+    sofa.sportItem.tournaments.forEach(tournament => {
+        const events = [];
+        tournament.events.forEach(event => {
+            events.push({
+                awayScore: event.awayScore,
+                awayTeam: event.awayTeam,
+                homeScore: event.homeScore,
+                homeTeam: event.homeTeam,
+                id: event.id,
+                startTimestamp: event.startTimestamp,
+                statusDescription: event.statusDescription,
+                winnerCode: event.winnerCode
+            });
+        });
+        result.tournaments.push({
+            category: {
+                name: tournament.category.name,
+                id: tournament.category ? tournament.category.id : null
+            },
+            events,
+            season: {
+                id: tournament.season ? tournament.season.id : null
+            },
+            tournament: {
+                id: tournament.tournament.uniqueId,
+                name: tournament.tournament.name
+            }
+        });
+    });
     return result;
 };

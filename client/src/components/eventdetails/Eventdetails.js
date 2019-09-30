@@ -321,10 +321,10 @@ class Eventdetails extends PureComponent {
         // socket.emit('get-eventdetails-helper-2', date2);
     }
 
-    initGetIddaaHelper(provider1Data) {
+    initGetIddaaList(provider1Data) {
         const { date, id } = provider1Data;
         const date2 = moment(date, 'DD/MM/YYYY').format('DD.MM.YYYY');
-        fetch('/api/iddaaHelper/' + date2)
+        fetch('/api/iddaa/list/' + date2)
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -333,14 +333,14 @@ class Eventdetails extends PureComponent {
                 }
             })
             .then(res => {
-                this.handleGetIddaaHelper(res, id);
+                this.handleGetIddaaList(res, id);
             })
             .catch(err => {
                 console.log(err);
             });
     }
 
-    handleGetIddaaHelper(data, betRadarId) {
+    handleGetIddaaList(data, betRadarId) {
         const filteredData = data.filter(x => x.bid === betRadarId);
         this.setState({
             iddaaMatchData: filteredData[0]
@@ -373,7 +373,7 @@ class Eventdetails extends PureComponent {
             this.setState({
                 provider1MatchData: provider1Data[0]
             });
-            if (provider1Data[0] && provider1Data[0].id) this.initGetIddaaHelper(provider1Data[0]);
+            if (provider1Data[0] && provider1Data[0].id) this.initGetIddaaList(provider1Data[0]);
         }
     }
 
@@ -595,8 +595,7 @@ class Eventdetails extends PureComponent {
                                 />
                                 <small>
                                     1: {this.state.provider1MatchData ? 'y' : 'n'} - 2:{' '}
-                                    {this.state.provider2MatchData ? 'y' : 'n'} - 3:{' '}
-                                    {this.state.iddaaHelper ? 'y' : 'n'}
+                                    {this.state.provider2MatchData ? 'y' : 'n'} - 3: {this.state.iddaaList ? 'y' : 'n'}
                                 </small>
                             </div>
                         </div>

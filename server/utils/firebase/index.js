@@ -8,3 +8,5 @@ firebaseAdmin.initializeApp({
 });
 
 exports.firebase = firebaseAdmin;
+
+exports.db = firebaseAdmin.firestore();

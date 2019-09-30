@@ -7,8 +7,6 @@ const helper = require('./helper');
 const cacheService = require('./cache.service');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
-
-
 const options = date => {
     return {
         method: 'GET',

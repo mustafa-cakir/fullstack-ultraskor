@@ -4,18 +4,18 @@ const cacheService = require('../../cache.service');
 const auth = require('../auth');
 
 router.get('/', auth.optional, (req, res) => {
-	const { method, token, topic } = req.body;
-	const cacheKey = topic;
-	firebase
-		.messaging()
-		[method](token, topic)
-		.then(() => {
-			cacheService.instance().set(cacheKey, 'true', cacheDuration.webpushtopic);
-			res.send(`Successfully ${method} to topic`);
-		})
-		.catch(err => {
-			res.status(500).send(`An error occurred while processing your request, err: ${err}`);
-		});
+    const { method, token, topic } = req.body;
+    const cacheKey = topic;
+    firebase
+        .messaging()
+        [method](token, topic)
+        .then(() => {
+            cacheService.instance().set(cacheKey, 'true', cacheDuration.webpushtopic);
+            res.send(`Successfully ${method} to topic`);
+        })
+        .catch(err => {
+            res.status(500).send(`An error occurred while processing your request, err: ${err}`);
+        });
 });
 
 module.exports = router;
