@@ -16,25 +16,17 @@ router.get('/:date', auth.optional, (req, res) => {
             fetchSportRadar(date)
                 .then(radar => {
                     const merged = mergeSofaAndRadar(sofa, radar);
+                    if (!merged) throw Error('error');
                     res.send(merged);
                 })
-                .catch(() => {
-                    console.log('## radar failed!');
-                    res.send(mergeSofaAndRadar(sofa));
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(501);
                 });
         })
         .catch(() => {
-            console.log('## sofa failed!');
-            res.send('error');
+            res.sendStatus(500);
         });
-
-    // Promise.all([fetchSofaScore(`/football//${date}/json`), fetchSportRadar(date)])
-    //     .then(response => {
-    //         res.send(response);
-    //     })
-    //     .catch(() => {
-    //         res.send('error');
-    //     });
 });
 
 module.exports = router;

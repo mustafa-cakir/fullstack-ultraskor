@@ -1,3 +1,4 @@
+const moment = require('moment');
 const _ = require('lodash');
 const cors = require('cors');
 const languageJson = require('./../client/src/languages/tr.json');
@@ -244,45 +245,97 @@ exports.simplifyWebSocketData = res => {
 };
 
 exports.mergeSofaAndRadar = (sofa, radar) => {
+    if (!radar || !sofa) return null;
+
     const result = {};
-    result.radar = radar.doc[0].data.sport.realcategories;
+    const radarTournaments = radar.doc[0].data.sport.realcategories.reduce((total, item) => {
+        return total.concat(item.tournaments);
+    }, []);
+    // result.radar = radarTournaments;
     result.date = sofa.params.date;
     result.tournaments = [];
-
-    // let provider1Data = res.filter(
-    //     match =>
-    //         match.homeTeam.uid === jsonData.event.homeTeam.id ||
-    //         match.awayTeam.uid === jsonData.event.awayTeam.id
-    // );
-
     sofa.sportItem.tournaments.forEach(tournament => {
         const events = [];
+        const tournamentRadar = radarTournaments.filter(x => x._id === tournament.tournament.id)[0] || {};
         tournament.events.forEach(event => {
-            events.push({
-                awayScore: event.awayScore,
-                awayTeam: event.awayTeam,
-                homeScore: event.homeScore,
-                homeTeam: event.homeTeam,
-                id: event.id,
-                startTimestamp: event.startTimestamp,
-                statusDescription: event.statusDescription,
-                winnerCode: event.winnerCode
-            });
-        });
-        result.tournaments.push({
-            category: {
-                name: tournament.category.name,
-                id: tournament.category ? tournament.category.id : null
-            },
-            events,
-            season: {
-                id: tournament.season ? tournament.season.id : null
-            },
-            tournament: {
-                id: tournament.tournament.uniqueId,
-                name: tournament.tournament.name
+            if (moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === sofa.params.date) {
+                let eventRadar = {};
+                if (tournamentRadar.matches && tournamentRadar.matches.length > 0) {
+                    eventRadar =
+                        tournamentRadar.matches.filter(x => {
+                            return x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id;
+                        })[0] || {};
+                }
+
+                events.push({
+                    teams: {
+                        home: {
+                            id: event.homeTeam.id,
+                            name: event.homeTeam.name,
+                            fullname: eventRadar.teams ? eventRadar.teams.home.mediumname : event.homeTeam.name
+                        },
+                        away: {
+                            id: event.awayTeam.id,
+                            name: event.awayTeam.name,
+                            fullname: eventRadar.teams ? eventRadar.teams.away.mediumname : event.awayTeam.name
+                        }
+                    },
+                    scores: {
+                        home: event.homeScore.current || 0,
+                        away: event.awayScore.current || 0,
+                        ht: {
+                            home: event.homeScore.period1 || 0,
+                            away: event.awayScore.period1 || 0
+                        }
+                    },
+                    redCards: {
+                        home: event.homeRedCards || 0,
+                        away: event.awayRedCards || 0
+                    },
+                    id: event.id,
+                    id_: eventRadar._id,
+                    id_t: eventRadar._tid,
+                    id_ut: eventRadar._utid,
+                    id_rc: eventRadar._rcid,
+                    startTimestamp: event.startTimestamp * 1000,
+                    status: event.status,
+                    statusBoxContent: event.statusDescription,
+                    winner: event.winnerCode
+                });
             }
         });
+        if (events.length > 0) {
+            result.tournaments.push({
+                category: {
+                    icon: tournament.category.flag,
+                    name: tournament.category.name,
+                    id: tournament.category.id
+                },
+                events,
+                season: {
+                    ...(tournament.season && { id: tournament.season.id }),
+                    name: {
+                        ...(tournament.season && { en: tournament.season.name }),
+                        ...(tournament.season && { tr: tournament.season.name }),
+                        ...(tournamentRadar.name && { tr: `${tournamentRadar.name} ${tournamentRadar.year}` })
+                    },
+                    id_: tournamentRadar.seasonid
+                },
+                tournament: {
+                    ...(tournament.tournament && { id: tournament.tournament.id }),
+                    ...(tournament.tournament && { uniqueId: tournament.tournament.uniqueId }),
+                    id_: tournamentRadar._id,
+                    id_t: tournamentRadar._tid,
+                    id_ut: tournamentRadar._utid,
+                    id_rc: tournamentRadar._rcid,
+                    name: {
+                        ...(tournament.tournament && { en: tournament.tournament.name }),
+                        ...(tournament.tournament && { tr: tournament.tournament.name }),
+                        ...(tournamentRadar.name && { tr: tournamentRadar.name })
+                    }
+                }
+            });
+        }
     });
     return result;
 };
