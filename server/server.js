@@ -4,7 +4,7 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const cacheService = require('./cache.service');
 const helper = require('./helper');
-const cronjob = require('./cronjob');
+const { start } = require('./cronjob');
 const { socketHandler } = require('./utils/socket');
 const { tor } = require('./utils/tor');
 const { initWebSocket } = require('./utils/Websocket');
@@ -18,7 +18,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helper.initCors());
 
 cacheService.start();
-cronjob.start();
+setTimeout(() => {
+	start();
+}, 2000);
 
 // refresh TOR session
 setInterval(() => {

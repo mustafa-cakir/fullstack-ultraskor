@@ -1,36 +1,9 @@
 const { CronJob } = require('cron');
 const moment = require('moment');
-const request = require('request-promise-native');
-const tor = require('tor-request');
-tor.TorControlPort.password = 'muztafultra';
 const helper = require('./helper');
+const fetchHomepage = require('./fetch/homepage');
 const cacheService = require('./cache.service');
 const { initWebPushByWebSocket } = require('./utils/webpush');
-
-const options = date => {
-    return {
-        method: 'GET',
-        uri: `https://www.sofascore.com/football//${date}/json?_=${Math.floor(Math.random() * 10e8)}`,
-        json: true,
-        headers: {
-            'Content-Type': 'application/json',
-            Origin: 'https://www.sofascore.com',
-            referer: 'https://www.sofascore.com/',
-            'x-requested-with': 'XMLHttpRequest'
-        }
-    };
-};
-
-if (helper.isTorDisabled) {
-    console.log('Tor Disabled');
-} else {
-    console.log('TOR IP is requested');
-    tor.request('https://api.ipify.org', (err, status, response) => {
-        if (!err && status.statusCode === 200) {
-            console.log(`Your public (through Tor) IP is: ${response}`);
-        }
-    });
-}
 
 exports.pushServiceChangesForWebPush = res => {
     const fullData = cacheService.instance().get('fullData');
@@ -118,26 +91,14 @@ exports.pushServiceChangesForWebPush = res => {
     return false;
 };
 
-const customRequest = (opt, cb) => {
-    if (helper.isTorDisabled) {
-        request(opt, cb).catch(() => {
-            console.log(`Error returning differences within cronJob.. Time: ${new Date()}`);
-        });
-    } else {
-        tor.request(opt, cb);
-    }
-};
-
 const cronHandler = () => {
-    customRequest(options(moment().format('YYYY-MM-DD')), (err, status, res) => {
-        if (!err && status.statusCode === 200 && res.sportItem && res.sportItem.tournaments.length > 0) {
-            const fullData = helper.simplifyHomeData(res);
-            cacheService.instance().set('fullData', fullData, 60 * 30); // cache the homepage full data for 30 min
-        } else {
-            // error
-            console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
-        }
-    });
+	fetchHomepage(moment().format('YYYY-MM-DD'))
+		.then(response => {
+			cacheService.instance().set('homepageListData', response, 60 * 30);
+		})
+		.catch(() => {
+			console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
+		});
 };
 
 cronHandler(); // run manually for the first time;

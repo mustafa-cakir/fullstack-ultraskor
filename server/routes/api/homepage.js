@@ -1,32 +1,34 @@
-// const moment = require('moment');
+const moment = require('moment');
 const router = require('express').Router();
-// const cacheService = require('../../cache.service');
+const cacheService = require('../../cache.service');
 const auth = require('../auth');
-const fetchSofaScore = require('../../fetch/sofascore');
-const fetchSportRadar = require('../../fetch/sportradar');
-const { mergeSofaAndRadar } = require('../../helper');
+const fetchHomepage = require('../../fetch/homepage');
 
 router.get('/:date', auth.optional, (req, res) => {
     const { date } = req.params; // YYYY-MM-DD
-    // const isToday = moment(date, 'YYYY-MM-DD').isSame(moment(), 'day');
-    // const cacheKey = isToday ? "fullData" : `mainData-${date}-homepage`;
+    const isToday = moment(date, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    fetchSofaScore(`/football//${date}/json`)
-        .then(sofa => {
-            fetchSportRadar(date)
-                .then(radar => {
-                    const merged = mergeSofaAndRadar(sofa, radar);
-                    if (!merged) throw Error('error');
-                    res.send(merged);
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.sendStatus(501);
-                });
-        })
-        .catch(() => {
-            res.sendStatus(500);
-        });
+	const remoteRequest = () => {
+		fetchHomepage(date)
+			.then(data => {
+				res.send(data);
+			})
+			.catch(err => {
+				res.sendStatus(err);
+			});
+	};
+
+	if (isToday) {
+		const cachedData = cacheService.instance().get('homepageListData');
+		if (typeof cachedData !== 'undefined') {
+			console.log('homepageListData is served from cached!');
+			res.send(cachedData);
+		} else {
+			remoteRequest();
+		}
+	} else {
+		remoteRequest()
+	}
 });
 
 module.exports = router;

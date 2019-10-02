@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const SocksProxyAgent = require('socks-proxy-agent');
-const cronjob = require('../../cronjob');
+// const cronjob = require('../../cronjob');
 const helper = require('../../helper');
 
 let wsMaxRetry = 25;
@@ -27,10 +27,6 @@ const initWebSocket = io => {
         rejectUnauthorized: false,
         ...(!helper.isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
     });
-
-    /**
-     * @namespace ws.on
-     * */
 
     ws.on('error', err => {
         console.log('errored', err);
@@ -69,7 +65,7 @@ const initWebSocket = io => {
         } else {
             if (!res) return false;
             res = helper.simplifyWebSocketData(res);
-            cronjob.pushServiceChangesForWebPush(res);
+            //cronjob.pushServiceChangesForWebPush(res);
             io.sockets.emit('push-service', res);
         }
         return false;
