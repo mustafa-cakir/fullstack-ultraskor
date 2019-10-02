@@ -9,7 +9,7 @@ const socketHandler = (socket, io) => {
     socket.emit('heyooo', 'mesg heyoo');
 
     socket.on('get-updates-homepage', () => {
-        const cachedData = cacheService.instance().get('fullData');
+        const cachedData = cacheService.instance().get('homepageListData');
         socket.emit('return-updates-homepage', cachedData || null);
     });
 

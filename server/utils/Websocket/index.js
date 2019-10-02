@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const SocksProxyAgent = require('socks-proxy-agent');
-// const cronjob = require('../../cronjob');
-const helper = require('../../helper');
+const {isTorDisabled, simplifyWebSocketData} = require("../../helper");
+const {pushServiceChangesForWebPush} = require("../../cronjob");
 
 let wsMaxRetry = 25;
 const initWebSocket = io => {
@@ -25,7 +25,7 @@ const initWebSocket = io => {
     const ws = new WebSocket(`${getPushServiceUri}/ServicePush`, {
         origin: 'https://www.sofascore.com',
         rejectUnauthorized: false,
-        ...(!helper.isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
+        ...(!isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
     });
 
     ws.on('error', err => {
@@ -64,8 +64,9 @@ const initWebSocket = io => {
             // console.log('## pong recived', res);
         } else {
             if (!res) return false;
-            res = helper.simplifyWebSocketData(res);
-            //cronjob.pushServiceChangesForWebPush(res);
+            console.log(res);
+            res = simplifyWebSocketData(res);
+            pushServiceChangesForWebPush(res);
             io.sockets.emit('push-service', res);
         }
         return false;

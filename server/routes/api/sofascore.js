@@ -28,7 +28,7 @@ router.get('/', auth.optional, (req, res) => {
 
     const cachedData = cacheService
         .instance()
-        .get(req.query.page === 'homepage' && req.query.today === '1' ? 'fullData' : cacheKey);
+        .get(req.query.page === 'homepage' && req.query.today === '1' ? 'homepageListData' : cacheKey);
     if (typeof cachedData !== 'undefined') {
         // Cache is found, serve the data from cache
         res.send(cachedData);

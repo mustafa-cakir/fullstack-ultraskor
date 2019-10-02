@@ -3,7 +3,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const cacheService = require('./cache.service');
-const helper = require('./helper');
+const {initCors } = require("./helper");
 const { start } = require('./cronjob');
 const { socketHandler } = require('./utils/socket');
 const { tor } = require('./utils/tor');
@@ -15,9 +15,10 @@ const io = socketIO(server);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helper.initCors());
+app.use(initCors());
 
 cacheService.start();
+
 setTimeout(() => {
 	start();
 }, 2000);

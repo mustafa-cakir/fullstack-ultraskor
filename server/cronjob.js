@@ -6,16 +6,16 @@ const cacheService = require('./cache.service');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
 exports.pushServiceChangesForWebPush = res => {
-    const fullData = cacheService.instance().get('fullData');
-    if (typeof fullData === 'undefined') {
-        console.log('fullData can not be gathered from cache');
+    const homepageListData = cacheService.instance().get('homepageListData');
+    if (typeof homepageListData === 'undefined') {
+        console.log('homepageListData can not be gathered from cache');
         return false;
     }
 
     let redScoreBarType = null;
     let redScoreBarIncident = {};
 
-    const getTournament = fullData.sportItem.tournaments.filter(x => x.tournament.id === res.info.tournament)[0];
+    const getTournament = homepageListData.filter(x => x.tournament.id === res.info.tournament)[0];
     if (!getTournament) return false;
     const event = getTournament.events.filter(x => x.id === res.info.id)[0];
     if (!event) return false;
@@ -77,7 +77,7 @@ exports.pushServiceChangesForWebPush = res => {
         event.statusDescription = res.statusDescription;
     }
 
-    cacheService.instance().set('fullData', fullData, 60 * 30); // cache the new fullData for 30 min.
+    cacheService.instance().set('homepageListData', homepageListData, 60 * 30); // cache the new homepageListData for 30 min.
 
     if (redScoreBarType) {
         redScoreBarIncident = {
