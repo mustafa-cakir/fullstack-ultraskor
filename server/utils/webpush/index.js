@@ -1,6 +1,6 @@
 const { firebase } = require('../firebase');
 const cacheService = require('../../cache.service');
-const helper = require('../../helper');
+const { isDev, t } = require('../../helper');
 
 exports.initWebPushByWebSocket = data => {
     const message = {
@@ -25,10 +25,10 @@ exports.initWebPushByWebSocket = data => {
         topic: `match_${data.event.id}`
     };
 
-    const homeTeamName = helper.t(data.event.homeTeam.name);
-    const awayTeamName = helper.t(data.event.awayTeam.name);
+    const homeTeamName = t(data.event.teams.home.name);
+    const awayTeamName = t(data.event.teams.away.name);
     const teamNames = `${homeTeamName} - ${awayTeamName}`;
-    const teamNamesWithScore = `${homeTeamName} ${data.event.homeScore.current} - ${data.event.awayScore.current} ${awayTeamName}`;
+    const teamNamesWithScore = `${homeTeamName} ${data.event.scores.home} - ${data.event.scores.away} ${awayTeamName}`;
 
     if (data.type === 'status_update') {
         if (data.event.status.code === 6) {
@@ -64,22 +64,22 @@ exports.initWebPushByWebSocket = data => {
         }
     } else if (data.type === 'away_redcard' || data.type === 'home_redcard') {
         // red card
-        message.webpush.notification.title = `KIRMIZI KART ${data.event.statusDescription}' ${
+        message.webpush.notification.title = `KIRMIZI KART ${data.event.statusBoxContent}' ${
             data.type === 'home_redcard' ? homeTeamName : awayTeamName
         }`;
         message.webpush.notification.body = teamNamesWithScore;
         message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${
-            data.type === 'home_redcard' ? data.event.homeTeam.id : data.event.awayTeam.id
+            data.type === 'home_redcard' ? data.event.teams.home.id : data.event.teams.away.id
         }.png`;
         message.webpush.notification.sound = 'https://www.ultraskor.com/static/media/sound/red-card.mp3';
     } else if (data.type === 'home_scored' || data.type === 'away_scored') {
         //  goal scored
-        message.webpush.notification.title = `GOL ${data.event.statusDescription}' ${
+        message.webpush.notification.title = `GOL ${data.event.statusBoxContent}' ${
             data.type === 'home_scored' ? homeTeamName : awayTeamName
         }`;
         message.webpush.notification.body = teamNamesWithScore;
         message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${
-            data.type === 'home_scored' ? data.event.homeTeam.id : data.event.awayTeam.id
+            data.type === 'home_scored' ? data.event.teams.home.id : data.event.teams.away.id
         }.png`;
         message.webpush.notification.sound = 'https://www.ultraskor.com/static/media/sound/goal.mp3';
     } else if (data.type === 'home_scored_cancel' || data.type === 'away_scored_cancel') {
@@ -89,7 +89,7 @@ exports.initWebPushByWebSocket = data => {
         }`;
         message.webpush.notification.body = teamNamesWithScore;
         message.webpush.notification.icon = `https://www.ultraskor.com/images/team-logo/football_${
-            data.type === 'home_scored_cancel' ? data.event.homeTeam.id : data.event.awayTeam.id
+            data.type === 'home_scored_cancel' ? data.event.teams.home.id : data.event.teams.away.id
         }.png`;
         message.webpush.notification.sound = 'https://www.ultraskor.com/static/media/sound/cancel.mp3';
     }
@@ -110,7 +110,7 @@ exports.initWebPushByWebSocket = data => {
                     .catch(error => {
                         console.log('Error sending message:', error);
                     });
-            } else if (helper.isDev) {
+            } else if (isDev) {
                 console.log(
                     `Subscription not found, no push for ${homeTeamName} - ${awayTeamName}, ${data.event.id}. The incident was ${data.type}`
                 );

@@ -217,31 +217,54 @@ exports.initCors = () => {
 };
 
 exports.simplifyWebSocketData = res => {
-    let result = {};
     res = JSON.parse(res);
-    if (res.data.length > 0 && res.data[1]) {
-        const resData = res.data[1];
-        result = {
-            info: {
-                id: parseFloat(resData.emits[0].split('_')[1]),
-                type: resData.emits[1].split('_')[1],
-                tournament: parseFloat(resData.emits[2].split('_')[1]),
-                homeTeam: parseFloat(resData.emits[3].split('_')[1]),
-                awayTeam: parseFloat(resData.emits[4].split('_')[1])
+    if (res.data.length === 0 && !res.data[1] && res.data[0] !== 'service-push') return null;
+    const resData = res.data[1];
+    return {
+        ids: {
+            even: parseFloat(resData.emits[0].split('_')[1]),
+            type: resData.emits[1].split('_')[1],
+            tournament: parseFloat(resData.emits[2].split('_')[1]),
+            homeTeam: parseFloat(resData.emits[3].split('_')[1]),
+            awayTeam: parseFloat(resData.emits[4].split('_')[1])
+        },
+        tournament: {
+            id: parseFloat(resData.emits[2].split('_')[1])
+        },
+        event: {
+            id: parseFloat(resData.emits[0].split('_')[1]),
+            scores: {
+                home: resData.data.homeScore.current,
+                away: resData.data.awayScore.current,
+                ht: {
+                    home: resData.data.homeScore.period1,
+                    away: resData.data.awayScore.period1
+                }
             },
-            ...(resData.data.changesData && { changesData: resData.data.changesData }),
-            awayScore: resData.data.awayScore,
-            homeScore: resData.data.homeScore,
-            homeTeam: resData.data.homeTeam,
-            awayTeam: resData.data.awayTeam,
+            redCards: {
+                home: resData.data.homeRedCards,
+                away: resData.data.awayRedCards
+            },
+            statusBoxContent: resData.data.statusDescription,
+            startTimestamp: resData.data.startTimestamp * 1000,
             status: resData.data.status,
-            statusDescription: resData.data.statusDescription,
-            ...(resData.data.homeRedCards && { homeRedCards: resData.data.homeRedCards }),
-            ...(resData.data.awayRedCards && { awayRedCards: resData.data.awayRedCards })
-        };
-    }
-
-    return result;
+            winner: resData.data.winnerCode
+        },
+        updated: {
+            scores: {
+                home: resData.data.changesData ? resData.data.changesData.home.score : null,
+                away: resData.data.changesData ? resData.data.changesData.away.score : null
+            },
+            teams: {
+                home: resData.data.changesData ? resData.data.changesData.home.team : null,
+                away: resData.data.changesData ? resData.data.changesData.away.team : null
+            },
+            score: resData.data.changesData ? resData.data.changesData.score : null,
+            status: resData.data.changesData ? resData.data.changesData.status : null,
+            first: resData.data.changesData ? resData.data.changesData.firstToServe : null,
+            notify: resData.data.changesData ? resData.data.changesData.notify : null
+        }
+    };
 };
 
 exports.mergeSofaAndRadar = (sofa, radar) => {
@@ -266,7 +289,6 @@ exports.mergeSofaAndRadar = (sofa, radar) => {
                             return x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id;
                         })[0] || {};
                 }
-
                 events.push({
                     teams: {
                         home: {
@@ -281,16 +303,16 @@ exports.mergeSofaAndRadar = (sofa, radar) => {
                         }
                     },
                     scores: {
-                        home: event.homeScore.current || 0,
-                        away: event.awayScore.current || 0,
+                        home: event.homeScore.current,
+                        away: event.awayScore.current,
                         ht: {
-                            home: event.homeScore.period1 || 0,
-                            away: event.awayScore.period1 || 0
+                            home: event.homeScore.period1,
+                            away: event.awayScore.period1
                         }
                     },
                     redCards: {
-                        home: event.homeRedCards || 0,
-                        away: event.awayRedCards || 0
+                        home: event.homeRedCards,
+                        away: event.awayRedCards
                     },
                     id: event.id,
                     id_: eventRadar._id,

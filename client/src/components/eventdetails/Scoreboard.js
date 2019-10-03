@@ -1,20 +1,28 @@
-import React, {Component} from 'react';
-import moment from "moment";
-import {Trans, withTranslation} from "react-i18next";
-import {generateSlug} from "../../Helper";
-import { Link } from "react-router-dom"
+import React, { Component } from 'react';
+import moment from 'moment';
+import { Trans, withTranslation } from 'react-i18next';
+import { generateSlug } from '../../Helper';
+import { Link } from 'react-router-dom';
 
 class Scoreboard extends Component {
     render() {
-        const {eventData, t} = this.props;
+        const { eventData, t } = this.props;
         return (
             <div className="event-details-scoreboard stadium">
                 <div className="container">
                     <div className="row text-center flex-nowrap">
-                        <Link to={{
-                            pathname: `/${t('team')}/${generateSlug(t(eventData.event.homeTeam.name))}-${eventData.event.homeTeam.id}`,
-                            state: {isPrev: true}
-                        }} className="col-4 team-link" title={`${t(eventData.event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}>
+                        <Link
+                            to={{
+                                pathname: `/${t('team')}/${generateSlug(t(eventData.event.homeTeam.name))}-${
+                                    eventData.event.homeTeam.id
+                                }`,
+                                state: { isPrev: true }
+                            }}
+                            className="col-4 team-link"
+                            title={`${t(eventData.event.homeTeam.name)} - ${t(
+                                'Fixtures, highlights and standings, click for more'
+                            )}`}
+                        >
                             <div className="team-logo mb-2">
                                 <img
                                     alt={t(eventData.event.homeTeam.name)}
@@ -22,39 +30,61 @@ class Scoreboard extends Component {
                                 />
                             </div>
                             <div className="team-name">{t(eventData.event.homeTeam.name)}</div>
-                            {eventData.managerDuel ?
-                                <div className="team-coach mb-2">{eventData.managerDuel.homeManager.name}</div> : ''}
-                            <div>{(eventData.teamsForm) ?
-                                <TeamForm data={eventData.teamsForm.homeTeam.form}/> : ""}</div>
+                            {eventData.managerDuel ? (
+                                <div className="team-coach mb-2">{eventData.managerDuel.homeManager.name}</div>
+                            ) : (
+                                ''
+                            )}
+                            <div>
+                                {eventData.teamsForm ? <TeamForm data={eventData.teamsForm.homeTeam.form} /> : ''}
+                            </div>
                         </Link>
                         <div className="col-4 align-self-center middle">
-                            <div className="time"><IsInProgress eventData={eventData}/></div>
-                            <div className={"score" + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
+                            <div className="time">
+                                <IsInProgress eventData={eventData} />
+                            </div>
+                            <div className={'score' + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
                                 {eventData.event.homeScore.current} - {eventData.event.awayScore.current}
                             </div>
-                            {(eventData.event.hasHalfTimeScore) ?
-                                <div
-                                    className="score-halftime">(<Trans>HT</Trans>: {eventData.event.homeScore.period1} - {eventData.event.awayScore.period1})
-                                </div> : ""}
+                            {eventData.event.hasHalfTimeScore ? (
+                                <div className="score-halftime">
+                                    (<Trans>HT</Trans>: {eventData.event.homeScore.period1} -{' '}
+                                    {eventData.event.awayScore.period1})
+                                </div>
+                            ) : (
+                                ''
+                            )}
                         </div>
-                        <Link to={{
-                            pathname: `/${t('team')}/${generateSlug(t(eventData.event.awayTeam.name))}-${eventData.event.awayTeam.id}`,
-                            state: {isPrev: true}
-                        }} className="col-4 team-link" title={`${t(eventData.event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}>
+                        <Link
+                            to={{
+                                pathname: `/${t('team')}/${generateSlug(t(eventData.event.awayTeam.name))}-${
+                                    eventData.event.awayTeam.id
+                                }`,
+                                state: { isPrev: true }
+                            }}
+                            className="col-4 team-link"
+                            title={`${t(eventData.event.homeTeam.name)} - ${t(
+                                'Fixtures, highlights and standings, click for more'
+                            )}`}
+                        >
                             <div className="team-logo mb-2">
-                                <img alt={t(eventData.event.awayTeam.name)}
-                                     src={`${window.ImageServer}/images/team-logo/football_${eventData.event.awayTeam.id}.png`}/>
+                                <img
+                                    alt={t(eventData.event.awayTeam.name)}
+                                    src={`${window.ImageServer}/images/team-logo/football_${eventData.event.awayTeam.id}.png`}
+                                />
                             </div>
                             <div className="team-name">{t(eventData.event.awayTeam.name)}</div>
-                            <div
-                                className="team-coach mb-2">{eventData.managerDuel ? eventData.managerDuel.awayManager.name : ''}</div>
-                            <div>{(eventData.teamsForm) ?
-                                <TeamForm data={eventData.teamsForm.awayTeam.form}/> : ""}</div>
+                            <div className="team-coach mb-2">
+                                {eventData.managerDuel ? eventData.managerDuel.awayManager.name : ''}
+                            </div>
+                            <div>
+                                {eventData.teamsForm ? <TeamForm data={eventData.teamsForm.awayTeam.form} /> : ''}
+                            </div>
                         </Link>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
@@ -63,44 +93,53 @@ const IsInProgress = props => {
     let text;
     let liveBlinkerCodes = [6, 7];
     switch (eventData.event.status.type) {
-        case "inprogress":
-            text =
+        case 'inprogress':
+            text = (
                 <div className="red font-weight-bold">
                     <Trans>{eventData.event.statusDescription}</Trans>
-                    {(eventData.event.status.code === 6) ? '' : ''}
-                    {(liveBlinkerCodes.indexOf(eventData.event.status.code) > -1) ?
-                        <span className="live-blinker">'</span> : ''}
-                </div>;
+                    {eventData.event.status.code === 6 ? '' : ''}
+                    {liveBlinkerCodes.indexOf(eventData.event.status.code) > -1 ? (
+                        <span className="live-blinker">'</span>
+                    ) : (
+                        ''
+                    )}
+                </div>
+            );
             break;
-        case "notstarted":
-            text =
+        case 'notstarted':
+            text = (
                 <div className="full-time font-weight-bold">
                     {moment(eventData.event.startTimestamp * 1000).format('HH:mm')}
-                </div>;
+                </div>
+            );
             break;
-        case "canceled":
-            text =
+        case 'canceled':
+            text = (
                 <div className="red small-text line-clamp">
                     <Trans>Cancelled</Trans>
-                </div>;
+                </div>
+            );
             break;
-        case "postponed":
-            text =
+        case 'postponed':
+            text = (
                 <div className="red small-text line-clamp">
                     <Trans>Postponed</Trans>
-                </div>;
+                </div>
+            );
             break;
-        case "interrupted":
-            text =
+        case 'interrupted':
+            text = (
                 <div className="red small-text line-clamp">
                     <Trans>Interrupted</Trans>
-                </div>;
+                </div>
+            );
             break;
         default:
-            text =
+            text = (
                 <div className="full-time font-weight-bold">
                     <Trans>FT</Trans>
                 </div>
+            );
     }
     return text;
 };
@@ -108,10 +147,13 @@ const IsInProgress = props => {
 const TeamForm = props => {
     let result = [];
     props.data.forEach((status, index) => {
-        result.push(<span key={index} className={"team-form team-form-" + status}><Trans>{status}</Trans></span>)
+        result.push(
+            <span key={index} className={'team-form team-form-' + status}>
+                <Trans>{status}</Trans>
+            </span>
+        );
     });
     return result;
 };
 
-
-export default withTranslation('translations')(Scoreboard)
+export default withTranslation('translations')(Scoreboard);

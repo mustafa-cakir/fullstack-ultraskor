@@ -64,7 +64,7 @@ const initWebSocket = io => {
             // console.log('## pong recived', res);
         } else {
             if (!res) return false;
-            console.log(res);
+            // console.log(res);
             res = simplifyWebSocketData(res);
             pushServiceChangesForWebPush(res);
             io.sockets.emit('push-service', res);

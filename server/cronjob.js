@@ -1,12 +1,13 @@
 const { CronJob } = require('cron');
 const moment = require('moment');
-const helper = require('./helper');
 const fetchHomepage = require('./fetch/homepage');
 const cacheService = require('./cache.service');
+const { isDev } = require('./helper');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
 exports.pushServiceChangesForWebPush = res => {
-    const homepageListData = cacheService.instance().get('homepageListData');
+    const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+    const homepageListData = cacheService.instance().get(cacheKey);
     if (typeof homepageListData === 'undefined') {
         console.log('homepageListData can not be gathered from cache');
         return false;
@@ -15,77 +16,74 @@ exports.pushServiceChangesForWebPush = res => {
     let redScoreBarType = null;
     let redScoreBarIncident = {};
 
-    const getTournament = homepageListData.filter(x => x.tournament.id === res.info.tournament)[0];
+    const getTournament = homepageListData.tournaments.filter(x => x.tournament.id === res.tournament.id)[0];
     if (!getTournament) return false;
-    const event = getTournament.events.filter(x => x.id === res.info.id)[0];
+    const event = getTournament.events.filter(x => x.id === res.event.id)[0];
     if (!event) return false;
-    if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
+    if (res.updated.status && res.event.status.code !== event.status.code) {
         // console.log(event.status, res.status);
-        event.status = res.status;
-        event.homeScore = res.homeScore;
-        event.awayScore = res.awayScore;
+        event.status = res.event.status;
+        event.scores = res.event.scores;
+        event.scores = res.event.scores;
         redScoreBarType = 'status_update';
     }
-    if (res.homeRedCards && res.homeRedCards !== event.homeRedCards) {
-        event.homeRedCards = res.homeRedCards; // home Team Red Card
+    if (res.event.redCards.home && res.event.redCards.home > event.redCards.home) {
+        event.redCards.home = res.redCards.home; // home Team Red Card
         redScoreBarType = 'home_redcard';
     }
 
-    if (res.awayRedCards && res.awayRedCards !== event.awayRedCards) {
-        event.awayRedCards = res.awayRedCards; // home Team Red Card
+    if (res.event.redCards.away && res.event.redCards.away > event.redCards.away) {
+        event.redCards.away = res.event.redCards.away; // home Team Red Card
         redScoreBarType = 'away_redcard';
     }
 
-    if (res.changesData && res.changesData.score) {
-        if (res.changesData.home.score) {
-            const oldScore = event.homeScore.current || 0;
-            const newScore = res.homeScore.current;
-
-            if (typeof newScore === 'number' && newScore !== oldScore) {
-                if (newScore > oldScore) {
-                    if (helper.isDev) console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
-                    redScoreBarType = 'home_scored';
-                } else if (newScore < oldScore) {
-                    // away team scored!!
-                    if (helper.isDev)
-                        console.log(`${res.homeTeam.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
-                    redScoreBarType = 'home_scored_cancel';
-                }
-                event.homeScore = res.homeScore; // update score Object
-            }
-        } else if (res.changesData.away.score) {
-            const oldScore = event.awayScore.current || 0;
-            const newScore = res.awayScore.current;
+    if (res.updated.score) {
+        if (res.updated.scores.home) {
+            const oldScore = event.scores.home || 0;
+            const newScore = res.event.scores.home;
 
             if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
                 if (newScore > oldScore) {
-                    if (helper.isDev) console.log(`${res.awayTeam.name} Away Team Scored. ${oldScore} -> ${newScore}`);
+                    if (isDev) console.log(`${event.teams.home.name} Home Team Scored. ${oldScore} -> ${newScore}`);
+                    redScoreBarType = 'home_scored';
+                } else if (newScore < oldScore) {
+                    if (isDev)
+                        console.log(`${event.teams.away.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
+                    redScoreBarType = 'home_scored_cancel';
+                }
+                event.scores = res.event.scores; // update score Object
+            }
+        } else if (res.updated.scores.scoawayre) {
+            const oldScore = event.scores.away || 0;
+            const newScore = res.event.scores.away;
+
+            if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
+                if (newScore > oldScore) {
+                    if (isDev) console.log(`${event.teams.away.name} Away Team Scored. ${oldScore} -> ${newScore}`);
                     redScoreBarType = 'away_scored';
                 } else if (newScore < oldScore) {
-                    // away team scored!!
-                    if (helper.isDev)
-                        console.log(`${res.awayTeam.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
+                    if (isDev)
+                        console.log(`${event.teams.away.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
                     redScoreBarType = 'away_scored_cancel';
                 }
-                event.awayScore = res.awayScore; // update score Object
+                event.scores = res.event.scores; // update score Object
             }
         }
     }
 
     // update statusDescription in all situations
-    if (event.statusDescription !== res.statusDescription) {
-        event.statusDescription = res.statusDescription;
-    }
+    event.statusBoxContent = res.event.statusBoxContent;
+    event.startTimestamp = res.event.startTimestamp;
+    event.winner = res.event.winner;
 
-    cacheService.instance().set('homepageListData', homepageListData, 60 * 30); // cache the new homepageListData for 30 min.
+    cacheService.instance().set(cacheKey, homepageListData, 60 * 30); // cache the new homepageListData for 30 min.
 
     if (redScoreBarType) {
         redScoreBarIncident = {
             type: redScoreBarType,
             event
         };
-        if (helper.isDev)
-            console.log(`webPush fn triggered for ${event.id}, for ${redScoreBarType},time: ${new Date()}`);
+        if (isDev) console.log(`webPush fn triggered for ${event.id}, for ${redScoreBarType},time: ${new Date()}`);
         initWebPushByWebSocket(redScoreBarIncident);
     }
     return false;
@@ -94,7 +92,8 @@ exports.pushServiceChangesForWebPush = res => {
 const cronHandler = () => {
     fetchHomepage(moment().format('YYYY-MM-DD'))
         .then(response => {
-            cacheService.instance().set('homepageListData', response, 60 * 30);
+            const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+            cacheService.instance().set(cacheKey, response, 60 * 30);
         })
         .catch(() => {
             console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
@@ -105,6 +104,6 @@ cronHandler(); // run manually for the first time;
 
 const cron = new CronJob('*/30 * * * *', cronHandler); // every 30 minutes
 
-exports.start = () => {
+exports.cronStart = () => {
     cron.start();
 };

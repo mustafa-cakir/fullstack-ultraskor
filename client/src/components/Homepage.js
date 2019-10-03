@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
+import moment from 'moment';
+import { Trans, withTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import Tournament from './common/Tournament';
 import Errors from './common/Errors';
 import Loading from './common/Loading';
-import moment from 'moment';
 import Headertabs from './Headertabs';
 import Footer from './common/Footer';
 import Icon from './common/Icon';
-import { Trans, withTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
 import RefreshButton from './common/RefreshButton';
-import i18n from 'i18next';
-import { HelperUpdateMeta, HelperTranslateUrlTo, getQueryStringFromUrl, restoreScrollY } from '../Helper';
+import {
+    HelperUpdateMeta,
+    HelperTranslateUrlTo,
+    getQueryStringFromUrl,
+    restoreScrollY,
+    prepareRes,
+    trackPage
+} from '../Helper';
 import RedScoreBoard from './common/RedScoreBar';
 import FavTournament from './common/FavTournament';
 import BottomParagrah from './common/BottomParagrah';
@@ -40,35 +46,182 @@ class Homepage extends Component {
         this.handleGetData = this.handleGetData.bind(this);
         this.onSocketConnect = this.onSocketConnect.bind(this);
         this.onSocketDisconnect = this.onSocketDisconnect.bind(this);
-        this.socket = this.props.socket;
+        const { socket } = this.props;
+        this.socket = socket;
     }
 
     componentDidMount() {
+        const { match, location } = this.props;
         this.isPushServiceEnabled = true;
-        if (this.props.match.params.date) {
-            this.todaysDate = this.props.match.params.date;
+        if (match.params.date) {
+            this.todaysDate = match.params.date;
         } else {
-            //this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
+            // this.todaysDate = moment().subtract('1', "hours").format('YYYY-MM-DD');
             this.todaysDate = moment().format('YYYY-MM-DD');
-            //this.analyzeSessionStorage();
+            // this.analyzeSessionStorage();
             this.getFromLocaleStorage();
         }
         this.initGetDataOnPageLoad(false);
         this.once = true;
         this.redScoreBarTimer = null;
-        const page = this.props.location.pathname;
-        this.trackPage(page);
+        const page = location.pathname;
+        trackPage(page);
         this.initSocket();
     }
 
-    initGetDataOnPageLoad(isUpdated) {
-        this.initGetData({
-            api: '/football//' + this.todaysDate + '/json',
-            loading: true,
-            today: moment(0, 'HH').diff(this.todaysDate, 'days') === 0 ? 1 : 0,
-            page: 'homepage',
-            isUpdated: isUpdated
+    componentWillUnmount() {
+        this.removeSocketEvents();
+        clearTimeout(this.redScoreBarTimer);
+    }
+
+    onSocketReturnPushServiceData(res) {
+        const { mainData } = this.state;
+        if (!res) return false;
+        if (!mainData) return false;
+
+        let redScoreBarType = null;
+        let redScoreBarIncident = {};
+
+        const newMainData = JSON.parse(JSON.stringify(mainData));
+        if (newMainData.length < 1) return false;
+        // console.log(res);
+
+        // let resEventId = res.emits[3].split('_')[1];
+        const getTournament = newMainData.filter(x => x.tournament.id === res.tournament.id)[0];
+        if (!getTournament) return false;
+
+        const event = getTournament.events.filter(x => x.id === res.event.id)[0];
+        if (!event) return false;
+
+        if (res.updated.status && event.status.code !== res.event.status.code) {
+            event.status = res.event.status;
+            event.scores = res.event.scores;
+            event.scores = res.event.scores;
+            redScoreBarType = 'status_update';
+        }
+
+        if (res.event.redCards.home > event.redCards.home && res.event.redCards.home) {
+            event.redCards.home = res.redCards.home; // home Team Red Card
+            redScoreBarType = 'home_redcard';
+        }
+        if (res.event.redCards.away && res.event.redCards.away > event.redCards.away) {
+            event.redCards.away = res.event.redCards.away; // home Team Red Card
+            redScoreBarType = 'away_redcard';
+        }
+
+        if (res.updated.score) {
+            if (res.updated.scores.home) {
+                const oldScore = event.scores.home || 0;
+                const newScore = res.event.scores.home;
+
+                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
+                    if (newScore > oldScore) {
+                        // console.log(`${event.teams.home.name} Home Team Scored. ${oldScore} -> ${newScore}`);
+                        redScoreBarType = 'home_scored';
+                    } else if (newScore < oldScore) {
+                        // console.log(`${event.teams.away.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
+                        redScoreBarType = 'home_scored_cancel';
+                    }
+                    event.scores = res.event.scores; // update score Object
+                }
+            } else if (res.updated.scores.scoawayre) {
+                const oldScore = event.scores.away || 0;
+                const newScore = res.event.scores.away;
+
+                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
+                    if (newScore > oldScore) {
+                        // console.log(`${event.teams.away.name} Away Team Scored. ${oldScore} -> ${newScore}`);
+                        redScoreBarType = 'away_scored';
+                    } else if (newScore < oldScore) {
+                        // console.log(`${event.teams.away.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
+                        redScoreBarType = 'away_scored_cancel';
+                    }
+                    event.scores = res.event.scores; // update score Object
+                }
+            }
+        }
+
+        // update statusDescription in all situations
+        event.statusBoxContent = res.event.statusBoxContent;
+        event.startTimestamp = res.event.startTimestamp;
+        event.winner = res.event.winner;
+
+        const { redScoreFavOnly, favEvents } = this.state;
+        if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(event.id) < 0) {
+            redScoreBarType = null;
+        }
+
+        if (redScoreBarType) {
+            redScoreBarIncident = {
+                type: redScoreBarType,
+                event
+            };
+            clearTimeout(this.redScoreBarTimer);
+            this.redScoreBarTimer = setTimeout(() => {
+                this.setState({
+                    redScoreBarIncident: null
+                });
+            }, 15000);
+        }
+
+        const { redScoreBarIncident: isRedScoreBarIncident } = this.state;
+        if (isRedScoreBarIncident && redScoreBarType) {
+            this.setState(
+                {
+                    redScoreBarIncident: null
+                },
+                () => {
+                    this.setState({
+                        mainData: newMainData,
+                        redScoreBarIncident
+                    });
+                }
+            );
+        } else {
+            this.setState({
+                mainData: newMainData,
+                ...(redScoreBarType && { redScoreBarIncident })
+            });
+        }
+
+        if (favEvents.length > 0) this.moveFavEventsToTop();
+        return false;
+    }
+
+    onSocketReturnUpdatesData(res) {
+        this.initGetUpdatesHomepage();
+        const { mainData } = this.state;
+        if (res && res.params && mainData[0].currentDate === res.params.date) {
+            this.handleGetData(res, true);
+        } else {
+            return false;
+        }
+        return false;
+    }
+
+    onSocketDisconnect() {
+        this.removeSocketEvents();
+        this.socket.on('connect', this.onSocketConnect);
+        this.setState({
+            refreshButton: true
         });
+    }
+
+    onSocketConnect() {
+        console.log('Socket connected! - Homepage');
+        this.socket.removeListener('connect', this.onSocketConnect);
+        const { refreshButton } = this.state;
+        if (refreshButton) {
+            this.setState(
+                {
+                    refreshButton: false
+                },
+                () => {
+                    this.initSocket(true);
+                    this.initGetDataOnPageLoad(true);
+                }
+            );
+        }
     }
 
     getFromLocaleStorage() {
@@ -83,221 +236,32 @@ class Homepage extends Component {
     }
 
     setToLocaleStorage() {
+        const { filteredTournaments, isLive, favEvents, redScoreMuted, redScoreShrinked, redScoreFavOnly } = this.state;
         const stateToStore = {
-            ...(this.state.filteredTournaments.length > 0 && { filteredTournaments: this.state.filteredTournaments }),
-            ...(this.state.isLive && { isLive: this.state.isLive }),
-            ...(this.state.favEvents.length > 0 && { favEvents: this.state.favEvents }),
-            redScoreMuted: this.state.redScoreMuted,
-            redScoreShrinked: this.state.redScoreShrinked,
-            redScoreFavOnly: this.state.redScoreFavOnly
+            ...(filteredTournaments.length > 0 && { filteredTournaments }),
+            ...(isLive && { isLive }),
+            ...(favEvents.length > 0 && { favEvents }),
+            redScoreMuted,
+            redScoreShrinked,
+            redScoreFavOnly
         };
         localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore));
     }
 
-    trackPage(page) {
-        ReactGA.set({
-            page
-        });
-        ReactGA.pageview(page);
-    }
-
-    updateParentState = (state, isSetToLocalStorage = false) => {
-        this.setState(state, () => {
-            if (isSetToLocalStorage) this.setToLocaleStorage();
-        });
-    };
-
-    prepareRes = res => {
-        let tournaments = res.sportItem.tournaments;
-
-        // Remove yesterday or tomorrow matches
-        let currentDate = res.params.date;
-        tournaments = tournaments.reduce(function(whole, tournament) {
-            tournament.events = tournament.events.filter(event => {
-                return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === currentDate;
-            });
-            tournament.events.forEach(() => {
-                if (whole.indexOf(tournament) < 0) whole.push(tournament);
-            });
-            return whole;
-        }, []);
-
-        // UEFA - CL - 7
-        // UEFA - Europa League - 679
-        // Turkey - Super Lig - 52
-        // Turkey - TFF 1. Lig - 98
-        // England - Premier League - 17
-        // England - Championship - 18
-
-        // Spain - LaLiga - 8
-        // Germany - Bundesliga - 35
-        // Italy - Seria A - 23
-        // France - Liga 1 - 34
-        // Holland - Eredivisie - 37
-        // Belgium - First Division A - 38
-
-        // Portugal - Primeira Liga - 238
-        // Norway - Eliteserien - 20
-        // Sweeden - Allsvenskan - 40
-        // Denmark - Superliga - 39
-        // Russia - Premier Liga - 203
-        // Croatia - 1. HNL - 170
-        // Czech Republic - 1. Liga - 172
-        // Greece - Super League - 185
-        // Israel - Premier League - 266
-        // Ukraine - Premier League - 218
-
-        // Spain - LaLiga 2 - 54
-        // Germany - Bundesliga 2 - 44
-        // Italy - Serie B - 53
-        // France - Ligue 2 - 182
-        // Holland - Eerste Divisie - 131
-        // England - League One - 24
-        // Switzerland - Super League - 215
-        //
-        // Mexico - Primera Division, Apertura - 11621
-        // Argentina - Superliga - 155
-        // Brasileiro Série A - 325
-        //
-
-        // Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
-        const moveToTop = [
-            7,
-            679,
-            52,
-            98,
-            17,
-            18,
-            8,
-            35,
-            23,
-            34,
-            37,
-            38,
-            238,
-            20,
-            40,
-            39,
-            203,
-            170,
-            172,
-            185,
-            266,
-            218,
-            54,
-            44,
-            53,
-            182,
-            131,
-            24,
-            215
-        ]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
-        const moveToBottom = []; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
-
-        const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) > -1);
-        priorityTournaments.sort((a, b) => {
-            if (moveToTop.indexOf(a.tournament.uniqueId) < moveToTop.indexOf(b.tournament.uniqueId)) {
-                return -1;
-            }
-            if (moveToTop.indexOf(a.tournament.uniqueId) > moveToTop.indexOf(b.tournament.uniqueId)) {
-                return 1;
-            }
-            return 0;
-        });
-
-        const otherTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) === -1);
-        tournaments = priorityTournaments.concat(otherTournaments);
-
-        for (let i = 0; i < tournaments.length; i++) {
-            if (moveToBottom.length > 0) {
-                for (let k = 0; k < moveToBottom.length; k++) {
-                    if (tournaments[i].tournament.id === moveToBottom[k]) {
-                        let a = tournaments.splice(i, 1); // removes the item
-                        tournaments.push(a[0]); // adds it back to the end
-                        break;
-                    }
-                }
-            }
+    initSocket(noInterval = false) {
+        // socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
+        this.socket.on('disconnect', this.onSocketDisconnect);
+        this.socket.on('return-error-updates', this.onSocketDisconnect);
+        if (this.isPushServiceEnabled) {
+            this.initGetPushService();
+        } else {
+            this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
+            this.initGetUpdatesHomepage(noInterval);
         }
-
-        tournaments[0].currentDate = currentDate;
-        return tournaments;
-    };
-
-    moveFavEventsToTop(res) {
-        res = res || this.state.mainData;
-        let favEventsList = [];
-        res.forEach(tournament => {
-            tournament.events.forEach(event => {
-                if (this.state.favEvents.length > 0 && this.state.favEvents.indexOf(event.id) > -1) {
-                    favEventsList.push(event);
-                }
-            });
-        });
-        this.setState({
-            favEventsList: favEventsList
-        });
     }
 
-    initGetData = options => {
-        if (!options.isUpdated) {
-            this.setState({ loading: true });
-            document.body.classList.remove('initial-load');
-        }
-        fetch(`/api/?query=${options.api}&page=homepage&today=${options.today}`, {
-            headers: {
-                Authorization:
-                    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJVbHRyYVNrb3IgQVBJIEFVVEgiLCJpYXQiOjE1Njk4MDA0ODEsImV4cCI6MTYwMTMzNjQ4MSwiYXVkIjoidWx0cmFza29yLmNvbSIsInN1YiI6ImNvbnRhY3RAdWx0cmFza29yLmNvbSJ9.2BO51xRBwQ2YCoqQRjUjvImQru35VgSzUW9vpKoo82A'
-            }
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    throw Error(`Can't retrieve information from server, ${res.status}`);
-                }
-            })
-            .then(res => {
-                if (!res) {
-                    throw Error(`Response is empty`);
-                } else {
-                    this.handleGetData(res, options.isUpdated);
-                    restoreScrollY();
-                }
-            })
-            .catch(err => {
-                this.setState({
-                    mainData: { error: err.toString() },
-                    loading: false,
-                    refreshBtn: true
-                });
-            });
-    };
-
-    handleGetData(res, isUpdated) {
-        if (!isUpdated) {
-            setTimeout(() => {
-                document.body.classList.add('initial-load');
-            }, 0);
-        }
-        res = this.prepareRes(res);
-        if (this.state.favEvents.length > 0) this.moveFavEventsToTop(res);
-        this.updateStateGetData(res, isUpdated);
-        if (!isUpdated) this.updateMeta();
-    }
-
-    updateStateGetData(res, isUpdated) {
-        //console.log(res);
-        this.setState({
-            mainData: res,
-            ...(!isUpdated && { loading: false }),
-            ...(!isUpdated && { refreshButton: false })
-        });
-    }
-
-    componentWillUnmount() {
-        this.removeSocketEvents();
-        clearTimeout(this.redScoreBarTimer);
+    initGetPushService() {
+        this.socket.on('push-service', this.onSocketReturnPushServiceData);
     }
 
     removeSocketEvents() {
@@ -313,139 +277,91 @@ class Homepage extends Component {
         }
     }
 
-    initSocket(noInterval = false) {
-        //socket.on('return-updates-homepage-2', this.onSocketReturnUpdatesData2);
-        this.socket.on('disconnect', this.onSocketDisconnect);
-        this.socket.on('return-error-updates', this.onSocketDisconnect);
-        if (this.isPushServiceEnabled) {
-            this.initGetPushService();
-        } else {
-            this.socket.on('return-updates-homepage', this.onSocketReturnUpdatesData);
-            this.initGetUpdatesHomepage(noInterval);
-        }
-    }
-
-    initGetPushService() {
-        this.socket.on('push-service', this.onSocketReturnPushServiceData);
-    }
-
-    onSocketReturnPushServiceData(res) {
-        if (!res) return false;
-        if (!this.state.mainData) return false;
-
-        let redScoreBarType = null;
-        let redScoreBarIncident = {};
-
-        let newMainData = JSON.parse(JSON.stringify(this.state.mainData));
-        if (newMainData.length < 1) return false;
+    updateStateGetData(res, isUpdated) {
         // console.log(res);
+        this.setState({
+            mainData: res,
+            ...(!isUpdated && { loading: false }),
+            ...(!isUpdated && { refreshButton: false })
+        });
+    }
 
-        // let resEventId = res.emits[3].split('_')[1];
-        let getTournament = newMainData.filter(x => x.tournament.id === res.info.tournament)[0];
-        if (!getTournament) return;
-
-        let event = getTournament.events.filter(x => x.id === res.info.id)[0];
-        if (!event) return;
-
-        // getEvent = getEvent[0];
-        // console.log('## mainData -> geEvent', getEvent);
-        if (res.changesData && res.changesData.status && res.status.code !== event.status.code) {
-            event.status = res.status;
-            event.homeScore = res.homeScore; // update score in each status updates
-            event.awayScore = res.awayScore; // update score in each status updates
-            redScoreBarType = 'status_update';
+    handleGetData(res, isUpdated) {
+        if (!isUpdated) {
+            setTimeout(() => {
+                document.body.classList.add('initial-load');
+            }, 0);
         }
+        res = prepareRes(res);
+        const { favEvents } = this.state;
+        if (favEvents.length > 0) this.moveFavEventsToTop(res);
+        this.updateStateGetData(res, isUpdated);
+        if (!isUpdated) this.updateMeta();
+    }
 
-        if (res.homeRedCards && res.homeRedCards !== event.homeRedCards) {
-            event.homeRedCards = res.homeRedCards; // home Team Red Card
-            redScoreBarType = 'home_redcard';
+    initGetData(options) {
+        if (!options.isUpdated) {
+            this.setState({ loading: true });
+            document.body.classList.remove('initial-load');
         }
-
-        if (res.awayRedCards && res.awayRedCards !== event.awayRedCards) {
-            event.awayRedCards = res.awayRedCards; // home Team Red Card
-            redScoreBarType = 'away_redcard';
-        }
-
-        if (res.changesData && res.changesData.score) {
-            if (res.changesData.home.score) {
-                let oldScore = event.homeScore.current || 0,
-                    newScore = res.homeScore.current;
-
-                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
-                    if (newScore > oldScore) {
-                        //console.log(`${res.homeTeam.name} Home Team Scored. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'home_scored';
-                    } else if (newScore < oldScore) {
-                        // away team scored!!
-                        //console.log(`${res.homeTeam.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'home_scored_cancel';
-                    }
-                    event.homeScore = res.homeScore; // update score Object
-                }
-            } else if (res.changesData.away.score) {
-                let oldScore = event.awayScore.current || 0,
-                    newScore = res.awayScore.current;
-
-                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
-                    if (newScore > oldScore) {
-                        //console.log(`${res.awayTeam.name} Away Team Scored. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'away_scored';
-                    } else if (newScore < oldScore) {
-                        // away team scored!!
-                        //console.log(`${res.awayTeam.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'away_scored_cancel';
-                    }
-                    event.awayScore = res.awayScore; // update score Object
-                }
+        fetch(options.api, {
+            headers: {
+                Authorization:
+                    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJVbHRyYVNrb3IgQVBJIEFVVEgiLCJpYXQiOjE1Njk4MDA0ODEsImV4cCI6MTYwMTMzNjQ4MSwiYXVkIjoidWx0cmFza29yLmNvbSIsInN1YiI6ImNvbnRhY3RAdWx0cmFza29yLmNvbSJ9.2BO51xRBwQ2YCoqQRjUjvImQru35VgSzUW9vpKoo82A'
             }
-        }
-
-        // update statusDescription in all situations
-        if (event.statusDescription !== res.statusDescription) {
-            event.statusDescription = res.statusDescription;
-        }
-
-        if (
-            this.state.redScoreFavOnly &&
-            this.state.favEvents.length > 0 &&
-            this.state.favEvents.indexOf(event.id) < 0
-        ) {
-            redScoreBarType = null;
-        }
-
-        if (redScoreBarType) {
-            redScoreBarIncident = {
-                type: redScoreBarType,
-                event: event
-            };
-            clearTimeout(this.redScoreBarTimer);
-            this.redScoreBarTimer = setTimeout(() => {
-                this.setState({
-                    redScoreBarIncident: null
-                });
-            }, 15000);
-        }
-
-        if (this.state.redScoreBarIncident && redScoreBarType) {
-            this.setState(
-                {
-                    redScoreBarIncident: null
-                },
-                () => {
-                    this.setState({
-                        mainData: newMainData,
-                        redScoreBarIncident: redScoreBarIncident
-                    });
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
                 }
-            );
-        } else {
-            this.setState({
-                mainData: newMainData,
-                ...(redScoreBarType && { redScoreBarIncident: redScoreBarIncident })
+                throw Error(`Can't retrieve information from server, ${res.status}`);
+            })
+            .then(res => {
+                if (!res) {
+                    throw Error(`Response is empty`);
+                } else {
+                    this.handleGetData(res, options.isUpdated);
+                    restoreScrollY();
+                }
+            })
+            .catch(err => {
+                this.setState({
+                    mainData: { error: err.toString() },
+                    loading: false
+                });
             });
-        }
+    }
 
-        if (this.state.favEvents.length > 0) this.moveFavEventsToTop();
+    moveFavEventsToTop(res) {
+        const { favEvents, mainData } = this.state;
+        res = res || mainData;
+        const favEventsList = [];
+        res.forEach(tournament => {
+            tournament.events.forEach(event => {
+                if (favEvents.length > 0 && favEvents.indexOf(event.id) > -1) {
+                    favEventsList.push(event);
+                }
+            });
+        });
+        this.setState({
+            favEventsList
+        });
+    }
+
+    updateParentState(state, isSetToLocalStorage = false) {
+        this.setState(state, () => {
+            if (isSetToLocalStorage) this.setToLocaleStorage();
+        });
+    }
+
+    initGetDataOnPageLoad(isUpdated) {
+        this.initGetData({
+            api: `/api/homepage/list/${this.todaysDate}`,
+            loading: true,
+            today: moment(0, 'HH').diff(this.todaysDate, 'days') === 0 ? 1 : 0,
+            page: 'homepage',
+            isUpdated
+        });
     }
 
     initGetUpdatesHomepage(noInterval = false) {
@@ -458,56 +374,24 @@ class Homepage extends Component {
         );
     }
 
-    onSocketReturnUpdatesData(res) {
-        this.initGetUpdatesHomepage();
-        if (res && res.params && this.state.mainData[0].currentDate === res.params.date) {
-            this.handleGetData(res, true);
-        } else {
-            return false;
-        }
-    }
-
-    onSocketDisconnect() {
-        this.removeSocketEvents();
-        this.socket.on('connect', this.onSocketConnect);
-        this.setState({
-            refreshButton: true
-        });
-    }
-
-    onSocketConnect() {
-        console.log('Socket connected! - Homepage');
-        this.socket.removeListener('connect', this.onSocketConnect);
-        if (this.state.refreshButton) {
-            this.setState(
-                {
-                    refreshButton: false
-                },
-                () => {
-                    this.initSocket(true);
-                    this.initGetDataOnPageLoad(true);
-                }
-            );
-        }
-    }
-
     updateMeta() {
-        const { date } = this.props.match.params || null;
+        const { match } = this.props;
+        const { date } = match.params || null;
 
         if (i18n.language === 'en') {
-            let title = date
+            const title = date
                 ? `UltraSkor - Results & Matches on ${moment(date, 'YYYY-MM-DD').format(
                       'dddd, MMMM DD, YYYY'
                   )}. See all Scores, Results, Stats and Match Highlights`
                 : 'Live Score, Match Results and League Fixtures - UltraSkor | (No Ads) ';
 
-            let description = date
+            const description = date
                 ? `No Ads. Get the football coverages for the matches on ${moment(date, 'YYYY-MM-DD').format(
                       'dddd, MMMM DD, YYYY'
                   )}. See results, league standings and watch highlights`
                 : 'No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world';
 
-            let keywords = date
+            const keywords = date
                 ? `${moment(date, 'YYYY-MM-DD')
                       .format('dddd')
                       .toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
@@ -516,29 +400,27 @@ class Homepage extends Component {
                 : '';
 
             HelperUpdateMeta({
-                title: title,
+                title,
                 canonical: window.location.href,
-                description: description,
-                keywords:
-                    keywords +
-                    'live scores, live football results, match results, football fixtures, eufa champions league results, highlights',
+                description,
+                keywords: `${keywords}live scores, live football results, match results, football fixtures, eufa champions league results, highlights`,
                 alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
                 hrefLang: 'tr'
             });
         } else if (i18n.language === 'tr') {
-            let title = date
+            const title = date
                 ? `UltraSkor - ${moment(date, 'YYYY-MM-DD').format(
                       'DD MMMM dddd'
                   )} Günü Oynanan Tüm Maçlar burada. Sonuçlar, İstatistikler ve Maç Özetleri için tıklayın.`
                 : 'Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları - UltraSkor | (Reklamsız)';
 
-            let description = date
+            const description = date
                 ? `Tamamen reklamsız olarak, ${moment(date, 'YYYY-MM-DD').format(
                       'DD MMMM dddd'
                   )} günü oynanmış tüm maçların sonuçlarını, lig puan durumlarını ve fikstürlerini takip edebilir, maç özetlerini izleyebilirsiniz.`
                 : 'Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.';
 
-            let keywords = date
+            const keywords = date
                 ? `${moment(date, 'YYYY-MM-DD')
                       .format('dddd')
                       .toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
@@ -547,10 +429,10 @@ class Homepage extends Component {
                 : '';
 
             HelperUpdateMeta({
-                title: title,
+                title,
                 canonical: window.location.href,
-                description: description,
-                keywords: keywords + 'canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri',
+                description,
+                keywords: `${keywords}canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri`,
                 alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
                 hrefLang: 'en'
             });
@@ -558,31 +440,44 @@ class Homepage extends Component {
     }
 
     render() {
-        const { mainData } = this.state;
+        const {
+            mainData,
+            isLive,
+            filteredTournaments,
+            favEventsList,
+            loading,
+            favEvents,
+            isLazyLoad,
+            lazyLoadCount,
+            refreshButton,
+            redScoreBarIncident,
+            redScoreMuted,
+            redScoreShrinked
+        } = this.state;
         if (!mainData) return <Loading />;
         if (mainData.error) return <Errors key={1} type="error" message={mainData.error} />;
 
-        const { t } = this.props;
+        const { t, match, socket, audioFiles } = this.props;
         return (
             <>
                 <Headertabs
-                    isLive={this.state.isLive}
-                    filteredTournaments={this.state.filteredTournaments}
+                    isLive={isLive}
+                    filteredTournaments={filteredTournaments}
                     updateParentState={this.updateParentState}
                     initGetData={this.initGetData}
-                    mainData={this.state.mainData}
-                    todaysDateByUrl={this.props.match.params.date}
+                    mainData={mainData}
+                    todaysDateByUrl={match.params.date}
                 />
 
-                {this.state.loading ? <Loading /> : null}
+                {loading ? <Loading /> : null}
                 <section className="container px-0 homepage-list">
-                    {this.state.favEventsList.length > 0 ? (
+                    {favEventsList.length > 0 ? (
                         <FavTournament
-                            isLive={this.state.isLive}
-                            socket={this.props.socket}
+                            isLive={isLive}
+                            socket={socket}
                             updateParentState={this.updateParentState}
-                            favEvents={this.state.favEvents}
-                            favEventsList={this.state.favEventsList}
+                            favEvents={favEvents}
+                            favEventsList={favEventsList}
                         />
                     ) : (
                         ''
@@ -590,15 +485,15 @@ class Homepage extends Component {
 
                     {mainData.length > 0 ? (
                         <Tournament
-                            isLive={this.state.isLive}
-                            filteredTournaments={this.state.filteredTournaments}
-                            socket={this.props.socket}
+                            isLive={isLive}
+                            filteredTournaments={filteredTournaments}
+                            socket={socket}
                             tournaments={mainData}
                             updateParentState={this.updateParentState}
-                            favEvents={this.state.favEvents}
-                            favEventsList={this.state.favEventsList}
-                            isLazyLoad={this.state.isLazyLoad}
-                            lazyLoadCount={this.state.lazyLoadCount}
+                            favEvents={favEvents}
+                            favEventsList={favEventsList}
+                            isLazyLoad={isLazyLoad}
+                            lazyLoadCount={lazyLoadCount}
                         />
                     ) : (
                         <Errors key={1} type="no-matched-game" />
@@ -621,6 +516,7 @@ class Homepage extends Component {
                         </div>
                         <div className="col text-center col-today">
                             <a href={i18n.language === 'en' ? '/en/' : '/'} title={t("Today's football matches")}>
+                                {/* eslint-disable-next-line react/no-unescaped-entities */}
                                 <Trans>Today's Matches</Trans>
                             </a>
                         </div>
@@ -639,14 +535,14 @@ class Homepage extends Component {
                         </div>
                     </div>
                 </section>
-                <BottomParagrah page={'homepage'} />
-                {this.state.refreshButton ? <RefreshButton /> : ''}
-                {this.state.redScoreBarIncident ? (
+                <BottomParagrah page="homepage" />
+                {refreshButton ? <RefreshButton /> : ''}
+                {redScoreBarIncident ? (
                     <RedScoreBoard
-                        redScoreBarIncident={this.state.redScoreBarIncident}
-                        audioFiles={this.props.audioFiles}
-                        redScoreMuted={this.state.redScoreMuted}
-                        redScoreShrinked={this.state.redScoreShrinked}
+                        redScoreBarIncident={redScoreBarIncident}
+                        audioFiles={audioFiles}
+                        redScoreMuted={redScoreMuted}
+                        redScoreShrinked={redScoreShrinked}
                         updateParentState={this.updateParentState}
                     />
                 ) : (

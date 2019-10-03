@@ -19,7 +19,8 @@ router.get('/:date', auth.optional, (req, res) => {
     };
 
     if (isToday) {
-        const cachedData = cacheService.instance().get('homepageListData');
+        const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+        const cachedData = cacheService.instance().get(cacheKey);
         if (typeof cachedData !== 'undefined') {
             console.log('homepageListData is served from cached!');
             res.send(cachedData);

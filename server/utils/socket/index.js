@@ -1,4 +1,5 @@
 const request = require('request-promise-native');
+const moment = require('moment');
 const tor = require('tor-request');
 const cacheService = require('../../cache.service');
 const firebase = require('../firebase');
@@ -9,7 +10,8 @@ const socketHandler = (socket, io) => {
     socket.emit('heyooo', 'mesg heyoo');
 
     socket.on('get-updates-homepage', () => {
-        const cachedData = cacheService.instance().get('homepageListData');
+        const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+        const cachedData = cacheService.instance().get(cacheKey);
         socket.emit('return-updates-homepage', cachedData || null);
     });
 

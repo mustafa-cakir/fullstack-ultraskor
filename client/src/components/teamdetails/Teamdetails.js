@@ -1,13 +1,13 @@
-import React, {PureComponent} from 'react';
-import {Trans, withTranslation} from "react-i18next";
-import Loading from "../common/Loading";
-import ReactSwipe from "react-swipe";
-import smoothscroll from "smoothscroll-polyfill";
-import Footer from "../common/Footer";
-import i18n from "i18next";
-import {HelperTranslateUrlTo, HelperUpdateMeta} from "../../Helper";
-import Errors from "../common/Errors";
-import Tournament from "../common/Tournament";
+import React, { PureComponent } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import Loading from '../common/Loading';
+import ReactSwipe from 'react-swipe';
+import smoothscroll from 'smoothscroll-polyfill';
+import Footer from '../common/Footer';
+import i18n from 'i18next';
+import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../Helper';
+import Errors from '../common/Errors';
+import Tournament from '../common/Tournament';
 
 class Teamdetails extends PureComponent {
     constructor(props) {
@@ -61,7 +61,7 @@ class Teamdetails extends PureComponent {
             let id = item.tournament.id;
             let matchedObj = whole.filter(x => x.tournament.id === id);
             if (matchedObj.length > 0) {
-                matchedObj[0].events.push(...item.events)
+                matchedObj[0].events.push(...item.events);
             } else {
                 whole.push(item);
             }
@@ -71,8 +71,8 @@ class Teamdetails extends PureComponent {
     }
 
     initGetData() {
-        const {teamId} = this.props.match.params;
-        const {language} = i18n;
+        const { teamId } = this.props.match.params;
+        const { language } = i18n;
 
         fetch(`/api/helper4/${language}/teams/${teamId}`)
             .then(res => {
@@ -83,15 +83,18 @@ class Teamdetails extends PureComponent {
                 }
             })
             .then(res => {
-                this.setState({
-                    teamInfoData: res
-                }, () => {
-                    this.updateMeta(res);
-                });
+                this.setState(
+                    {
+                        teamInfoData: res
+                    },
+                    () => {
+                        this.updateMeta(res);
+                    }
+                );
             })
             .catch(() => {
                 this.setState({
-                    teamInfoData: null,
+                    teamInfoData: null
                 });
             });
 
@@ -104,58 +107,77 @@ class Teamdetails extends PureComponent {
                 }
             })
             .then(res => {
-                this.setState({
-                    loading: false,
-                    teamTournamentsData: Teamdetails.preProcessTournamentsData(res),
-                    teamTournamentsDataByTournament: Teamdetails.preProcessTournamentsSortByTournament(res)
-                }, () => {
-                    setTimeout(() => {
-                        this.swipeAdjustHeight();
-                    }, 100);
-                });
+                this.setState(
+                    {
+                        loading: false,
+                        teamTournamentsData: Teamdetails.preProcessTournamentsData(res),
+                        teamTournamentsDataByTournament: Teamdetails.preProcessTournamentsSortByTournament(res)
+                    },
+                    () => {
+                        setTimeout(() => {
+                            this.swipeAdjustHeight();
+                        }, 100);
+                    }
+                );
             })
             .catch(err => {
-                this.setState({
-                    teamTournamentsData: {error: err.toString()},
-                }, () => {
-                    setTimeout(() => {
-                        this.swipeAdjustHeight();
-                    }, 100);
-                });
+                this.setState(
+                    {
+                        teamTournamentsData: { error: err.toString() }
+                    },
+                    () => {
+                        setTimeout(() => {
+                            this.swipeAdjustHeight();
+                        }, 100);
+                    }
+                );
             });
-
     }
 
     updateMeta(teamInfoData) {
-        const {t} = this.props;
-        if (i18n.language === "en") {
-            if (window.location.pathname.split('/')[2] === "takim") window.location.href = HelperTranslateUrlTo('en', true);
+        const { t } = this.props;
+        if (i18n.language === 'en') {
+            if (window.location.pathname.split('/')[2] === 'takim')
+                window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
                 title: `${teamInfoData.team.name} Live Match Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
                 canonical: window.location.href,
-                description: `See live match results, watch highlights, see league fixtures and follow the transfer news for ${t(teamInfoData.team.name)}`,
-                keywords: `${t(teamInfoData.team.name)} fixtures, ${t(teamInfoData.team.abbreviation)} match results, ${t(teamInfoData.team.name)} highlights, ${t(teamInfoData.team.name)} transfer news, lineups, league fixtures`,
+                description: `See live match results, watch highlights, see league fixtures and follow the transfer news for ${t(
+                    teamInfoData.team.name
+                )}`,
+                keywords: `${t(teamInfoData.team.name)} fixtures, ${t(
+                    teamInfoData.team.abbreviation
+                )} match results, ${t(teamInfoData.team.name)} highlights, ${t(
+                    teamInfoData.team.name
+                )} transfer news, lineups, league fixtures`,
                 alternate: HelperTranslateUrlTo('tr'),
-                hrefLang: "tr"
-            })
-        } else if (i18n.language === "tr") {
-            if (window.location.pathname.split('/')[1] === "team") window.location.href = HelperTranslateUrlTo("tr", true);
+                hrefLang: 'tr'
+            });
+        } else if (i18n.language === 'tr') {
+            if (window.location.pathname.split('/')[1] === 'team')
+                window.location.href = HelperTranslateUrlTo('tr', true);
             HelperUpdateMeta({
                 title: `${t(teamInfoData.team.name)} Fikstür, Kadro, Puan Durumu ve Maç Özetleri - UltraSkor.com`,
                 canonical: window.location.href,
-                description: `${t(teamInfoData.team.name)} fikstürü ve kadroları görebilir, iddaa maç sonuçları ve transfer haberlerini takip edebilir, haftalık maç özetlerini izleyebilirsiniz.`,
-                keywords: `${t(teamInfoData.team.name)} mac fiksturu, ${t(teamInfoData.team.abbreviation)} fixture, lig fikstürü, haftalık lıg fikstürü, ${t(teamInfoData.team.name)} özetleri, ${t(teamInfoData.team.name)} haftanın takımı, ${t(teamInfoData.team.name)} gol krallığı`,
+                description: `${t(
+                    teamInfoData.team.name
+                )} fikstürü ve kadroları görebilir, iddaa maç sonuçları ve transfer haberlerini takip edebilir, haftalık maç özetlerini izleyebilirsiniz.`,
+                keywords: `${t(teamInfoData.team.name)} mac fiksturu, ${t(
+                    teamInfoData.team.abbreviation
+                )} fixture, lig fikstürü, haftalık lıg fikstürü, ${t(teamInfoData.team.name)} özetleri, ${t(
+                    teamInfoData.team.name
+                )} haftanın takımı, ${t(teamInfoData.team.name)} gol krallığı`,
                 alternate: HelperTranslateUrlTo('en'),
-                hrefLang: "en"
-            })
+                hrefLang: 'en'
+            });
         }
-    };
+    }
 
     swipeComplete = (index, el) => {
         let tab = el.getAttribute('data-tab');
 
-        if (tab === "team-of-week") {
-            this.setState({isTeamOfTheWeekClicked: true});
+        if (tab === 'team-of-week') {
+            this.setState({ isTeamOfTheWeekClicked: true });
         }
 
         this.swipeMarkerAndScrollHandler(index);
@@ -167,19 +189,22 @@ class Teamdetails extends PureComponent {
     }
 
     swipeByTabName(tab) {
-        let index = (this.tabs) ? this.tabs.indexOf(tab) : 0;
+        let index = this.tabs ? this.tabs.indexOf(tab) : 0;
         if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
     }
 
     swipeTabClick = (event, index) => {
         this.rippleEffectHandler(event);
-        this.setState({
-            index: index
-        }, () => {
-	        if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
-            this.swipeMarkerAndScrollHandler(index);
-            this.swipeAdjustHeight(index);
-        });
+        this.setState(
+            {
+                index: index
+            },
+            () => {
+                if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
+                this.swipeMarkerAndScrollHandler(index);
+                this.swipeAdjustHeight(index);
+            }
+        );
     };
 
     swipeAdjustHeight(index) {
@@ -200,14 +225,14 @@ class Teamdetails extends PureComponent {
         marker.style.left = active.offsetLeft + 'px';
 
         tabs.scrollTo({
-            left: active.offsetLeft - ((window.innerWidth - active.offsetWidth) / 2) + 7,
+            left: active.offsetLeft - (window.innerWidth - active.offsetWidth) / 2 + 7,
             behavior: 'smooth'
         });
-    };
+    }
 
     rippleEffectHandler(e) {
         let el = e.target,
-            rippleEl = document.createElement("span"),
+            rippleEl = document.createElement('span'),
             rect = el.getBoundingClientRect(),
             clientX = e.clientX ? e.clientX : e.touches[0].clientX,
             clientY = e.clientY ? e.clientY : e.touches[0].clientY,
@@ -215,38 +240,34 @@ class Teamdetails extends PureComponent {
             rippleY = Math.round(clientY - rect.top),
             rippleSize = Math.max(el.offsetWidth, el.offsetHeight);
 
-        rippleEl.className = "ripple";
+        rippleEl.className = 'ripple';
         el.appendChild(rippleEl);
 
-        rippleEl.style.width = rippleSize + "px";
-        rippleEl.style.height = rippleSize + "px";
+        rippleEl.style.width = rippleSize + 'px';
+        rippleEl.style.height = rippleSize + 'px';
         rippleEl.style.top = -(rippleSize / 2) + rippleY + 'px';
         rippleEl.style.left = -(rippleSize / 2) + rippleX + 'px';
-        rippleEl.className += " rippleEffect";
+        rippleEl.className += ' rippleEffect';
         setTimeout(() => {
             rippleEl.remove();
         }, 600);
-    };
+    }
 
     sortByClickHandler(by) {
         this.setState({
             sortBy: by
-        })
+        });
     }
 
     render() {
-        const {t} = this.props;
-        const {teamInfoData, teamTournamentsData, teamTournamentsDataByTournament, sortBy} = this.state;
-        if (!teamTournamentsData) return <Loading/>;
+        const { t } = this.props;
+        const { teamInfoData, teamTournamentsData, teamTournamentsDataByTournament, sortBy } = this.state;
+        if (!teamTournamentsData) return <Loading />;
         //if (teamInfoData.error) return <Errors type="error" message={teamInfoData.error}/>;
-        if (teamTournamentsData.error) return <Errors type="error" message={teamTournamentsData.error}/>;
+        if (teamTournamentsData.error) return <Errors type="error" message={teamTournamentsData.error} />;
 
-        this.tabs = [
-            t('Fixture'),
-            t('LANG_Players'),
-            t('Standing'),
-        ];
-        const {teamId} = this.props.match.params;
+        this.tabs = [t('Fixture'), t('LANG_Players'), t('Standing')];
+        const { teamId } = this.props.match.params;
         return (
             <div className="team-details">
                 <div className="row team-details-header align-items-center">
@@ -255,81 +276,109 @@ class Teamdetails extends PureComponent {
                             <div className="col col-img">
                                 <img
                                     src={window.ImageServer + '/images/team-logo/football_' + teamId + '.png'}
-                                    alt={t(teamInfoData.team.name)}/>
+                                    alt={t(teamInfoData.team.name)}
+                                />
                             </div>
                             <div className="col col-info">
                                 <div className="name">{t(teamInfoData.team.name)}</div>
-                                {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ""}
+                                {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ''}
                             </div>
                             {teamInfoData.venue ? (
                                 <div className="col col-stadium text-right">
                                     <div className="name">{teamInfoData.venue.name}</div>
-                                    <div className="capacity"><Trans>Capacity</Trans>: {teamInfoData.venue.capacity}
+                                    <div className="capacity">
+                                        <Trans>Capacity</Trans>: {teamInfoData.venue.capacity}
                                     </div>
                                 </div>
-                            ) : ""}
+                            ) : (
+                                ''
+                            )}
                         </React.Fragment>
-                    ) : ""}
+                    ) : (
+                        ''
+                    )}
                 </div>
                 <div className="middle-tabs">
                     <div className="container">
                         <ul className="swipe-tabs" ref={this.swipeTabsEl}>
                             {this.tabs.map((tab, index) => {
-                                return <li key={index} onClick={(event) => this.swipeTabClick(event, index)}
-                                           className={(this.state.index === index ? "active " : "") + "ripple-effect pink"}>
-                                    <span>{tab}</span></li>;
+                                return (
+                                    <li
+                                        key={index}
+                                        onClick={event => this.swipeTabClick(event, index)}
+                                        className={(this.state.index === index ? 'active ' : '') + 'ripple-effect pink'}
+                                    >
+                                        <span>{tab}</span>
+                                    </li>
+                                );
                             })}
-                            <li className="marker" ref={this.swipeMarkerEl}
-                                style={{width: '85px', left: '0px'}}/>
+                            <li className="marker" ref={this.swipeMarkerEl} style={{ width: '85px', left: '0px' }} />
                         </ul>
-                        <div className="swipe-shadows"/>
+                        <div className="swipe-shadows" />
                     </div>
                 </div>
-                <ReactSwipe className="swipe-contents"
-                            childCount={this.tabs.length}
-                            swipeOptions={{
-                                speed: 200,
-                                continuous: true,
-                                callback: this.swipeChanging,
-                                transitionEnd: this.swipeComplete,
-                                swiping: this.swipeSwiping,
-                                disableScroll: false,
-                            }} ref={this.swipeEl}>
-
+                <ReactSwipe
+                    className="swipe-contents"
+                    childCount={this.tabs.length}
+                    swipeOptions={{
+                        speed: 200,
+                        continuous: true,
+                        callback: this.swipeChanging,
+                        transitionEnd: this.swipeComplete,
+                        swiping: this.swipeSwiping,
+                        disableScroll: false
+                    }}
+                    ref={this.swipeEl}
+                >
                     <div className="swipe-content fixture" data-tab="standing">
                         <div className="sort-by-container">
-                            <span className={"sort-by-btn" + (sortBy === "date" ? " checked" : "")} onClick={() => {
-                                this.sortByClickHandler('date');
-                            }}>
-                                <span className="checkbox"/>Tarihe Göre
+                            <span
+                                className={'sort-by-btn' + (sortBy === 'date' ? ' checked' : '')}
+                                onClick={() => {
+                                    this.sortByClickHandler('date');
+                                }}
+                            >
+                                <span className="checkbox" />
+                                Tarihe Göre
                             </span>
-                            <span className={"sort-by-btn" + (sortBy === "league" ? " checked" : "")} onClick={() => {
-                                this.sortByClickHandler('league');
-                            }}>
-                                <span className="checkbox"/>Lig'e Göre
+                            <span
+                                className={'sort-by-btn' + (sortBy === 'league' ? ' checked' : '')}
+                                onClick={() => {
+                                    this.sortByClickHandler('league');
+                                }}
+                            >
+                                <span className="checkbox" />
+                                Lig'e Göre
                             </span>
                         </div>
                         <Tournament
-                            tournaments={sortBy === "league" ? teamTournamentsDataByTournament.tournaments : teamTournamentsData.tournaments}
-                            from={"h2h"}
+                            tournaments={
+                                sortBy === 'league'
+                                    ? teamTournamentsDataByTournament.tournaments
+                                    : teamTournamentsData.tournaments
+                            }
+                            from={'h2h'}
                             selectedId={teamId}
                             selected="home"
                         />
                     </div>
 
                     <div className="swipe-content standing" data-tab="fixture">
-                        <div className="coming-soon"><Trans>LANG_Players</Trans> - <Trans>Coming soon</Trans></div>
+                        <div className="coming-soon">
+                            <Trans>LANG_Players</Trans> - <Trans>Coming soon</Trans>
+                        </div>
                     </div>
 
                     <div className="swipe-content team-of-week" data-tab="team-of-week">
-                        <div className="coming-soon"><Trans>Standing</Trans> - <Trans>Coming soon</Trans></div>
+                        <div className="coming-soon">
+                            <Trans>Standing</Trans> - <Trans>Coming soon</Trans>
+                        </div>
                     </div>
-
                 </ReactSwipe>
-                <Footer/>
+                <Footer />
             </div>
-        )
+        );
     }
 }
 
-export default withTranslation('translations')(Teamdetails)
+export default withTranslation('translations')(Teamdetails);
