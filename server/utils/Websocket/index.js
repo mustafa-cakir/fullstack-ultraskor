@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const SocksProxyAgent = require('socks-proxy-agent');
-const {isTorDisabled, simplifyWebSocketData} = require("../../helper");
-const {pushServiceChangesForWebPush} = require("../../cronjob");
+const { isTorDisabled, simplifyWebSocketData } = require('../../helper');
+const { pushServiceChangesForWebPush } = require('../../cronjob');
 
 let wsMaxRetry = 25;
 const initWebSocket = io => {

@@ -92,13 +92,13 @@ exports.pushServiceChangesForWebPush = res => {
 };
 
 const cronHandler = () => {
-	fetchHomepage(moment().format('YYYY-MM-DD'))
-		.then(response => {
-			cacheService.instance().set('homepageListData', response, 60 * 30);
-		})
-		.catch(() => {
-			console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
-		});
+    fetchHomepage(moment().format('YYYY-MM-DD'))
+        .then(response => {
+            cacheService.instance().set('homepageListData', response, 60 * 30);
+        })
+        .catch(() => {
+            console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
+        });
 };
 
 cronHandler(); // run manually for the first time;
