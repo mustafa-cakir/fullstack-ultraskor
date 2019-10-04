@@ -1,17 +1,20 @@
-import * as firebase from 'firebase/app';
-import 'firebase/messaging'
+import firebase from 'firebase/app';
+import 'firebase/messaging';
+import 'firebase/analytics';
 
 export const initFirebaseWebPush = () => {
-	var config = {
-		apiKey: "AIzaSyB2l5VSMWR5zasnrWdPJFycWKYybsiDi9g",
-		authDomain: "livescores-54cdf.firebaseapp.com",
-		databaseURL: "https://livescores-54cdf.firebaseio.com",
-		projectId: "livescores",
-		storageBucket: "livescores.appspot.com",
-		messagingSenderId: "966467312594"
+	const firebaseConfig = {
+		apiKey: "AIzaSyA_I1ukPyAbn0CiPnWTx4QTGUy3r9zRwH0",
+		authDomain: "corded-reality-254218.firebaseapp.com",
+		databaseURL: "https://corded-reality-254218.firebaseio.com",
+		projectId: "corded-reality-254218",
+		storageBucket: "corded-reality-254218.appspot.com",
+		messagingSenderId: "755901264997",
+		appId: "1:755901264997:web:f3aef78d77be8fd77a028c",
+		measurementId: "G-H2HSZS1CGG"
 	};
-	firebase.initializeApp(config);
-
+	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
 	// use other service worker
 	// navigator.serviceWorker
 	//   .register('/my-sw.js')
