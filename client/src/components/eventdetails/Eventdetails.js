@@ -57,6 +57,7 @@ class Eventdetails extends PureComponent {
             iddaaMatchData: null,
             refreshButton: false,
             eventid: this.props.match.params.eventid,
+            date: this.props.match.params.date,
             matchTextInfo: null
         };
         this.tabs = [];
@@ -244,8 +245,8 @@ class Eventdetails extends PureComponent {
 
     initGetData(isUpdated = false) {
         if (!isUpdated) this.setState({ loading: true });
-        const api = '/event/' + this.state.eventid + '/json';
-        fetch(`/api/?query=${api}&page=eventdetails`)
+        const { eventid, date } = this.state;
+        fetch(`/api/eventdetails/${moment(date, 'YYYYMMDD').format('YYYY-MM-DD')}/${eventid}`)
             .then(res => {
                 if (res.status === 200) {
                     return res.json();

@@ -67,7 +67,7 @@ const initWebSocket = io => {
             // console.log(res);
             res = simplifyWebSocketData(res);
             pushServiceChangesForWebPush(res);
-            io.sockets.emit('push-service', res);
+            if (io) io.sockets.emit('push-service', res);
         }
         return false;
     });

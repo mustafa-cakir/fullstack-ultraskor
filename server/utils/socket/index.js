@@ -7,8 +7,6 @@ const { cacheDuration, isTorDisabled, userDisconnected } = require('../../helper
 const { db } = require('../firebase/db');
 
 const socketHandler = (socket, io) => {
-    socket.emit('heyooo', 'mesg heyoo');
-
     socket.on('get-updates-homepage', () => {
         const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
         const cachedData = cacheService.instance().get(cacheKey);

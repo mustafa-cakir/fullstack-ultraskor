@@ -97,13 +97,13 @@ class Event extends Component {
                 text = (
                     <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
                         <div className="day">
-                            {moment(event.startTimestamp * 1000).isSame(moment(), 'day') ? (
+                            {moment(event.startTimestamp).isSame(moment(), 'day') ? (
                                 <Trans>Today</Trans>
                             ) : (
-                                <span>{moment(event.startTimestamp * 1000).format('D MMM')}</span>
+                                <span>{moment(event.startTimestamp).format('D MMM')}</span>
                             )}
                         </div>
-                        {moment(event.startTimestamp * 1000).format('HH:mm')}
+                        {moment(event.startTimestamp).format('HH:mm')}
                     </div>
                 );
                 break;
@@ -132,7 +132,7 @@ class Event extends Component {
                 text =
                     from === 'h2h' || from === 'fixture' ? (
                         <div className="col event-time pr-0 pl-2 full-time in-the-past">
-                            {moment(event.startTimestamp * 1000).format('DD.MM.YY')}
+                            {moment(event.startTimestamp).format('DD.MM.YY')}
                         </div>
                     ) : (
                         <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
@@ -219,7 +219,7 @@ class Event extends Component {
                     to={{
                         pathname: `/${t('match')}/${generateSlug(
                             `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
-                        )}-${t('live-score')}-${event.id}`,
+                        )}-${t('live-score')}-${moment(event.startTimestamp).format('YYYYMMDD')}-${event.id}`,
                         state: { isPrev: true, scrollY: 123 }
                     }}
                     className={`event-link col p-0 row m-0 ${event.winnerCode ? `winner-${event.winnerCode}` : ''}`}

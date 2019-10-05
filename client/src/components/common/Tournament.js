@@ -60,8 +60,8 @@ class Tournament extends PureComponent {
                                     role="button"
                                     tabIndex={1}
                                     key="more"
-                                    onKeyPress={this.lazyLoadLoadMoreBtn}
-                                    onClick={this.lazyLoadLoadMoreBtn}
+                                    onKeyPress={this.lazyLoadLoadMoreBtn.bind(this)}
+                                    onClick={this.lazyLoadLoadMoreBtn.bind(this)}
                                     className="load-more-homepage"
                                 >
                                     <i className="fas" />
@@ -75,7 +75,7 @@ class Tournament extends PureComponent {
                     }
                     tournamentCount += 1;
                     return tournament.events.length > 0 ? (
-                        <React.Fragment key={`${tournament.tournament.uniqueId}_`}>
+                        <React.Fragment key={`${tournament.tournament.uniqueId}_${tournamentCount}`}>
                             <div className="tournament-title">
                                 {flagImg(tournament)}
                                 <Link
