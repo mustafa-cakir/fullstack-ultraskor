@@ -129,13 +129,11 @@ export function flagImg(tournament) {
     if (storedCustomLogos.indexOf(tournament.tournament.uniqueId) > -1) {
         return (
             <div className="col flag-img">
-                <img
-                    src={'/static/media/' + tournament.tournament.uniqueId + '.png'}
-                    alt={tournament.tournament.name}
-                />
+                <img src={`/static/media/${tournament.tournament.uniqueId}.png`} alt={tournament.tournament.name} />
             </div>
         );
-    } else if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+    }
+    if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
         return (
             <div className="col flag-img">
                 <img
@@ -144,9 +142,8 @@ export function flagImg(tournament) {
                 />
             </div>
         );
-    } else {
-        return <div className={'col flag flag-' + tournament.category.flag} />;
     }
+    return <div className={`col flag flag-${tournament.category.icon}`} />;
 }
 
 export function Throttle(func, wait, options) {

@@ -56,6 +56,12 @@ a:hover {
 	text-decoration: none;
 }
 
+[role='button'] {
+	&:focus {
+		outline: none;
+	}
+}
+
 .btn {
 	color: $color-link;
 }
