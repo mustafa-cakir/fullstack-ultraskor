@@ -219,7 +219,9 @@ class Event extends Component {
                     to={{
                         pathname: `/${t('match')}/${generateSlug(
                             `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
-                        )}-${t('live-score')}-${moment(event.startTimestamp).format('YYYYMMDD')}-${event.id}`,
+                        )}-${t('live-score')}-${event.id}-${event.id_sr ? event.id_sr : ''}-${
+                            event.id_o ? event.id_o : ''
+                        }-${event.id_code ? event.id_code : ''}-0`,
                         state: { isPrev: true, scrollY: 123 }
                     }}
                     className={`event-link col p-0 row m-0 ${event.winnerCode ? `winner-${event.winnerCode}` : ''}`}

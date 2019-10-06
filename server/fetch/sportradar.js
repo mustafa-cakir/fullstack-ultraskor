@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-module.exports = date =>
+const fetchSportRadar = query =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -9,9 +9,11 @@ module.exports = date =>
                 Origin: 'https://ls.betradar.com',
                 Referer: 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page'
             },
-            uri: `https://ls.fn.sportradar.com/tempobet/tr/Europe:Istanbul/gismo/sport_matches/1/${date}/1`,
+            uri: `https://ls.fn.sportradar.com/tempobet${query}`,
             json: true,
             timeout: 10000
         };
         fetch(options, resolve, reject);
     });
+
+exports.fetchSportRadar = fetchSportRadar;

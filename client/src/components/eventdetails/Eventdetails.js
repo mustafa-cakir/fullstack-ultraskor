@@ -18,7 +18,6 @@ import ReactGA from 'react-ga';
 import moment from 'moment';
 import Injuries from './Injuries';
 import smoothscroll from 'smoothscroll-polyfill';
-import i18n from 'i18next';
 import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../Helper';
 import LiveTracker from './LiveTracker';
 import H2h from './H2h';
@@ -56,8 +55,7 @@ class Eventdetails extends PureComponent {
             provider2MatchData: null,
             iddaaMatchData: null,
             refreshButton: false,
-            eventid: this.props.match.params.eventid,
-            date: this.props.match.params.date,
+            eventids: this.props.match.params.eventids,
             matchTextInfo: null
         };
         this.tabs = [];
@@ -82,17 +80,17 @@ class Eventdetails extends PureComponent {
     }
 
     componentDidUpdate() {
-        if (this.props.match.params.eventid !== this.state.eventid) {
+        if (this.props.match.params.eventids !== this.state.eventids) {
             window.location.reload(); // in case the same component re-called with different matchid, refresh the page to load the fresh data
         }
     }
 
-    swipeChanging = index => {
+    swipeChanging(index) {
         this.setState({
             index: index
         });
-    };
-    swipeComplete = (index, el) => {
+    }
+    swipeComplete(index, el) {
         let tab = el.getAttribute('data-tab');
 
         if (tab === 'standing') {
@@ -112,7 +110,7 @@ class Eventdetails extends PureComponent {
         }
         this.swipeMarkerAndScrollHandler(index);
         this.swipeAdjustHeight(index);
-    };
+    }
     swipeSwiping = percentage => {
         //console.log(percentage);
     };
@@ -245,8 +243,8 @@ class Eventdetails extends PureComponent {
 
     initGetData(isUpdated = false) {
         if (!isUpdated) this.setState({ loading: true });
-        const { eventid, date } = this.state;
-        fetch(`/api/eventdetails/${moment(date, 'YYYYMMDD').format('YYYY-MM-DD')}/${eventid}`)
+        const { eventids } = this.state;
+        fetch(`/api/eventdetails/${eventids}/${this.props.i18n.language}`)
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -268,7 +266,7 @@ class Eventdetails extends PureComponent {
 
     emitSocketMessage() {
         const { socket } = this.props;
-        const api = '/event/' + this.state.eventid + '/json';
+        const api = '/event/' + this.state.eventids + '/json';
 
         this.initSocketInterval = setTimeout(() => {
             // init socket after 10 seconds (10 seconds interval)
@@ -461,7 +459,7 @@ class Eventdetails extends PureComponent {
 
     updateMeta() {
         const eventData = this.state.eventData;
-        if (i18n.language === 'en') {
+        if (this.props.i18n.language === 'en') {
             if (window.location.pathname.split('/')[2] === 'mac')
                 window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
@@ -480,7 +478,7 @@ class Eventdetails extends PureComponent {
                 alternate: HelperTranslateUrlTo('tr'),
                 hrefLang: 'tr'
             });
-        } else if (i18n.language === 'tr') {
+        } else if (this.props.i18n.language === 'tr') {
             if (window.location.pathname.split('/')[1] === 'match')
                 window.location.href = HelperTranslateUrlTo('tr', true);
             HelperUpdateMeta({
@@ -556,7 +554,7 @@ class Eventdetails extends PureComponent {
                             <li
                                 className="marker"
                                 ref={this.swipeMarkerEl}
-                                style={{ width: i18n.language === 'en' ? '102px' : '71px', left: '0px' }}
+                                style={{ width: this.props.i18n.language === 'en' ? '102px' : '71px', left: '0px' }}
                             />
                         </ul>
                         <div className="swipe-shadows" />

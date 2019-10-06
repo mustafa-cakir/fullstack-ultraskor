@@ -118,7 +118,10 @@ exports.simplifyHomeData = res => {
 };
 
 exports.cacheDuration = {
-    eventIdTable: 60 * 60 * 24,
+    homepageListToday: 60 * 30, // 30 min
+    homepageList: 60 * 60 * 24, // 24 hours
+    eventDetails: 60 * 60 * 24, // 24 hours
+    eventIdTable: 60 * 60 * 24, // 24 hours
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
     provider3: 60 * 60 * 24, // 24 hours
@@ -270,10 +273,58 @@ exports.simplifyWebSocketData = res => {
     };
 };
 
+exports.mergeEventDetailsData = (sofa, radar, oley, iddaa) => {
+    // return [sofa, radar, oley, iddaa];
+    const result = {};
+    const { event } = sofa;
+    result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
+    result.textList = oley ? oley.textList : null;
+    result.incidents = sofa.incidents;
+    result.liveForm = sofa.liveForm;
+    result.event = {
+        bestAwayTeamPlayer: event.bestAwayTeamPlayer,
+        bestHomeTeamPlayer: event.bestHomeTeamPlayer,
+        category: event.category,
+        confirmedLineups: event.confirmedLineups,
+        id: event.id,
+        name: event.name,
+        referee: event.referee,
+        season: event.season,
+        startTimestamp: event.startTimestamp * 1000,
+        status: event.status,
+        statusBoxContent: event.statusDescription,
+        tournament: event.tournament,
+        venue: event.venue,
+        teams: {
+            home: {
+                id: event.homeTeam.id,
+                name: event.homeTeam.name
+            },
+            away: {
+                id: event.awayTeam.id,
+                name: event.awayTeam.name
+            }
+        },
+        scores: {
+            home: event.homeScore.current,
+            away: event.awayScore.current,
+            ht: {
+                home: event.homeScore.period1,
+                away: event.awayScore.period1
+            }
+        },
+        redCards: {
+            home: event.homeRedCards,
+            away: event.awayRedCards
+        }
+    };
+    return result;
+};
+
 const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
     const jsonDataTeamNames = [sofaEvent.homeTeam.name.toLowerCase(), sofaEvent.awayTeam.name.toLowerCase()];
 
-    if (eventRadar && eventRadar.teams) {
+    if (eventRadar) {
         jsonDataTeamNames.push(
             eventRadar.teams.home.mediumname.toLowerCase(),
             eventRadar.teams.away.mediumname.toLowerCase()
@@ -300,47 +351,38 @@ const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
 };
 
 exports.mergeHomepageData = (sofa, radar, oley) => {
-    if (!radar || !sofa || !oley) return null;
-    const shortIds = {};
+    // if (!radar || !sofa || !oley) return null;
     const result = {};
-    const radarTournaments = radar.doc[0].data.sport.realcategories.reduce((total, item) => {
-        return total.concat(item.tournaments);
-    }, []);
-    const oleyTournaments = oley.initialData || null;
-    result.oley = oleyTournaments;
-    // result.radar = radarTournaments;
+    const radarTournaments =
+        radar && radar.doc[0] && radar.doc[0].data && radar.doc[0].data.sport
+            ? radar.doc[0].data.sport.realcategories.reduce((total, item) => {
+                  return total.concat(item.tournaments);
+              }, [])
+            : null;
+    const oleyTournaments = oley && oley.initialData ? oley.initialData : null;
     result.date = sofa.params.date;
     result.tournaments = [];
     sofa.sportItem.tournaments.forEach(tournament => {
         const events = [];
-        const tournamentRadar = radarTournaments.filter(x => x._id === tournament.tournament.id)[0] || {};
+        const tournamentRadar = radarTournaments
+            ? radarTournaments.filter(x => x._id === tournament.tournament.id)[0]
+            : null;
         tournament.events.forEach(event => {
             if (moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === sofa.params.date) {
-                let eventRadar = {};
-                if (tournamentRadar.matches && tournamentRadar.matches.length > 0) {
-                    eventRadar =
-                        tournamentRadar.matches.filter(x => {
-                            return x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id;
-                        })[0] || {};
-                }
-                const eventOley = getOleyEvent(event, eventRadar, oleyTournaments);
-                const uniqueId = shortid.generate();
-                shortIds[uniqueId] = {
-                    id_sofascore: event.id,
-                    id_iddaacode: eventOley && eventOley.code ? eventOley.code : null,
-                    id_oley: eventOley && eventOley.id ? eventOley.id : null,
-                    id_sportradar: eventRadar._id || null,
-                    id_sportradar_t: eventRadar._tid || null,
-                    id_sportradar_ut: eventRadar._utid || null,
-                    id_sportradar_rc: eventRadar._rcid || null
-                };
+                const eventRadar =
+                    tournamentRadar && tournamentRadar.matches && tournamentRadar.matches.length > 0
+                        ? tournamentRadar.matches.filter(x => {
+                              return x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id;
+                          })[0]
+                        : null;
+
+                const eventOley = oleyTournaments ? getOleyEvent(event, eventRadar, oleyTournaments) : null;
                 events.push({
-                    oley: eventOley || null,
                     teams: {
                         home: {
                             id: event.homeTeam.id,
                             name: event.homeTeam.name,
-                            fullname: eventRadar.teams ? eventRadar.teams.home.mediumname : event.homeTeam.name,
+                            fullname: eventRadar ? eventRadar.teams.home.mediumname : event.homeTeam.name,
                             ...(eventOley && { id_o: eventOley.homeTeam.id }),
                             ...(eventOley && { shortName: eventOley.homeTeam.shortName }),
                             ...(eventOley && { middlename: eventOley.homeTeam.name })
@@ -348,7 +390,7 @@ exports.mergeHomepageData = (sofa, radar, oley) => {
                         away: {
                             id: event.awayTeam.id,
                             name: event.awayTeam.name,
-                            fullname: eventRadar.teams ? eventRadar.teams.away.mediumname : event.awayTeam.name,
+                            fullname: eventRadar ? eventRadar.teams.away.mediumname : event.awayTeam.name,
                             ...(eventOley && { id_o: eventOley.awayTeam.id }),
                             ...(eventOley && { shortName: eventOley.awayTeam.shortName }),
                             ...(eventOley && { middlename: eventOley.awayTeam.name })
@@ -370,7 +412,13 @@ exports.mergeHomepageData = (sofa, radar, oley) => {
                         tr: '/mac/kasimpasa-konyaspor-canli-skor-',
                         en: '/match/kasimpasa-konyaspor-live-score-'
                     },
-                    id: uniqueId,
+                    id: event.id,
+                    ...(eventOley && eventOley.code && { id_code: eventOley.code }),
+                    ...(eventOley && { id_o: eventOley.id }),
+                    ...(eventRadar && { id_sr: eventRadar._id }),
+                    ...(eventRadar && { id_sr_t: eventRadar._tid }),
+                    ...(eventRadar && { id_sr_ut: eventRadar._utid }),
+                    ...(eventRadar && { id_sr_rc: eventRadar._rcid }),
                     startTimestamp: event.startTimestamp * 1000,
                     status: event.status,
                     statusBoxContent: event.statusDescription,
@@ -391,31 +439,25 @@ exports.mergeHomepageData = (sofa, radar, oley) => {
                     name: {
                         ...(tournament.season && { en: tournament.season.name }),
                         ...(tournament.season && { tr: tournament.season.name }),
-                        ...(tournamentRadar.name && { tr: `${tournamentRadar.name} ${tournamentRadar.year}` })
+                        ...(tournamentRadar && { tr: `${tournamentRadar.name} ${tournamentRadar.year}` })
                     },
-                    id_: tournamentRadar.seasonid
+                    ...(tournamentRadar && { id_: tournamentRadar.seasonid })
                 },
                 tournament: {
                     ...(tournament.tournament && { id: tournament.tournament.id }),
                     ...(tournament.tournament && { uniqueId: tournament.tournament.uniqueId }),
-                    id_: tournamentRadar._id,
-                    id_t: tournamentRadar._tid,
-                    id_ut: tournamentRadar._utid,
-                    id_rc: tournamentRadar._rcid,
+                    ...(tournamentRadar && { id_: tournamentRadar._id }),
+                    ...(tournamentRadar && { id_t: tournamentRadar._tid }),
+                    ...(tournamentRadar && { id_ut: tournamentRadar._utid }),
+                    ...(tournamentRadar && { id_rc: tournamentRadar._rcid }),
                     name: {
                         ...(tournament.tournament && { en: tournament.tournament.name }),
                         ...(tournament.tournament && { tr: tournament.tournament.name }),
-                        ...(tournamentRadar.name && { tr: tournamentRadar.name })
+                        ...(tournamentRadar && { tr: tournamentRadar.name })
                     }
                 }
             });
         }
     });
-    db.collection('ultraskor_eventIds_by_date')
-        .doc(sofa.params.date)
-        .set(shortIds)
-        .then(() => {
-            // do nothing
-        });
     return result;
 };

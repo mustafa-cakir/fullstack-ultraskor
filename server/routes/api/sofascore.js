@@ -5,7 +5,7 @@ const cacheService = require('../../cache.service');
 const { simplifyHomeData, cacheDuration } = require('../../helper');
 const auth = require('../auth');
 
-const fetchSofaScore = require('../../fetch/sofascore');
+const { fetchSofaScore } = require('../../fetch/sofascore');
 
 tor.TorControlPort.password = 'muztafultra';
 

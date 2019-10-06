@@ -1,8 +1,8 @@
 const { CronJob } = require('cron');
 const moment = require('moment');
-const fetchHomepage = require('./fetch/homepage');
+const { fetchHomepage } = require('./fetch/homepage');
 const cacheService = require('./cache.service');
-const { isDev } = require('./helper');
+const { isDev, cacheDuration } = require('./helper');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
 exports.pushServiceChangesForWebPush = res => {
@@ -76,7 +76,7 @@ exports.pushServiceChangesForWebPush = res => {
     event.startTimestamp = res.event.startTimestamp;
     event.winner = res.event.winner;
 
-    cacheService.instance().set(cacheKey, homepageListData, 60 * 30); // cache the new homepageListData for 30 min.
+    cacheService.instance().set(cacheKey, homepageListData, cacheDuration.homepageListToday); // cache the new homepageListData for 30 min.
 
     if (redScoreBarType) {
         redScoreBarIncident = {
@@ -93,7 +93,7 @@ const cronHandler = () => {
     fetchHomepage(moment().format('YYYY-MM-DD'))
         .then(response => {
             const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
-            cacheService.instance().set(cacheKey, response, 60 * 30);
+            cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
         })
         .catch(() => {
             console.log(`Error returning differences within cronJob. Time: ${new Date()}`);

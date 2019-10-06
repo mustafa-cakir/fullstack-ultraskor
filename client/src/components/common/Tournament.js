@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
-import i18next from 'i18next';
 import { Link } from 'react-router-dom';
 import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../Helper';
 import Event from './Event';
@@ -36,9 +35,8 @@ class Tournament extends PureComponent {
             from,
             updateParentState
         } = this.props;
-        const { language } = i18next;
         let tournamentCount = 0;
-        const { tournaments } = this.props;
+        const { tournaments, i18n } = this.props;
         return (
             <>
                 {tournaments.map((tournament, index) => {
@@ -83,20 +81,22 @@ class Tournament extends PureComponent {
                                     to={{
                                         pathname: `/${t('league')}/${generateSlug(
                                             t(tournament.category.name)
-                                        )}-${generateSlug(tournament.tournament.name[language])}${t('-standing-')}${
-                                            tournament.tournament.uniqueId
-                                        }${t('-season-')}${tournament.season ? tournament.season.id : '0'}`,
+                                        )}-${generateSlug(tournament.tournament.name[i18n.language])}${t(
+                                            '-standing-'
+                                        )}${tournament.tournament.uniqueId}${t('-season-')}${
+                                            tournament.season ? tournament.season.id : '0'
+                                        }`,
                                         state: { isPrev: true }
                                     }}
                                     className="col tournament-name"
                                     title={`${t(tournament.category.name)} - ${
-                                        tournament.tournament.name[language]
+                                        tournament.tournament.name[i18n.language]
                                     }  ${t('click for standings, highlights and league fixtures')}`}
                                 >
                                     <strong>
                                         <Trans>{tournament.category.name}</Trans>
                                     </strong>{' '}
-                                    - {tournament.tournament.name[language]}
+                                    - {tournament.tournament.name[i18n.language]}
                                 </Link>
                             </div>
 

@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-module.exports = query =>
+const fetchSofaScore = query =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -16,3 +16,5 @@ module.exports = query =>
         };
         fetch(options, resolve, reject);
     });
+
+exports.fetchSofaScore = fetchSofaScore;

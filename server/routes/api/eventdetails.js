@@ -1,14 +1,29 @@
-const moment = require('moment');
 const router = require('express').Router();
+const cacheService = require('../../cache.service');
 const auth = require('../auth');
-const { getEventIds } = require('../../fetch/getEventIds');
+const { fetchEventDetails } = require('../../fetch/eventdetails');
 
-router.get('/:date/:eventid', auth.optional, (req, res) => {
-    const { date, eventid } = req.params; // YYYY-MM-DD
+router.get('/:ids/:language', auth.optional, (req, res) => {
+    const { ids, language } = req.params; // YYYY-MM-DD
 
-    getEventIds(date).then(eventIds => {
-        res.send(eventIds);
-    });
+    const remoteRequest = () => {
+        fetchEventDetails(ids, language)
+            .then(data => {
+                res.send(data);
+            })
+            .catch(err => {
+                res.sendStatus(err);
+            });
+    };
+
+    const cacheKey = `eventdetails-${ids}`;
+    const cachedData = cacheService.instance().get(cacheKey);
+    if (typeof cachedData !== 'undefined') {
+        console.log('eventdetails is served from cached!');
+        res.send(cachedData);
+    } else {
+        remoteRequest();
+    }
 });
 
 module.exports = router;
