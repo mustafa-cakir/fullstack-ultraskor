@@ -22,6 +22,7 @@ const fetchHomepage = date =>
         Promise.all(pAll)
             .then(values => {
                 const merged = mergeHomepageData(values[0], values[1], values[2]);
+                // if (!merged) throw Error('error');
                 resolve(merged);
             })
             .catch(err => {
