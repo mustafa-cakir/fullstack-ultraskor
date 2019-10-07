@@ -4,6 +4,22 @@ const cors = require('cors');
 const languageJson = require('./../client/src/languages/tr.json');
 const { db } = require('./utils/firebase/db');
 
+const generateSlug = text => {
+    const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
+    const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
+    const p = new RegExp(a.split('').join('|'), 'g');
+
+    return text
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
+        .replace(/&/g, '-and-') // Replace & with 'and'
+        .replace(/[^\w-]+/g, '') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
+};
 const preProcessSportRadarData = data => {
     let result = null;
     if (data.doc && data.doc.length > 0 && data.doc[0].data && data.doc[0].data) {
@@ -336,6 +352,7 @@ const mergeEventDetailsData = (sofa, radar, oley, ids) => {
         confirmedLineups: event.confirmedLineups,
         id: convertToUltraSkorId(event.id),
         name: event.name,
+        slug: generateSlug(event.name),
         referee: event.referee,
         season: event.season,
         startTimestamp: event.startTimestamp * 1000,
@@ -347,13 +364,16 @@ const mergeEventDetailsData = (sofa, radar, oley, ids) => {
         teams: {
             home: {
                 id: event.homeTeam.id,
-                name: event.homeTeam.name
+                name: event.homeTeam.name,
+                slug: generateSlug(event.homeTeam.name)
             },
             away: {
                 id: event.awayTeam.id,
-                name: event.awayTeam.name
+                name: event.awayTeam.name,
+                slug: generateSlug(event.awayTeam.name)
             }
         },
+        hasHalfTimeScore: event.hasHalfTimeScore,
         scores: {
             home: event.homeScore.current,
             away: event.awayScore.current,
@@ -515,6 +535,7 @@ const mergeHomepageData = (sofa, radar, broad) => {
     });
 };
 
+exports.generateSlug = generateSlug;
 exports.cacheDuration = cacheDuration;
 exports.userConnected = userConnected;
 exports.isDev = isDev;

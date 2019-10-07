@@ -1,8 +1,8 @@
 import React from 'react';
+import { Trans, withTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { Trans, withTranslation } from 'react-i18next';
-import { generateSlug } from '../../Helper';
+import { generateSlug } from '../../../Helper';
 
 const Scoreboard = ({ event, t }) => {
     return (
@@ -11,36 +11,38 @@ const Scoreboard = ({ event, t }) => {
                 <div className="row text-center flex-nowrap">
                     <Link
                         to={{
-                            pathname: `/${t('team')}/${generateSlug(t(event.homeTeam.name))}-${event.homeTeam.id}`,
+                            pathname: `/${t('team')}/${generateSlug(t(event.teams.home.name))}-${event.teams.home.id}`,
                             state: { isPrev: true }
                         }}
                         className="col-4 team-link"
-                        title={`${t(event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}
+                        title={`${t(event.teams.home.name)} - ${t(
+                            'Fixtures, highlights and standings, click for more'
+                        )}`}
                     >
                         <div className="team-logo mb-2">
                             <img
-                                alt={t(event.homeTeam.name)}
-                                src={`${window.ImageServer}/images/team-logo/football_${event.homeTeam.id}.png`}
+                                alt={t(event.teams.home.name)}
+                                src={`${window.ImageServer}/images/team-logo/football_${event.teams.home.id}.png`}
                             />
                         </div>
-                        <div className="team-name">{t(event.homeTeam.name)}</div>
+                        <div className="team-name">{t(event.teams.home.name)}</div>
                         {event.managerDuel ? (
                             <div className="team-coach mb-2">{event.managerDuel.homeManager.name}</div>
                         ) : (
                             ''
                         )}
-                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.homeTeam.form} /> : ''}</div>
+                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.teams.home.form} /> : ''}</div>
                     </Link>
                     <div className="col-4 align-self-center middle">
                         <div className="time">
-                            <IsInProgress eventData={event} />
+                            <IsInProgress event={event} />
                         </div>
                         <div className={`score${event.status.type === 'inprogress' ? ' live' : ''}`}>
-                            {event.homeScore.current} - {event.awayScore.current}
+                            {event.scores.home} - {event.scores.away}
                         </div>
                         {event.hasHalfTimeScore ? (
                             <div className="score-halftime">
-                                (<Trans>HT</Trans>: {event.homeScore.period1} - {event.awayScore.period1})
+                                (<Trans>HT</Trans>: {event.scores.ht.home} - {event.scores.ht.away})
                             </div>
                         ) : (
                             ''
@@ -48,23 +50,25 @@ const Scoreboard = ({ event, t }) => {
                     </div>
                     <Link
                         to={{
-                            pathname: `/${t('team')}/${generateSlug(t(event.awayTeam.name))}-${event.awayTeam.id}`,
+                            pathname: `/${t('team')}/${generateSlug(t(event.teams.away.name))}-${event.teams.away.id}`,
                             state: { isPrev: true }
                         }}
                         className="col-4 team-link"
-                        title={`${t(event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}
+                        title={`${t(event.teams.home.name)} - ${t(
+                            'Fixtures, highlights and standings, click for more'
+                        )}`}
                     >
                         <div className="team-logo mb-2">
                             <img
-                                alt={t(event.awayTeam.name)}
-                                src={`${window.ImageServer}/images/team-logo/football_${event.awayTeam.id}.png`}
+                                alt={t(event.teams.away.name)}
+                                src={`${window.ImageServer}/images/team-logo/football_${event.teams.away.id}.png`}
                             />
                         </div>
-                        <div className="team-name">{t(event.awayTeam.name)}</div>
+                        <div className="team-name">{t(event.teams.away.name)}</div>
                         <div className="team-coach mb-2">
                             {event.managerDuel ? event.managerDuel.awayManager.name : ''}
                         </div>
-                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.awayTeam.form} /> : ''}</div>
+                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.teams.away.form} /> : ''}</div>
                     </Link>
                 </div>
             </div>

@@ -8,15 +8,7 @@ const { getEventIds } = require('./getEventIds');
 const { cacheDuration } = require('../helper');
 
 const fetchEventDetails = (eventId, language) => {
-    // const idArr = ids.split('-');
-    // idArr[0] // sofascore
-    // idArr[1] // sportradar
-    // idArr[2] // oley
-    // idArr[3] // iddaaCode
-    // idArr[4] // iddaa isLive 1 or 0
-
     return getEventIds(eventId).then(ids => {
-        console.log(ids);
         return new Promise((resolve, reject) => {
             const pAll = [];
 
@@ -38,6 +30,7 @@ const fetchEventDetails = (eventId, language) => {
                         return null;
                     })
                 );
+
             Promise.all(pAll)
                 .then(values => {
                     const merged = mergeEventDetailsData(values[0], values[1], values[2], ids);
@@ -47,11 +40,9 @@ const fetchEventDetails = (eventId, language) => {
                         cacheService.instance().set(cacheKey, merged, cacheDuration.eventDetails);
                     }
                     resolve(merged);
-
-                    resolve(values);
                 })
                 .catch(err => {
-                    console.log(err);
+                    reject(err);
                 });
         });
     });

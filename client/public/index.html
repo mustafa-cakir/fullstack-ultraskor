@@ -1,80 +1,209 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-    <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.min.js" integrity="sha256-WRc/eG3R84AverJv0zmqxAmdwQxstUpqkiE+avJ3WSo=" crossorigin="anonymous"></script>
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png?v=2">
-    <link rel="manifest" href="%PUBLIC_URL%/site.webmanifest?v=2">
-    <link rel="mask-icon" href="%PUBLIC_URL%/safari-pinned-tab.svg?v=2" color="#0656bf">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico?v=2">
-    <meta name="apple-mobile-web-app-title" content="UltraSkor">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="application-name" content="UltraSkor">
-    <meta name="msapplication-TileColor" content="#0656bf">
-    <meta name="theme-color" content="#0656bf">
-    <meta name="google-site-verification" content="audG9DVjIdSfQ-aG-OS3KalUdTZx39-gXmrKeFUlLZw" />
+    <head>
+        <meta charset="utf-8" />
+        <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control" />
+        <meta content="no-cache" http-equiv="Pragma" />
+        <meta content="0" http-equiv="Expires" />
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" name="viewport" />
+        <script
+            crossorigin="anonymous"
+            integrity="sha256-WRc/eG3R84AverJv0zmqxAmdwQxstUpqkiE+avJ3WSo="
+            nomodule
+            src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.min.js"
+        ></script>
+        <link href="%PUBLIC_URL%/apple-touch-icon.png?v=2" rel="apple-touch-icon" sizes="180x180" />
+        <link href="%PUBLIC_URL%/favicon-32x32.png?v=2" rel="icon" sizes="32x32" type="image/png" />
+        <link href="%PUBLIC_URL%/favicon-16x16.png?v=2" rel="icon" sizes="16x16" type="image/png" />
+        <link href="%PUBLIC_URL%/site.webmanifest?v=2" rel="manifest" />
+        <link color="#0656bf" href="%PUBLIC_URL%/safari-pinned-tab.svg?v=2" rel="mask-icon" />
+        <link href="%PUBLIC_URL%/favicon.ico?v=2" rel="shortcut icon" />
+        <meta content="UltraSkor" name="apple-mobile-web-app-title" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+        <meta content="UltraSkor" name="application-name" />
+        <meta content="#0656bf" name="msapplication-TileColor" />
+        <meta content="#0656bf" name="theme-color" />
+        <meta content="audG9DVjIdSfQ-aG-OS3KalUdTZx39-gXmrKeFUlLZw" name="google-site-verification" />
 
-    <link href="%PUBLIC_URL%/splashscreens/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/iphoneplus_splash.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/iphonexr_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/iphonexsmax_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <link href="%PUBLIC_URL%/splashscreens/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-    <title>Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları - UltraSkor | (Reklamsız)</title>
-    <meta name="description" data-meta="description" content="Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz." />
-    <meta name="keywords" data-meta="keywords" content="canli skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari"/>
-    <meta name="og:image" content="https://www.ultraskor.com/apple-touch-icon.png"/>
-    <meta name="og:site_name" content="UltraSkor.com"/>
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphone5_splash.png"
+            media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphone6_splash.png"
+            media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphoneplus_splash.png"
+            media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphonex_splash.png"
+            media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphonexr_splash.png"
+            media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/iphonexsmax_splash.png"
+            media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/ipad_splash.png"
+            media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/ipadpro1_splash.png"
+            media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/ipadpro3_splash.png"
+            media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <link
+            href="%PUBLIC_URL%/splashscreens/ipadpro2_splash.png"
+            media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+            rel="apple-touch-startup-image"
+        />
+        <title>Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları - UltraSkor | (Reklamsız)</title>
+        <meta
+            content="Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz."
+            data-meta="description"
+            name="description"
+        />
+        <meta
+            content="canli skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari"
+            data-meta="keywords"
+            name="keywords"
+        />
+        <meta content="https://www.ultraskor.com/apple-touch-icon.png" name="og:image" />
+        <meta content="UltraSkor.com" name="og:site_name" />
 
-    <script>
-        !function(n){"use strict";n.loadCSS||(n.loadCSS=function(){});var o=loadCSS.relpreload={};if(o.support=function(){var e;try{e=n.document.createElement("link").relList.supports("preload")}catch(t){e=!1}return function(){return e}}(),o.bindMediaToggle=function(t){var e=t.media||"all";function a(){t.addEventListener?t.removeEventListener("load",a):t.attachEvent&&t.detachEvent("onload",a),t.setAttribute("onload",null),t.media=e}t.addEventListener?t.addEventListener("load",a):t.attachEvent&&t.attachEvent("onload",a),setTimeout(function(){t.rel="stylesheet",t.media="only x"}),setTimeout(a,3e3)},o.poly=function(){if(!o.support())for(var t=n.document.getElementsByTagName("link"),e=0;e<t.length;e++){var a=t[e];"preload"!==a.rel||"style"!==a.getAttribute("as")||a.getAttribute("data-loadcss")||(a.setAttribute("data-loadcss",!0),o.bindMediaToggle(a))}},!o.support()){o.poly();var t=n.setInterval(o.poly,500);n.addEventListener?n.addEventListener("load",function(){o.poly(),n.clearInterval(t)}):n.attachEvent&&n.attachEvent("onload",function(){o.poly(),n.clearInterval(t)})}"undefined"!=typeof exports?exports.loadCSS=loadCSS:n.loadCSS=loadCSS}("undefined"!=typeof global?global:this);
-    </script>
-    <!--<link rel="preload" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">-->
-    <link rel="preload" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-</head>
-<body>
-<noscript>
-    You need to enable JavaScript to run this app.
-</noscript>
-<div id="root"></div>
-<script>
-	document.addEventListener("DOMContentLoaded", function() {
-		var webP = new Image();
-		webP.onload = webP.onerror = function () {
-			if (webP.height !== 2) document.body.classList.add("no-webP");
-		};
-		webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
-	});
-    (function logErrors() {
-	    window.addEventListener('error', function(e) {
-		    var client = new XMLHttpRequest();
-		    client.open('POST', '/api/logerrors');
-		    client.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-		    client.send(
-			    JSON.stringify({
-				    date: (new Date()).toLocaleString(),
-				    error: e.message || "no message",
-				    filename: e.filename || "unknown",
-				    linenumber: e.lineno || "unknown",
-				    url: window.location.href,
-				    userAgent: (window.navigator) ? window.navigator.userAgent ? window.navigator.userAgent : "unknown" : "unknown",
-				    platform: (window.navigator) ? window.navigator.platform ? window.navigator.platform : "unknown" : "unknown",
-				    vendor: (window.navigator) ? window.navigator.vendor ? window.navigator.vendor : "unknown" : "unknown"
-			    })
-		    );
-	    });
-	})();
-</script>
-</body>
+        <script>
+            !(function(n) {
+                'use strict';
+                n.loadCSS || (n.loadCSS = function() {});
+                var o = (loadCSS.relpreload = {});
+                if (
+                    ((o.support = (function() {
+                        var e;
+                        try {
+                            e = n.document.createElement('link').relList.supports('preload');
+                        } catch (t) {
+                            e = !1;
+                        }
+                        return function() {
+                            return e;
+                        };
+                    })()),
+                    (o.bindMediaToggle = function(t) {
+                        var e = t.media || 'all';
+                        function a() {
+                            t.addEventListener
+                                ? t.removeEventListener('load', a)
+                                : t.attachEvent && t.detachEvent('onload', a),
+                                t.setAttribute('onload', null),
+                                (t.media = e);
+                        }
+                        t.addEventListener
+                            ? t.addEventListener('load', a)
+                            : t.attachEvent && t.attachEvent('onload', a),
+                            setTimeout(function() {
+                                (t.rel = 'stylesheet'), (t.media = 'only x');
+                            }),
+                            setTimeout(a, 3e3);
+                    }),
+                    (o.poly = function() {
+                        if (!o.support())
+                            for (var t = n.document.getElementsByTagName('link'), e = 0; e < t.length; e++) {
+                                var a = t[e];
+                                'preload' !== a.rel ||
+                                    'style' !== a.getAttribute('as') ||
+                                    a.getAttribute('data-loadcss') ||
+                                    (a.setAttribute('data-loadcss', !0), o.bindMediaToggle(a));
+                            }
+                    }),
+                    !o.support())
+                ) {
+                    o.poly();
+                    var t = n.setInterval(o.poly, 500);
+                    n.addEventListener
+                        ? n.addEventListener('load', function() {
+                              o.poly(), n.clearInterval(t);
+                          })
+                        : n.attachEvent &&
+                          n.attachEvent('onload', function() {
+                              o.poly(), n.clearInterval(t);
+                          });
+                }
+                'undefined' != typeof exports ? (exports.loadCSS = loadCSS) : (n.loadCSS = loadCSS);
+            })('undefined' != typeof global ? global : this);
+        </script>
+        <!--<link rel="preload" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">-->
+        <link
+            as="style"
+            href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+            onload="this.onload=null;this.rel='stylesheet'"
+            rel="preload"
+        />
+    </head>
+    <body>
+        <noscript>
+            You need to enable JavaScript to run this app.
+        </noscript>
+        <div id="root"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var webP = new Image();
+                webP.onload = webP.onerror = function() {
+                    if (webP.height !== 2) document.body.classList.add('no-webP');
+                };
+                webP.src =
+                    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+            });
+            (function logErrors() {
+                return false;
+                window.addEventListener('error', function(e) {
+                    var client = new XMLHttpRequest();
+                    client.open('POST', '/api/logerrors');
+                    client.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                    client.send(
+                        JSON.stringify({
+                            date: new Date().toLocaleString(),
+                            error: e.message || 'no message',
+                            filename: e.filename || 'unknown',
+                            linenumber: e.lineno || 'unknown',
+                            url: window.location.href,
+                            userAgent: window.navigator
+                                ? window.navigator.userAgent
+                                    ? window.navigator.userAgent
+                                    : 'unknown'
+                                : 'unknown',
+                            platform: window.navigator
+                                ? window.navigator.platform
+                                    ? window.navigator.platform
+                                    : 'unknown'
+                                : 'unknown',
+                            vendor: window.navigator
+                                ? window.navigator.vendor
+                                    ? window.navigator.vendor
+                                    : 'unknown'
+                                : 'unknown'
+                        })
+                    );
+                });
+            })();
+        </script>
+    </body>
 </html>

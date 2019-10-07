@@ -9,8 +9,8 @@ import Loading from '../common/Loading';
 import Scoreboard from './Scoreboard';
 import Incidents from './Incidents';
 import PressureGraph from './PressureGraph';
-import MatchInfo from './MatchInfo';
 import Bestplayer from './Bestplayer';
+import MatchInfo from './MatchInfo/index';
 import Standings from './Standings';
 import Stats from './Stats';
 import Lineup from './Lineup';
@@ -68,7 +68,7 @@ class Eventdetails extends PureComponent {
         const { location } = this.props;
         this.isPushServiceEnabled = true;
         this.initGetData(false);
-        this.initSocket();
+        // this.initSocket();
         this.tabs = [];
         const page = location.pathname;
         this.trackPage(page);
@@ -333,8 +333,8 @@ class Eventdetails extends PureComponent {
             if (window.location.pathname.split('/')[2] === 'mac')
                 window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
-                title: `Live: ${typeof event.homeScore.current !== 'undefined' ? event.homeScore.current : ' '} - ${
-                    typeof event.awayScore.current !== 'undefined' ? event.awayScore.current : ' '
+                title: `Live: ${typeof event.scores.home !== 'undefined' ? event.scores.home : ' '} - ${
+                    typeof event.scores.away !== 'undefined' ? event.scores.away : ' '
                 } | ${event.name} Live Scores Coverage - See highlights and match statistics`,
                 canonical: window.location.href,
                 description: `${event.tournament.name} Match Report and Live Scores for ${event.name} on ${moment(
@@ -342,8 +342,8 @@ class Eventdetails extends PureComponent {
                 ).format('ll')} at ${moment(event.startTimestamp).format(
                     'HH:mm'
                 )}, including lineups, all goals and incidents`,
-                keywords: `${event.homeTeam.slug} match results, 
-                ${event.awayTeam.slug} match results, ${event.tournament.slug} results, 
+                keywords: `${event.teams.home.slug} match results, 
+                ${event.teams.away.slug} match results, ${event.tournament.slug} results, 
                 ${event.slug} lineup, ${event.slug} results, fixtures`,
                 alternate: HelperTranslateUrlTo('tr'),
                 hrefLang: 'tr'
@@ -352,8 +352,8 @@ class Eventdetails extends PureComponent {
             if (window.location.pathname.split('/')[1] === 'match')
                 window.location.href = HelperTranslateUrlTo('tr', true);
             HelperUpdateMeta({
-                title: `Canlı: ${typeof event.homeScore.current !== 'undefined' ? event.homeScore.current : ' '} - ${
-                    typeof event.awayScore.current !== 'undefined' ? event.awayScore.current : ' '
+                title: `Canlı: ${typeof event.scores.home !== 'undefined' ? event.scores.home : ' '} - ${
+                    typeof event.scores.away !== 'undefined' ? event.scores.away : ' '
                 } | ${event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`,
                 canonical: window.location.href,
                 description: `${event.tournament.name}, ${event.name} (${moment(event.startTimestamp).format(
@@ -363,7 +363,7 @@ class Eventdetails extends PureComponent {
                 )}) maçının canlı skorlarını takip edebilirsiniz. İşte ${
                     event.name
                 } maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`,
-                keywords: `${event.homeTeam.slug} mac sonuclari, ${event.awayTeam.slug} mac sonuclari, 
+                keywords: `${event.teams.home.slug} mac sonuclari, ${event.teams.away.slug} mac sonuclari, 
                 ${event.tournament.slug} sonuclari, ${event.slug} macinin sonucu, ultraskor, 
                 canli maclar, iddaa sonuclari`,
                 alternate: HelperTranslateUrlTo('en'),
@@ -377,7 +377,7 @@ class Eventdetails extends PureComponent {
         if (!eventData) return <Loading />;
         if (eventData.error) return <Errors type="error" message={eventData.error} />;
 
-        const { event } = eventData;
+        const { event, textList } = eventData;
         const { socket, t } = this.props;
         this.tabs = [
             t('Summary'),
@@ -387,7 +387,7 @@ class Eventdetails extends PureComponent {
             ...(provider2MatchData ? [t('Injuries & Susp.')] : []),
             t('Head To Head'),
             ...(iddaaMatchData ? [t('Iddaa')] : []),
-            ...(eventData.standingsAvailable ? [t('Standing')] : []),
+            ...(event.standingsAvailable ? [t('Standing')] : []),
             t('Forum')
         ];
 
@@ -452,13 +452,12 @@ class Eventdetails extends PureComponent {
                                         iddaaMatchData={iddaaMatchData}
                                         swipeByTabName={this.swipeByTabName}
                                     />
-                                    <Incidents eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight} />
+                                    <Incidents incidents={event.incidents} />
                                 </div>
                                 <MatchInfo
-                                    eventData={eventData}
-                                    matchTextInfo={matchTextInfo}
+                                    event={event}
+                                    textList={textList}
                                     swipeAdjustHeight={this.swipeAdjustHeight}
-                                    socket={socket}
                                 />
                                 <small>
                                     1: {this.state.provider1MatchData ? 'y' : 'n'} - 2:{' '}
@@ -592,7 +591,7 @@ class Eventdetails extends PureComponent {
                                 .toISOString()}",
 							"description": "${event.tournament.name} ${event.season ? event.season.year : ''} sezonunda ${t(
                         event.teams.home.name
-                    )}, ${t(event.awayTeam.name)} ile evinde oynuyor. Maçın başlama saati ${moment(
+                    )}, ${t(event.teams.away.name)} ile evinde oynuyor. Maçın başlama saati ${moment(
                         event.startTimestamp
                     ).format('HH:mm')}. ${
                         event.venue && event.venue.stadium ? event.venue.stadium.name : ''
