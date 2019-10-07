@@ -15,10 +15,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// console.log('encrypted: ', encryptThis('18427666_8243475_123123'));
-// console.log('dencrypted: ', decryptThis('YNiBNJUaem6l'));
-// console.log(shortid.generate());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(initCors());

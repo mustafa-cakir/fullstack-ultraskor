@@ -1,11 +1,10 @@
 const moment = require('moment');
 const _ = require('lodash');
-const shortid = require('shortid');
 const cors = require('cors');
 const languageJson = require('./../client/src/languages/tr.json');
 const { db } = require('./utils/firebase/db');
 
-exports.preProcessSportRadarData = data => {
+const preProcessSportRadarData = data => {
     let result = null;
     if (data.doc && data.doc.length > 0 && data.doc[0].data && data.doc[0].data) {
         result = data.doc[0].data.sport.realcategories.reduce((all, current) => {
@@ -31,7 +30,7 @@ exports.preProcessSportRadarData = data => {
     return result;
 };
 
-exports.replaceDotWithUnderscore = obj => {
+const replaceDotWithUnderscore = obj => {
     _.forOwn(obj, (value, key) => {
         // if key has a period, replace all occurences with an underscore
         if (_.includes(key, '.')) {
@@ -49,13 +48,13 @@ exports.replaceDotWithUnderscore = obj => {
     return obj;
 };
 
-exports.simplifyIddaaHelperData = response => {
+const simplifyIddaaHelperData = response => {
     return response && response.data && response.data.events && response.data.events.length > 0
         ? response.data.events
         : null;
 };
 
-exports.simplifyHomeData = res => {
+const simplifyHomeData = res => {
     if (res && res.sportItem && res.sportItem.tournaments) {
         const eventIgnoredProperties = [
             'changes',
@@ -117,11 +116,11 @@ exports.simplifyHomeData = res => {
     return res;
 };
 
-exports.cacheDuration = {
+const cacheDuration = {
     homepageListToday: 60 * 30, // 30 min
     homepageList: 60 * 60 * 24, // 24 hours
     eventDetails: 60 * 60 * 24, // 24 hours
-    eventIdTable: 60 * 60 * 24, // 24 hours
+    getEventIdFromDB: 60 * 60 * 24, // 24 hours
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
     provider3: 60 * 60 * 24, // 24 hours
@@ -201,28 +200,28 @@ const corsOptions = {
     }
 };
 let activeUser = 0;
-exports.userConnected = () => {
+const userConnected = () => {
     activeUser += 1;
 };
 
-exports.userDisconnected = () => {
+const userDisconnected = () => {
     activeUser -= 1;
 };
 
-exports.isDev = process.env.NODE_ENV === 'dev';
-exports.isProd = process.env.NODE_ENV !== 'dev';
-exports.isTorDisabled = process.env.TOR_DISABLED === 'true';
+const isDev = process.env.NODE_ENV === 'dev';
+const isProd = process.env.NODE_ENV !== 'dev';
+const isTorDisabled = process.env.TOR_DISABLED === 'true';
 // exports.isTorDisabled = false
 
-exports.userCount = () => {
+const userCount = () => {
     return activeUser;
 };
 
-exports.initCors = () => {
+const initCors = () => {
     return cors(corsOptions);
 };
 
-exports.simplifyWebSocketData = res => {
+const simplifyWebSocketData = res => {
     res = JSON.parse(res);
     if (res.data.length === 0 && !res.data[1] && res.data[0] !== 'service-push') return null;
     const resData = res.data[1];
@@ -273,54 +272,6 @@ exports.simplifyWebSocketData = res => {
     };
 };
 
-exports.mergeEventDetailsData = (sofa, radar, oley, iddaa) => {
-    // return [sofa, radar, oley, iddaa];
-    const result = {};
-    const { event } = sofa;
-    result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
-    result.textList = oley ? oley.textList : null;
-    result.incidents = sofa.incidents;
-    result.liveForm = sofa.liveForm;
-    result.event = {
-        bestAwayTeamPlayer: event.bestAwayTeamPlayer,
-        bestHomeTeamPlayer: event.bestHomeTeamPlayer,
-        category: event.category,
-        confirmedLineups: event.confirmedLineups,
-        id: event.id,
-        name: event.name,
-        referee: event.referee,
-        season: event.season,
-        startTimestamp: event.startTimestamp * 1000,
-        status: event.status,
-        statusBoxContent: event.statusDescription,
-        tournament: event.tournament,
-        venue: event.venue,
-        teams: {
-            home: {
-                id: event.homeTeam.id,
-                name: event.homeTeam.name
-            },
-            away: {
-                id: event.awayTeam.id,
-                name: event.awayTeam.name
-            }
-        },
-        scores: {
-            home: event.homeScore.current,
-            away: event.awayScore.current,
-            ht: {
-                home: event.homeScore.period1,
-                away: event.awayScore.period1
-            }
-        },
-        redCards: {
-            home: event.homeRedCards,
-            away: event.awayRedCards
-        }
-    };
-    return result;
-};
-
 const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
     const jsonDataTeamNames = [sofaEvent.homeTeam.name.toLowerCase(), sofaEvent.awayTeam.name.toLowerCase()];
 
@@ -350,114 +301,234 @@ const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
     return eventOley;
 };
 
-exports.mergeHomepageData = (sofa, radar, oley) => {
-    // if (!radar || !sofa || !oley) return null;
-    const result = {};
-    const radarTournaments =
-        radar && radar.doc[0] && radar.doc[0].data && radar.doc[0].data.sport
-            ? radar.doc[0].data.sport.realcategories.reduce((total, item) => {
-                  return total.concat(item.tournaments);
-              }, [])
-            : null;
-    const oleyTournaments = oley && oley.initialData ? oley.initialData : null;
-    result.date = sofa.params.date;
-    result.tournaments = [];
-    sofa.sportItem.tournaments.forEach(tournament => {
-        const events = [];
-        const tournamentRadar = radarTournaments
-            ? radarTournaments.filter(x => x._id === tournament.tournament.id)[0]
-            : null;
-        tournament.events.forEach(event => {
-            if (moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === sofa.params.date) {
-                const eventRadar =
-                    tournamentRadar && tournamentRadar.matches && tournamentRadar.matches.length > 0
-                        ? tournamentRadar.matches.filter(x => {
-                              return x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id;
-                          })[0]
-                        : null;
+const convertToUltraSkorId = id => {
+    return `us${String(id)
+        .split('')
+        .reverse()
+        .join('')}`;
+};
 
-                const eventOley = oleyTournaments ? getOleyEvent(event, eventRadar, oleyTournaments) : null;
-                events.push({
-                    teams: {
-                        home: {
-                            id: event.homeTeam.id,
-                            name: event.homeTeam.name,
-                            fullname: eventRadar ? eventRadar.teams.home.mediumname : event.homeTeam.name,
-                            ...(eventOley && { id_o: eventOley.homeTeam.id }),
-                            ...(eventOley && { shortName: eventOley.homeTeam.shortName }),
-                            ...(eventOley && { middlename: eventOley.homeTeam.name })
+const convertToSofaScoreID = id => {
+    if (typeof id !== 'string') return false;
+    if (id.indexOf('us') === -1) return false;
+    return parseFloat(
+        id
+            .substr(2)
+            .split('')
+            .reverse()
+            .join('')
+    );
+};
+
+const mergeEventDetailsData = (sofa, radar, oley, ids) => {
+    // return [sofa, radar, oley, iddaa];
+    const result = {};
+    const { event } = sofa;
+    result.ids = { ...ids };
+    result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
+    result.textList = oley ? oley.textList : null;
+    result.event = {
+        incidents: sofa.incidents,
+        liveForm: sofa.liveForm,
+        bestAwayTeamPlayer: event.bestAwayTeamPlayer,
+        bestHomeTeamPlayer: event.bestHomeTeamPlayer,
+        category: event.category,
+        confirmedLineups: event.confirmedLineups,
+        id: convertToUltraSkorId(event.id),
+        name: event.name,
+        referee: event.referee,
+        season: event.season,
+        startTimestamp: event.startTimestamp * 1000,
+        status: event.status,
+        statusBoxContent: event.statusDescription,
+        tournament: event.tournament,
+        venue: event.venue,
+        managerDuel: sofa.managerDuel,
+        teams: {
+            home: {
+                id: event.homeTeam.id,
+                name: event.homeTeam.name
+            },
+            away: {
+                id: event.awayTeam.id,
+                name: event.awayTeam.name
+            }
+        },
+        scores: {
+            home: event.homeScore.current,
+            away: event.awayScore.current,
+            ht: {
+                home: event.homeScore.period1,
+                away: event.awayScore.period1
+            }
+        },
+        redCards: {
+            home: event.homeRedCards,
+            away: event.awayRedCards
+        }
+    };
+    return result;
+};
+
+const mergeHomepageData = (sofa, radar, broad) => {
+    return new Promise((resolve, reject) => {
+        // if (!radar || !sofa || !oley) return null;
+        const result = {};
+        const shortIds = [];
+        const radarTournaments =
+            radar && radar.doc[0] && radar.doc[0].data && radar.doc[0].data.sport
+                ? radar.doc[0].data.sport.realcategories.reduce((total, item) => {
+                      return total.concat(item.tournaments);
+                  }, [])
+                : null;
+        const broadTournaments = broad && broad.initialData ? broad.initialData : null;
+        result.date = sofa.params.date;
+        result.tournaments = [];
+        sofa.sportItem.tournaments.forEach(tournament => {
+            const events = [];
+            const tournamentRadar = radarTournaments
+                ? radarTournaments.filter(x => x._id === tournament.tournament.id)[0]
+                : null;
+            tournament.events.forEach(event => {
+                if (moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === sofa.params.date) {
+                    const eventRadar =
+                        tournamentRadar && tournamentRadar.matches && tournamentRadar.matches.length > 0
+                            ? tournamentRadar.matches.filter(x => {
+                                  return (
+                                      x.teams.home.uid === event.homeTeam.id || x.teams.away.uid === event.homeTeam.id
+                                  );
+                              })[0]
+                            : null;
+
+                    const eventBroad = broadTournaments ? getOleyEvent(event, eventRadar, broadTournaments) : null;
+                    const ultraskorid = convertToUltraSkorId(event.id);
+                    shortIds.push({
+                        id: ultraskorid,
+                        data: {
+                            id_so: event.id,
+                            ...(eventBroad && eventBroad.code && { id_i: eventBroad.code }),
+                            ...(eventBroad && { id_br: eventBroad.id }),
+                            ...(eventRadar && { id_sp: eventRadar._id }),
+                            ...(eventRadar && { id_sp_t: eventRadar._tid }),
+                            ...(eventRadar && { id_sp_ut: eventRadar._utid }),
+                            ...(eventRadar && { id_sp_rc: eventRadar._rcid })
+                        }
+                    });
+                    events.push({
+                        teams: {
+                            home: {
+                                id: event.homeTeam.id,
+                                name: event.homeTeam.name,
+                                fullname: eventRadar ? eventRadar.teams.home.mediumname : event.homeTeam.name,
+                                ...(eventBroad && { id_o: eventBroad.homeTeam.id }),
+                                ...(eventBroad && { shortName: eventBroad.homeTeam.shortName }),
+                                ...(eventBroad && { middlename: eventBroad.homeTeam.name })
+                            },
+                            away: {
+                                id: event.awayTeam.id,
+                                name: event.awayTeam.name,
+                                fullname: eventRadar ? eventRadar.teams.away.mediumname : event.awayTeam.name,
+                                ...(eventBroad && { id_o: eventBroad.awayTeam.id }),
+                                ...(eventBroad && { shortName: eventBroad.awayTeam.shortName }),
+                                ...(eventBroad && { middlename: eventBroad.awayTeam.name })
+                            }
                         },
-                        away: {
-                            id: event.awayTeam.id,
-                            name: event.awayTeam.name,
-                            fullname: eventRadar ? eventRadar.teams.away.mediumname : event.awayTeam.name,
-                            ...(eventOley && { id_o: eventOley.awayTeam.id }),
-                            ...(eventOley && { shortName: eventOley.awayTeam.shortName }),
-                            ...(eventOley && { middlename: eventOley.awayTeam.name })
+                        scores: {
+                            home: event.homeScore.current,
+                            away: event.awayScore.current,
+                            ht: {
+                                home: event.homeScore.period1,
+                                away: event.awayScore.period1
+                            }
+                        },
+                        redCards: {
+                            home: event.homeRedCards,
+                            away: event.awayRedCards
+                        },
+                        id: ultraskorid,
+                        startTimestamp: event.startTimestamp * 1000,
+                        status: event.status,
+                        statusBoxContent: event.statusDescription,
+                        winner: event.winnerCode
+                    });
+                }
+            });
+            if (events.length > 0) {
+                result.tournaments.push({
+                    category: {
+                        icon: tournament.category.flag,
+                        name: tournament.category.name,
+                        id: tournament.category.id
+                    },
+                    events,
+                    season: {
+                        ...(tournament.season && { id: tournament.season.id }),
+                        name: {
+                            ...(tournament.season && { en: tournament.season.name }),
+                            ...(tournament.season && { tr: tournament.season.name }),
+                            ...(tournamentRadar && { tr: `${tournamentRadar.name} ${tournamentRadar.year}` })
+                        },
+                        ...(tournamentRadar && { id_: tournamentRadar.seasonid })
+                    },
+                    tournament: {
+                        ...(tournament.tournament && { id: tournament.tournament.id }),
+                        ...(tournament.tournament && { uniqueId: tournament.tournament.uniqueId }),
+                        ...(tournamentRadar && { id_: tournamentRadar._id }),
+                        ...(tournamentRadar && { id_t: tournamentRadar._tid }),
+                        ...(tournamentRadar && { id_ut: tournamentRadar._utid }),
+                        ...(tournamentRadar && { id_rc: tournamentRadar._rcid }),
+                        name: {
+                            ...(tournament.tournament && { en: tournament.tournament.name }),
+                            ...(tournament.tournament && { tr: tournament.tournament.name }),
+                            ...(tournamentRadar && { tr: tournamentRadar.name })
                         }
-                    },
-                    scores: {
-                        home: event.homeScore.current,
-                        away: event.awayScore.current,
-                        ht: {
-                            home: event.homeScore.period1,
-                            away: event.awayScore.period1
-                        }
-                    },
-                    redCards: {
-                        home: event.homeRedCards,
-                        away: event.awayRedCards
-                    },
-                    links: {
-                        tr: '/mac/kasimpasa-konyaspor-canli-skor-',
-                        en: '/match/kasimpasa-konyaspor-live-score-'
-                    },
-                    id: event.id,
-                    ...(eventOley && eventOley.code && { id_code: eventOley.code }),
-                    ...(eventOley && { id_o: eventOley.id }),
-                    ...(eventRadar && { id_sr: eventRadar._id }),
-                    ...(eventRadar && { id_sr_t: eventRadar._tid }),
-                    ...(eventRadar && { id_sr_ut: eventRadar._utid }),
-                    ...(eventRadar && { id_sr_rc: eventRadar._rcid }),
-                    startTimestamp: event.startTimestamp * 1000,
-                    status: event.status,
-                    statusBoxContent: event.statusDescription,
-                    winner: event.winnerCode
+                    }
                 });
             }
         });
-        if (events.length > 0) {
-            result.tournaments.push({
-                category: {
-                    icon: tournament.category.flag,
-                    name: tournament.category.name,
-                    id: tournament.category.id
-                },
-                events,
-                season: {
-                    ...(tournament.season && { id: tournament.season.id }),
-                    name: {
-                        ...(tournament.season && { en: tournament.season.name }),
-                        ...(tournament.season && { tr: tournament.season.name }),
-                        ...(tournamentRadar && { tr: `${tournamentRadar.name} ${tournamentRadar.year}` })
-                    },
-                    ...(tournamentRadar && { id_: tournamentRadar.seasonid })
-                },
-                tournament: {
-                    ...(tournament.tournament && { id: tournament.tournament.id }),
-                    ...(tournament.tournament && { uniqueId: tournament.tournament.uniqueId }),
-                    ...(tournamentRadar && { id_: tournamentRadar._id }),
-                    ...(tournamentRadar && { id_t: tournamentRadar._tid }),
-                    ...(tournamentRadar && { id_ut: tournamentRadar._utid }),
-                    ...(tournamentRadar && { id_rc: tournamentRadar._rcid }),
-                    name: {
-                        ...(tournament.tournament && { en: tournament.tournament.name }),
-                        ...(tournament.tournament && { tr: tournament.tournament.name }),
-                        ...(tournamentRadar && { tr: tournamentRadar.name })
-                    }
-                }
-            });
-        }
+
+        const batch = db.batch();
+        const ref = db.collection('ultraskor_eventIds_by_date').doc(shortIds[0].id);
+        ref.get().then(doc => {
+            if (doc.exists) {
+                console.log('these ids are already exist. Don not write: ', shortIds[0].id);
+                resolve(result);
+            } else {
+                console.log('these ids do not exist. Write them to db');
+                shortIds.forEach(item => {
+                    const docRef = db.collection('ultraskor_eventIds_by_date').doc(item.id);
+                    batch.set(docRef, item.data, { merge: true });
+                });
+                batch
+                    .commit()
+                    .then(() => {
+                        if (isDev) console.log(`batch write completed, total of ${shortIds.length} ids`);
+                        resolve(result);
+                    })
+                    .catch(err => {
+                        if (isDev)
+                            console.log(`batch operation failed, total of ${shortIds.length} ids. Error Msg:`, err);
+                        reject(err);
+                    });
+            }
+        });
     });
-    return result;
 };
+
+exports.cacheDuration = cacheDuration;
+exports.userConnected = userConnected;
+exports.isDev = isDev;
+exports.isProd = isProd;
+exports.isTorDisabled = isTorDisabled;
+exports.userDisconnected = userDisconnected;
+exports.userCount = userCount;
+exports.simplifyHomeData = simplifyHomeData;
+exports.preProcessSportRadarData = preProcessSportRadarData;
+exports.replaceDotWithUnderscore = replaceDotWithUnderscore;
+exports.simplifyIddaaHelperData = simplifyIddaaHelperData;
+exports.simplifyWebSocketData = simplifyWebSocketData;
+exports.initCors = initCors;
+exports.convertToUltraSkorId = convertToUltraSkorId;
+exports.convertToSofaScoreID = convertToSofaScoreID;
+exports.mergeEventDetailsData = mergeEventDetailsData;
+exports.mergeHomepageData = mergeHomepageData;

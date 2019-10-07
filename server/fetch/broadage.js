@@ -1,7 +1,7 @@
 const moment = require('moment');
 const fetch = require('./fetch');
 
-const fetchOley = date =>
+const fetchBroadage = date =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'POST',
@@ -30,4 +30,4 @@ const fetchOley = date =>
         fetch(options, resolve, reject);
     });
 
-exports.fetchOley = fetchOley;
+exports.fetchBroadage = fetchBroadage;

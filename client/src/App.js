@@ -113,7 +113,7 @@ class App extends Component {
 
                         <Route
                             exact
-                            path="/(mac|match)/:slug-(canli-skor|live-score)-:eventids"
+                            path="/(mac|match)/:slug-(canli-skor|live-score)-:eventid"
                             render={props => (
                                 <ErrorBoundary>
                                     <Eventdetails socket={socket} {...props} />

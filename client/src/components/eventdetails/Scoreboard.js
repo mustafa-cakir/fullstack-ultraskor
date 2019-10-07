@@ -1,116 +1,93 @@
-import React, { Component } from 'react';
+import React from 'react';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import { Trans, withTranslation } from 'react-i18next';
 import { generateSlug } from '../../Helper';
-import { Link } from 'react-router-dom';
 
-class Scoreboard extends Component {
-    render() {
-        const { eventData, t } = this.props;
-        return (
-            <div className="event-details-scoreboard stadium">
-                <div className="container">
-                    <div className="row text-center flex-nowrap">
-                        <Link
-                            to={{
-                                pathname: `/${t('team')}/${generateSlug(t(eventData.event.homeTeam.name))}-${
-                                    eventData.event.homeTeam.id
-                                }`,
-                                state: { isPrev: true }
-                            }}
-                            className="col-4 team-link"
-                            title={`${t(eventData.event.homeTeam.name)} - ${t(
-                                'Fixtures, highlights and standings, click for more'
-                            )}`}
-                        >
-                            <div className="team-logo mb-2">
-                                <img
-                                    alt={t(eventData.event.homeTeam.name)}
-                                    src={`${window.ImageServer}/images/team-logo/football_${eventData.event.homeTeam.id}.png`}
-                                />
-                            </div>
-                            <div className="team-name">{t(eventData.event.homeTeam.name)}</div>
-                            {eventData.managerDuel ? (
-                                <div className="team-coach mb-2">{eventData.managerDuel.homeManager.name}</div>
-                            ) : (
-                                ''
-                            )}
-                            <div>
-                                {eventData.teamsForm ? <TeamForm data={eventData.teamsForm.homeTeam.form} /> : ''}
-                            </div>
-                        </Link>
-                        <div className="col-4 align-self-center middle">
-                            <div className="time">
-                                <IsInProgress eventData={eventData} />
-                            </div>
-                            <div className={'score' + (eventData.event.status.type === 'inprogress' ? ' live' : '')}>
-                                {eventData.event.homeScore.current} - {eventData.event.awayScore.current}
-                            </div>
-                            {eventData.event.hasHalfTimeScore ? (
-                                <div className="score-halftime">
-                                    (<Trans>HT</Trans>: {eventData.event.homeScore.period1} -{' '}
-                                    {eventData.event.awayScore.period1})
-                                </div>
-                            ) : (
-                                ''
-                            )}
+const Scoreboard = ({ event, t }) => {
+    return (
+        <div className="event-details-scoreboard stadium">
+            <div className="container">
+                <div className="row text-center flex-nowrap">
+                    <Link
+                        to={{
+                            pathname: `/${t('team')}/${generateSlug(t(event.homeTeam.name))}-${event.homeTeam.id}`,
+                            state: { isPrev: true }
+                        }}
+                        className="col-4 team-link"
+                        title={`${t(event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}
+                    >
+                        <div className="team-logo mb-2">
+                            <img
+                                alt={t(event.homeTeam.name)}
+                                src={`${window.ImageServer}/images/team-logo/football_${event.homeTeam.id}.png`}
+                            />
                         </div>
-                        <Link
-                            to={{
-                                pathname: `/${t('team')}/${generateSlug(t(eventData.event.awayTeam.name))}-${
-                                    eventData.event.awayTeam.id
-                                }`,
-                                state: { isPrev: true }
-                            }}
-                            className="col-4 team-link"
-                            title={`${t(eventData.event.homeTeam.name)} - ${t(
-                                'Fixtures, highlights and standings, click for more'
-                            )}`}
-                        >
-                            <div className="team-logo mb-2">
-                                <img
-                                    alt={t(eventData.event.awayTeam.name)}
-                                    src={`${window.ImageServer}/images/team-logo/football_${eventData.event.awayTeam.id}.png`}
-                                />
+                        <div className="team-name">{t(event.homeTeam.name)}</div>
+                        {event.managerDuel ? (
+                            <div className="team-coach mb-2">{event.managerDuel.homeManager.name}</div>
+                        ) : (
+                            ''
+                        )}
+                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.homeTeam.form} /> : ''}</div>
+                    </Link>
+                    <div className="col-4 align-self-center middle">
+                        <div className="time">
+                            <IsInProgress eventData={event} />
+                        </div>
+                        <div className={`score${event.status.type === 'inprogress' ? ' live' : ''}`}>
+                            {event.homeScore.current} - {event.awayScore.current}
+                        </div>
+                        {event.hasHalfTimeScore ? (
+                            <div className="score-halftime">
+                                (<Trans>HT</Trans>: {event.homeScore.period1} - {event.awayScore.period1})
                             </div>
-                            <div className="team-name">{t(eventData.event.awayTeam.name)}</div>
-                            <div className="team-coach mb-2">
-                                {eventData.managerDuel ? eventData.managerDuel.awayManager.name : ''}
-                            </div>
-                            <div>
-                                {eventData.teamsForm ? <TeamForm data={eventData.teamsForm.awayTeam.form} /> : ''}
-                            </div>
-                        </Link>
+                        ) : (
+                            ''
+                        )}
                     </div>
+                    <Link
+                        to={{
+                            pathname: `/${t('team')}/${generateSlug(t(event.awayTeam.name))}-${event.awayTeam.id}`,
+                            state: { isPrev: true }
+                        }}
+                        className="col-4 team-link"
+                        title={`${t(event.homeTeam.name)} - ${t('Fixtures, highlights and standings, click for more')}`}
+                    >
+                        <div className="team-logo mb-2">
+                            <img
+                                alt={t(event.awayTeam.name)}
+                                src={`${window.ImageServer}/images/team-logo/football_${event.awayTeam.id}.png`}
+                            />
+                        </div>
+                        <div className="team-name">{t(event.awayTeam.name)}</div>
+                        <div className="team-coach mb-2">
+                            {event.managerDuel ? event.managerDuel.awayManager.name : ''}
+                        </div>
+                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.awayTeam.form} /> : ''}</div>
+                    </Link>
                 </div>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
-const IsInProgress = props => {
-    let eventData = props.eventData;
+const IsInProgress = ({ event }) => {
     let text;
-    let liveBlinkerCodes = [6, 7];
-    switch (eventData.event.status.type) {
+    const liveBlinkerCodes = [6, 7];
+    switch (event.status.type) {
         case 'inprogress':
             text = (
                 <div className="red font-weight-bold">
-                    <Trans>{eventData.event.statusDescription}</Trans>
-                    {eventData.event.status.code === 6 ? '' : ''}
-                    {liveBlinkerCodes.indexOf(eventData.event.status.code) > -1 ? (
-                        <span className="live-blinker">'</span>
-                    ) : (
-                        ''
-                    )}
+                    <Trans>{event.statusDescription}</Trans>
+                    {event.status.code === 6 ? '' : ''}
+                    {liveBlinkerCodes.indexOf(event.status.code) > -1 ? <span className="live-blinker">'</span> : ''}
                 </div>
             );
             break;
         case 'notstarted':
             text = (
-                <div className="full-time font-weight-bold">
-                    {moment(eventData.event.startTimestamp * 1000).format('HH:mm')}
-                </div>
+                <div className="full-time font-weight-bold">{moment(event.startTimestamp * 1000).format('HH:mm')}</div>
             );
             break;
         case 'canceled':
@@ -144,11 +121,11 @@ const IsInProgress = props => {
     return text;
 };
 
-const TeamForm = props => {
-    let result = [];
-    props.data.forEach((status, index) => {
+const TeamForm = ({ data }) => {
+    const result = [];
+    data.forEach(status => {
         result.push(
-            <span key={index} className={'team-form team-form-' + status}>
+            <span key={Math.random()} className={`team-form team-form-${status}`}>
                 <Trans>{status}</Trans>
             </span>
         );

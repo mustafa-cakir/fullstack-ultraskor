@@ -1,6 +1,6 @@
 const { fetchSofaScore } = require('./sofascore');
 const { fetchSportRadar } = require('./sportradar');
-const { fetchOley } = require('./oley');
+const { fetchBroadage } = require('./broadage');
 const { mergeHomepageData } = require('../helper');
 
 const fetchHomepage = date =>
@@ -13,7 +13,7 @@ const fetchHomepage = date =>
             return null;
         });
 
-        const p3 = fetchOley(date).catch(() => {
+        const p3 = fetchBroadage(date).catch(() => {
             return null;
         });
 
@@ -21,9 +21,13 @@ const fetchHomepage = date =>
 
         Promise.all(pAll)
             .then(values => {
-                const merged = mergeHomepageData(values[0], values[1], values[2]);
-                // if (!merged) throw Error('error');
-                resolve(merged);
+                mergeHomepageData(values[0], values[1], values[2])
+                    .then(data => {
+                        resolve(data);
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
             })
             .catch(err => {
                 reject(err);
