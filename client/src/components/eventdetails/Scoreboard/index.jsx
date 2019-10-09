@@ -90,9 +90,7 @@ const IsInProgress = ({ event }) => {
             );
             break;
         case 'notstarted':
-            text = (
-                <div className="full-time font-weight-bold">{moment(event.startTimestamp * 1000).format('HH:mm')}</div>
-            );
+            text = <div className="full-time font-weight-bold">{moment(event.startTimestamp).format('HH:mm')}</div>;
             break;
         case 'canceled':
             text = (

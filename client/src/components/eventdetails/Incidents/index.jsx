@@ -17,9 +17,9 @@ const Incidents = ({ incidents, t }) => {
                             <img src={iconWhistle} alt="whistle" className="icon-whistle" /> <Trans>Kick off</Trans>
                         </div>
                     </div>
-                    {incidents.map((item, index) => {
+                    {incidents.reverse().map(item => {
                         return (
-                            <div key={index} className={'match-incidents-row'}>
+                            <div key={Math.random()} className="match-incidents-row">
                                 <Types item={item} t={t} />
                             </div>
                         );
@@ -42,7 +42,8 @@ const Types = ({ item, t }) => {
                 </div>
             </div>
         );
-    } else if (incidentType === 'injuryTime') {
+    }
+    if (incidentType === 'injuryTime') {
         return (
             <div className="row">
                 <div className="col additional-time text-center text-gray">
@@ -50,12 +51,13 @@ const Types = ({ item, t }) => {
                 </div>
             </div>
         );
-    } else if (incidentType === 'card') {
+    }
+    if (incidentType === 'card') {
         return (
-            <div className={'py-3 row align-items-center' + (isHome ? '' : ' flex-row-reverse')}>
+            <div className={`py-3 row align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
                 <div className="col">
-                    <div className={'row align-items-center ' + (isHome ? '' : ' flex-row-reverse')}>
-                        <div className={'col put-border ' + (isHome ? 'home text-right' : ' text-left')}>
+                    <div className={`row align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
+                        <div className={`col put-border${isHome ? ' home text-right' : ' text-left'}`}>
                             {item.player ? <div className="name">{item.player.name}</div> : ''}
                             <div className="text-gray">
                                 <Trans>{item.reason}</Trans>
@@ -74,12 +76,13 @@ const Types = ({ item, t }) => {
                 <div className="col" />
             </div>
         );
-    } else if (incidentType === 'YellowRed') {
+    }
+    if (incidentType === 'YellowRed') {
         return (
-            <div className={'py-3 row align-items-center' + (isHome ? '' : ' flex-row-reverse')}>
+            <div className={`py-3 row align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
                 <div className="col">
-                    <div className={'row align-items-center ' + (isHome ? '' : ' flex-row-reverse')}>
-                        <div className={'col put-border ' + (isHome ? 'home text-right' : ' text-left')}>
+                    <div className={`row align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
+                        <div className={`col put-border${isHome ? ' home text-right' : ' text-left'}`}>
                             {item.player ? <div className="name">{item.player.name}</div> : ''}
                             <div className="text-gray">
                                 <Trans>{item.reason}</Trans>
@@ -98,12 +101,13 @@ const Types = ({ item, t }) => {
                 <div className="col" />
             </div>
         );
-    } else if (incidentType === 'substitution') {
+    }
+    if (incidentType === 'substitution') {
         return (
-            <div className={'py-3 row align-items-center' + (isHome ? '' : ' flex-row-reverse')}>
+            <div className={`py-3 row align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
                 <div className="col">
-                    <div className={'row align-items-center ' + (isHome ? '' : ' flex-row-reverse')}>
-                        <div className={'col put-border ' + (isHome ? 'home text-right' : ' text-left')}>
+                    <div className={`row align-items-center ${isHome ? '' : ' flex-row-reverse'}`}>
+                        <div className={`col put-border ${isHome ? 'home text-right' : ' text-left'}`}>
                             {item.playerIn ? <div className="playerIn">{item.playerIn.name}</div> : ''}
                             {item.playerOut ? <div className="playerOut">{item.playerOut.name}</div> : ''}
                         </div>
@@ -120,12 +124,13 @@ const Types = ({ item, t }) => {
                 <div className="col" />
             </div>
         );
-    } else if (incidentType === 'penalty') {
+    }
+    if (incidentType === 'penalty') {
         return (
-            <div className={'py-3 row missed-penalty align-items-center' + (isHome ? '' : ' flex-row-reverse')}>
+            <div className={`py-3 row missed-penalty align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
                 <div className="col">
-                    <div className={'row align-items-center ' + (isHome ? '' : ' flex-row-reverse')}>
-                        <div className={'col put-border ' + (isHome ? 'home text-right' : ' text-left')}>
+                    <div className={`row align-items-center ${isHome ? '' : ' flex-row-reverse'}`}>
+                        <div className={`col put-border ${isHome ? 'home text-right' : ' text-left'}`}>
                             {item.incidentDescription ? (
                                 <div className="player text-bold">{item.incidentDescription}</div>
                             ) : (
@@ -164,12 +169,13 @@ const Types = ({ item, t }) => {
                 <div className="col" />
             </div>
         );
-    } else if (incidentType === 'goal') {
+    }
+    if (incidentType === 'goal') {
         return (
-            <div className={'py-3 row goal align-items-center' + (isHome ? '' : ' flex-row-reverse')}>
+            <div className={`py-3 row goal align-items-center${isHome ? '' : ' flex-row-reverse'}`}>
                 <div className="col">
-                    <div className={'row align-items-center ' + (isHome ? '' : ' flex-row-reverse')}>
-                        <div className={'col put-border ' + (isHome ? 'home text-right' : ' text-left')}>
+                    <div className={`row align-items-center ${isHome ? '' : ' flex-row-reverse'}`}>
+                        <div className={`col put-border ${isHome ? 'home text-right' : ' text-left'}`}>
                             {item.player ? <div className="player text-bold">{item.player.name}</div> : ''}
                             {item.assist1 ? <div className="text-gray">{item.assist1.name}</div> : ''}
                             {item.from ? (
@@ -204,6 +210,7 @@ const Types = ({ item, t }) => {
             </div>
         );
     }
+    return false;
 };
 
 export default withTranslation('translations')(Incidents);

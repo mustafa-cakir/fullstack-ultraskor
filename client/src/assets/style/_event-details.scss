@@ -255,23 +255,6 @@
 			padding: .4rem 0;
 			//background: rgba(0,0,0,.03);
 		}
-		.yellowcard,
-		.redcard,
-		.yellowcard2 {
-			display: inline-block;
-			vertical-align: middle;
-			height: 15px;
-			width: 10px;
-			background: #f6c825;
-			box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-		}
-		.redcard {
-			background: #dc0d17;
-		}
-		.yellowcard2 {
-			background: linear-gradient(to right, #f6c825 0%, #f6c825 50%, #dc0d17 50%, #dc0d17 100%);
-			width: 17px;
-		}
 		.text-gray {
 			color: #aaa;
 			font-size: .8rem;
@@ -1133,6 +1116,30 @@
 	&:nth-child(5) {
 		animation-delay: .25s;
 	}
+}
+.card-stats {
+	display: flex;
+	color: #999;
+	span {
+		margin: 0 5px;
+	}
+}
+.yellowcard,
+.redcard,
+.yellowcard2 {
+	display: inline-block;
+	vertical-align: middle;
+	height: 15px;
+	width: 10px;
+	background: #f6c825;
+	box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+.redcard {
+	background: #dc0d17;
+}
+.yellowcard2 {
+	background: linear-gradient(to right, #f6c825 0%, #f6c825 50%, #dc0d17 50%, #dc0d17 100%);
+	width: 17px;
 }
 
 .team-of-the-week-title {

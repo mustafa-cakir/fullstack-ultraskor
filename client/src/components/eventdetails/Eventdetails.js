@@ -373,15 +373,15 @@ class Eventdetails extends PureComponent {
     }
 
     render() {
-        const { eventData, provider1MatchData, provider2MatchData, matchTextInfo, iddaaMatchData } = this.state;
+        const { eventData, provider2MatchData, matchTextInfo, iddaaMatchData } = this.state;
         if (!eventData) return <Loading />;
         if (eventData.error) return <Errors type="error" message={eventData.error} />;
 
-        const { event, textList } = eventData;
+        const { event, ids } = eventData;
         const { socket, t } = this.props;
         this.tabs = [
             t('Summary'),
-            ...(provider1MatchData ? [t('Live Tracker')] : []),
+            ...(ids.id_sp ? [t('Live Tracker')] : []),
             ...(event.hasStatistics ? [t('Stats')] : []),
             ...(event.hasLineups ? [t('Lineup')] : []),
             ...(provider2MatchData ? [t('Injuries & Susp.')] : []),
@@ -434,8 +434,8 @@ class Eventdetails extends PureComponent {
                     swipeOptions={{
                         speed: 200,
                         continuous: true,
-                        callback: this.swipeChanging,
-                        transitionEnd: this.swipeComplete,
+                        callback: this.swipeChanging.bind(this),
+                        transitionEnd: this.swipeComplete.bind(this),
                         swiping: this.swipeSwiping,
                         disableScroll: false
                     }}
@@ -454,11 +454,7 @@ class Eventdetails extends PureComponent {
                                     />
                                     <Incidents incidents={event.incidents} />
                                 </div>
-                                <MatchInfo
-                                    event={event}
-                                    textList={textList}
-                                    swipeAdjustHeight={this.swipeAdjustHeight}
-                                />
+                                <MatchInfo eventData={eventData} swipeAdjustHeight={this.swipeAdjustHeight} />
                                 <small>
                                     1: {this.state.provider1MatchData ? 'y' : 'n'} - 2:{' '}
                                     {this.state.provider2MatchData ? 'y' : 'n'} - 3: {this.state.iddaaList ? 'y' : 'n'}
@@ -467,12 +463,9 @@ class Eventdetails extends PureComponent {
                         </div>
                     </div>
 
-                    {provider1MatchData ? (
+                    {ids.id_sp ? (
                         <div className="swipe-content live-tracker" data-tab="live-tracker">
-                            <LiveTracker
-                                matchid={provider1MatchData.id}
-                                isTabLiveTracker={this.state.isTabLiveTracker}
-                            />
+                            <LiveTracker matchid={ids.id_sp} isTabLiveTracker={this.state.isTabLiveTracker} />
                         </div>
                     ) : (
                         ''

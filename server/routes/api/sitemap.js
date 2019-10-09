@@ -64,7 +64,7 @@ router.get('/:lang/:sport/:type/:by/:date', auth.optional, (req, res) => {
                 if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
                     const tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
                         tournament.events = tournament.events.filter(event => {
-                            return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === date;
+                            return moment(event.startTimestamp).format('YYYY-MM-DD') === date;
                         });
                         tournament.events.forEach(() => {
                             if (whole.indexOf(tournament) < 0) whole.push(tournament);
@@ -201,7 +201,7 @@ router.get('/matches/:year/:month/:day', (req, res) => {
             if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
                 const tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
                     tournament.events = tournament.events.filter(event => {
-                        return moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === `${year}-${month}-${day}`;
+                        return moment(event.startTimestamp).format('YYYY-MM-DD') === `${year}-${month}-${day}`;
                     });
                     tournament.events.forEach(() => {
                         if (whole.indexOf(tournament) < 0) whole.push(tournament);

@@ -3,13 +3,14 @@ import { Trans, withTranslation } from 'react-i18next';
 
 import moment from 'moment';
 
-const MatchInfo = ({ event, textList, t, i18n }) => {
+const MatchInfo = ({ eventData, t, i18n }) => {
+    const { event, textList, funfacts } = eventData;
     const { language } = i18n;
 
     // let tournament, country, city, stadium, capacity, attendance, date, referee, broadcast;
     const tournament = event.tournament ? event.tournament.name : null;
     const attendance = event.attendance ? event.attendance.toLocaleString() : null;
-    const date = moment(event.startTimestamp * 1000).format('DD MMM YYYY, HH:mm');
+    const date = moment(event.startTimestamp).format('DD MMM YYYY, HH:mm');
     const referee = event.referee ? event.referee.name : null;
     const country = event.venue && event.venue.country ? event.venue.country.name : null;
     const city = event.venue && event.venue.city ? event.venue.city.name : null;
@@ -24,9 +25,15 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
             <h1 className="title">
                 {t(event.teams.home.name)} - {t(event.teams.away.name)} <Trans>Match Information</Trans>
             </h1>
-            {textList ? <MatchTextInfo textList={textList} /> : ''}
+            {textList && <MatchTextInfo textList={textList} group="Maça Giriş" />}
+            <h2 className="title mb-3 mt-4">
+                <Trans>Match Highlights</Trans>
+            </h2>
+            {textList && <MatchTextInfo textList={textList} group="Form Durumu" />}
+            {funfacts && funfacts.map(item => <p key={Math.random()}>{item}</p>)}
+
             {language === 'tr' ? (
-                <p className="match-facts">
+                <h3 className="match-facts desc">
                     Başlama düdüğünden itibaren Ultraskor.com{' '}
                     <a
                         href={window.location.href}
@@ -36,9 +43,9 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
                     </a>{' '}
                     sayfasindan maçın canlı skorunu, istatiklerini, kadrolarını ve canlı puan durumunu anlık olarak
                     takip edebilirsiniz.
-                </p>
+                </h3>
             ) : (
-                <p>
+                <h3 className="match-facts desc">
                     You can track the live score, stats, lineups and live standings on UltraSkor.com's{' '}
                     <a
                         href={window.location.href}
@@ -47,10 +54,10 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
                         {t(event.teams.home.name)} - {t(event.teams.away.name)}
                     </a>{' '}
                     match details page.
-                </p>
+                </h3>
             )}
 
-            <div className="body">
+            <div className="body pb-4">
                 <div className="row">
                     <div className="col col-3 f-500 text-right pr-0">
                         <Trans>Date</Trans>
@@ -65,17 +72,16 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
                         <div className="col col-7">{tournament}</div>
                     </div>
                 )}
-                {country ||
-                    (city && (
-                        <div className="row">
-                            <div className="col col-3 f-500 text-right pr-0">
-                                <Trans>Location</Trans>
-                            </div>
-                            <div className="col col-7">
-                                {country || ''}, {city || ''}
-                            </div>
+                {(country || city) && (
+                    <div className="row">
+                        <div className="col col-3 f-500 text-right pr-0">
+                            <Trans>Location</Trans>
                         </div>
-                    ))}
+                        <div className="col col-7">
+                            {country || ''}, {city || ''}
+                        </div>
+                    </div>
+                )}
                 {stadium && (
                     <div className="row">
                         <div className="col col-3 f-500 text-right pr-0">
@@ -105,7 +111,19 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
                         <div className="col col-3 f-500 text-right pr-0">
                             <Trans>Referee</Trans>
                         </div>
-                        <div className="col col-7">{referee}</div>
+                        <div className="col col-9">
+                            {referee}
+                            {event.referee.redCardsPerGame && event.referee.yellowCardsPerGame && (
+                                <>
+                                    <br />
+                                    <span className="card-stats">
+                                        <Trans>Avrg. card stats</Trans>: {event.referee.yellowCardsPerGame}{' '}
+                                        <span className="yellowcard" /> - {event.referee.redCardsPerGame}{' '}
+                                        <span className="redcard" />
+                                    </span>
+                                </>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
@@ -113,13 +131,13 @@ const MatchInfo = ({ event, textList, t, i18n }) => {
     );
 };
 
-const MatchTextInfo = ({ textList }) => {
+const MatchTextInfo = ({ textList, group }) => {
     const generalInfo = textList.filter(item => {
-        return item.textGroupName === 'Maça Giriş';
+        return item.textGroupName === group;
     });
 
     return generalInfo.map((item, index) => {
-        return index === 0 ? (
+        return index === 0 && group === 'Maça Giriş' ? (
             <h2 className="desc provider2-data" key={Math.random()}>
                 {item.textValue}
             </h2>
