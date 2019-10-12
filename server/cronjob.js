@@ -8,7 +8,7 @@ const { initWebPushByWebSocket } = require('./utils/webpush');
 exports.pushServiceChangesForWebPush = res => {
     const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
     const homepageListData = cacheService.instance().get(cacheKey);
-    if (typeof homepageListData === 'undefined') {
+    if (!homepageListData || !homepageListData.tournaments) {
         console.log('homepageListData can not be gathered from cache');
         return false;
     }

@@ -62,6 +62,13 @@ a:hover {
 	}
 }
 
+button {
+	-webkit-appearance: none;
+	&:focus {
+		outline: none;
+	}
+}
+
 .btn {
 	color: $color-link;
 }

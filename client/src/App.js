@@ -3,7 +3,7 @@ import './assets/style/app.scss';
 import Navbar from './components/Navbar';
 import Homepage from './components/Homepage';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import Eventdetails from './components/eventdetails/Eventdetails';
+import Eventdetails from './components/Eventdetails';
 import Errors from './components/common/Errors';
 import ReactGA from 'react-ga';
 import TestComp from './components/TestComp';

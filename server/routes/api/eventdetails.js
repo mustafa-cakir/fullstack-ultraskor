@@ -1,25 +1,26 @@
 const router = require('express').Router();
 const cacheService = require('../../cache.service');
 const auth = require('../auth');
+const { isDev } = require('../../helper');
 const { fetchEventDetails } = require('../../fetch/eventdetails');
 
 router.get('/:eventId/:language', auth.optional, (req, res) => {
     const { eventId, language } = req.params; // YYYY-MM-DD
+    const cacheKey = `eventdetails-${eventId}-${language}`;
 
     const remoteRequest = () => {
-        fetchEventDetails(eventId, language)
+        fetchEventDetails(eventId, language, cacheKey)
             .then(data => {
                 res.send(data);
             })
-            .catch(err => {
-                res.sendStatus(err);
+            .catch(() => {
+                res.status(500).send('Can not retrieve information from server');
             });
     };
 
-    const cacheKey = `eventdetails-${eventId}`;
     const cachedData = cacheService.instance().get(cacheKey);
     if (typeof cachedData !== 'undefined') {
-        console.log('eventdetails is served from cached!');
+        if (isDev) console.log('Eventdetails is served from cached!');
         res.send(cachedData);
     } else {
         remoteRequest();

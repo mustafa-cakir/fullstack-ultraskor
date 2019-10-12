@@ -337,7 +337,10 @@ const convertToSofaScoreID = id => {
 };
 
 const mergeEventDetailsData = (sofa, radar, oley, ids) => {
-    // return [sofa, radar, oley, iddaa];
+    if (!sofa) {
+        if (isDev) console.log('data can not be gathered from sofa');
+        throw Error('Whoops!');
+    }
     const result = {};
     const { event } = sofa;
     result.ids = { ...ids };
@@ -392,7 +395,10 @@ const mergeEventDetailsData = (sofa, radar, oley, ids) => {
 
 const mergeHomepageData = (sofa, radar, broad) => {
     return new Promise((resolve, reject) => {
-        // if (!radar || !sofa || !oley) return null;
+        if (!sofa) {
+            if (isDev) console.log('data can not be gathered from sofa');
+            resolve(Error('Whoops!'));
+        }
         const result = {};
         const shortIds = [];
         const radarTournaments =
@@ -511,10 +517,10 @@ const mergeHomepageData = (sofa, radar, broad) => {
         const ref = db.collection('ultraskor_eventIds_by_date').doc(shortIds[0].id);
         ref.get().then(doc => {
             if (doc.exists) {
-                console.log('these ids are already exist. Don not write: ', shortIds[0].id);
+                if (isDev) console.log('these ids are already exist. Don not write: ', shortIds[0].id);
                 resolve(result);
             } else {
-                console.log('these ids do not exist. Write them to db');
+                if (isDev) console.log('these ids do not exist. Write them to db');
                 shortIds.forEach(item => {
                     const docRef = db.collection('ultraskor_eventIds_by_date').doc(item.id);
                     batch.set(docRef, item.data, { merge: true });
@@ -527,7 +533,8 @@ const mergeHomepageData = (sofa, radar, broad) => {
                     })
                     .catch(err => {
                         if (isDev)
-                            console.log(`batch operation failed, total of ${shortIds.length} ids. Error Msg:`, err);
+                            if (isDev)
+                                console.log(`batch operation failed, total of ${shortIds.length} ids. Error Msg:`, err);
                         reject(err);
                     });
             }

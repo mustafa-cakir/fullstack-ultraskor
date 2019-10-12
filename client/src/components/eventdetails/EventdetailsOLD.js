@@ -9,7 +9,7 @@ import Loading from '../common/Loading';
 import Scoreboard from './Scoreboard';
 import Incidents from './Incidents';
 import PressureGraph from './PressureGraph';
-import Bestplayer from './Bestplayer';
+import Bestplayer from './BestPlayer';
 import MatchInfo from './MatchInfo/index';
 import Standings from './Standings';
 import Stats from './Stats';
@@ -27,7 +27,7 @@ import Forum from '../common/Forum';
 import { JsonLd } from '../common/JsonLd';
 import PreIddaa from './PreIddaa';
 
-class Eventdetails extends PureComponent {
+class EventdetailsOLD extends PureComponent {
     constructor(props) {
         super(props);
         this.swipeEl = React.createRef();
@@ -96,7 +96,6 @@ class Eventdetails extends PureComponent {
 
     swipeComplete(index, el) {
         const tab = el.getAttribute('data-tab');
-
         if (tab === 'standing') {
             this.setState({ isTabStanding: true });
         } else if (tab === 'lineup') {
@@ -391,6 +390,10 @@ class Eventdetails extends PureComponent {
             t('Forum')
         ];
 
+        const handleTabChange = args => {
+            console.log(args);
+        };
+
         return (
             <div className="event-details">
                 {this.state.loading ? <Loading /> : null}
@@ -401,9 +404,6 @@ class Eventdetails extends PureComponent {
                             {this.tabs.map((tab, index) => {
                                 return (
                                     <li
-                                        tabIndex={1}
-                                        role="button"
-                                        onKeyPress={e => this.swipeTabClick(e, index)}
                                         key={tab}
                                         onClick={e => this.swipeTabClick(e, index)}
                                         className={`${this.state.index === index ? 'active' : ''} ripple-effect pink`}
@@ -445,8 +445,8 @@ class Eventdetails extends PureComponent {
                         <div className="event-details-summary">
                             <div className="container">
                                 <div className="white-box mt-2 pb-2">
-                                    <PressureGraph eventData={eventData} />
-                                    <Bestplayer eventData={eventData} swipeByTabName={this.swipeByTabName} />
+                                    <PressureGraph event={event} />
+                                    <Bestplayer event={event} swipeByTabName={this.swipeByTabName} />
                                     <PreIddaa
                                         eventData={eventData}
                                         iddaaMatchData={iddaaMatchData}
@@ -463,65 +463,51 @@ class Eventdetails extends PureComponent {
                         </div>
                     </div>
 
-                    {ids.id_sp ? (
+                    {ids.id_sp && (
                         <div className="swipe-content live-tracker" data-tab="live-tracker">
-                            <LiveTracker matchid={ids.id_sp} isTabLiveTracker={this.state.isTabLiveTracker} />
+                            {this.state.isTabLiveTracker && <LiveTracker matchid={ids.id_sp} />}
                         </div>
-                    ) : (
-                        ''
                     )}
 
-                    {event.hasStatistics ? (
+                    {event.hasStatistics && (
                         <div className="swipe-content stats" data-tab="stats">
                             <Stats eventData={eventData} />
                         </div>
-                    ) : (
-                        ''
                     )}
 
-                    {event.hasLineups ? (
+                    {event.hasLineups && (
                         <div className="swipe-content lineup" data-tab="lineup">
-                            {this.state.isTabLineup ? (
+                            {this.state.isTabLineup && (
                                 <Lineup
                                     eventData={eventData}
                                     swipeAdjustHeight={this.swipeAdjustHeight}
                                     socket={socket}
                                 />
-                            ) : (
-                                ''
                             )}
                         </div>
-                    ) : (
-                        ''
                     )}
 
-                    {provider2MatchData ? (
+                    {provider2MatchData && (
                         <div className="swipe-content injuries" data-tab="injuries">
-                            {this.state.isTabInjury ? (
+                            {this.state.isTabInjury && (
                                 <Injuries
                                     eventData={eventData}
                                     provider2MatchData={provider2MatchData}
                                     swipeAdjustHeight={this.swipeAdjustHeight}
                                     socket={socket}
                                 />
-                            ) : (
-                                ''
                             )}
                         </div>
-                    ) : (
-                        ''
                     )}
 
                     <div className="swipe-content h2h" data-tab="h2h">
-                        {this.state.isTabH2h ? (
+                        {this.state.isTabH2h && (
                             <H2h
                                 eventData={eventData}
                                 matchTextInfo={matchTextInfo}
                                 swipeAdjustHeight={this.swipeAdjustHeight}
                                 socket={socket}
                             />
-                        ) : (
-                            ''
                         )}
                     </div>
 
@@ -539,31 +525,25 @@ class Eventdetails extends PureComponent {
                         </div>
                     )}
 
-                    {eventData.standingsAvailable ? (
+                    {eventData.standingsAvailable && (
                         <div className="swipe-content standing" data-tab="standing">
-                            {this.state.isTabStanding ? (
+                            {this.state.isTabStanding && (
                                 <Standings
                                     eventData={eventData}
                                     socket={socket}
                                     swipeAdjustHeight={this.swipeAdjustHeight}
                                 />
-                            ) : (
-                                ''
                             )}
                         </div>
-                    ) : (
-                        ''
                     )}
                     <div className="swipe-content forum" data-tab="forum">
-                        {this.state.isTabForum ? (
+                        {this.state.isTabForum && (
                             <Forum
                                 t={t}
                                 socket={socket}
                                 swipeAdjustHeight={this.swipeAdjustHeight}
                                 topicId={event.id}
                             />
-                        ) : (
-                            ''
                         )}
                     </div>
                 </ReactSwipe>
@@ -575,8 +555,8 @@ class Eventdetails extends PureComponent {
 				        {
 							"@context": "http://schema.org",
 							"@type": "SportsEvent",
-							"name": "${event.tournament.name} 
-							${event.season ? event.season.year : ''} - ${t(event.teams.home.name)} 
+							"name": "${event.tournament.name}
+							${event.season ? event.season.year : ''} - ${t(event.teams.home.name)}
 							vs ${t(event.teams.away.name)}",
 							"startDate": "${moment(event.startTimestamp).toISOString()}",
 							"endDate": "${moment(event.startTimestamp)
@@ -655,4 +635,4 @@ class Eventdetails extends PureComponent {
     }
 }
 
-export default withTranslation('translations')(Eventdetails);
+export default withTranslation('translations')(EventdetailsOLD);

@@ -17,13 +17,16 @@ const Incidents = ({ incidents, t }) => {
                             <img src={iconWhistle} alt="whistle" className="icon-whistle" /> <Trans>Kick off</Trans>
                         </div>
                     </div>
-                    {incidents.reverse().map(item => {
-                        return (
-                            <div key={Math.random()} className="match-incidents-row">
-                                <Types item={item} t={t} />
-                            </div>
-                        );
-                    })}
+                    {incidents
+                        .slice()
+                        .reverse()
+                        .map(item => {
+                            return (
+                                <div key={Math.random()} className="match-incidents-row">
+                                    <Types item={item} t={t} />
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
         </div>

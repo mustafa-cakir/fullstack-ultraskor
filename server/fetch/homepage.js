@@ -1,3 +1,4 @@
+const { isDev } = require('../helper');
 const { fetchSofaScore } = require('./sofascore');
 const { fetchSportRadar } = require('./sportradar');
 const { fetchBroadage } = require('./broadage');
@@ -26,11 +27,12 @@ const fetchHomepage = date =>
                         resolve(data);
                     })
                     .catch(err => {
-                        reject(err);
+                        throw Error(err);
                     });
             })
             .catch(err => {
-                reject(err);
+                if (isDev) console.log('fetchHomepage', err);
+                reject();
             });
     });
 exports.fetchHomepage = fetchHomepage;

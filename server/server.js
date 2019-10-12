@@ -4,6 +4,7 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 // const shortid = require('shortid');
 const cacheService = require('./cache.service');
+const { isTorDisabled } = require('./helper');
 // const { encryptThis, decryptThis } = require('./utils/encryption');
 const { initCors } = require('./helper');
 const { cronStart } = require('./cronjob');
@@ -15,6 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
+console.log('Tor disabled? : ', isTorDisabled);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(initCors());

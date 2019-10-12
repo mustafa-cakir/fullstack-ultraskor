@@ -16,8 +16,8 @@ router.get('/:date', auth.optional, (req, res) => {
                 cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
                 res.send(data);
             })
-            .catch(err => {
-                res.sendStatus(err);
+            .catch(() => {
+                res.sendStatus(501);
             });
     };
 

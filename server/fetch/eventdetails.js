@@ -1,13 +1,13 @@
-const { fetchIddaaMatch } = require('./iddaaMatch');
 const { fetchSofaScore } = require('./sofascore');
 const { fetchSportRadar } = require('./sportradar');
 const { fetchOleyWidget } = require('./oleyWidget');
 const { mergeEventDetailsData } = require('../helper');
 const cacheService = require('../cache.service');
+const { isDev } = require('../helper');
 const { getEventIds } = require('./getEventIds');
 const { cacheDuration } = require('../helper');
 
-const fetchEventDetails = (eventId, language) => {
+const fetchEventDetails = (eventId, language, cacheKey) => {
     return getEventIds(eventId).then(ids => {
         return new Promise((resolve, reject) => {
             const pAll = [];
@@ -35,14 +35,14 @@ const fetchEventDetails = (eventId, language) => {
                 .then(values => {
                     const merged = mergeEventDetailsData(values[0], values[1], values[2], ids);
                     if (!merged) throw Error('error');
-                    if (values[0] && values[1] && values[2] && values[3]) {
-                        const cacheKey = `eventdetails-${ids}-${language}`;
+                    if (values[0] && values[1] && values[2]) {
                         cacheService.instance().set(cacheKey, merged, cacheDuration.eventDetails);
                     }
                     resolve(merged);
                 })
                 .catch(err => {
-                    reject(err);
+                    if (isDev) console.log('fetchEventDetails', err);
+                    reject();
                 });
         });
     });
