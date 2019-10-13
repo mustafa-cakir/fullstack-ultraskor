@@ -1,7 +1,8 @@
 import React from 'react';
 import i18n from 'i18next';
 
-const LiveTracker = ({ matchid }) => {
+const LiveTracker = ({ matchid, hasActived }) => {
+    if (!hasActived) return false;
     const { language } = i18n;
     return (
         <div className="live-match-iframe-wrapper">

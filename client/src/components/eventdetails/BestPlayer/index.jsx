@@ -3,7 +3,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import Icon from '../../common/Icon';
 import { printImageSrc } from '../../../core/utils';
 
-const BestPlayer = ({ event, swipeByTabName, t }) => {
+const BestPlayer = ({ event, swiper }) => {
     if (!event || !event.bestAwayTeamPlayer || !event.bestHomeTeamPlayer) return false;
 
     const printRatingClassName = value => {
@@ -25,7 +25,7 @@ const BestPlayer = ({ event, swipeByTabName, t }) => {
     };
 
     return (
-        <div className="best-player" onClick={() => swipeByTabName(t('Lineup'))}>
+        <div className="best-player" onClick={() => swiper.slideTo(1)}>
             <div className="best-player-title text-center">
                 <Trans>Best Players</Trans>
             </div>

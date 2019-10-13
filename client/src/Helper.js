@@ -568,3 +568,9 @@ export const trackPage = page => {
     });
     ReactGA.pageview(page);
 };
+
+export const appendValueToArray = (arr, value) => {
+    if (arr.indexOf(value) > -1) return arr;
+    arr.push(value);
+    return arr;
+};

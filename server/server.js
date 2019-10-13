@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
+const tor = require('tor-request');
 // const shortid = require('shortid');
 const cacheService = require('./cache.service');
 const { isTorDisabled } = require('./helper');
@@ -9,14 +10,21 @@ const { isTorDisabled } = require('./helper');
 const { initCors } = require('./helper');
 const { cronStart } = require('./cronjob');
 const { socketHandler } = require('./utils/socket');
-const { tor } = require('./utils/tor');
 const { initWebSocket } = require('./utils/Websocket');
 
+tor.TorControlPort.password = 'muztafultra';
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
 console.log('Tor disabled? : ', isTorDisabled);
+if (!isTorDisabled) {
+    tor.request('https://api.ipify.org', (err, status, response) => {
+        if (!err && status.statusCode === 200) {
+            console.log('TOR request completed, IP: ', response);
+        }
+    });
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(initCors());

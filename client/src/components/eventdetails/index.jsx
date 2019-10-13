@@ -1,39 +1,99 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useCallback, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import { withTranslation } from 'react-i18next';
 import { Tabs, Tab } from '@material-ui/core';
-import SwipeableViews from 'react-swipeable-views';
+import { Swiper, Slide } from 'react-dynamic-swiper';
+import 'react-dynamic-swiper/lib/styles.css';
+import Errors from '../common/Errors';
+import Loading from '../common/Loading';
+import Summary from './Summary';
+import LiveTracker from './LiveTracker';
+import { appendValueToArray } from '../../Helper';
 
-const Eventdetails = () => {
+const Eventdetails = ({ t, i18n }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         tabIndex: 0,
-        tabExtra1: false,
-        tabExtra2: false
+        clickedTabIndex: [0],
+        data: null,
+        error: null,
+        isLoading: true,
+        swiper: null
     });
-    const { tabIndex, tabExtra1, tabExtra2 } = state;
+    const { language } = i18n;
+    const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
+    const params = useParams();
+    const { eventid } = params;
+
+    const getData = useCallback(() => {
+        axios
+            .get(`/api/eventdetails/${eventid}/${language}`)
+            .then(res => {
+                setState({
+                    data: res.data,
+                    isLoading: false,
+                    error: null
+                });
+            })
+            .catch(err => {
+                setState({
+                    error: err,
+                    isLoading: false
+                });
+            });
+    }, [eventid, language]);
+
+    useEffect(() => {
+        getData();
+    }, [getData]);
+
+    if (error) return <Errors message={error} />;
+    if (isLoading) return <Loading />;
+
+    const slides = [
+        {
+            id: 0,
+            label: t('Summary'),
+            Component: Summary,
+            props: {
+                data,
+                swiper: swiper
+            }
+        }
+    ];
+
+    if (data.ids.id_sp)
+        slides.push({
+            id: 1,
+            label: t('Live Tracker'),
+            Component: LiveTracker,
+            props: {
+                matchid: data.ids.id_sp
+            }
+        });
 
     const handleTabChange = (event, value) => {
+        if (swiper) swiper.slideTo(value);
         setState({
-            tabIndex: value
+            tabIndex: value,
+            clickedTabIndex: appendValueToArray(clickedTabIndex, slides[value].id)
         });
     };
 
-    const handleSwipeChange = value => {
+    const onInitSwiper = swiperInstance => {
         setState({
-            tabIndex: value
+            swiper: swiperInstance
+        });
+        swiperInstance.on('slideChange', () => {
+            setState({
+                tabIndex: swiperInstance.activeIndex,
+                clickedTabIndex: appendValueToArray(clickedTabIndex, slides[swiperInstance.activeIndex].id)
+            });
         });
     };
 
-    setTimeout(() => {}, 4000);
-
-    setTimeout(() => {
-        setState({
-            tabExtra1: true
-        });
-    }, 8000);
-
-    const slides = [1, 2, ...(tabExtra1 ? [3] : []), 4, ...(tabExtra2 ? [5] : [])];
     return (
-        <div>
+        <div className="event-details">
             <Tabs
                 value={tabIndex}
                 onChange={handleTabChange}
@@ -41,32 +101,27 @@ const Eventdetails = () => {
                 indicatorColor="secondary"
                 textColor="secondary"
             >
-                <Tab label="tab n°1" />
-                <Tab label="tab n°2" />
-                {tabExtra1 && <Tab label="tab n°3 Extra" />}
-                <Tab label="tab n°4" />
-                {tabExtra2 && <Tab label="tab n°5 Extra" />}
+                {slides.map(({ label }) => (
+                    <Tab label={label} key={label} />
+                ))}
             </Tabs>
-            <SwipeableViews
-                // key={Math.random()}
-                enableMouseEvents
-                index={tabIndex}
-                onChangeIndex={handleSwipeChange}
-                animateHeight
-                hysteresis={0.4}
+            <Swiper
+                swiperOptions={{
+                    slidesPerView: 1,
+                    autoHeight: true
+                }}
+                navigation={false}
+                pagination={false}
+                onInitSwiper={onInitSwiper}
             >
-                {slides.map(number => {
-                    return <SlideItem number={number} />;
+                {slides.map(({ label, Component, props, id }) => {
+                    return (
+                        <Slide key={label}>
+                            <Component hasActived={clickedTabIndex.indexOf(id) > -1} {...props} />
+                        </Slide>
+                    );
                 })}
-            </SwipeableViews>
-        </div>
-    );
-};
-
-const SlideItem = ({ number }) => {
-    return (
-        <div className="slide4" style={{ height: 800, backgroundColor: 'green' }}>
-            slide {number}
+            </Swiper>
         </div>
     );
 };
