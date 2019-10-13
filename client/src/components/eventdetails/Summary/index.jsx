@@ -5,7 +5,7 @@ import PreIddaa from '../PreIddaa';
 import Incidents from '../Incidents';
 import MatchInfo from '../MatchInfo';
 
-const Summary = ({ data, swiper }) => {
+const Summary = ({ data, swipeByTabId }) => {
     const { event } = data;
     return (
         <div className="swipe-content summary">
@@ -13,8 +13,8 @@ const Summary = ({ data, swiper }) => {
                 <div className="container">
                     <div className="white-box mt-2 pb-2">
                         <PressureGraph event={event} />
-                        <Bestplayer event={event} swiper={swiper} />
-                        <PreIddaa eventData={data} iddaaMatchData={data} swiper={swiper} />
+                        <Bestplayer event={event} swipeByTabId={swipeByTabId} />
+                        <PreIddaa eventData={data} iddaaMatchData={data} swipeByTabId={swipeByTabId} />
                         <Incidents incidents={event.incidents} />
                     </div>
                     <MatchInfo eventData={data} />

@@ -10,6 +10,10 @@ import Loading from '../common/Loading';
 import Summary from './Summary';
 import LiveTracker from './LiveTracker';
 import { appendValueToArray } from '../../Helper';
+import Stats from './Stats';
+import Scoreboard from './Scoreboard';
+import Lineups from './Lineups';
+import Injuries from './Injuries';
 
 const Eventdetails = ({ t, i18n }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -48,31 +52,70 @@ const Eventdetails = ({ t, i18n }) => {
     }, [getData]);
 
     if (error) return <Errors message={error} />;
-    if (isLoading) return <Loading />;
+    if (isLoading || !data) return <Loading />;
 
-    const slides = [
-        {
-            id: 0,
-            label: t('Summary'),
-            Component: Summary,
-            props: {
-                data,
-                swiper: swiper
-            }
+    const { event, ids } = data;
+    const { injuries, teams, lineups, stats } = event;
+    const slides = [];
+
+    const swipeByTabId = id => {
+        const targetIndex = slides.findIndex(x => x.id === id);
+        swiper.slideTo(targetIndex);
+    };
+
+    slides.push({
+        id: 0,
+        label: t('Summary'),
+        Component: Summary,
+        props: {
+            data,
+            swipeByTabId
         }
-    ];
+    });
 
-    if (data.ids.id_sp)
+    if (ids.id_sp)
         slides.push({
             id: 1,
             label: t('Live Tracker'),
             Component: LiveTracker,
             props: {
-                matchid: data.ids.id_sp
+                id_sp: ids.id_sp
             }
         });
 
-    const handleTabChange = (event, value) => {
+    if (stats)
+        slides.push({
+            id: 2,
+            label: t('Stats'),
+            Component: Stats,
+            props: {
+                stats
+            }
+        });
+
+    if (lineups)
+        slides.push({
+            id: 3,
+            label: t('Lineup'),
+            Component: Lineups,
+            props: {
+                lineups,
+                teams
+            }
+        });
+
+    if (injuries)
+        slides.push({
+            id: 4,
+            label: t('Injuries & Susp.'),
+            Component: Injuries,
+            props: {
+                injuries,
+                teams
+            }
+        });
+
+    const handleTabChange = (e, value) => {
         if (swiper) swiper.slideTo(value);
         setState({
             tabIndex: value,
@@ -94,17 +137,22 @@ const Eventdetails = ({ t, i18n }) => {
 
     return (
         <div className="event-details">
-            <Tabs
-                value={tabIndex}
-                onChange={handleTabChange}
-                variant="scrollable"
-                indicatorColor="secondary"
-                textColor="secondary"
-            >
-                {slides.map(({ label }) => (
-                    <Tab label={label} key={label} />
-                ))}
-            </Tabs>
+            <Scoreboard event={event} />
+            <div className="middle-tabs">
+                <div className="container">
+                    <Tabs
+                        value={tabIndex}
+                        onChange={handleTabChange}
+                        variant="scrollable"
+                        indicatorColor="secondary"
+                        textColor="secondary"
+                    >
+                        {slides.map(({ label }) => (
+                            <Tab label={label} key={label} />
+                        ))}
+                    </Tabs>
+                </div>
+            </div>
             <Swiper
                 swiperOptions={{
                     slidesPerView: 1,
@@ -117,6 +165,7 @@ const Eventdetails = ({ t, i18n }) => {
                 {slides.map(({ label, Component, props, id }) => {
                     return (
                         <Slide key={label}>
+                            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                             <Component hasActived={clickedTabIndex.indexOf(id) > -1} {...props} />
                         </Slide>
                     );

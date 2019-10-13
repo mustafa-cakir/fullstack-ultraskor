@@ -821,6 +821,7 @@
 			transition: all .2s linear;
 			cursor: pointer;
 			line-height: 55px;
+			background: #eee;
 			&.home {
 				border-right: 1px solid #ccc;
 				border-radius: 18px 0 0 18px;
@@ -860,6 +861,24 @@
 		}
 		.area {
 			margin-bottom: 20px;
+			opacity: 0;
+			transform: translateY(15px);
+			animation: fadeInFromUp .2s ease-in-out forwards;
+			&:nth-child(1) {
+				animation-delay: .1s;
+			}
+			&:nth-child(2) {
+				animation-delay: .2s;
+			}
+			&:nth-child(3) {
+				animation-delay: .3s;
+			}
+			&:nth-child(4) {
+				animation-delay: .4s;
+			}
+			&:nth-child(5) {
+				animation-delay: .6s;
+			}
 			&-2 {
 				padding: 0 25%;
 			}
@@ -944,37 +963,39 @@
 		}
 		.lineup-icon {
 			position: absolute;
-			&.yellowcard {
+			.yellowcard {
 
 			}
-			&.redcard {
+			.redcard {
 
 			}
-			&.regulargoal {
+			.regulargoal {
 
 			}
 		}
 	}
 	.lineup-icon {
 		display: inline-block;
-		left: -5px;
-		top: 5px;
-		width: 10px;
+		left: calc(100% - 5px);
+		top: 0;
 		height: 15px;
-		&.yellowcard {
+		span {
+			margin-right: 2px;
+		}
+		.yellowcard {
 			background: #f6c825;
 			box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 			z-index: 1;
 		}
-		&.redcard {
+		.redcard {
 			background: red;
 			box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 			z-index: 2;
 		}
-		&.regulargoal,
-		&.penalty,
-		&.owngoal,
-		&.missedpenalty {
+		.regulargoal,
+		.penalty,
+		.owngoal,
+		.missedpenalty {
 			font-family: "Font Awesome 5 Free";
 			font-weight: 400;
 			height: 17px;
@@ -994,17 +1015,17 @@
 				box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 			}
 		}
-		&.owngoal {
+		.owngoal {
 			color: red;
 		}
-		&.missedpenalty {
+		.missedpenalty {
 			font-weight: 900;
 			color: red;
 			&:before {
 				content: "\f00d";
 			}
 		}
-		&.substitutionin {
+		.substitutionin {
 			background: url(../images/icon-subs.png) center center no-repeat #fff;
 			background-size: 10px 10px;
 			width: 16px;
@@ -1169,6 +1190,21 @@
 }
 .mbs-4 {
 	background: #0d5b9f;
+}
+
+@keyframes fadeInFromUp {
+	0% {
+		opacity: 0;
+		transform: translateY(15px);
+	}
+	1% {
+		opacity: 0;
+		transform: translateY(15px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes fadeIn {

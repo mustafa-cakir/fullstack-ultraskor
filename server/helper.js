@@ -336,23 +336,25 @@ const convertToSofaScoreID = id => {
     );
 };
 
-const mergeEventDetailsData = (sofa, radar, oley, ids) => {
+const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, ids) => {
     if (!sofa) {
         if (isDev) console.log('data can not be gathered from sofa');
         throw Error('Whoops!');
     }
     const result = {};
     const { event } = sofa;
+    // result.radar = radar;
+    // result.oley = oley;
     result.ids = { ...ids };
     result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
     result.textList = oley ? oley.textList : null;
     result.event = {
+        ...(injuries && { injuries }),
         incidents: sofa.incidents,
         liveForm: sofa.liveForm,
         bestAwayTeamPlayer: event.bestAwayTeamPlayer,
         bestHomeTeamPlayer: event.bestHomeTeamPlayer,
         category: event.category,
-        confirmedLineups: event.confirmedLineups,
         id: convertToUltraSkorId(event.id),
         name: event.name,
         slug: generateSlug(event.name),
@@ -363,7 +365,23 @@ const mergeEventDetailsData = (sofa, radar, oley, ids) => {
         statusBoxContent: event.statusDescription,
         tournament: event.tournament,
         venue: event.venue,
+        lineups: sofaLineup,
+        stats: sofa.statistics,
         managerDuel: sofa.managerDuel,
+        ...(sofa.teamsForm && {
+            teamsForm: {
+                teams: {
+                    home: {
+                        form: sofa.teamsForm.homeTeam.form,
+                        rating: sofa.teamsForm.homeTeam.avgRating
+                    },
+                    away: {
+                        form: sofa.teamsForm.awayTeam.form,
+                        rating: sofa.teamsForm.awayTeam.avgRating
+                    }
+                }
+            }
+        }),
         teams: {
             home: {
                 id: event.homeTeam.id,
@@ -376,14 +394,15 @@ const mergeEventDetailsData = (sofa, radar, oley, ids) => {
                 slug: generateSlug(event.awayTeam.name)
             }
         },
-        hasHalfTimeScore: event.hasHalfTimeScore,
         scores: {
             home: event.homeScore.current,
             away: event.awayScore.current,
-            ht: {
-                home: event.homeScore.period1,
-                away: event.awayScore.period1
-            }
+            ...(event.hasHalfTimeScore && {
+                ht: {
+                    home: event.homeScore.period1,
+                    away: event.awayScore.period1
+                }
+            })
         },
         redCards: {
             home: event.homeRedCards,

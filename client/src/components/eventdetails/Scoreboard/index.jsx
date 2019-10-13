@@ -2,7 +2,7 @@ import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { generateSlug } from '../../../Helper';
+import { generateSlug, ratingClass } from '../../../Helper';
 
 const Scoreboard = ({ event, t }) => {
     return (
@@ -26,12 +26,17 @@ const Scoreboard = ({ event, t }) => {
                             />
                         </div>
                         <div className="team-name">{t(event.teams.home.name)}</div>
-                        {event.managerDuel ? (
-                            <div className="team-coach mb-2">{event.managerDuel.homeManager.name}</div>
-                        ) : (
-                            ''
+                        <div className="team-coach mb-2">
+                            {event.managerDuel ? event.managerDuel.homeManager.name : ''}
+                        </div>
+                        {event.teamsForm && (
+                            <div>
+                                <TeamForm data={event.teamsForm.teams.home.form} />
+                            </div>
                         )}
-                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.teams.home.form} /> : ''}</div>
+                        <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.home.rating)}`}>
+                            {event.teamsForm.teams.home.rating}
+                        </div>
                     </Link>
                     <div className="col-4 align-self-center middle">
                         <div className="time">
@@ -40,12 +45,10 @@ const Scoreboard = ({ event, t }) => {
                         <div className={`score${event.status.type === 'inprogress' ? ' live' : ''}`}>
                             {event.scores.home} - {event.scores.away}
                         </div>
-                        {event.hasHalfTimeScore ? (
+                        {event.scores.ht && (
                             <div className="score-halftime">
                                 (<Trans>HT</Trans>: {event.scores.ht.home} - {event.scores.ht.away})
                             </div>
-                        ) : (
-                            ''
                         )}
                     </div>
                     <Link
@@ -68,7 +71,14 @@ const Scoreboard = ({ event, t }) => {
                         <div className="team-coach mb-2">
                             {event.managerDuel ? event.managerDuel.awayManager.name : ''}
                         </div>
-                        <div>{event.teamsForm ? <TeamForm data={event.teamsForm.teams.away.form} /> : ''}</div>
+                        {event.teamsForm && (
+                            <div>
+                                <TeamForm data={event.teamsForm.teams.away.form} />
+                            </div>
+                        )}
+                        <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.away.rating)}`}>
+                            {event.teamsForm.teams.away.rating}
+                        </div>
                     </Link>
                 </div>
             </div>
@@ -124,15 +134,11 @@ const IsInProgress = ({ event }) => {
 };
 
 const TeamForm = ({ data }) => {
-    const result = [];
-    data.forEach(status => {
-        result.push(
-            <span key={Math.random()} className={`team-form team-form-${status}`}>
-                <Trans>{status}</Trans>
-            </span>
-        );
-    });
-    return result;
+    return data.map(status => (
+        <span key={Math.random()} className={`team-form team-form-${status}`}>
+            <Trans>{status}</Trans>
+        </span>
+    ));
 };
 
 export default withTranslation('translations')(Scoreboard);

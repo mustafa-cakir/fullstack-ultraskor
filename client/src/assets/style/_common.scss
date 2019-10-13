@@ -69,6 +69,16 @@ button {
 	}
 }
 
+button, [type="button"] {
+	-webkit-appearance: none;
+	font-size: 1rem;
+	line-height: normal;
+	box-shadow: none;
+	border:none;
+	padding: 0;
+	margin: 0;
+}
+
 .btn {
 	color: $color-link;
 }
@@ -276,7 +286,9 @@ code {
 	display: inline-block;
 	padding: 0px 4px;
 	font-weight: 700;
-
+	&.small {
+		font-size: .8rem
+	}
 	&.amazing {
 		color: #009f25;
 
@@ -541,8 +553,8 @@ code {
 	padding: 0;
 	border-bottom: 1px solid #ccc;
 	margin: 10px 0 15px 0;
-
-	li {
+	li,
+	button{
 		margin: 0 5px;
 
 		&:first-child {
@@ -1413,6 +1425,30 @@ footer {
 		margin-right: 10px;
 		margin-bottom: 10px;
 	}
+}
+
+.MuiTabs-root {
+
+}
+
+.MuiTab-root.MuiButtonBase-root{
+	padding: 6px 20px;
+	overflow: hidden;
+	position: relative;
+	font-size: 1rem;
+	max-width: 264px;
+	min-width: 72px;
+	box-sizing: border-box;
+	min-height: 48px;
+	text-align: center;
+	flex-shrink: 0;
+	font-family: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	white-space: normal;
+	letter-spacing: inherit;
+	text-transform: none;
+	color: #000;
 }
 
 .pure-dropdown {

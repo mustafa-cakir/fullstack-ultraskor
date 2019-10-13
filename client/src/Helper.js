@@ -181,19 +181,20 @@ export function Throttle(func, wait, options) {
 }
 
 export function ratingClass(value) {
-    value = Number(value);
-    if (value > 8.0) {
-        return 'amazing bg';
-    } else if (value > 7.5) {
-        return 'great bg';
-    } else if (value > 6.9) {
-        return 'good bg';
-    } else if (value > 5.9) {
-        return 'mediocre bg';
-    } else if (value > 4.9) {
-        return 'underwhelming bg';
-    } else {
-        return 'unrated bg';
+    value = parseFloat(value);
+    switch (true) {
+        case value > 8.0:
+            return 'amazing bg';
+        case value > 7.5:
+            return 'great bg';
+        case value > 6.9:
+            return 'good bg';
+        case value > 5.9:
+            return 'mediocre bg';
+        case value > 4.9:
+            return 'underwhelming bg';
+        default:
+            return 'unrated';
     }
 }
 

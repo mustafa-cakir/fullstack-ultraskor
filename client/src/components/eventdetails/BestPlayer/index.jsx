@@ -2,30 +2,18 @@ import React from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import Icon from '../../common/Icon';
 import { printImageSrc } from '../../../core/utils';
+import { ratingClass } from '../../../Helper';
 
-const BestPlayer = ({ event, swiper }) => {
+const BestPlayer = ({ event, swipeByTabId }) => {
     if (!event || !event.bestAwayTeamPlayer || !event.bestHomeTeamPlayer) return false;
-
-    const printRatingClassName = value => {
-        value = Number(value);
-        switch (value) {
-            case value > 8.0:
-                return 'amazing bg';
-            case value > 7.5:
-                return 'great bg';
-            case value > 6.9:
-                return 'good bg';
-            case value > 5.9:
-                return 'mediocre bg';
-            case value > 4.9:
-                return 'underwhelming bg';
-            default:
-                return 'unrated';
-        }
-    };
-
     return (
-        <div className="best-player" onClick={() => swiper.slideTo(1)}>
+        <div
+            className="best-player"
+            onClick={() => swipeByTabId(3)}
+            onKeyPress={() => swipeByTabId(3)}
+            tabIndex={1}
+            role="button"
+        >
             <div className="best-player-title text-center">
                 <Trans>Best Players</Trans>
             </div>
@@ -38,13 +26,13 @@ const BestPlayer = ({ event, swiper }) => {
                         />
                     </div>
                     <div className="col col-text">
-                        <div className={`text-bold rating ${printRatingClassName(event.bestHomeTeamPlayer.value)}`}>
+                        <div className={`text-bold rating ${ratingClass(event.bestHomeTeamPlayer.value)}`}>
                             {event.bestHomeTeamPlayer.value}
                         </div>
                         <div className="name">{event.bestHomeTeamPlayer.player.shortName}</div>
                     </div>
                     <div className="col col-text text-right align-items-end">
-                        <div className={`text-bold rating ${printRatingClassName(event.bestAwayTeamPlayer.value)}`}>
+                        <div className={`text-bold rating ${ratingClass(event.bestAwayTeamPlayer.value)}`}>
                             {event.bestAwayTeamPlayer.value}
                         </div>
                         <div className="name">{event.bestAwayTeamPlayer.player.shortName}</div>

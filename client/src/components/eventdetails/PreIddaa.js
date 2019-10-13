@@ -1,8 +1,8 @@
 import React from 'react';
-import IddaLogo from '../../assets/images/icon-iddaa.png';
 import { Trans, withTranslation } from 'react-i18next';
+import IddaLogo from '../../assets/images/icon-iddaa.png';
 
-const PreIddaa = ({ iddaaMatchData, swiper, eventData }) => {
+const PreIddaa = ({ iddaaMatchData, swipeByTabId, eventData }) => {
     if (!iddaaMatchData) return false;
     const { m } = iddaaMatchData;
 
@@ -15,7 +15,7 @@ const PreIddaa = ({ iddaaMatchData, swiper, eventData }) => {
                 <img src={IddaLogo} className="title-logo" alt="Iddaa Oranlari, Iddaa Tahminleri" />{' '}
                 <Trans>{isLive ? 'Live ' : ''}Iddaa Odds</Trans>
             </div>
-            <div className="pre-iddaa-container" onClick={() => swiper.slideTo(1)}>
+            <div className="pre-iddaa-container" onClick={() => swipeByTabId(1)}>
                 {m.map(market => {
                     // if (market.name !== "1-1") return false;
                     return (
@@ -42,7 +42,7 @@ const PreIddaa = ({ iddaaMatchData, swiper, eventData }) => {
                     );
                 })}
             </div>
-            <div onClick={() => swiper.slideTo(1)} className="pre-iddaa-link text-center">
+            <div onClick={() => swipeByTabId(1)} className="pre-iddaa-link text-center">
                 <span className="live-pulse" />{' '}
                 <span>
                     <Trans>See All {isLive ? 'Live ' : ''}Iddaa Odds</Trans> <i className="fas fa-angle-right" />

@@ -4,7 +4,7 @@ import Loading from '../common/Loading';
 import Errors from '../common/Errors';
 import Icon from '../common/Icon';
 
-class Injuries extends Component {
+class InjuriesOLD extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -210,4 +210,4 @@ const InjuryTable = props => {
     );
 };
 
-export default withTranslation('translations')(Injuries);
+export default withTranslation('translations')(InjuriesOLD);
