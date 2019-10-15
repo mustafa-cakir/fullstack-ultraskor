@@ -5,11 +5,23 @@ const cacheService = require('./cache.service');
 const { isDev, cacheDuration } = require('./helper');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
+const cronHandler = () => {
+    fetchHomepage(moment().format('YYYY-MM-DD'))
+        .then(response => {
+            const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+            cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
+        })
+        .catch(() => {
+            console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
+        });
+};
+
 exports.pushServiceChangesForWebPush = res => {
     const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
     const homepageListData = cacheService.instance().get(cacheKey);
     if (!homepageListData || !homepageListData.tournaments) {
         console.log('homepageListData can not be gathered from cache');
+        cronHandler();
         return false;
     }
 
@@ -87,17 +99,6 @@ exports.pushServiceChangesForWebPush = res => {
         initWebPushByWebSocket(redScoreBarIncident);
     }
     return false;
-};
-
-const cronHandler = () => {
-    fetchHomepage(moment().format('YYYY-MM-DD'))
-        .then(response => {
-            const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
-            cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
-        })
-        .catch(() => {
-            console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
-        });
 };
 
 cronHandler(); // run manually for the first time;

@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-const fetchSofaScore = query =>
+const fetchSofaScore = (query, cacheDuration) =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -14,7 +14,14 @@ const fetchSofaScore = query =>
             },
             timeout: 10000
         };
-        fetch(options, resolve, reject);
+        const cache = cacheDuration
+            ? {
+                  cacheKey: query,
+                  cacheDuration
+              }
+            : null;
+
+        fetch(options, resolve, reject, cache);
     });
 
 exports.fetchSofaScore = fetchSofaScore;

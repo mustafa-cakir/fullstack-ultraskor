@@ -14,6 +14,7 @@ import Stats from './Stats';
 import Scoreboard from './Scoreboard';
 import Lineups from './Lineups';
 import Injuries from './Injuries';
+import Standings from './Standings';
 
 const Eventdetails = ({ t, i18n }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -51,11 +52,15 @@ const Eventdetails = ({ t, i18n }) => {
         getData();
     }, [getData]);
 
+    const updateAutoHeight = useCallback(() => {
+        swiper.updateAutoHeight();
+    }, [swiper]);
+
     if (error) return <Errors message={error} />;
     if (isLoading || !data) return <Loading />;
 
     const { event, ids } = data;
-    const { injuries, teams, lineups, stats } = event;
+    const { injuries, teams, lineups, stats, isStanding, isLineups } = event;
     const slides = [];
 
     const swipeByTabId = id => {
@@ -79,7 +84,7 @@ const Eventdetails = ({ t, i18n }) => {
             label: t('Live Tracker'),
             Component: LiveTracker,
             props: {
-                id_sp: ids.id_sp
+                id: ids.id_sp
             }
         });
 
@@ -93,7 +98,7 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (lineups)
+    if (isLineups)
         slides.push({
             id: 3,
             label: t('Lineup'),
@@ -112,6 +117,17 @@ const Eventdetails = ({ t, i18n }) => {
             props: {
                 injuries,
                 teams
+            }
+        });
+
+    if (isStanding)
+        slides.push({
+            id: 5,
+            label: t('Standing'),
+            Component: Standings,
+            props: {
+                event,
+                updateAutoHeight
             }
         });
 

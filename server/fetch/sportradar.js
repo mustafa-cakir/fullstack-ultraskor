@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-const fetchSportRadar = query =>
+const fetchSportRadar = (query, cacheDuration) =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -13,7 +13,14 @@ const fetchSportRadar = query =>
             json: true,
             timeout: 10000
         };
-        fetch(options, resolve, reject);
+        const cache = cacheDuration
+            ? {
+                  cacheKey: query,
+                  cacheDuration
+              }
+            : null;
+
+        fetch(options, resolve, reject, cache);
     });
 
 exports.fetchSportRadar = fetchSportRadar;

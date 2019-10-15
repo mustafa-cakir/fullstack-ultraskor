@@ -133,9 +133,15 @@ const simplifyHomeData = res => {
 };
 
 const cacheDuration = {
+    sportRadarFunFacts: 60 * 60 * 24, // 7 days
+    oleyInjuries: 60 * 60 * 24, // 7 days
+    oleyTextList: 60 * 60 * 24 * 7, // 7 days
+    sofaLineups: 60 * 5, // 5 minutes
+    sofaEventdetails: 60 * 5, // 5 minutes
     homepageListToday: 60 * 30, // 30 min
     homepageList: 60 * 60 * 24, // 24 hours
-    eventDetails: 60 * 60 * 24, // 24 hours
+    eventDetails: 10, // 10 seconds
+    tournamentStandings: 10, // 10 seconds
     getEventIdFromDB: 60 * 60 * 24, // 24 hours
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
@@ -350,6 +356,9 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, ids) => 
     result.textList = oley ? oley.textList : null;
     result.event = {
         ...(injuries && { injuries }),
+        isStanding: sofa.standingsAvailable,
+        isLineups: event.hasLineups,
+        isLineupsList: event.hasLineupsList,
         incidents: sofa.incidents,
         liveForm: sofa.liveForm,
         bestAwayTeamPlayer: event.bestAwayTeamPlayer,

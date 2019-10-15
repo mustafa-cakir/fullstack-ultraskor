@@ -11,16 +11,18 @@ const fetchEventDetails = (eventId, language, cacheKey) => {
     return getEventIds(eventId).then(ids => {
         return new Promise((resolve, reject) => {
             const pAll = [];
-
             pAll.push(
-                fetchSofaScore(`/event/${ids.id_so}/json`).catch(() => {
+                fetchSofaScore(`/event/${ids.id_so}/json`, cacheDuration.sofaEventdetails).catch(() => {
                     return null;
                 })
             );
 
             pAll.push(
                 ids.id_sp
-                    ? fetchSportRadar(`/${language}/Europe:Istanbul/gismo/match_funfacts/${ids.id_sp}`).catch(() => {
+                    ? fetchSportRadar(
+                          `/${language}/Europe:Istanbul/gismo/match_funfacts/${ids.id_sp}`,
+                          cacheDuration.sportRadarFunFacts
+                      ).catch(() => {
                           return null;
                       })
                     : null
@@ -28,21 +30,21 @@ const fetchEventDetails = (eventId, language, cacheKey) => {
 
             pAll.push(
                 ids.id_br
-                    ? fetchOleyWidget(`teamstats/1/${ids.id_br}`).catch(() => {
+                    ? fetchOleyWidget(`teamstats/1/${ids.id_br}`, cacheDuration.oleyTextList).catch(() => {
                           return null;
                       })
                     : null
             );
 
             pAll.push(
-                fetchSofaScore(`/event/${ids.id_so}/lineups/json`).catch(() => {
+                fetchSofaScore(`/event/${ids.id_so}/lineups/json`, cacheDuration.sofaLineups).catch(() => {
                     return null;
                 })
             );
 
             pAll.push(
                 ids.id_br
-                    ? fetchOleyWidget(`missings/1/${ids.id_br}`).catch(() => {
+                    ? fetchOleyWidget(`missings/1/${ids.id_br}`, cacheDuration.oleyInjuries).catch(() => {
                           return null;
                       })
                     : null

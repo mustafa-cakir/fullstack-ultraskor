@@ -1,7 +1,7 @@
 import React from 'react';
 import i18n from 'i18next';
 
-const LiveTracker = ({ id_sp, hasActived }) => {
+const LiveTracker = ({ id, hasActived }) => {
     if (!hasActived) return false;
     const { language } = i18n;
     return (
@@ -9,7 +9,7 @@ const LiveTracker = ({ id_sp, hasActived }) => {
             <iframe
                 title="Live Match Tracker"
                 className="live-match-iframe"
-                src={`/static/live-match/index.html?matchid=${id_sp}&lang=${language}`}
+                src={`/static/live-match/index.html?matchid=${id}&lang=${language}`}
                 width="100%"
                 height="800"
                 frameBorder="no"

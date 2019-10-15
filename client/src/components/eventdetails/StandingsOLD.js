@@ -6,7 +6,7 @@ import { withTranslation } from 'react-i18next';
 import { generateSlug } from '../../Helper';
 import { Link } from 'react-router-dom';
 
-class Standings extends Component {
+class StandingsOLD extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -230,4 +230,4 @@ class Standings extends Component {
     }
 }
 
-export default withTranslation('translations')(Standings);
+export default withTranslation('translations')(StandingsOLD);

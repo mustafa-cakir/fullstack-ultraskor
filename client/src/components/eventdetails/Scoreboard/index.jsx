@@ -30,13 +30,15 @@ const Scoreboard = ({ event, t }) => {
                             {event.managerDuel ? event.managerDuel.homeManager.name : ''}
                         </div>
                         {event.teamsForm && (
-                            <div>
-                                <TeamForm data={event.teamsForm.teams.home.form} />
-                            </div>
+                            <>
+                                <div>
+                                    <TeamForm data={event.teamsForm.teams.home.form} />
+                                </div>
+                                <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.home.rating)}`}>
+                                    {event.teamsForm.teams.home.rating}
+                                </div>
+                            </>
                         )}
-                        <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.home.rating)}`}>
-                            {event.teamsForm.teams.home.rating}
-                        </div>
                     </Link>
                     <div className="col-4 align-self-center middle">
                         <div className="time">
@@ -72,13 +74,15 @@ const Scoreboard = ({ event, t }) => {
                             {event.managerDuel ? event.managerDuel.awayManager.name : ''}
                         </div>
                         {event.teamsForm && (
-                            <div>
-                                <TeamForm data={event.teamsForm.teams.away.form} />
-                            </div>
+                            <>
+                                <div>
+                                    <TeamForm data={event.teamsForm.teams.away.form} />
+                                </div>
+                                <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.away.rating)}`}>
+                                    {event.teamsForm.teams.away.rating}
+                                </div>
+                            </>
                         )}
-                        <div className={`mt-2 rating small ${ratingClass(event.teamsForm.teams.away.rating)}`}>
-                            {event.teamsForm.teams.away.rating}
-                        </div>
                     </Link>
                 </div>
             </div>
@@ -93,7 +97,7 @@ const IsInProgress = ({ event }) => {
         case 'inprogress':
             text = (
                 <div className="red font-weight-bold">
-                    <Trans>{event.statusDescription}</Trans>
+                    <Trans>{event.statusBoxContent}</Trans>
                     {event.status.code === 6 ? '' : ''}
                     {liveBlinkerCodes.indexOf(event.status.code) > -1 ? <span className="live-blinker">'</span> : ''}
                 </div>
