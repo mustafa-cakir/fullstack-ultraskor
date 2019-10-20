@@ -594,6 +594,35 @@ code {
 	}
 }
 
+.sort-by {
+	&-container {
+		margin: 0 0 13px;
+		text-align: right;
+		padding: 0 10px;
+	}
+	&-btn {
+		background: #fff;
+		margin-left: 15px;
+		line-height: 16px;
+		color: $link-color;
+		border: 1px solid #eee;
+		padding: 5px 10px;
+		.checkbox {
+			margin-right: 1.8rem;
+			top: 3px;
+		}
+	}
+}
+
+.show-more {
+	padding: 10px;
+	text-align: center;
+	color: #007bff;
+	background: rgba(#007bff, .1);
+	width: 100%;
+	display: block;
+}
+
 .white-box {
 	margin: 0 -15px 10px -15px;
 	background: #fff;
@@ -1182,12 +1211,6 @@ code {
 		&:last-child {
 			border: none;
 		}
-	}
-
-	.show-more {
-		padding: 10px;
-		text-align: center;
-		color: #007bff;
 	}
 }
 

@@ -81,9 +81,11 @@ class Tournament extends PureComponent {
                                     to={{
                                         pathname: `/${t('league')}/${generateSlug(
                                             t(tournament.category.name)
-                                        )}-${generateSlug(tournament.tournament.name[i18n.language])}${t(
-                                            '-standing-'
-                                        )}${tournament.tournament.uniqueId}${t('-season-')}${
+                                        )}-${generateSlug(
+                                            tournament.tournament.name[i18n.language]
+                                                ? tournament.tournament.name[i18n.language]
+                                                : tournament.tournament.name
+                                        )}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${
                                             tournament.season ? tournament.season.id : '0'
                                         }`,
                                         state: { isPrev: true }
@@ -105,7 +107,7 @@ class Tournament extends PureComponent {
                                 return (
                                     <Event
                                         key={event.id}
-                                        favEvents={favEvents}
+                                        favEvents={favEvents || []}
                                         favEventsList={favEventsList}
                                         index={k}
                                         selectedId={selectedId}

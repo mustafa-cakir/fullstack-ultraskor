@@ -6,7 +6,7 @@ import { Trans } from 'react-i18next';
 import Icon from '../common/Icon';
 import { withTranslation } from 'react-i18next';
 
-class H2h extends Component {
+class H2hOLD extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -184,4 +184,4 @@ class MatchTextInfo extends PureComponent {
     }
 }
 
-export default withTranslation('translations')(H2h);
+export default withTranslation('translations')(H2hOLD);

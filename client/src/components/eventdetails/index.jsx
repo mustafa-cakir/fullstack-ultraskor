@@ -10,6 +10,7 @@ import Loading from '../common/Loading';
 import Summary from './Summary';
 import LiveTracker from './LiveTracker';
 import { appendValueToArray } from '../../Helper';
+import H2h from './H2h';
 import Stats from './Stats';
 import Scoreboard from './Scoreboard';
 import Lineups from './Lineups';
@@ -17,20 +18,22 @@ import Injuries from './Injuries';
 import Standings from './Standings';
 
 const Eventdetails = ({ t, i18n }) => {
-    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
+    const initialStates = {
         tabIndex: 0,
         clickedTabIndex: [0],
         data: null,
         error: null,
         isLoading: true,
         swiper: null
-    });
+    };
+    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), initialStates);
     const { language } = i18n;
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
     const params = useParams();
     const { eventid } = params;
 
     const getData = useCallback(() => {
+        setState(initialStates);
         axios
             .get(`/api/eventdetails/${eventid}/${language}`)
             .then(res => {
@@ -53,13 +56,15 @@ const Eventdetails = ({ t, i18n }) => {
     }, [getData]);
 
     const updateAutoHeight = useCallback(() => {
-        swiper.updateAutoHeight();
+        setTimeout(() => {
+            swiper.updateAutoHeight();
+        });
     }, [swiper]);
 
     if (error) return <Errors message={error} />;
     if (isLoading || !data) return <Loading />;
 
-    const { event, ids } = data;
+    const { event, ids, matches, textList } = data;
     const { injuries, teams, lineups, stats, isStanding, isLineups } = event;
     const slides = [];
 
@@ -131,11 +136,24 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
+    if (matches)
+        slides.push({
+            id: 6,
+            label: t('Head To Head'),
+            Component: H2h,
+            props: {
+                matches,
+                teams,
+                textList,
+                updateAutoHeight
+            }
+        });
+
     const handleTabChange = (e, value) => {
         if (swiper) swiper.slideTo(value);
         setState({
             tabIndex: value,
-            clickedTabIndex: appendValueToArray(clickedTabIndex, slides[value].id)
+            clickedTabIndex: appendValueToArray(clickedTabIndex, slides[value] ? slides[value].id : 0)
         });
     };
 
@@ -146,7 +164,10 @@ const Eventdetails = ({ t, i18n }) => {
         swiperInstance.on('slideChange', () => {
             setState({
                 tabIndex: swiperInstance.activeIndex,
-                clickedTabIndex: appendValueToArray(clickedTabIndex, slides[swiperInstance.activeIndex].id)
+                clickedTabIndex: appendValueToArray(
+                    clickedTabIndex,
+                    slides[swiperInstance.activeIndex] ? slides[swiperInstance.activeIndex].id : 0
+                )
             });
         });
     };

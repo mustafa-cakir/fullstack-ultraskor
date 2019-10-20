@@ -342,7 +342,132 @@ const convertToSofaScoreID = id => {
     );
 };
 
-const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, ids) => {
+const preprocessTournaments = tournaments => {
+    const result = [];
+    tournaments.forEach(tournament => {
+        const tempTournament = {};
+        tempTournament.category = {
+            icon: tournament.category.flag,
+            id: tournament.category.id,
+            name: tournament.category.name
+        };
+        tempTournament.season = tournament.season
+            ? {
+                  id: tournament.season.id
+              }
+            : null;
+        tempTournament.tournament = {
+            id: tournament.tournament.id,
+            uniqueId: tournament.tournament.uniqueId,
+            name: {
+                en: tournament.tournament.name,
+                tr: tournament.tournament.name
+            }
+        };
+        tempTournament.events = [];
+        tournament.events.forEach(event => {
+            if (event.status.type === 'finished') {
+                tempTournament.events.push({
+                    teams: {
+                        home: {
+                            id: event.homeTeam.id,
+                            name: event.homeTeam.name
+                        },
+                        away: {
+                            id: event.awayTeam.id,
+                            name: event.awayTeam.name
+                        }
+                    },
+                    scores: {
+                        home: event.homeScore.current,
+                        away: event.awayScore.current,
+                        ht: {
+                            home: event.homeScore.period1,
+                            away: event.awayScore.period1
+                        }
+                    },
+                    redCards: {
+                        home: event.homeRedCards,
+                        away: event.awayRedCards
+                    },
+                    id: convertToUltraSkorId(event.id),
+                    startTimestamp: event.startTimestamp * 1000,
+                    status: event.status,
+                    statusBoxContent: event.statusDescription,
+                    winner: event.winnerCode
+                });
+            }
+        });
+        if (tempTournament.events.length > 0) result.push(tempTournament);
+    });
+    return result;
+};
+
+const getH2hByDates = data => {
+    const result = {};
+    const homeTournaments = [];
+    if (data.home.recent) homeTournaments.push(...preprocessTournaments(data.home.recent.tournaments));
+
+    const awayTournaments = [];
+    if (data.away.recent) awayTournaments.push(...preprocessTournaments(data.away.recent.tournaments));
+
+    const h2hTournaments = [];
+    if (data.h2h.events) h2hTournaments.push(...preprocessTournaments(data.h2h.events.tournaments));
+
+    result.home = homeTournaments;
+    result.away = awayTournaments;
+    result.h2h = h2hTournaments;
+    return result;
+};
+
+const combineH2hTournamentsByTournament = tournaments => {
+    const tempTournaments = [];
+
+    tournaments.forEach(tournament => {
+        const index = tempTournaments.findIndex(x => x.tournament.uniqueId === tournament.tournament.uniqueId);
+        if (index > -1) {
+            tournament.events.forEach(event => {
+                const eventIndex = tempTournaments[index].events.findIndex(x => x.id === event.id);
+                if (eventIndex === -1) tempTournaments[index].events.push(event);
+            });
+        } else {
+            tempTournaments.push(tournament);
+        }
+    });
+    return tempTournaments;
+};
+
+const getH2hByTournaments = data => {
+    const result = {};
+    const tempHomeTournaments = [];
+    if (data.home.recent) tempHomeTournaments.push(...preprocessTournaments(data.home.recent.tournaments));
+    if (data.home.playedAt) tempHomeTournaments.push(...preprocessTournaments(data.home.playedAt.tournaments));
+    if (data.home.playedAtThisTournament)
+        tempHomeTournaments.push(...preprocessTournaments(data.home.playedAtThisTournament.tournaments));
+    if (data.home.thisTournament)
+        tempHomeTournaments.push(...preprocessTournaments(data.home.thisTournament.tournaments));
+    const homeTournaments = combineH2hTournamentsByTournament(tempHomeTournaments);
+
+    const tempAwayTournaments = [];
+    if (data.away.recent) tempAwayTournaments.push(...preprocessTournaments(data.away.recent.tournaments));
+    if (data.away.playedAt) tempAwayTournaments.push(...preprocessTournaments(data.away.playedAt.tournaments));
+    if (data.away.playedAtThisTournament)
+        tempAwayTournaments.push(...preprocessTournaments(data.away.playedAtThisTournament.tournaments));
+    if (data.away.thisTournament)
+        tempAwayTournaments.push(...preprocessTournaments(data.away.thisTournament.tournaments));
+    const awayTournaments = combineH2hTournamentsByTournament(tempAwayTournaments);
+
+    const tempH2hTournaments = [];
+    if (data.h2h.events) tempH2hTournaments.push(...preprocessTournaments(data.h2h.events.tournaments));
+    const h2hTournaments = combineH2hTournamentsByTournament(tempH2hTournaments);
+
+    result.home = homeTournaments;
+    result.away = awayTournaments;
+    result.h2h = h2hTournaments;
+    return result;
+};
+
+const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatches, ids) => {
     if (!sofa) {
         if (isDev) console.log('data can not be gathered from sofa');
         throw Error('Whoops!');
@@ -354,6 +479,10 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, ids) => 
     result.ids = { ...ids };
     result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
     result.textList = oley ? oley.textList : null;
+    result.matches = {
+        byDates: sofaMatches ? getH2hByDates(sofaMatches) : null,
+        byTournaments: sofaMatches ? getH2hByTournaments(sofaMatches) : null
+    };
     result.event = {
         ...(injuries && { injuries }),
         isStanding: sofa.standingsAvailable,
@@ -490,10 +619,12 @@ const mergeHomepageData = (sofa, radar, broad) => {
                         scores: {
                             home: event.homeScore.current,
                             away: event.awayScore.current,
-                            ht: {
-                                home: event.homeScore.period1,
-                                away: event.awayScore.period1
-                            }
+                            ...(event.hasHalfTimeScore && {
+                                ht: {
+                                    home: event.homeScore.period1,
+                                    away: event.awayScore.period1
+                                }
+                            })
                         },
                         redCards: {
                             home: event.homeRedCards,

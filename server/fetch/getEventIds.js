@@ -1,5 +1,7 @@
 const { db } = require('../utils/firebase');
 const cacheService = require('../cache.service');
+const { convertToSofaScoreID } = require('../helper');
+const { isDev } = require('../helper');
 const { cacheDuration } = require('../helper');
 
 const getEventIds = eventId => {
@@ -16,7 +18,11 @@ const getEventIds = eventId => {
                         cacheService.instance().set(cacheKey, doc.data(), cacheDuration.getEventIdFromDB);
                         resolve(doc.data());
                     } else {
-                        reject(Error('DB: not exist'));
+                        const ids = {
+                            id_so: convertToSofaScoreID(eventId)
+                        };
+                        if (isDev) console.log(eventId, ' does not exist in DB. Get back to legacy');
+                        resolve(ids);
                     }
                 })
                 .catch(() => {

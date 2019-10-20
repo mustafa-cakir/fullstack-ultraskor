@@ -50,11 +50,25 @@ const fetchEventDetails = (eventId, language, cacheKey) => {
                     : null
             );
 
+            pAll.push(
+                fetchSofaScore(`/event/${ids.id_so}/matches/json`, cacheDuration.sofaLineups).catch(() => {
+                    return null;
+                })
+            );
+
             Promise.all(pAll)
                 .then(values => {
-                    const merged = mergeEventDetailsData(values[0], values[1], values[2], values[3], values[4], ids);
+                    const merged = mergeEventDetailsData(
+                        values[0],
+                        values[1],
+                        values[2],
+                        values[3],
+                        values[4],
+                        values[5],
+                        ids
+                    );
                     if (!merged) throw Error('error');
-                    if (values[0] && values[1] && values[2]) {
+                    if (values[0] && values[1] && values[2] && values[3] && values[5]) {
                         cacheService.instance().set(cacheKey, merged, cacheDuration.eventDetails);
                     }
                     resolve(merged);

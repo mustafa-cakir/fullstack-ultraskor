@@ -222,7 +222,7 @@ class Event extends Component {
                         )}-${t('live-score')}-${event.id}`,
                         state: { isPrev: true, scrollY: 123 }
                     }}
-                    className={`event-link col p-0 row m-0 ${event.winnerCode ? `winner-${event.winnerCode}` : ''}`}
+                    className={`event-link col p-0 row m-0 ${event.winner ? `winner-${event.winner}` : ''}`}
                     title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
                         'click for live scores, lineup and stats'
                     )}`}
@@ -257,10 +257,9 @@ class Event extends Component {
                             <TeamForm selectedId={selectedId} event={event} />
                         ) : (
                             <span>
-                                {typeof event.scores.home.period1 !== 'undefined' ||
-                                typeof event.scores.away.period1 !== 'undefined'
-                                    ? `(${event.scores.home.period1 || 0}-${event.scores.away.period1 || 0})`
-                                    : ''}
+                                {typeof event.scores.ht.home !== 'undefined' &&
+                                    typeof event.scores.ht.away !== 'undefined' &&
+                                    `(${event.scores.ht.home || 0} - ${event.scores.ht.away || 0})`}
                             </span>
                         )}
                     </div>
@@ -285,11 +284,11 @@ class Event extends Component {
 const TeamForm = props => {
     const { event, selectedId } = props;
     let result = null;
-    if (event.winnerCode === 1) {
-        result = parseFloat(selectedId) === event.homeTeam.id ? 'W' : 'L';
-    } else if (event.winnerCode === 2) {
-        result = parseFloat(selectedId) === event.homeTeam.id ? 'L' : 'W';
-    } else if (event.winnerCode === 3) {
+    if (event.winner === 1) {
+        result = parseFloat(selectedId) === event.teams.home.id ? 'W' : 'L';
+    } else if (event.winner === 2) {
+        result = parseFloat(selectedId) === event.teams.home.id ? 'L' : 'W';
+    } else if (event.winner === 3) {
         result = 'D';
     }
 
