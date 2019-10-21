@@ -15,19 +15,19 @@ module.exports = (options, resolve, reject, cache) => {
     const onError = () => reject(Error('501'));
 
     const remoteRequest = () => {
-        if (isTorDisabled) {
-            request(options)
-                .then(onSuccess)
-                .catch(onError);
-        } else {
-            tor.request(options, (err, status, res) => {
-                if (!err && status.statusCode === 200) {
-                    onSuccess(res);
-                } else {
-                    onError(err);
-                }
-            });
-        }
+        // if (isTorDisabled) {
+        request(options)
+            .then(onSuccess)
+            .catch(onError);
+        // } else {
+        //     tor.request(options, (err, status, res) => {
+        //         if (!err && status.statusCode === 200) {
+        //             onSuccess(res);
+        //         } else {
+        //             onError(err);
+        //         }
+        //     });
+        // }
     };
 
     const cachedData = cache ? cacheService.instance().get(cache.cacheKey) : null;
