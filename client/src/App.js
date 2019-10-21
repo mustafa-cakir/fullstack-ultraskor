@@ -5,7 +5,7 @@ import ReactGA from 'react-ga';
 import './assets/style/app.scss';
 import Navbar from './components/Navbar';
 import Homepage from './components/Homepage';
-import Eventdetails from './components/Eventdetails';
+import Eventdetails from './components/eventdetails';
 import Errors from './components/common/Errors';
 import TestComp from './components/TestComp';
 import Mp3Goal from './assets/sound/goal.mp3';
