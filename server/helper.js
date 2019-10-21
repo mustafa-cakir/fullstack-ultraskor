@@ -717,6 +717,10 @@ const mergeUTournamentRoundsData = data => {
     return result;
 };
 
+const isEmpty = obj => {
+    return Object.keys(obj).length === 0;
+};
+
 exports.generateSlug = generateSlug;
 exports.cacheDuration = cacheDuration;
 exports.userConnected = userConnected;
@@ -737,3 +741,4 @@ exports.mergeEventDetailsData = mergeEventDetailsData;
 exports.mergeHomepageData = mergeHomepageData;
 exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
+exports.isEmpty = isEmpty;

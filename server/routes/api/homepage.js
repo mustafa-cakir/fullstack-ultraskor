@@ -3,6 +3,7 @@ const router = require('express').Router();
 const cacheService = require('../../cache.service');
 const { cacheDuration } = require('../../helper');
 const auth = require('../auth');
+const { isEmpty } = require('../../helper');
 const { fetchHomepage } = require('../../fetch/homepage');
 
 router.get('/:date', auth.optional, (req, res) => {
@@ -13,7 +14,9 @@ router.get('/:date', auth.optional, (req, res) => {
     const remoteRequest = () => {
         fetchHomepage(date)
             .then(data => {
-                cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
+                if (!isEmpty(data)) {
+                    cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
+                }
                 res.send(data);
             })
             .catch(() => {
