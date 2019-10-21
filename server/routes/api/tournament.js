@@ -11,7 +11,10 @@ router.get('/standings/:tournamentId/:seasonId', auth.optional, (req, res) => {
     const remoteRequest = () => {
         fetchSofaScore(`/tournament/${tournamentId}/${seasonId}/standings/tables/json`)
             .then(data => {
-                cacheService.instance().set(cacheKey, data, cacheDuration.tournamentStandings);
+                if (data && data.teamEvents) {
+                    delete data.teamEvents;
+                    cacheService.instance().set(cacheKey, data, cacheDuration.tournamentStandings);
+                }
                 res.send(data);
             })
             .catch(() => {

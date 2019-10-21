@@ -7,12 +7,12 @@ import StandingTable from '../../common/StandingTable';
 
 const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
-        data: null,
+        standingsTables: null,
         error: null,
         isLoading: true,
         tab: 'Total'
     });
-    const { data, error, isLoading } = state;
+    const { standingsTables, error, isLoading } = state;
     const { teams, tournament, season } = event;
     const getData = useCallback(() => {
         axios
@@ -20,19 +20,17 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
             .then(res => {
                 setState({
                     isLoading: false,
-                    data: res.data.standingsTables[0],
-                    isLoaded: true
+                    standingsTables: res.data.standingsTables
                 });
                 updateAutoHeight();
             })
-            .catch(err => {
+            .catch(() => {
                 setState({
                     isLoading: false,
-                    error: err,
-                    isLoaded: true
+                    error: t('Something went wrong')
                 });
             });
-    }, [tournament.id, season.id, updateAutoHeight]);
+    }, [tournament.id, season.id, updateAutoHeight, t]);
 
     useEffect(() => {
         if (hasActived) {
@@ -44,7 +42,7 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
     if (isLoading) return <Loading type="inside" />;
     if (error) return <Errors message={error} />;
 
-    return <StandingTable data={data} teams={teams} />;
+    return <StandingTable standingsTables={standingsTables} teams={teams} />;
 };
 
 export default withTranslation('translations')(Standings);
