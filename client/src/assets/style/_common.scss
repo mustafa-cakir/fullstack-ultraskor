@@ -1475,24 +1475,37 @@ footer {
 }
 
 .pure-dropdown {
-	color: $color-link;
-	margin: 10px 0;
-	border: 1px solid rgba($color-link, .5);
-	padding: 5px 20px;
-	display: block;
 	position: relative;
-	border-radius: 17px;
-	cursor: pointer;
-	outline: none;
-	min-width: 120px;
-
-	&:hover {
-		color: $color-link-hover;
+	&-btn {
+		width: 100%;
+		color: $color-link;
+		border: 1px solid rgba($color-link, .5);
+		padding: 5px 20px;
+		border-radius: 17px;
+		cursor: pointer;
+		outline: none;
+		min-width: 120px;
+		margin: 10px auto;
+		display: block;
+		&:hover {
+			color: $color-link-hover;
+		}
+		.fas {
+			margin-left: 8px;
+			transition: transform .1s linear;
+		}
 	}
-
-	.fas {
-		margin-left: 8px;
-		transition: transform .1s linear;
+	&.open {
+		.pure-dropdown-btn {
+			background: $color-link;
+			color: #fff;
+		}
+		.fas{
+			transform: rotate(180deg);
+		}
+		.dropdown {
+			display: block;
+		}
 	}
 
 	.dropdown {
@@ -1527,36 +1540,33 @@ footer {
 			margin: 0;
 			padding: 0;
 			list-style: none;
-
 			li {
-				padding: 11px 16px;
-				cursor: pointer;
-				color: rgba(0, 0, 0, 0.87);
-				transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-
-				&:hover {
-					background-color: rgba(0,0,0,.04);
-				}
-
 				&.active {
-					background-color: rgba(0,0,0,.12);
-					font-style: italic;
+					button,
+					button:hover {
+						background-color: rgba(0, 0, 0, .12);
+						font-style: italic;
+					}
 				}
 
 				&.this-round {
-					color: $color-cl-4;
+					button {
+						color: $color-cl-4;
+					}
+				}
+
+				button {
+					width: 100%;
+					padding: 11px 16px;
+					cursor: pointer;
+					color: rgba(0, 0, 0, 0.87);
+					transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+
+					&:hover {
+						background-color: rgba(0, 0, 0, .04);
+					}
 				}
 			}
-		}
-	}
-	&.open {
-		background: $color-link;
-		color: #fff;
-		.fas{
-			transform: rotate(180deg);
-		}
-		.dropdown {
-			display: block;
 		}
 	}
 }

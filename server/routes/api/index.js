@@ -3,6 +3,7 @@ router.use('/', require('./sofascore'));
 router.use('/homepage/list', require('./homepage'));
 router.use('/eventdetails', require('./eventdetails'));
 router.use('/tournament', require('./tournament'));
+router.use('/u-tournament', require('./u-tournament'));
 router.use('/webpush', require('./webpush'));
 router.use('/helper1', require('./sportradar'));
 router.use('/helper2', require('./oley'));

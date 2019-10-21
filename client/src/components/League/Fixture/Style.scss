@@ -1,0 +1,39 @@
+@import '../../../assets/style/colors';
+
+.section-fixture {
+    background: #f1f2f3;
+    min-height: calc(100vh - 212px);
+    .tournament-title {
+        top: 0;
+    }
+    .event-container:nth-child(odd) {
+        background: rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #eee;
+    }
+    .event-time {
+        .day {
+            display: block;
+        }
+    }
+    .white-box {
+        padding: 0;
+    }
+    .col-nav {
+        color: $color-link;
+        line-height: 50px;
+        cursor: pointer;
+        padding: 0 15px;
+        &.not-exist {
+            color: #ccc;
+            cursor: not-allowed;
+            &:hover {
+                background: none;
+                color: #ccc;
+            }
+        }
+        &:hover {
+            color: $color-link-hover;
+            background: rgba($color-link, 0.05);
+        }
+    }
+}

@@ -18,6 +18,7 @@ import Mp3Start from './assets/sound/start.mp3';
 import Teamdetails from './components/teamdetails/Teamdetails';
 import PullToRefresh from './components/common/PullToRefresh';
 import ErrorBoundary from './ErrorBoundary';
+import Leageue from './components/League';
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -124,9 +125,9 @@ class App extends Component {
                         <Route
                             exact
                             path="/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?"
-                            render={props => (
+                            render={() => (
                                 <ErrorBoundary>
-                                    <Leaguedetails socket={socket} {...props} />
+                                    <Leageue />
                                 </ErrorBoundary>
                             )}
                         />

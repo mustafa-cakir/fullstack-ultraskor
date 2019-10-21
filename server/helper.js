@@ -142,6 +142,8 @@ const cacheDuration = {
     homepageList: 60 * 60 * 24, // 24 hours
     eventDetails: 10, // 10 seconds
     tournamentStandings: 10, // 10 seconds
+    uTournamentStandings: 10, // 10 seconds
+    uTournamentStandingsRounds: 60 * 60 * 24, // 24 hours
     getEventIdFromDB: 60 * 60 * 24, // 24 hours
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
@@ -342,7 +344,7 @@ const convertToSofaScoreID = id => {
     );
 };
 
-const preprocessTournaments = tournaments => {
+const preprocessTournaments = (tournaments, includeNotStartedEvents = false) => {
     const result = [];
     tournaments.forEach(tournament => {
         const tempTournament = {};
@@ -366,7 +368,7 @@ const preprocessTournaments = tournaments => {
         };
         tempTournament.events = [];
         tournament.events.forEach(event => {
-            if (event.status.type === 'finished') {
+            if (event.status.type === 'finished' || includeNotStartedEvents) {
                 tempTournament.events.push({
                     teams: {
                         home: {
@@ -701,6 +703,20 @@ const mergeHomepageData = (sofa, radar, broad) => {
     });
 };
 
+const mergeUTournamentData = data => {
+    const result = { ...data };
+    delete result.teamEvents;
+    result.events.roundMatches.tournaments = preprocessTournaments(result.events.roundMatches.tournaments, true);
+    return result;
+};
+
+const mergeUTournamentRoundsData = data => {
+    const result = { ...data.roundMatches };
+    delete result.sport;
+    result.tournaments = preprocessTournaments(result.tournaments, true);
+    return result;
+};
+
 exports.generateSlug = generateSlug;
 exports.cacheDuration = cacheDuration;
 exports.userConnected = userConnected;
@@ -719,3 +735,5 @@ exports.convertToUltraSkorId = convertToUltraSkorId;
 exports.convertToSofaScoreID = convertToSofaScoreID;
 exports.mergeEventDetailsData = mergeEventDetailsData;
 exports.mergeHomepageData = mergeHomepageData;
+exports.mergeUTournamentData = mergeUTournamentData;
+exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
