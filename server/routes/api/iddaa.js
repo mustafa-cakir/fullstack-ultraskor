@@ -43,7 +43,7 @@ router.get('/list/:date', auth.optional, (req, res) => {
                 }
                 res.send(responseData);
             } else {
-                res.statusCode(501);
+                res.status(501).send('Something went wrong!');
             }
         };
 

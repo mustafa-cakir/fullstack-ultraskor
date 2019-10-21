@@ -30,11 +30,11 @@ router.get('/:type/:matchid', auth.optional, (req, res) => {
                             .set(response);
                     res.send(response);
                 } else {
-                    res.statusCode(501);
+                    res.status(501).send('Something went wrong!');
                 }
             })
             .catch(() => {
-                res.statusCode(500);
+                res.status(500).send('Something went wrong!');
             });
     };
 

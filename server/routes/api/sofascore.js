@@ -22,7 +22,7 @@ router.get('/', auth.optional, (req, res) => {
                 }
             })
             .catch(() => {
-                res.statusCode(500);
+                res.status(500).send('Something went wrong!');
             });
     };
 

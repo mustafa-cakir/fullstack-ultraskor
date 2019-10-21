@@ -43,7 +43,7 @@ router.get('/:date', auth.optional, (req, res) => {
                     }
                     res.send(matchList);
                 } else {
-                    res.statusCode(501);
+                    res.status(501);
                 }
             })
             .catch(() => {
