@@ -2,14 +2,17 @@ const { CronJob } = require('cron');
 const moment = require('moment');
 const { fetchHomepage } = require('./fetch/homepage');
 const cacheService = require('./cache.service');
+const { isEmpty } = require('./helper');
 const { isDev, cacheDuration } = require('./helper');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
 const cronHandler = () => {
     fetchHomepage(moment().format('YYYY-MM-DD'))
         .then(response => {
-            const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
-            cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
+            if (!isEmpty(response)) {
+                const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
+                cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
+            }
         })
         .catch(() => {
             console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
@@ -21,7 +24,6 @@ exports.pushServiceChangesForWebPush = res => {
     const homepageListData = cacheService.instance().get(cacheKey);
     if (!homepageListData || !homepageListData.tournaments) {
         console.log('homepageListData can not be gathered from cache');
-        cronHandler();
         return false;
     }
 
