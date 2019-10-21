@@ -18,22 +18,29 @@ import Injuries from './Injuries';
 import Standings from './Standings';
 
 const Eventdetails = ({ t, i18n }) => {
-    const initialStates = {
+    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         tabIndex: 0,
         clickedTabIndex: [0],
         data: null,
         error: null,
         isLoading: true,
         swiper: null
-    };
-    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), initialStates);
+    });
+
     const { language } = i18n;
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
     const params = useParams();
     const { eventid } = params;
 
     const getData = useCallback(() => {
-        setState(initialStates);
+        setState({
+            tabIndex: 0,
+            clickedTabIndex: [0],
+            data: null,
+            error: null,
+            isLoading: true,
+            swiper: null
+        });
         axios
             .get(`/api/eventdetails/${eventid}/${language}`)
             .then(res => {

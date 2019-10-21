@@ -6,6 +6,7 @@ import Icon from '../../common/Icon';
 import Loading from '../../common/Loading';
 import Tournament from '../../common/Tournament';
 import './Style.scss';
+import Errors from '../../common/Errors';
 
 const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
     const initialStates = {
@@ -22,7 +23,6 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
         axios
             .get(`/api/u-tournament/${leagueid}/${seasonid}/matches/round/${round}${name ? `/${name}` : ''}`)
             .then(res => {
-                console.log(res.data);
                 setState({
                     isLoading: false,
                     roundMatchesLocal: res.data,
@@ -60,6 +60,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
     const prevRound = rounds[getCurrentRoundIndex - 1];
     const nextRound = rounds[getCurrentRoundIndex + 1];
 
+    if (error) return <Errors message={error} />;
     return (
         <div className="section-fixture">
             <div className="container">

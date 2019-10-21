@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
+import socketIOClient from 'socket.io-client';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import './assets/style/app.scss';
 import Navbar from './components/Navbar';
 import Homepage from './components/Homepage';
-import { Route, Switch, withRouter } from 'react-router-dom';
 import Eventdetails from './components/Eventdetails';
 import Errors from './components/common/Errors';
-import ReactGA from 'react-ga';
 import TestComp from './components/TestComp';
-import socketIOClient from 'socket.io-client';
-import Leaguedetails from './components/leaguedetails/Leaguedetails';
 import Mp3Goal from './assets/sound/goal.mp3';
 import Mp3Cancel from './assets/sound/cancel.mp3';
 import Mp3Finish from './assets/sound/finish.mp3';

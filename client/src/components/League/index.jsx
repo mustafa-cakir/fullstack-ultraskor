@@ -12,19 +12,18 @@ import StandingTable from '../common/StandingTable';
 import './Style.scss';
 
 const Leageue = ({ t }) => {
-    let { activeTab } = useParams();
     const { leagueid, seasonid } = useParams();
-    activeTab = activeTab ? parseFloat(activeTab) : 0;
+    // let { activeTab } = useParams();
+    // activeTab = activeTab ? parseFloat(activeTab) : 0;
 
-    const initialStates = {
+    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         tabIndex: 0,
         clickedTabIndex: [0],
         data: {},
         error: null,
         isLoading: true,
         swiper: null
-    };
-    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), initialStates);
+    });
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
 
     useEffect(() => {
@@ -43,7 +42,7 @@ const Leageue = ({ t }) => {
                     isLoading: false
                 });
             });
-    }, []);
+    }, [leagueid, seasonid]);
 
     const onInitSwiper = swiperInstance => {
         setState({

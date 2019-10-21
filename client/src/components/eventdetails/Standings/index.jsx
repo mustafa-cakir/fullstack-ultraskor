@@ -32,13 +32,13 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
                     isLoaded: true
                 });
             });
-    }, [tournament.id, season.id, hasActived, updateAutoHeight]);
+    }, [tournament.id, season.id, updateAutoHeight]);
 
     useEffect(() => {
         if (hasActived) {
             getData();
         }
-    }, [hasActived]);
+    }, [hasActived, getData]);
 
     if (!hasActived) return false;
     if (isLoading) return <Loading type="inside" />;
