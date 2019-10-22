@@ -15,7 +15,7 @@ const fetchSportRadar = (query, cacheDuration) =>
         };
         const cache = cacheDuration
             ? {
-                  cacheKey: query,
+                  cacheKey: query.replace(':', '-'),
                   cacheDuration
               }
             : null;

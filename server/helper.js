@@ -133,7 +133,7 @@ const simplifyHomeData = res => {
 };
 
 const cacheDuration = {
-    sportRadarFunFacts: 60 * 60 * 24, // 7 days
+    sportRadarFunFacts: 60 * 60 * 24 * 7, // 7 days
     oleyInjuries: 60 * 60 * 24, // 7 days
     oleyTextList: 60 * 60 * 24 * 7, // 7 days
     sofaLineups: 60 * 5, // 5 minutes
