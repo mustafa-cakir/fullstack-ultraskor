@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-const fetchSofaScore = (query, cacheDuration) => {
+const fetchSofaScore = (query, cacheDuration, isTor) => {
     return new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -10,7 +10,9 @@ const fetchSofaScore = (query, cacheDuration) => {
                 'Content-Type': 'application/json',
                 Origin: 'https://www.sofascore.com',
                 referer: 'https://www.sofascore.com/',
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'User-Agent':
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
             },
             timeout: 10000
         };
@@ -21,7 +23,7 @@ const fetchSofaScore = (query, cacheDuration) => {
               }
             : null;
 
-        fetch(options, resolve, reject, cache);
+        fetch(options, resolve, reject, cache, isTor);
     });
 };
 

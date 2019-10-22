@@ -1,7 +1,7 @@
 const moment = require('moment');
 const fetch = require('./fetch');
 
-const fetchBroadage = date =>
+const fetchBroadage = (date, cacheDuration, isTor) =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'POST',
@@ -27,7 +27,14 @@ const fetchBroadage = date =>
             json: true,
             timeout: 10000
         };
-        fetch(options, resolve, reject);
+        const cache = cacheDuration
+            ? {
+                  cacheKey: `broadage-${date}`,
+                  cacheDuration
+              }
+            : null;
+
+        fetch(options, resolve, reject, cache, isTor);
     });
 
 exports.fetchBroadage = fetchBroadage;

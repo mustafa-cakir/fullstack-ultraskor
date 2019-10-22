@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-const fetchOleyWidget = (query, cacheDuration) =>
+const fetchOleyWidget = (query, cacheDuration, isTor) =>
     new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
@@ -15,7 +15,7 @@ const fetchOleyWidget = (query, cacheDuration) =>
               }
             : null;
 
-        fetch(options, resolve, reject, cache);
+        fetch(options, resolve, reject, cache, isTor);
     });
 
 exports.fetchOleyWidget = fetchOleyWidget;

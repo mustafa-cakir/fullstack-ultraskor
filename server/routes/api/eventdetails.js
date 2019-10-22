@@ -13,8 +13,8 @@ router.get('/:eventId/:language', auth.optional, (req, res) => {
             .then(data => {
                 res.send(data);
             })
-            .catch(() => {
-                res.status(500).send('Can not retrieve information from server');
+            .catch(err => {
+                res.status(500).send(isDev ? err : 'Can not retrieve information from server');
             });
     };
 

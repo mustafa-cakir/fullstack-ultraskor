@@ -6,11 +6,11 @@ const { isTorDisabled } = require('../helper');
 
 tor.TorControlPort.password = 'muztafultra';
 
-module.exports = (options, resolve, reject, cache) => {
+module.exports = (options, resolve, reject, cache, isTor) => {
     const onSuccess = response => {
         if (cache && response) {
             cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
-            console.log(`${cache.cacheKey} is cached!`);
+            if (isDev) console.log(`${cache.cacheKey} is cached!`);
         }
 
         resolve(response);
@@ -18,12 +18,8 @@ module.exports = (options, resolve, reject, cache) => {
     const onError = () => reject(Error('501'));
 
     const remoteRequest = () => {
-        console.log('## fetch sofaScore: ', options.uri);
-        if (isTorDisabled) {
-            request(options)
-                .then(onSuccess)
-                .catch(onError);
-        } else {
+        if (isDev) console.log('## fetch init: ', options.uri);
+        if (!isTorDisabled && isTor) {
             tor.request(options, (err, status, res) => {
                 if (!err && status.statusCode === 200) {
                     onSuccess(res);
@@ -31,6 +27,10 @@ module.exports = (options, resolve, reject, cache) => {
                     onError(err);
                 }
             });
+        } else {
+            request(options)
+                .then(onSuccess)
+                .catch(onError);
         }
     };
 

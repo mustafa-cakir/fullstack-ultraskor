@@ -16,7 +16,8 @@ const cronHandler = () => {
                 cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
             }
         })
-        .catch(() => {
+        .catch(err => {
+            if (isDev) console.log('500 - fetchHomepage', err);
             console.log(`Error returning differences within cronJob. Time: ${new Date()}`);
         });
 };
