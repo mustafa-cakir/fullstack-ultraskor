@@ -113,19 +113,19 @@ router.get('/match/:id/:live?', (req, res) => {
             res.status(500);
         };
 
-        // if (isTorDisabled) {
-        request(idaaOddsOptions)
-            .then(onSuccess)
-            .catch(onError);
-        // } else {
-        //     tor.request(idaaOddsOptions, (err, status, response) => {
-        //         if (!err && status.statusCode === 200) {
-        //             onSuccess(response);
-        //         } else {
-        //             onError(err);
-        //         }
-        //     });
-        // }
+        if (isTorDisabled) {
+            request(idaaOddsOptions)
+                .then(onSuccess)
+                .catch(onError);
+        } else {
+            tor.request(idaaOddsOptions, (err, status, response) => {
+                if (!err && status.statusCode === 200) {
+                    onSuccess(response);
+                } else {
+                    onError(err);
+                }
+            });
+        }
     };
 
     const cachedData = cacheService.instance().get(cacheKey);
