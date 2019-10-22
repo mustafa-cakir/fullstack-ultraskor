@@ -138,7 +138,7 @@ const cacheDuration = {
     oleyTextList: 60 * 60 * 24 * 7, // 7 days
     sofaLineups: 60 * 5, // 5 minutes
     sofaMatches: 60 * 5, // 5 minutes
-    sofaEventdetails: 60 * 5, // 5 minutes
+    sofaEventdetails: 10, // 10 seconds
     homepageListToday: 60 * 30, // 30 min
     homepageList: 60 * 60 * 24, // 24 hours
     eventDetails: 10, // 10 seconds
@@ -247,57 +247,6 @@ const initCors = () => {
     return cors(corsOptions);
 };
 
-const simplifyWebSocketData = res => {
-    res = JSON.parse(res);
-    if (res.data.length === 0 && !res.data[1] && res.data[0] !== 'service-push') return null;
-    const resData = res.data[1];
-    return {
-        ids: {
-            even: parseFloat(resData.emits[0].split('_')[1]),
-            type: resData.emits[1].split('_')[1],
-            tournament: parseFloat(resData.emits[2].split('_')[1]),
-            homeTeam: parseFloat(resData.emits[3].split('_')[1]),
-            awayTeam: parseFloat(resData.emits[4].split('_')[1])
-        },
-        tournament: {
-            id: parseFloat(resData.emits[2].split('_')[1])
-        },
-        event: {
-            id: parseFloat(resData.emits[0].split('_')[1]),
-            scores: {
-                home: resData.data.homeScore.current,
-                away: resData.data.awayScore.current,
-                ht: {
-                    home: resData.data.homeScore.period1,
-                    away: resData.data.awayScore.period1
-                }
-            },
-            redCards: {
-                home: resData.data.homeRedCards,
-                away: resData.data.awayRedCards
-            },
-            statusBoxContent: resData.data.statusDescription,
-            startTimestamp: resData.data.startTimestamp * 1000,
-            status: resData.data.status,
-            winner: resData.data.winnerCode
-        },
-        updated: {
-            scores: {
-                home: resData.data.changesData ? resData.data.changesData.home.score : null,
-                away: resData.data.changesData ? resData.data.changesData.away.score : null
-            },
-            teams: {
-                home: resData.data.changesData ? resData.data.changesData.home.team : null,
-                away: resData.data.changesData ? resData.data.changesData.away.team : null
-            },
-            score: resData.data.changesData ? resData.data.changesData.score : null,
-            status: resData.data.changesData ? resData.data.changesData.status : null,
-            first: resData.data.changesData ? resData.data.changesData.firstToServe : null,
-            notify: resData.data.changesData ? resData.data.changesData.notify : null
-        }
-    };
-};
-
 const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
     const jsonDataTeamNames = [sofaEvent.homeTeam.name.toLowerCase(), sofaEvent.awayTeam.name.toLowerCase()];
 
@@ -344,6 +293,58 @@ const convertToSofaScoreID = id => {
             .reverse()
             .join('')
     );
+};
+
+const simplifyWebSocketData = res => {
+    res = JSON.parse(res);
+    if (res.data.length === 0 && !res.data[1] && res.data[0] !== 'service-push') return null;
+    const resData = res.data[1];
+    const eventid = convertToUltraSkorId(parseFloat(resData.emits[0].split('_')[1]));
+    return {
+        ids: {
+            event: eventid,
+            type: resData.emits[1].split('_')[1],
+            tournament: parseFloat(resData.emits[2].split('_')[1]),
+            homeTeam: parseFloat(resData.emits[3].split('_')[1]),
+            awayTeam: parseFloat(resData.emits[4].split('_')[1])
+        },
+        tournament: {
+            id: parseFloat(resData.emits[2].split('_')[1])
+        },
+        event: {
+            id: eventid,
+            scores: {
+                home: resData.data.homeScore.current,
+                away: resData.data.awayScore.current,
+                ht: {
+                    home: resData.data.homeScore.period1,
+                    away: resData.data.awayScore.period1
+                }
+            },
+            redCards: {
+                home: resData.data.homeRedCards,
+                away: resData.data.awayRedCards
+            },
+            statusBoxContent: resData.data.statusDescription,
+            startTimestamp: resData.data.startTimestamp * 1000,
+            status: resData.data.status,
+            winner: resData.data.winnerCode
+        },
+        updated: {
+            scores: {
+                home: resData.data.changesData ? resData.data.changesData.home.score : null,
+                away: resData.data.changesData ? resData.data.changesData.away.score : null
+            },
+            teams: {
+                home: resData.data.changesData ? resData.data.changesData.home.team : null,
+                away: resData.data.changesData ? resData.data.changesData.away.team : null
+            },
+            score: resData.data.changesData ? resData.data.changesData.score : null,
+            status: resData.data.changesData ? resData.data.changesData.status : null,
+            first: resData.data.changesData ? resData.data.changesData.firstToServe : null,
+            notify: resData.data.changesData ? resData.data.changesData.notify : null
+        }
+    };
 };
 
 const preprocessEvents = (events, includeNotStartedEvents = false) => {
