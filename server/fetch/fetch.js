@@ -3,6 +3,7 @@ const request = require('request-promise-native');
 const cacheService = require('../cache.service');
 const { isDev } = require('../helper');
 const { isTorDisabled } = require('../helper');
+const Agent = require('socks5-https-client/lib/Agent');
 
 tor.TorControlPort.password = 'muztafultra';
 
@@ -19,19 +20,30 @@ module.exports = (options, resolve, reject, cache, isTor) => {
 
     const remoteRequest = () => {
         if (isDev) console.log('## fetch init: ', options.uri);
-        if (!isTorDisabled && isTor) {
-            tor.request(options, (err, status, res) => {
-                if (!err && status.statusCode === 200) {
-                    onSuccess(res);
-                } else {
-                    onError(err);
-                }
-            });
-        } else {
-            request(options)
-                .then(onSuccess)
-                .catch(onError);
-        }
+
+        options.agentClass = Agent;
+        options.agentOptions = {
+            socksHost: 'localhost',
+            socksPort: 9050
+        };
+
+        request(options)
+            .then(onSuccess)
+            .catch(onError);
+
+        // if (!isTorDisabled && isTor) {
+        //     tor.request(options, (err, status, res) => {
+        //         if (!err && status.statusCode === 200) {
+        //             onSuccess(res);
+        //         } else {
+        //             onError(err);
+        //         }
+        //     });
+        // } else {
+        //     request(options)
+        //         .then(onSuccess)
+        //         .catch(onError);
+        // }
     };
 
     const cachedData = cache ? cacheService.instance().get(cache.cacheKey) : null;

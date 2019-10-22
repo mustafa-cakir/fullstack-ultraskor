@@ -8,7 +8,7 @@ const { cacheDuration } = require('../helper');
 
 const fetchEventDetails = (eventId, language, cacheKey) => {
     return getEventIds(eventId).then(ids => {
-        const isTor = false;
+        const isTor = true;
         return new Promise((resolve, reject) => {
             fetchSofaScore(`/event/${ids.id_so}/json`, cacheDuration.sofaEventdetails, isTor)
                 .then(sofa => {

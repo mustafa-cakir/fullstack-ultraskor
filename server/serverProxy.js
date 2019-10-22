@@ -40,10 +40,18 @@ app.get('/images/:type/:filename', (req, res) => {
                 url: 'https://www.sofascore.com' + pathname,
                 strictSSL: true,
                 agentClass: helper.isTorDisabled ? null : Agent,
-                timeout: 1000,
                 agentOptions: {
                     socksHost: 'localhost',
                     socksPort: 9050
+                },
+                timeout: 1000,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Origin: 'https://www.sofascore.com',
+                    referer: 'https://www.sofascore.com/',
+                    'x-requested-with': 'XMLHttpRequest',
+                    'User-Agent':
+                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
                 }
             };
 
