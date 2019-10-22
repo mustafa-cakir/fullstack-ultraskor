@@ -110,7 +110,7 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (isLineups)
+    if (isLineups && lineups)
         slides.push({
             id: 3,
             label: t('Lineup'),
@@ -143,7 +143,7 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (matches)
+    if (matches.byDates)
         slides.push({
             id: 6,
             label: t('Head To Head'),
