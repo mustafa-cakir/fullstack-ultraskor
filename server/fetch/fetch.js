@@ -8,13 +8,17 @@ tor.TorControlPort.password = 'muztafultra';
 
 module.exports = (options, resolve, reject, cache) => {
     const onSuccess = response => {
-        if (cache && response) cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
-        if (cache && isDev) console.log(`${cache.cacheKey} is cached!`);
+        if (cache && response) {
+            cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
+            console.log(`${cache.cacheKey} is cached!`);
+        }
+
         resolve(response);
     };
     const onError = () => reject(Error('501'));
 
     const remoteRequest = () => {
+        console.log('## fetch sofaScore: ', options.uri);
         if (isTorDisabled) {
             request(options)
                 .then(onSuccess)
@@ -32,7 +36,7 @@ module.exports = (options, resolve, reject, cache) => {
 
     const cachedData = cache ? cacheService.instance().get(cache.cacheKey) : null;
     if (cachedData) {
-        if (isDev) console.log(`${cache.cacheKey} data is served from cached!`);
+        if (isDev) console.log(`--> ${cache.cacheKey} data is served from cached!`);
         resolve(cachedData);
     } else {
         remoteRequest();

@@ -22,7 +22,7 @@ class BottomParagrah extends PureComponent {
     }
 
     initGetData() {
-        fetch(`/api/?query=/list/footer/events/popular/json&page=popularevents`)
+        fetch(`/api/partial/footer/popularevents`)
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -31,11 +31,10 @@ class BottomParagrah extends PureComponent {
                 }
             })
             .then(res => {
-                if (res.events.length < 1) throw Error(`Can't retrieve information from server`);
+                if (res.length < 1) throw Error(`Can't retrieve information from server`);
 
-                let events = res.events.filter(x => x.sport.id === 1);
                 this.setState({
-                    popularEvents: events
+                    popularEvents: res
                 });
             })
             .catch(err => {
@@ -69,15 +68,15 @@ class BottomParagrah extends PureComponent {
                                             <Link
                                                 to={{
                                                     pathname: `/${t('match')}/${generateSlug(
-                                                        t(event.homeTeam.name) + '-' + t(event.awayTeam.name)
+                                                        t(event.teams.home.name) + '-' + t(event.teams.home.name)
                                                     )}-${t('live-score')}-${event.id}`,
                                                     state: { isPrev: true }
                                                 }}
-                                                title={`${t(event.homeTeam.name)} - ${t(event.awayTeam.name)}  ${t(
+                                                title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
                                                     'click for live scores, lineup and stats'
                                                 )}`}
                                             >
-                                                {event.homeTeam.name} - {event.awayTeam.name}
+                                                {event.teams.home.name} - {event.teams.away.name}
                                             </Link>
                                         </li>
                                     ))}

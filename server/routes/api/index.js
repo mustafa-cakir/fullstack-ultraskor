@@ -13,6 +13,7 @@ router.use('/iddaa', require('./iddaa'));
 router.use('/sitemap', require('./sitemap'));
 router.use('/logerrors', require('./logerrors'));
 router.use('/tor', require('./tor'));
+router.use('/partial', require('./partial'));
 router.use('/test', require('./test'));
 
 router.use((err, req, res, next) => {

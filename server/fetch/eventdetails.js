@@ -51,7 +51,7 @@ const fetchEventDetails = (eventId, language, cacheKey) => {
             );
 
             pAll.push(
-                fetchSofaScore(`/event/${ids.id_so}/matches/json`, cacheDuration.sofaLineups).catch(() => {
+                fetchSofaScore(`/event/${ids.id_so}/matches/json`, cacheDuration.sofaMatches).catch(() => {
                     return null;
                 })
             );

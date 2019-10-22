@@ -3,7 +3,7 @@ const router = require('express').Router();
 const cacheService = require('../../cache.service');
 const { cacheDuration } = require('../../helper');
 const auth = require('../auth');
-const { isEmpty } = require('../../helper');
+const { isEmpty, isDev } = require('../../helper');
 const { fetchHomepage } = require('../../fetch/homepage');
 
 router.get('/:date', auth.optional, (req, res) => {
@@ -27,7 +27,7 @@ router.get('/:date', auth.optional, (req, res) => {
     // if (isToday) {
     const cachedData = cacheService.instance().get(cacheKey);
     if (typeof cachedData !== 'undefined') {
-        console.log('homepageListData is served from cached!');
+        if (isDev) console.log('homepageListData is served from cached!');
         res.send(cachedData);
     } else {
         remoteRequest();

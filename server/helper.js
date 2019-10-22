@@ -137,6 +137,7 @@ const cacheDuration = {
     oleyInjuries: 60 * 60 * 24, // 7 days
     oleyTextList: 60 * 60 * 24 * 7, // 7 days
     sofaLineups: 60 * 5, // 5 minutes
+    sofaMatches: 60 * 5, // 5 minutes
     sofaEventdetails: 60 * 5, // 5 minutes
     homepageListToday: 60 * 30, // 30 min
     homepageList: 60 * 60 * 24, // 24 hours
@@ -145,6 +146,7 @@ const cacheDuration = {
     uTournamentStandings: 10, // 10 seconds
     uTournamentStandingsRounds: 60 * 60 * 24, // 24 hours
     getEventIdFromDB: 60 * 60 * 24, // 24 hours
+    popularFooterEvents: 60 * 60 * 24, // 24 hours
     provider1: 60 * 60 * 24, // 24 hours
     provider2: 60 * 60 * 24, // 24 hours
     provider3: 60 * 60 * 24, // 24 hours
@@ -344,6 +346,45 @@ const convertToSofaScoreID = id => {
     );
 };
 
+const preprocessEvents = (events, includeNotStartedEvents = false) => {
+    const result = [];
+    events.forEach(event => {
+        if (event.sport.id !== 1) return false;
+        if (!includeNotStartedEvents && event.status.type !== 'finished') return false;
+        result.push({
+            teams: {
+                home: {
+                    id: event.homeTeam.id,
+                    name: event.homeTeam.name
+                },
+                away: {
+                    id: event.awayTeam.id,
+                    name: event.awayTeam.name
+                }
+            },
+            scores: {
+                home: event.homeScore.current,
+                away: event.awayScore.current,
+                ht: {
+                    home: event.homeScore.period1,
+                    away: event.awayScore.period1
+                }
+            },
+            redCards: {
+                home: event.homeRedCards,
+                away: event.awayRedCards
+            },
+            id: convertToUltraSkorId(event.id),
+            startTimestamp: event.startTimestamp * 1000,
+            status: event.status,
+            statusBoxContent: event.statusDescription,
+            winner: event.winnerCode
+        });
+        return false;
+    });
+    return result;
+};
+
 const preprocessTournaments = (tournaments, includeNotStartedEvents = false) => {
     const result = [];
     tournaments.forEach(tournament => {
@@ -366,40 +407,7 @@ const preprocessTournaments = (tournaments, includeNotStartedEvents = false) => 
                 tr: tournament.tournament.name
             }
         };
-        tempTournament.events = [];
-        tournament.events.forEach(event => {
-            if (event.status.type === 'finished' || includeNotStartedEvents) {
-                tempTournament.events.push({
-                    teams: {
-                        home: {
-                            id: event.homeTeam.id,
-                            name: event.homeTeam.name
-                        },
-                        away: {
-                            id: event.awayTeam.id,
-                            name: event.awayTeam.name
-                        }
-                    },
-                    scores: {
-                        home: event.homeScore.current,
-                        away: event.awayScore.current,
-                        ht: {
-                            home: event.homeScore.period1,
-                            away: event.awayScore.period1
-                        }
-                    },
-                    redCards: {
-                        home: event.homeRedCards,
-                        away: event.awayRedCards
-                    },
-                    id: convertToUltraSkorId(event.id),
-                    startTimestamp: event.startTimestamp * 1000,
-                    status: event.status,
-                    statusBoxContent: event.statusDescription,
-                    winner: event.winnerCode
-                });
-            }
-        });
+        tempTournament.events = preprocessEvents(tournament.events, includeNotStartedEvents);
         if (tempTournament.events.length > 0) result.push(tempTournament);
     });
     return result;
@@ -742,3 +750,4 @@ exports.mergeHomepageData = mergeHomepageData;
 exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;
+exports.preprocessEvents = preprocessEvents;

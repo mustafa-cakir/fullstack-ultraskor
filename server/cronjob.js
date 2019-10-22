@@ -7,9 +7,11 @@ const { isDev, cacheDuration } = require('./helper');
 const { initWebPushByWebSocket } = require('./utils/webpush');
 
 const cronHandler = () => {
+    if (isDev) console.log('## cron start!');
     fetchHomepage(moment().format('YYYY-MM-DD'))
         .then(response => {
             if (!isEmpty(response)) {
+                if (isDev) console.log('homepageListData is cached!');
                 const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
                 cacheService.instance().set(cacheKey, response, cacheDuration.homepageListToday);
             }
@@ -103,7 +105,9 @@ exports.pushServiceChangesForWebPush = res => {
     return false;
 };
 
-cronHandler(); // run manually for the first time;
+setTimeout(() => {
+    cronHandler(); // run manually for the first time;
+}, 10000);
 
 const cron = new CronJob('*/30 * * * *', cronHandler); // every 30 minutes
 

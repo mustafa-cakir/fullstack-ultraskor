@@ -3,7 +3,6 @@ const http = require('http');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const tor = require('tor-request');
-const request = require('request-promise-native');
 // const shortid = require('shortid');
 const cacheService = require('./cache.service');
 const { isTorDisabled } = require('./helper');
@@ -44,26 +43,6 @@ setInterval(() => {
 }, 1000 * 60 * 60 * 6); // 6 hours
 
 server.listen(5001, () => console.log(`Listening on port ${5001}`));
-
-const options = {
-    method: 'GET',
-    uri: `https://www.sofascore.com/football//2019-10-22/json?_=${Math.floor(Math.random() * 10e8)}`,
-    json: true,
-    headers: {
-        'Content-Type': 'application/json',
-        Origin: 'https://www.sofascore.com',
-        referer: 'https://www.sofascore.com/',
-        'x-requested-with': 'XMLHttpRequest'
-    },
-    timeout: 10000
-};
-request(options)
-    .then(res => {
-        console.log(res);
-    })
-    .catch(err => {
-        console.log(err);
-    });
 
 initWebSocket(io);
 
