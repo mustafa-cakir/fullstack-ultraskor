@@ -39,12 +39,12 @@ app.get('/images/:type/:filename', (req, res) => {
             const requestOptions = {
                 url: `https://www.sofascore.com${pathname}`,
                 strictSSL: true,
-                // agentClass: helper.isTorDisabled ? null : Agent,
+                agentClass: helper.isTorDisabled ? null : Agent,
                 timeout: 1000,
-                // agentOptions: {
-                //     socksHost: 'localhost',
-                //     socksPort: 9050,
-                // }
+                agentOptions: {
+                    socksHost: 'localhost',
+                    socksPort: 9050,
+                }
             };
 
             // console.log(requestOptions.url);
