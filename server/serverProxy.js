@@ -1,13 +1,13 @@
 const express = require('express');
-const helper = require('./helper');
 const request = require('request');
 const Agent = require('socks5-https-client/lib/Agent');
 const fs = require('fs');
+const helper = require('./helper');
 
 const app = express();
 
 app.get('/images/:type/:filename', (req, res) => {
-    let { type, filename } = req.params;
+    const { type, filename } = req.params;
     // console.log(type, filename);
     const sendFileOptions = {
         root: `../client/public/static/images/${type}/`,
@@ -37,29 +37,21 @@ app.get('/images/:type/:filename', (req, res) => {
             }
 
             const requestOptions = {
-                url: 'https://www.sofascore.com' + pathname,
+                url: `https://www.sofascore.com${pathname}`,
                 strictSSL: true,
                 agentClass: helper.isTorDisabled ? null : Agent,
+                timeout: 1000,
                 agentOptions: {
                     socksHost: 'localhost',
-                    socksPort: 9050
-                },
-                timeout: 1000,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Origin: 'https://www.sofascore.com',
-                    referer: 'https://www.sofascore.com/',
-                    'x-requested-with': 'XMLHttpRequest',
-                    'User-Agent':
-                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
+                    socksPort: 9050,
                 }
             };
 
             // console.log(requestOptions.url);
             const stream = request(requestOptions);
 
-            stream.on('error', err => {
-                console.log('Error on request: ' + err);
+            stream.on('error', errStream => {
+                console.log(`Error on request: ${errStream}`);
                 res.sendStatus(404);
             });
 
@@ -68,34 +60,12 @@ app.get('/images/:type/:filename', (req, res) => {
                     stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
                     stream.pipe(res);
                 } else {
-                    //console.log('Error on response: ' + err);
+                    // console.log('Error on response: ' + err);
                     res.sendStatus(404);
                 }
             });
-
-            // stream.on('close', () => {
-            // 	console.log('checkpoint5');
-            // 	res.sendFile(filename, sendFileOptions, (err) => {
-            // 		if (err) {
-            // 			console.log('Error on sendFile: ' + err);
-            // 			res.sendStatus(404);
-            // 		}
-            // 	});
-            // });
         }
     });
-
-    // ************
-    // request({
-    // 	url: `https://www.sofascore.com${(req.query && req.query.url) ? req.query.url : (req.originalUrl + '.png')}`,
-    // 	strictSSL: true,
-    // 	agentClass: Agent,
-    // 	agentOptions: {
-    // 		socksHost: 'localhost', // Defaults to 'localhost'.
-    // 		socksPort: 9050, // Defaults to 1080.
-    // 		// Optional credentials
-    // 	}
-    // }).pipe(res);
 });
 
 function pushDomain(body) {
@@ -106,12 +76,12 @@ function pushDomain(body) {
 
 // define a simple route
 app.get('*', (req, res) => {
-    let path = req.originalUrl;
+    const path = req.originalUrl;
     // path = path.substring(11, path.length);
     // console.log(path);
 
-    let options = {
-        url: 'https://widgets.sir.sportradar.com/' + path,
+    const options = {
+        url: `https://widgets.sir.sportradar.com/${path}`,
         headers: {
             Referer: 'https://www.aspor.com.tr',
             Origin: 'https://www.aspor.com.tr',
@@ -126,7 +96,7 @@ app.get('*', (req, res) => {
     //     options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js?v=2.0.1';
     // }
 
-    //console.log(options.url);
+    // console.log(options.url);
     request(options, function(error, response, body) {
         res.header('Access-Control-Allow-Origin', '*');
         if (path.indexOf('translations') > -1) {
