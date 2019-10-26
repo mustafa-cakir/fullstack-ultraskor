@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const cacheService = require('../../services/cache.service');
 const auth = require('../auth');
-const { isDev } = require('../../utils');
+const { isDev, cacheDuration, isEmpty } = require('../../utils');
 const { fetchEventDetails } = require('../../fetch/eventdetails');
 
 router.get('/:eventId/:language', auth.optional, (req, res) => {
@@ -9,8 +9,11 @@ router.get('/:eventId/:language', auth.optional, (req, res) => {
     const cacheKey = `eventdetails-${eventId}-${language}`;
 
     const remoteRequest = () => {
-        fetchEventDetails(eventId, language, cacheKey)
+        fetchEventDetails(eventId, language)
             .then(data => {
+                if (!isEmpty(data)) {
+                    cacheService.instance().set(cacheKey, data, cacheDuration.min30);
+                }
                 res.send(data);
             })
             .catch(err => {

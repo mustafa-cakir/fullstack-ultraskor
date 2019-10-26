@@ -2,64 +2,41 @@ const { fetchSofaScore } = require('./sofascore');
 const { fetchSportRadar } = require('./sportradar');
 const { fetchOleyWidget } = require('./oleyWidget');
 const { mergeEventDetailsData } = require('../utils');
-const cacheService = require('../services/cache.service');
 const { getEventIds } = require('./getEventIds');
 const { cacheDuration } = require('../utils');
 
-const fetchEventDetails = (eventId, language, cacheKey) => {
+const fetchEventDetails = (eventId, language) => {
     return getEventIds(eventId).then(ids => {
         const { min30, hour24 } = cacheDuration;
         return new Promise((resolve, reject) => {
-            fetchSofaScore(`/event/${ids.id_so}/json`, min30)
-                .then(sofa => {
-                    fetchSportRadar(`/${language}/Europe:Istanbul/gismo/match_funfacts/${ids.id_sp}`, hour24)
-                        .then(radar => {
-                            fetchOleyWidget(`teamstats/1/${ids.id_br}`, hour24)
-                                .then(oley => {
-                                    fetchOleyWidget(`missings/1/${ids.id_br}`, hour24)
-                                        .then(injuries => {
-                                            fetchSofaScore(`/event/${ids.id_so}/lineups/json`, min30)
-                                                .then(sofaLineup => {
-                                                    fetchSofaScore(`/event/${ids.id_so}/matches/json`, min30)
-                                                        .then(sofaMatches => {
-                                                            const merged = mergeEventDetailsData(
-                                                                sofa,
-                                                                radar,
-                                                                oley,
-                                                                sofaLineup,
-                                                                injuries,
-                                                                sofaMatches
-                                                            );
-                                                            if (merged) {
-                                                                cacheService.instance().set(cacheKey, merged, min30);
-                                                                resolve(merged);
-                                                            } else {
-                                                                reject();
-                                                            }
-                                                        })
-                                                        .catch(err => {
-                                                            reject(err);
-                                                        });
-                                                })
-                                                .catch(err => {
-                                                    reject(err);
-                                                });
-                                        })
-                                        .catch(err => {
-                                            reject(err);
-                                        });
-                                })
-                                .catch(err => {
-                                    reject(err);
-                                });
-                        })
-                        .catch(err => {
-                            reject(err);
-                        });
+            const pAll = [
+                fetchSofaScore(`/event/${ids.id_so}/json`, min30).catch(err => console.log(err)),
+                fetchSportRadar(`/${language}/Europe:Istanbul/gismo/match_funfacts/${ids.id_sp}`, hour24).catch(() => null),
+                fetchOleyWidget(`teamstats/1/${ids.id_br}`, hour24).catch(() => null),
+                fetchSofaScore(`/event/${ids.id_so}/lineups/json`, min30).catch(() => null),
+                fetchOleyWidget(`missings/1/${ids.id_br}`, hour24).catch(() => null),
+                fetchSofaScore(`/event/${ids.id_so}/matches/json`, min30).catch(() => null)
+            ];
+
+
+            Promise.all(pAll)
+                .then(responses => {
+                    const merged = mergeEventDetailsData(
+                        responses[0], // sofa
+                        responses[1], // radar
+                        responses[2], // oley
+                        responses[3], // sofaLineup
+                        responses[4], // injuries
+                        responses[5], // sofaMatches
+                        ids
+                    );
+                    if (merged) {
+                        resolve(merged);
+                    } else {
+                        reject();
+                    }
                 })
-                .catch(err => {
-                    reject(err);
-                });
+                .catch(err => reject(err));
         });
     });
 };

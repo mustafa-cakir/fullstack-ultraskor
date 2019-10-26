@@ -1,7 +1,5 @@
 const express = require('express');
-const request = require('request');
-const cloudscraper = require('request');
-const Agent = require('socks5-https-client/lib/Agent');
+const cloudscraper = require('cloudscraper');
 const fs = require('fs');
 
 const app = express();
@@ -37,29 +35,14 @@ app.get('/images/:type/:filename', (req, res) => {
             }
 
             const requestOptions = {
-                url: `https://www.sofascore.com${pathname}`,
-                strictSSL: true,
-                agentClass: Agent,
-                agentOptions: {
-                    socksHost: 'localhost',
-                    socksPort: 9050
-                },
-                timeout: 1000,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Origin: 'https://www.sofascore.com',
-                    referer: 'https://www.sofascore.com/',
-                    'x-requested-with': 'XMLHttpRequest',
-                    'User-Agent':
-                        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
-                }
+                url: `https://www.sofascore.com${pathname}`
             };
 
             // console.log(requestOptions.url);
-            const stream = request(requestOptions);
+            const stream = cloudscraper(requestOptions);
 
-            stream.on('error', errStrem => {
-                console.log(`Error on request: ${errStrem}`);
+            stream.on('error', () => {
+                console.log('## Image Error - 404');
                 res.sendStatus(404);
             });
 
@@ -68,7 +51,7 @@ app.get('/images/:type/:filename', (req, res) => {
                     stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
                     stream.pipe(res);
                 } else {
-                    // console.log('Error on response: ' + err);
+                    console.log('## Image Error 2 - 404');
                     res.sendStatus(404);
                 }
             });
@@ -101,7 +84,7 @@ app.get('*', (req, res) => {
     };
 
     // console.log(options.url);
-    request(options, (error, response, body) => {
+    cloudscraper(options, (error, response, body) => {
         res.header('Access-Control-Allow-Origin', '*');
         if (path.indexOf('translations') > -1) {
             res.header('Content-Type', 'application/json; charset=utf-8');
