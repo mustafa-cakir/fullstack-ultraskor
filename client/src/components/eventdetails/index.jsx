@@ -71,8 +71,8 @@ const Eventdetails = ({ t, i18n }) => {
     if (error) return <Errors message={error} />;
     if (isLoading || !data) return <Loading />;
 
-    const { event, ids, matches, textList } = data;
-    const { injuries, teams, lineups, stats, isStanding, isLineups } = event;
+    const { event, ids, textList } = data;
+    const { id, injuries, teams, stats, isStanding, isLineups } = event;
     const slides = [];
 
     const swipeByTabId = id => {
@@ -110,14 +110,15 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (isLineups && lineups)
+    if (isLineups)
         slides.push({
             id: 3,
             label: t('Lineup'),
             Component: Lineups,
             props: {
-                lineups,
-                teams
+                id,
+                teams,
+                updateAutoHeight
             }
         });
 
@@ -127,8 +128,8 @@ const Eventdetails = ({ t, i18n }) => {
             label: t('Injuries & Susp.'),
             Component: Injuries,
             props: {
-                injuries,
-                teams
+                teams,
+                injuries
             }
         });
 
@@ -143,13 +144,13 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (matches.byDates)
+    if (teams)
         slides.push({
             id: 6,
             label: t('Head To Head'),
             Component: H2h,
             props: {
-                matches,
+                id,
                 teams,
                 textList,
                 updateAutoHeight

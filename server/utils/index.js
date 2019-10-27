@@ -395,7 +395,14 @@ const getH2hByTournaments = data => {
     return result;
 };
 
-const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatches, ids) => {
+const processSofaH2hData = data => {
+    return {
+        byDates: data ? getH2hByDates(data) : null,
+        byTournaments: data ? getH2hByTournaments(data) : null
+    }
+};
+
+const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
     if (!sofa) {
         if (isDev) console.log('data can not be gathered from sofa');
         throw Error('Whoops!');
@@ -407,10 +414,7 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatc
     result.ids = { ...ids };
     result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
     result.textList = oley ? oley.textList : null;
-    result.matches = {
-        byDates: sofaMatches ? getH2hByDates(sofaMatches) : null,
-        byTournaments: sofaMatches ? getH2hByTournaments(sofaMatches) : null
-    };
+
     result.event = {
         ...(injuries && { injuries }),
         isStanding: sofa.standingsAvailable,
@@ -431,7 +435,7 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatc
         statusBoxContent: event.statusDescription,
         tournament: event.tournament,
         venue: event.venue,
-        lineups: sofaLineup,
+        // lineups: sofaLineup,
         stats: sofa.statistics,
         managerDuel: sofa.managerDuel,
         ...(sofa.teamsForm && {
@@ -665,3 +669,4 @@ exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;
 exports.preprocessEvents = preprocessEvents;
+exports.processSofaH2hData = processSofaH2hData;

@@ -13,9 +13,9 @@ const fetchEventDetails = (eventId, language) => {
                 fetchSofaScore(`/event/${ids.id_so}/json`, min30).catch(err => console.log(err)),
                 fetchSportRadar(`/${language}/Europe:Istanbul/gismo/match_funfacts/${ids.id_sp}`, hour24).catch(() => null),
                 fetchOleyWidget(`teamstats/1/${ids.id_br}`, hour24).catch(() => null),
-                fetchSofaScore(`/event/${ids.id_so}/lineups/json`, min30).catch(() => null),
+                // fetchSofaScore(`/event/${ids.id_so}/lineups/json`, min30).catch(() => null),
                 fetchOleyWidget(`missings/1/${ids.id_br}`, hour24).catch(() => null),
-                fetchSofaScore(`/event/${ids.id_so}/matches/json`, min30).catch(() => null)
+                // fetchSofaScore(`/event/${ids.id_so}/matches/json`, min30).catch(() => null)
             ];
 
 
@@ -26,8 +26,8 @@ const fetchEventDetails = (eventId, language) => {
                         responses[1], // radar
                         responses[2], // oley
                         responses[3], // sofaLineup
-                        responses[4], // injuries
-                        responses[5], // sofaMatches
+                        // responses[4], // injuries
+                        // responses[5], // sofaMatches
                         ids
                     );
                     if (merged) {

@@ -22,7 +22,9 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
                     isLoading: false,
                     standingsTables: res.data.standingsTables
                 });
-                updateAutoHeight();
+                setTimeout(() => {
+                    updateAutoHeight();
+                })
             })
             .catch(() => {
                 setState({
@@ -38,8 +40,7 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
         }
     }, [hasActived, getData]);
 
-    if (!hasActived) return false;
-    if (isLoading) return <Loading type="inside" />;
+    if (!standingsTables || isLoading || !hasActived) return <Loading type="whitebox container" />;
     if (error) return <Errors message={error} />;
 
     return <StandingTable standingsTables={standingsTables} teams={teams} />;
