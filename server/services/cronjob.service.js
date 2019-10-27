@@ -108,7 +108,7 @@ exports.pushServiceChangesForWebPush = res => {
 
 setTimeout(() => {
     cronHandler(); // run manually for the first time;
-});
+}, 5000);
 
 const cron = new CronJob('*/30 * * * *', cronHandler); // every 30 minutes
 
