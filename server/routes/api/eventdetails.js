@@ -53,7 +53,7 @@ router.get('/:eventId/:language', auth.optional, (req, res) => {
 
     const cachedData = cacheService.instance().get(cacheKey);
     if (typeof cachedData !== 'undefined') {
-        if (isDev) console.log('eventdetails is served from cached!');
+        if (isDev) console.log('Eventdetails is served from cached!');
         res.send(cachedData);
     } else {
         remoteRequest();

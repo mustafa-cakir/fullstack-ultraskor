@@ -21,7 +21,7 @@ import RedScoreBoard from './common/RedScoreBar';
 import FavTournament from './common/FavTournament';
 import BottomParagrah from './common/BottomParagrah';
 
-class Homepage extends Component {
+class HomepageOLD extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -208,7 +208,7 @@ class Homepage extends Component {
     }
 
     onSocketConnect() {
-        console.log('Socket connected! - Homepage');
+        console.log('Socket connected! - HomepageOLD');
         this.socket.removeListener('connect', this.onSocketConnect);
         const { refreshButton } = this.state;
         if (refreshButton) {
@@ -554,4 +554,4 @@ class Homepage extends Component {
     }
 }
 
-export default withTranslation('translations')(Homepage);
+export default withTranslation('translations')(HomepageOLD);

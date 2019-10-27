@@ -1,7 +1,7 @@
 const router = require('express').Router();
 router.use('/', require('./sofascore'));
 router.use('/homepage/list', require('./homepage'));
-router.use('/eventdetails', require('./eventdetails'));
+router.use('/Eventdetails', require('./eventdetails'));
 router.use('/tournament', require('./tournament'));
 router.use('/u-tournament', require('./u-tournament'));
 router.use('/webpush', require('./webpush'));

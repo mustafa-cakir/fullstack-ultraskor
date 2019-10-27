@@ -1,7 +1,7 @@
 import React from 'react';
 import PressureGraph from '../PressureGraph';
 import Bestplayer from '../BestPlayer';
-import PreIddaa from '../PreIddaa';
+import PreIddaa from '../Preiddaa/PreIddaa';
 import Incidents from '../Incidents';
 import MatchInfo from '../MatchInfo';
 

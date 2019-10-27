@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import IddaLogo from './../../assets/images/icon-iddaa.png';
-import IddaLogo2 from './../../assets/images/icon-iddaa2.png';
+import IddaLogo from '../../../assets/images/icon-iddaa.png';
+import IddaLogo2 from '../../../assets/images/icon-iddaa2.png';
 import { Trans, withTranslation } from 'react-i18next';
-import Icon from '../common/Icon';
-import Loading from '../common/Loading';
-import { lockedOddsPlaceholder, marketGroups } from '../../Helper';
+import Icon from '../../common/Icon';
+import Loading from '../../common/Loading';
+import { lockedOddsPlaceholder, marketGroups } from '../../../Helper';
 
 class Iddaa extends PureComponent {
     constructor(props) {

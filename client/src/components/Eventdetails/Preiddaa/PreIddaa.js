@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
-import IddaLogo from '../../assets/images/icon-iddaa.png';
+import IddaLogo from '../../../assets/images/icon-iddaa.png';
 
 const PreIddaa = ({ iddaaMatchData, swipeByTabId, eventData }) => {
     if (!iddaaMatchData) return false;

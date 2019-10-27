@@ -4,8 +4,8 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import './assets/style/app.scss';
 import Navbar from './components/Navbar';
-import Homepage from './components/Homepage';
-import Eventdetails from './components/eventdetails';
+import HomepageOld from './components/HomepageOLD';
+import Eventdetails from './components/Eventdetails';
 import Errors from './components/common/Errors';
 import TestComp from './components/TestComp';
 import Mp3Goal from './assets/sound/goal.mp3';
@@ -18,6 +18,7 @@ import Teamdetails from './components/teamdetails/Teamdetails';
 import PullToRefresh from './components/common/PullToRefresh';
 import ErrorBoundary from './ErrorBoundary';
 import Leageue from './components/League';
+import routes from './core/routes';
 
 ReactGA.initialize('UA-132328627-1');
 
@@ -91,71 +92,84 @@ class App extends Component {
                 <Navbar />
                 <main className="main">
                     <Switch>
-                        <Route
-                            exact
-                            path="/"
-                            render={() => (
-                                <ErrorBoundary>
-                                    <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles} />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route
-                            exact
-                            path="/(maclar|matches)/(tarih|date)-:date"
-                            render={props => (
-                                <ErrorBoundary>
-                                    <Homepage {...this.props} {...props} {...this.state} audioFiles={this.audioFiles} />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route
-                            exact
-                            path="/(mac|match)/:slug-(canli-skor|live-score)-:eventid"
-                            render={props => (
-                                <ErrorBoundary>
-                                    <Eventdetails socket={socket} {...props} />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route
-                            exact
-                            path="/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?"
-                            render={() => (
-                                <ErrorBoundary>
-                                    <Leageue />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route
-                            exact
-                            path="/(takim|team)/:slug-:teamId(\d+)"
-                            render={props => (
-                                <ErrorBoundary>
-                                    <Teamdetails socket={socket} {...props} />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route exact path="/test" component={TestComp} />
-
-                        <Route
-                            exact
-                            path="/eventdetails/:eventid"
-                            socket={socket}
-                            render={props => (
-                                <ErrorBoundary>
-                                    <Eventdetails socket={socket} {...props} />
-                                </ErrorBoundary>
-                            )}
-                        />
-
-                        <Route render={() => <Errors type="page-not-found" />} />
+                        {routes.map(({ path, Component }) => {
+                            return (
+                                <Route
+                                    key={path}
+                                    exact
+                                    path={path}
+                                    render={() => <ErrorBoundary><Component /></ErrorBoundary>}
+                                />
+                            );
+                        })}
+                        <Route render={() => <Error message="Aradığınız sayfa bulunamadı." statusCode={404} />} />
                     </Switch>
+                    {/*<Switch>*/}
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/"*/}
+                    {/*        render={() => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Homepage {...this.props} {...this.state} audioFiles={this.audioFiles} />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/(maclar|matches)/(tarih|date)-:date"*/}
+                    {/*        render={props => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Homepage {...this.props} {...props} {...this.state} audioFiles={this.audioFiles} />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/(mac|match)/:slug-(canli-skor|live-score)-:eventid"*/}
+                    {/*        render={props => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Eventdetails socket={socket} {...props} />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/(lig|league)/:slug-(puan-durumu|standing)-:leagueid-(sezon|season)-:seasonid/:activeTab?"*/}
+                    {/*        render={() => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Leageue />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/(takim|team)/:slug-:teamId(\d+)"*/}
+                    {/*        render={props => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Teamdetails socket={socket} {...props} />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route exact path="/test" component={TestComp} />*/}
+
+                    {/*    <Route*/}
+                    {/*        exact*/}
+                    {/*        path="/eventdetails/:eventid"*/}
+                    {/*        socket={socket}*/}
+                    {/*        render={props => (*/}
+                    {/*            <ErrorBoundary>*/}
+                    {/*                <Eventdetails socket={socket} {...props} />*/}
+                    {/*            </ErrorBoundary>*/}
+                    {/*        )}*/}
+                    {/*    />*/}
+
+                    {/*    <Route render={() => <Errors type="page-not-found" />} />*/}
+                    {/*</Switch>*/}
                 </main>
             </div>
         );
