@@ -1,7 +1,6 @@
 const express = require('express');
 const cloudscraper = require('cloudscraper');
 const fs = require('fs');
-const helper = require('./helper');
 
 const app = express();
 
