@@ -1,12 +1,11 @@
-const request = require('request-promise-native');
 const moment = require('moment');
-const tor = require('tor-request');
-const cacheService = require('../../cache.service');
-const firebase = require('../firebase');
-const { cacheDuration, isTorDisabled, userDisconnected } = require('../../helper');
-const { db } = require('../firebase/db');
+const cacheService = require('./cache.service');
+const firebaseService = require('./firebase.service');
+const { fetchSofaScore } = require('../fetch/sofascore');
 
-const socketHandler = (socket, io) => {
+const { db, firebase } = firebaseService;
+
+exports.init = (socket, io) => {
     socket.on('get-updates-homepage', () => {
         const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
         const cachedData = cacheService.instance().get(cacheKey);
@@ -59,41 +58,14 @@ const socketHandler = (socket, io) => {
     socket.on('get-updates-details', api => {
         const cacheKey = `mainData-${api}-eventdetails`;
         const initRemoteRequests = () => {
-            const sofaOptions = {
-                method: 'GET',
-                uri: `https://www.sofascore.com${api}?_=${Math.floor(Math.random() * 10e8)}`,
-                json: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Origin: 'https://www.sofascore.com',
-                    referer: 'https://www.sofascore.com/',
-                    'x-requested-with': 'XMLHttpRequest'
-                },
-                timeout: 10000
-            };
-
-            function onSuccess(res) {
-                cacheService.instance().set(cacheKey, res, cacheDuration.main.eventdetails || 10);
-                socket.emit('return-updates-details', res);
-            }
-
-            function onError() {
-                socket.emit('return-error-updates', 'Error while retrieving information from server');
-            }
-
-            if (isTorDisabled) {
-                request(sofaOptions)
-                    .then(onSuccess)
-                    .catch(onError);
-            } else {
-                tor.request(sofaOptions, (err, status, res) => {
-                    if (!err && status.statusCode === 200) {
-                        onSuccess(res);
-                    } else {
-                        onError(err);
-                    }
+            fetchSofaScore(api, 10)
+                .then(res => {
+                    socket.emit('return-updates-details', res);
+                })
+                .catch(() => {
+                    socket.emit('return-error-updates', 'Error while retrieving information from server');
                 });
-            }
+
         };
 
         const cachedData = cacheService.instance().get(cacheKey);
@@ -106,8 +78,6 @@ const socketHandler = (socket, io) => {
     });
 
     socket.on('disconnect', () => {
-        userDisconnected();
+        //
     });
 };
-
-exports.socketHandler = socketHandler;

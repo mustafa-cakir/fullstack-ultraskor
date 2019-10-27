@@ -8,23 +8,23 @@
         "node": ">=8.0.0"
     },
     "dependencies": {
-        "aws-sdk": "^2.543.0",
+        "aws-sdk": "^2.555.0",
         "body-parser": "^1.19.0",
-        "concurrently": "^4.1.0",
+        "cloudscraper": "^4.3.0",
+        "concurrently": "^5.0.0",
         "cors": "^2.8.5",
         "cron": "^1.7.2",
-        "crypto": "^1.0.1",
         "deep-diff": "^1.0.2",
         "express": "^4.16.4",
         "express-jwt": "^5.3.1",
-        "firebase-admin": "^8.6.0",
+        "firebase-admin": "^8.6.1",
         "fs": "^0.0.1-security",
         "lodash": "^4.17.11",
         "moment": "^2.24.0",
-        "mongodb": "^3.3.2",
-        "node-cache": "^4.2.0",
-        "nodemon": "^1.19.3",
-        "pm2": "^3.5.1",
+        "mongodb": "^3.3.3",
+        "node-cache": "^5.0.0",
+        "nodemon": "^1.19.4",
+        "pm2": "^4.1.2",
         "request": "^2.88.0",
         "request-promise-native": "^1.0.7",
         "shortid": "^2.2.15",
@@ -33,10 +33,10 @@
         "socks-proxy-agent": "^4.0.2",
         "socks5-https-client": "^1.2.1",
         "tor-request": "^3.1.0",
-        "ws": "^7.0.0"
+        "ws": "^7.2.0"
     },
     "scripts": {
-        "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch ./serverProxy.js serverProxy.js\"",
+        "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch serverProxy.js serverProxy.js\"",
         "prod": "yarn install && concurrently \"pm2 restart server.js\" \"pm2 restart serverProxy.js\""
     }
 }

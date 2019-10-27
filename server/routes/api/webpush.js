@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const { firebase } = require('../../utils/firebase');
-const cacheService = require('../../cache.service');
+const { firebase } = require('../../services/firebase.service');
+const cacheService = require('../../services/cache.service');
 const auth = require('../auth');
-const { cacheDuration } = require('../../helper');
+const { cacheDuration } = require('../../utils');
 
 router.post('/', auth.optional, (req, res) => {
     const { method, token, topic } = req.body;

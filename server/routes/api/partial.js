@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const cacheService = require('../../cache.service');
+const cacheService = require('../../services/cache.service');
 const auth = require('../auth');
-const { preprocessEvents } = require('../../helper');
+const { preprocessEvents } = require('../../utils');
 const { fetchSofaScore } = require('../../fetch/sofascore');
-const { isDev, cacheDuration } = require('../../helper');
+const { isDev, cacheDuration } = require('../../utils');
 
 router.get('/footer/popularevents', auth.optional, (req, res) => {
     const cacheKey = `footer-popular-events`;

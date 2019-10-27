@@ -1,7 +1,9 @@
 const NodeCache = require('node-cache');
+const { isDev } = require('../utils');
 
 let cache = null;
-exports.start = done => {
+exports.init = done => {
+    if (isDev) console.log('## cache service started');
     if (cache) return done();
     cache = new NodeCache();
     return false;

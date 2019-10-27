@@ -1,6 +1,5 @@
 const express = require('express');
-const request = require('request');
-const Agent = require('socks5-https-client/lib/Agent');
+const cloudscraper = require('cloudscraper');
 const fs = require('fs');
 const helper = require('./helper');
 
@@ -37,21 +36,14 @@ app.get('/images/:type/:filename', (req, res) => {
             }
 
             const requestOptions = {
-                url: `https://www.sofascore.com${pathname}`,
-                strictSSL: true,
-                agentClass: helper.isTorDisabled ? null : Agent,
-                timeout: 1000,
-                agentOptions: {
-                    socksHost: 'localhost',
-                    socksPort: 9050,
-                }
+                url: `https://www.sofascore.com${pathname}`
             };
 
             // console.log(requestOptions.url);
-            const stream = request(requestOptions);
+            const stream = cloudscraper(requestOptions);
 
-            stream.on('error', errStream => {
-                console.log(`Error on request: ${errStream}`);
+            stream.on('error', () => {
+                console.log('## Image Error - 404');
                 res.sendStatus(404);
             });
 
@@ -60,7 +52,7 @@ app.get('/images/:type/:filename', (req, res) => {
                     stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
                     stream.pipe(res);
                 } else {
-                    // console.log('Error on response: ' + err);
+                    console.log('## Image Error 2 - 404');
                     res.sendStatus(404);
                 }
             });
@@ -92,12 +84,8 @@ app.get('*', (req, res) => {
         timeout: 1500
     };
 
-    // if (path.indexOf('common_widgets') > -1) {
-    //     options.url = 'https://www.ultraskor.com/static/live-match/common_widgets.js?v=2.0.1';
-    // }
-
     // console.log(options.url);
-    request(options, function(error, response, body) {
+    cloudscraper(options, (error, response, body) => {
         res.header('Access-Control-Allow-Origin', '*');
         if (path.indexOf('translations') > -1) {
             res.header('Content-Type', 'application/json; charset=utf-8');

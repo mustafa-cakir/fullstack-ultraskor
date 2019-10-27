@@ -1,6 +1,5 @@
 const firebaseAdmin = require('firebase-admin');
-
-const FireBaseServiceAccount = require('./corded-reality-254218-firebase-adminsdk-vso8i-a543d2b9c4');
+const FireBaseServiceAccount = require('../config/corded-reality-254218-firebase-adminsdk-vso8i-a543d2b9c4');
 
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(FireBaseServiceAccount),

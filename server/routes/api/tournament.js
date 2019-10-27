@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const cacheService = require('../../cache.service');
+const cacheService = require('../../services/cache.service');
 const auth = require('../auth');
 const { fetchSofaScore } = require('../../fetch/sofascore');
-const { isDev, cacheDuration } = require('../../helper');
+const { isDev, cacheDuration } = require('../../utils');
 
 router.get('/standings/:tournamentId/:seasonId', auth.optional, (req, res) => {
     const { tournamentId, seasonId } = req.params; // YYYY-MM-DD

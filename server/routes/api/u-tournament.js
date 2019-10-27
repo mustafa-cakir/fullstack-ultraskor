@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const cacheService = require('../../cache.service');
+const cacheService = require('../../services/cache.service');
 const auth = require('../auth');
-const { mergeUTournamentRoundsData } = require('../../helper');
-const { mergeUTournamentData } = require('../../helper');
+const { mergeUTournamentRoundsData } = require('../../utils');
+const { mergeUTournamentData } = require('../../utils');
 const { fetchSofaScore } = require('../../fetch/sofascore');
-const { isDev, cacheDuration } = require('../../helper');
+const { isDev, cacheDuration } = require('../../utils');
 
 router.get('/:leagueid/:seasonid', auth.optional, (req, res) => {
     const { leagueid, seasonid } = req.params; // YYYY-MM-DD

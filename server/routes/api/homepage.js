@@ -1,9 +1,9 @@
 const moment = require('moment');
 const router = require('express').Router();
-const cacheService = require('../../cache.service');
-const { cacheDuration } = require('../../helper');
+const cacheService = require('../../services/cache.service');
+const { cacheDuration } = require('../../utils');
 const auth = require('../auth');
-const { isEmpty, isDev } = require('../../helper');
+const { isEmpty, isDev } = require('../../utils');
 const { fetchHomepage } = require('../../fetch/homepage');
 
 router.get('/:date', auth.optional, (req, res) => {

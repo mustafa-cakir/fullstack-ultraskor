@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const tor = require('tor-request');
-const { isProd } = require('../../helper');
+const { isProd } = require('../../utils');
 const auth = require('../auth');
-const { db } = require('../../utils/firebase');
+const { db } = require('../../services/firebase.service');
 
 tor.TorControlPort.password = 'muztafultra';
 

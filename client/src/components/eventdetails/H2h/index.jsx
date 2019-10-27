@@ -1,31 +1,76 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
+import axios from 'axios';
 import Tournament from '../../common/Tournament';
 import { printImageSrc } from '../../../core/utils';
 import Icon from '../../common/Icon';
+import Loading from '../../common/Loading';
+import Errors from '../../common/Errors';
 
-const H2h = ({ matches, teams, textList, t, updateAutoHeight }) => {
-    const [tab, setTab] = useState('h2h');
-    const [by, setBy] = useState('byDates');
-    const [showMore, setShowMore] = useState(true);
+const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
+    const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
+        tab: 'h2h',
+        by: 'byDates',
+        showMore: true,
+        matches: null,
+        isLoading: true,
+        error: null
+    });
+
+    const {tab, by, showMore, matches, isLoading, error} = state;
+
+    const getData = useCallback(() => {
+        axios
+            .get(`/api/eventdetails/${id}/matches`)
+            .then(res => {
+                setState({
+                    isLoading: false,
+                    matches: res.data
+                });
+                setTimeout(() => {
+                    updateAutoHeight();
+                })
+            })
+            .catch(() => {
+                setState({
+                    isLoading: false,
+                    error: t('Something went wrong')
+                });
+            });
+    }, [id, updateAutoHeight, t]);
+
+    useEffect(() => {
+        if (hasActived) {
+            getData();
+        }
+    }, [hasActived, getData]);
+
+    if (!matches || isLoading || !hasActived) return <Loading type="whitebox container" />;
+    if (error) return <Errors message={error} />;
+
     const tournaments = matches[by][tab];
-
     const tabClickHandler = newTab => {
         if (newTab !== tab) {
-            setTab(newTab);
-            setShowMore(true);
+            setState({
+                tab: newTab,
+                showMore: true
+            });
             updateAutoHeight();
         }
     };
 
     const showMoreClickHandler = () => {
-        setShowMore(!showMore);
+        setState({
+            showMore: !showMore
+        });
         updateAutoHeight();
     };
 
     const byClickHandler = newBy => {
         if (newBy !== by) {
-            setBy(newBy);
+            setState({
+                by: newBy
+            })
             updateAutoHeight();
         }
     };

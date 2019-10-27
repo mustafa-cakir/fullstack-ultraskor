@@ -1,10 +1,10 @@
 const { CronJob } = require('cron');
 const moment = require('moment');
-const { fetchHomepage } = require('./fetch/homepage');
+const { fetchHomepage } = require('../fetch/homepage');
 const cacheService = require('./cache.service');
-const { isEmpty } = require('./helper');
-const { isDev, cacheDuration } = require('./helper');
-const { initWebPushByWebSocket } = require('./utils/webpush');
+const { isEmpty } = require('../utils');
+const { isDev, cacheDuration } = require('../utils');
+const { initWebPushByWebSocket } = require('./webpush.service');
 
 const cronHandler = () => {
     if (isDev) console.log('## cron start!');
@@ -26,7 +26,7 @@ exports.pushServiceChangesForWebPush = res => {
     const cacheKey = `homepageListData-${moment().format('YYYY-MM-DD')}`;
     const homepageListData = cacheService.instance().get(cacheKey);
     if (!homepageListData || !homepageListData.tournaments) {
-        console.log('homepageListData can not be gathered from cache');
+        // console.log('homepageListData can not be gathered from cache');
         return false;
     }
 
@@ -108,10 +108,10 @@ exports.pushServiceChangesForWebPush = res => {
 
 setTimeout(() => {
     cronHandler(); // run manually for the first time;
-}, 10000);
+});
 
 const cron = new CronJob('*/30 * * * *', cronHandler); // every 30 minutes
 
-exports.cronStart = () => {
+exports.init = () => {
     cron.start();
 };

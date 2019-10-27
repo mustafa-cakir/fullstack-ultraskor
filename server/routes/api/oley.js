@@ -2,10 +2,10 @@ const moment = require('moment');
 const router = require('express').Router();
 const request = require('request-promise-native');
 const tor = require('tor-request');
-const cacheService = require('../../cache.service');
-const { cacheDuration } = require('../../helper');
+const cacheService = require('../../services/cache.service');
+const { cacheDuration } = require('../../utils');
 const auth = require('../auth');
-const { db } = require('../../utils/firebase');
+const { db } = require('../../services/firebase.service');
 
 tor.TorControlPort.password = 'muztafultra';
 

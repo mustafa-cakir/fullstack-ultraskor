@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const request = require('request-promise-native');
 const tor = require('tor-request');
-const cacheService = require('../../cache.service');
-const { simplifyHomeData, cacheDuration } = require('../../helper');
+const cacheService = require('../../services/cache.service');
+const { simplifyHomeData, cacheDuration } = require('../../utils');
 const auth = require('../auth');
 
 const { fetchSofaScore } = require('../../fetch/sofascore');

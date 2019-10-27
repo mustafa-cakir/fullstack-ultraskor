@@ -1,8 +1,6 @@
 const moment = require('moment');
-const _ = require('lodash');
-const cors = require('cors');
-const languageJson = require('./../client/src/languages/tr.json');
-const { db } = require('./utils/firebase/db');
+const languageJson = require('../../client/src/languages/tr.json');
+const { db } = require('../services/firebase.service');
 
 const generateSlug = text => {
     const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
@@ -44,24 +42,6 @@ const preProcessSportRadarData = data => {
         }, []);
     }
     return result;
-};
-
-const replaceDotWithUnderscore = obj => {
-    _.forOwn(obj, (value, key) => {
-        // if key has a period, replace all occurences with an underscore
-        if (_.includes(key, '.')) {
-            const cleanKey = _.replace(key, /\./g, '_');
-            obj[cleanKey] = value;
-            delete obj[key];
-        }
-
-        // continue recursively looping through if we have an object or array
-        if (_.isObject(value)) {
-            return this.replaceDotWithUnderscore(value);
-        }
-        return false;
-    });
-    return obj;
 };
 
 const simplifyIddaaHelperData = response => {
@@ -110,29 +90,26 @@ const simplifyHomeData = res => {
             whole.push(item);
             return whole;
         }, []);
-
-        // res.sportItem.tournaments = res.sportItem.tournaments.filter(tournament => {
-        //     return !(tournament.tournament.name.indexOf('Friendly') > -1 || tournament.tournament.name.indexOf('Women') > -1);
-        // });
-        //
-        // res.sportItem.tournaments.forEach((tournament, index) => {
-        // 	// if (tournament.tournament.name.indexOf('Friendly') > -1 || tournament.tournament.name.indexOf('Women') > -1) {
-        //     //     console.log('deleted, index:', index);
-        // 	// 	res.sportItem.tournaments.splice(index, 1);
-        //     // } else {
-        //         tournament.events.map(event => {
-        // 	        for (let i = 0; i < eventIgnoredProperties.length; i++) {
-        // 		        delete event[eventIgnoredProperties[i]]
-        // 	        }
-        // 	        return event
-        //         });
-        //     //}
-        // });
     }
     return res;
 };
 
 const cacheDuration = {
+    sec15: 15,
+    sec30: 30,
+    min5: 60 * 5,
+    min10: 60 * 10,
+    min15: 60 * 15,
+    min30: 60 * 10,
+    min45: 60 * 15,
+    hour1: 60 * 60,
+    hour3: 60 * 60 * 3,
+    hour6: 60 * 60 * 6,
+    hour12: 60 * 60 * 12,
+    hour24: 60 * 60 * 12,
+    day1: 60 * 60 * 24,
+    day3: 60 * 60 * 24 * 3,
+    day7: 60 * 60 * 24 * 7,
     sportRadarFunFacts: 60 * 60 * 24 * 7, // 7 days
     oleyInjuries: 60 * 60 * 24, // 7 days
     oleyTextList: 60 * 60 * 24 * 7, // 7 days
@@ -175,77 +152,17 @@ const cacheDuration = {
     }
 };
 
-exports.generateSlug = text => {
-    const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
-    const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
-    const p = new RegExp(a.split('').join('|'), 'g');
-
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
-        .replace(/&/g, '-and-') // Replace & with 'and'
-        .replace(/[^\w-]+/g, '') // Remove all non-word chars
-        .replace(/--+/g, '-') // Replace multiple - with single -
-        .replace(/^-+/, '') // Trim - from start of text
-        .replace(/-+$/, ''); // Trim - from end of text
-};
-
-exports.t = text => {
+const t = text => {
     if (languageJson[text]) {
         return languageJson[text];
     }
     return text;
 };
 
-exports.mongoOptions = () => {
-    return {
-        useNewUrlParser: true,
-        keepAlive: 1,
-        connectTimeoutMS: 1000,
-        socketTimeoutMS: 1000
-    };
-};
-
-const whitelist = [
-    'http://localhost:5000',
-    'http://localhost:5001',
-    'http://localhost:3000',
-    'https://www.ultraskor.com'
-];
-
-const corsOptions = {
-    origin(origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            console.log(origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-};
-let activeUser = 0;
-const userConnected = () => {
-    activeUser += 1;
-};
-
-const userDisconnected = () => {
-    activeUser -= 1;
-};
-
 const isDev = process.env.NODE_ENV === 'dev';
 const isProd = process.env.NODE_ENV !== 'dev';
 const isTorDisabled = process.env.TOR_DISABLED === 'true';
 // exports.isTorDisabled = false
-
-const userCount = () => {
-    return activeUser;
-};
-
-const initCors = () => {
-    return cors(corsOptions);
-};
 
 const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
     const jsonDataTeamNames = [sofaEvent.homeTeam.name.toLowerCase(), sofaEvent.awayTeam.name.toLowerCase()];
@@ -478,7 +395,14 @@ const getH2hByTournaments = data => {
     return result;
 };
 
-const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatches, ids) => {
+const processSofaH2hData = data => {
+    return {
+        byDates: data ? getH2hByDates(data) : null,
+        byTournaments: data ? getH2hByTournaments(data) : null
+    }
+};
+
+const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
     if (!sofa) {
         if (isDev) console.log('data can not be gathered from sofa');
         throw Error('Whoops!');
@@ -490,10 +414,7 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatc
     result.ids = { ...ids };
     result.funfacts = radar && radar.doc[0] && radar.doc[0].data ? radar.doc[0].data.funfacts : null;
     result.textList = oley ? oley.textList : null;
-    result.matches = {
-        byDates: sofaMatches ? getH2hByDates(sofaMatches) : null,
-        byTournaments: sofaMatches ? getH2hByTournaments(sofaMatches) : null
-    };
+
     result.event = {
         ...(injuries && { injuries }),
         isStanding: sofa.standingsAvailable,
@@ -514,7 +435,7 @@ const mergeEventDetailsData = (sofa, radar, oley, sofaLineup, injuries, sofaMatc
         statusBoxContent: event.statusDescription,
         tournament: event.tournament,
         venue: event.venue,
-        lineups: sofaLineup,
+        // lineups: sofaLineup,
         stats: sofa.statistics,
         managerDuel: sofa.managerDuel,
         ...(sofa.teamsForm && {
@@ -732,18 +653,14 @@ const isEmpty = obj => {
 
 exports.generateSlug = generateSlug;
 exports.cacheDuration = cacheDuration;
-exports.userConnected = userConnected;
 exports.isDev = isDev;
 exports.isProd = isProd;
 exports.isTorDisabled = isTorDisabled;
-exports.userDisconnected = userDisconnected;
-exports.userCount = userCount;
+exports.t = t;
 exports.simplifyHomeData = simplifyHomeData;
 exports.preProcessSportRadarData = preProcessSportRadarData;
-exports.replaceDotWithUnderscore = replaceDotWithUnderscore;
 exports.simplifyIddaaHelperData = simplifyIddaaHelperData;
 exports.simplifyWebSocketData = simplifyWebSocketData;
-exports.initCors = initCors;
 exports.convertToUltraSkorId = convertToUltraSkorId;
 exports.convertToSofaScoreID = convertToSofaScoreID;
 exports.mergeEventDetailsData = mergeEventDetailsData;
@@ -752,3 +669,4 @@ exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;
 exports.preprocessEvents = preprocessEvents;
+exports.processSofaH2hData = processSofaH2hData;

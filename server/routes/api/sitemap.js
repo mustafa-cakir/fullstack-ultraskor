@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const moment = require('moment');
 const tor = require('tor-request');
 const auth = require('../auth');
-const { t, generateSlug } = require('../../helper');
+const { t, generateSlug } = require('../../utils');
 
 tor.TorControlPort.password = 'muztafultra';
 

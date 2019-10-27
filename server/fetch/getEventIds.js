@@ -1,8 +1,8 @@
-const { db } = require('../utils/firebase');
-const cacheService = require('../cache.service');
-const { convertToSofaScoreID } = require('../helper');
-const { isDev } = require('../helper');
-const { cacheDuration } = require('../helper');
+const { db } = require('../services/firebase.service');
+const cacheService = require('../services/cache.service');
+const { convertToSofaScoreID } = require('../utils');
+const { isDev } = require('../utils');
+const { cacheDuration } = require('../utils');
 
 const getEventIds = eventId => {
     const cacheKey = `eventIdsByDate-${eventId}`;

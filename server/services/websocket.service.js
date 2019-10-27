@@ -1,10 +1,9 @@
 const WebSocket = require('ws');
-const SocksProxyAgent = require('socks-proxy-agent');
-const { isTorDisabled, simplifyWebSocketData } = require('../../helper');
-const { pushServiceChangesForWebPush } = require('../../cronjob');
+const { simplifyWebSocketData } = require('../utils');
+const { pushServiceChangesForWebPush } = require('./cronjob.service');
 
 let wsMaxRetry = 25;
-const initWebSocket = io => {
+const init = io => {
     let swTimeout = null;
     const pushServiceUri = [
         'wss://ws.sofascore.com:10017',
@@ -24,8 +23,8 @@ const initWebSocket = io => {
     console.log(getPushServiceUri);
     const ws = new WebSocket(`${getPushServiceUri}/ServicePush`, {
         origin: 'https://www.sofascore.com',
-        rejectUnauthorized: false,
-        ...(!isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
+        rejectUnauthorized: false
+        // ...(!isTorDisabled && { agent: new SocksProxyAgent('socks://127.0.0.1:9050') })
     });
 
     ws.on('error', err => {
@@ -50,14 +49,14 @@ const initWebSocket = io => {
 
     ws.on('close', err => {
         console.log('ws disconnected. ', err);
-        if (wsMaxRetry > 0) initWebSocket();
+        if (wsMaxRetry > 0) init();
         clearInterval(swTimeout);
         wsMaxRetry -= 1;
     });
 
-    ws.on('pong', () => {
-        // console.log('Ws pong ', data);
-    });
+    // ws.on('pong', () => {
+    //     // console.log('Ws pong ', data);
+    // });
 
     ws.on('message', res => {
         if (res.substr(0, 15).match('pong')) {
@@ -73,4 +72,4 @@ const initWebSocket = io => {
     });
 };
 
-exports.initWebSocket = initWebSocket;
+exports.init = init;

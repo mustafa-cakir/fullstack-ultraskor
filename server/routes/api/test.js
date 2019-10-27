@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const auth = require('../auth');
-const { db } = require('../../utils/firebase');
+const { db } = require('../../services/firebase.service');
 
 router.get('/getuser/:id', auth.required, (req, res) => {
     const { id } = req.params;
