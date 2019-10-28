@@ -1,6 +1,6 @@
 import Homepage from '../../components/Homepage';
 import Eventdetails from '../../components/Eventdetails';
-import Teamdetails from '../../components/Teamdetails';
+import Team from '../../components/Team';
 import League from '../../components/League';
 
 const routes = [
@@ -22,7 +22,7 @@ const routes = [
     },
     {
         path: '/(takim|team)/:slug-:teamId',
-        Component: Teamdetails
+        Component: Team
     },
     {
         path: '/eventdetails/:eventid',

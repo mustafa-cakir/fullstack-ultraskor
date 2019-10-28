@@ -56,3 +56,7 @@ export const scrollTopOnClick = e => {
     scrollToTop(false);
     return false;
 };
+
+export const isEmpty = obj => {
+    return Object.keys(obj).length === 0;
+};

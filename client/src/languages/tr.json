@@ -129,7 +129,9 @@
     "Date": "Tarih",
     "Tournament": "Lig",
     "Location": "Şehir",
+    "Contr": "Kontr",
     "Stadium": "Stadyum",
+    "Stadium Capacity": "Stadyum Kapasite",
     "Capacity": "Kapasite",
     "Attendance": "Seyirci",
     "Referee": "Hakem",
@@ -140,6 +142,7 @@
     "L": "Y",
     "Pts": "P",
     "Coach": "Teknik Direktör",
+    "Manager": "Teknik Direktör",
     "Possible Lineup!": "Muhtemel 11",
     "Confirmed Lineup": "Onaylanmış 11",
     "Avg. Age": "Ort. Takım Yaşı",
@@ -343,5 +346,6 @@
     "Hide": "Gizle",
     "No match found!": "Maç bulunamadı!",
     "Prev": "Geri",
-    "Next": "İleri"
+    "Next": "İleri",
+    "Contract Since": "Kontrat Başlangıcı"
 }

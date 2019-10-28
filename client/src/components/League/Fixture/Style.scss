@@ -3,6 +3,9 @@
 .section-fixture {
     background: #f1f2f3;
     min-height: calc(100vh - 212px);
+    .fixture-list {
+        min-height: 400px;
+    }
     .tournament-title {
         top: 0;
     }

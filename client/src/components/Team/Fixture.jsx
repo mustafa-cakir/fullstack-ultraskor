@@ -5,6 +5,7 @@ import Tournament from '../common/Tournament';
 import Icon from '../common/Icon';
 import Loading from '../common/Loading';
 import Errors from '../common/Errors';
+import { isEmpty } from '../../core/utils';
 
 const Fixture = ({ teamId, updateAutoHeight }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -12,9 +13,49 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
         isDropdown: false,
         data: null,
         isLoading: true,
-        error: null
+        error: null,
+        prevExist: true,
+        nextExist: true
     });
-    const { by, isDropdown, data, isLoading, error } = state;
+    const { by, isDropdown, data, isLoading, error, prevExist, nextExist } = state;
+
+    const getOffset = nav => {
+        if (nav === 'prev') return String(data.byDates[0].events[0].startTimestamp).substr(0, 10);
+        return String(
+            data.byDates[data.byDates.length - 1].events[data.byDates[data.byDates.length - 1].events.length - 1]
+                .startTimestamp
+        ).substr(0, 10);
+    };
+
+    const getPrevNextData = nav => {
+        const offset = getOffset(nav);
+        setState({ isLoading: true, nextExist: true, prevExist: true });
+        axios
+            .get(`/api/team/${teamId}/${offset}/${nav}`)
+            .then(res => {
+                if (res.data) {
+                    setState({
+                        data: res.data,
+                        isLoading: false,
+                        error: null
+                    });
+                    setTimeout(() => {
+                        updateAutoHeight();
+                    });
+                } else {
+                    setState({
+                        ...(nav === 'next' ? { nextExist: false } : { prevExist: false }),
+                        isLoading: false
+                    });
+                }
+            })
+            .catch(err => {
+                setState({
+                    error: err,
+                    isLoading: false
+                });
+            });
+    };
 
     const getData = useCallback(() => {
         axios
@@ -27,7 +68,7 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                 });
                 setTimeout(() => {
                     updateAutoHeight();
-                }, 2000);
+                });
             })
             .catch(err => {
                 setState({
@@ -50,16 +91,12 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
         }
     };
 
-    const prevClickHandler = () => {};
-    const nextClickHandler = () => {};
-
     const dropdownClickHandler = () => {
         setState({
             isDropdown: !isDropdown
         });
     };
 
-    if (!data || isLoading) return <Loading type="whitebox container" />;
     if (error) return <Errors message={error} />;
 
     return (
@@ -70,8 +107,8 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                         <div className="row heading align-items-center">
                             <button
                                 type="button"
-                                className="col col-3 text-left col-nav"
-                                onClick={() => prevClickHandler()}
+                                className={`col col-3 text-left col-nav${prevExist ? '' : ' not-exist'}`}
+                                onClick={() => (prevExist ? getPrevNextData('prev') : undefined)}
                             >
                                 <Icon name="fas fa-chevron-left" /> <Trans>Prev</Trans>
                             </button>
@@ -100,8 +137,8 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                             </div>
                             <button
                                 type="button"
-                                className="col col-3 text-right col-nav"
-                                onClick={() => nextClickHandler()}
+                                className={`col col-3 text-right col-nav${nextExist ? '' : ' not-exist'}`}
+                                onClick={() => (nextExist ? getPrevNextData('next') : undefined)}
                             >
                                 <Trans>Next</Trans> <Icon name="fas fa-chevron-right" />
                             </button>
