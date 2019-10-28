@@ -1,12 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../Helper';
+import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../core/utils/helper';
 import Event from './Event';
 
 import Errors from './Errors';
 
-class Tournament extends PureComponent {
+class Tournament extends Component {
     lazyLoadLoadMoreBtn() {
         const { lazyLoadCount, updateParentState } = this.props;
         const newLazyLoadCount = parseFloat(lazyLoadCount) + 10;

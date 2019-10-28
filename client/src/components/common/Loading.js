@@ -1,42 +1,42 @@
-import React, {Component} from 'react';
-import logoBlack from "../../logo-black.png";
-import RefreshButton from "./RefreshButton";
+import React, { Component } from 'react';
+import logoBlack from '../../assets/images/logo-black.png';
+import RefreshButton from './RefreshButton';
 
 class Loading extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			refreshBtn: false
-		}
-	}
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshBtn: false
+        };
+    }
 
-	componentDidMount() {
-		this.waitTimeout= setTimeout(() => {
-			this.setState({
-				refreshBtn: true
-			})
-		}, 10000);
-	}
+    componentDidMount() {
+        this.waitTimeout = setTimeout(() => {
+            this.setState({
+                refreshBtn: true
+            });
+        }, 10000);
+    }
 
-	componentWillUnmount() {
-		clearTimeout(this.waitTimeout);
-	}
+    componentWillUnmount() {
+        clearTimeout(this.waitTimeout);
+    }
 
-	render() {
-		const {type} = this.props;
-		return (
-			<div className={`loadingAbstract ${type || ""}`}>
-				<div className="loading-ball">
-					<div className="lds-ripple">
-						<div/>
-						<div/>
-					</div>
-					<img src={logoBlack} alt="Loading"/>
-				</div>
-				{this.state.refreshBtn ? <RefreshButton/> : ""}
-			</div>
-		)
-	}
+    render() {
+        const { type } = this.props;
+        return (
+            <div className={`loadingAbstract ${type || ''}`}>
+                <div className="loading-ball">
+                    <div className="lds-ripple">
+                        <div />
+                        <div />
+                    </div>
+                    <img src={logoBlack} alt="Loading" />
+                </div>
+                {this.state.refreshBtn ? <RefreshButton /> : ''}
+            </div>
+        );
+    }
 }
 
-export default Loading
+export default Loading;

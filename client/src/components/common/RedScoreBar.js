@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Icon from './Icon';
-import { generateSlug } from '../../Helper';
+import { generateSlug } from '../../core/utils/helper';
 
 class RedScoreBar extends Component {
     constructor(props) {

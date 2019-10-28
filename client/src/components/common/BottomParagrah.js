@@ -5,7 +5,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import iconIOS from '../../assets/images/app-stores-ios.png';
 import iconPlay from '../../assets/images/app-stores-play.png';
 import Icon from './Icon';
-import { generateSlug } from '../../Helper';
+import { generateSlug } from '../../core/utils/helper';
 
 class BottomParagrah extends PureComponent {
     constructor(props) {

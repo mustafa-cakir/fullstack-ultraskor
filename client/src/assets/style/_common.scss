@@ -69,7 +69,9 @@ button {
 	}
 }
 
-button, [type="button"] {
+button {
+	background: inherit;
+	color: inherit;
 	-webkit-appearance: none;
 	font-size: 1rem;
 	line-height: normal;
@@ -77,6 +79,10 @@ button, [type="button"] {
 	border:none;
 	padding: 0;
 	margin: 0;
+}
+
+button, [type="button"], [type="reset"], [type="submit"] {
+	-webkit-appearance: button;
 }
 
 .btn {
@@ -93,8 +99,16 @@ button, [type="button"] {
 	position: relative;
 }
 
-.homepage-list {
+.homepage-list,
+.homepage-loading {
 	min-height: calc(100vh - 90px);
+	position: relative;
+	z-index: 4;
+}
+
+.homepage-loading .loadingAbstract {
+	opacity: 0;
+	animation: fadeIn 0.4s linear forwards;
 }
 
 .fetch-alert {
@@ -1044,11 +1058,16 @@ code {
 
 	.btn {
 		display: inline-block;
+		margin-right: 3px;
+		&:hover {
+			background: #007bff;
+			color: #fff;
+		}
+		&.active {
+			border: 1px solid #007bff;
+		}
 	}
 
-	.active {
-		border: 1px solid #007bff;
-	}
 }
 
 .date-prev-next {

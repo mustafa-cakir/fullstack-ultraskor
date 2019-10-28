@@ -348,7 +348,7 @@ const getH2hByDates = data => {
     return result;
 };
 
-const combineH2hTournamentsByTournament = tournaments => {
+const reorderTournamentsByTournament = tournaments => {
     const tempTournaments = [];
 
     tournaments.forEach(tournament => {
@@ -374,7 +374,7 @@ const getH2hByTournaments = data => {
         tempHomeTournaments.push(...preprocessTournaments(data.home.playedAtThisTournament.tournaments));
     if (data.home.thisTournament)
         tempHomeTournaments.push(...preprocessTournaments(data.home.thisTournament.tournaments));
-    const homeTournaments = combineH2hTournamentsByTournament(tempHomeTournaments);
+    const homeTournaments = reorderTournamentsByTournament(tempHomeTournaments);
 
     const tempAwayTournaments = [];
     if (data.away.recent) tempAwayTournaments.push(...preprocessTournaments(data.away.recent.tournaments));
@@ -383,11 +383,11 @@ const getH2hByTournaments = data => {
         tempAwayTournaments.push(...preprocessTournaments(data.away.playedAtThisTournament.tournaments));
     if (data.away.thisTournament)
         tempAwayTournaments.push(...preprocessTournaments(data.away.thisTournament.tournaments));
-    const awayTournaments = combineH2hTournamentsByTournament(tempAwayTournaments);
+    const awayTournaments = reorderTournamentsByTournament(tempAwayTournaments);
 
     const tempH2hTournaments = [];
     if (data.h2h.events) tempH2hTournaments.push(...preprocessTournaments(data.h2h.events.tournaments));
-    const h2hTournaments = combineH2hTournamentsByTournament(tempH2hTournaments);
+    const h2hTournaments = reorderTournamentsByTournament(tempH2hTournaments);
 
     result.home = homeTournaments;
     result.away = awayTournaments;
@@ -399,7 +399,7 @@ const processSofaH2hData = data => {
     return {
         byDates: data ? getH2hByDates(data) : null,
         byTournaments: data ? getH2hByTournaments(data) : null
-    }
+    };
 };
 
 const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
@@ -647,6 +647,13 @@ const mergeUTournamentRoundsData = data => {
     return result;
 };
 
+const mergeTeamData = tournaments => {
+    const newTournaments = preprocessTournaments(tournaments, true);
+    return {
+        byDates: newTournaments,
+        byTournaments: reorderTournamentsByTournament(preprocessTournaments(tournaments, true))
+    };
+};
 const isEmpty = obj => {
     return Object.keys(obj).length === 0;
 };
@@ -670,3 +677,5 @@ exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;
 exports.preprocessEvents = preprocessEvents;
 exports.processSofaH2hData = processSofaH2hData;
+exports.mergeTeamData = mergeTeamData;
+exports.preprocessTournaments = preprocessTournaments;

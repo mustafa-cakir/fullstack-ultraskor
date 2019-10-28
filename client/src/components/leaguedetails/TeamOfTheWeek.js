@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loading from '../common/Loading';
 // import {Trans} from "react-i18next";
-import { ratingClass } from '../../Helper';
+import { ratingClass } from '../../core/utils/helper';
 import Icon from '../common/Icon';
 import { Trans } from 'react-i18next';
 import Errors from '../common/Errors';

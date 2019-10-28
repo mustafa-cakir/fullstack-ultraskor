@@ -6,7 +6,7 @@ import ReactSwipe from 'react-swipe';
 import smoothscroll from 'smoothscroll-polyfill';
 import Footer from '../common/Footer';
 import i18n from 'i18next';
-import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../Helper';
+import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../core/utils/helper';
 import Fixture from './Fixture';
 import Errors from '../common/Errors';
 import TeamOfTheWeek from './TeamOfTheWeek';
