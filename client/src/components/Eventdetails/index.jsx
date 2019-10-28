@@ -267,8 +267,7 @@ const Eventdetails = ({ t, i18n }) => {
                             ve canlı maç izle {moment(event.startTimestamp).format('DD.MM.YYYY')} tarihinde, saat{' '}
                             {moment(event.startTimestamp).format('HH:mm')} 'te başlayacaktır. Maçın oynanacağı stadyum{' '}
                             {event.venue ? event.venue.stadium.name : ''}, {event.venue ? event.venue.city.name : ''},{' '}
-                            {event.venue ? event.venue.country.name : ''}. Maç detayı sayfamızda {event.category.name},{' '}
-                            . Maçı {event.referee.name} yönetecek.
+                            {event.venue ? event.venue.country.name : ''}. Maçı {event.referee.name} yönetecek.
                             <strong>
                                 {event.tournament.name} liginda oynanan {event.name} karşılaşması
                             </strong>
