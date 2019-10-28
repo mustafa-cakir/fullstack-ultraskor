@@ -1,5 +1,6 @@
 import React, { useReducer, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import moment from 'moment';
 import axios from 'axios';
 import { withTranslation } from 'react-i18next';
 import { Tabs, Tab } from '@material-ui/core';
@@ -9,13 +10,14 @@ import Errors from '../common/Errors';
 import Loading from '../common/Loading';
 import Summary from './Summary';
 import LiveTracker from './LiveTracker';
-import { appendValueToArray } from '../../core/utils/helper';
+import { appendValueToArray, HelperTranslateUrlTo, HelperUpdateMeta } from '../../core/utils/helper';
 import H2h from './H2h';
 import Stats from './Stats';
 import Scoreboard from './Scoreboard';
 import Lineups from './Lineups';
 import Injuries from './Injuries';
 import Standings from './Standings';
+import { isEmpty } from '../../core/utils';
 
 const Eventdetails = ({ t, i18n }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -31,6 +33,46 @@ const Eventdetails = ({ t, i18n }) => {
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
     const params = useParams();
     const { eventid } = params;
+
+    const updateMeta = eventData => {
+        if (language === 'en') {
+            if (window.location.pathname.split('/')[2] === 'mac')
+                window.location.href = HelperTranslateUrlTo('en', true);
+            HelperUpdateMeta({
+                title: `Live: ${!isEmpty(eventData.event.scores) ? eventData.event.scores.home : ' '} - ${
+                    !isEmpty(eventData.event.scores) ? eventData.event.scores.away : ' '
+                } | ${eventData.event.name} Live Scores Coverage - See highlights and match statistics`,
+                canonical: window.location.href,
+                description: `${eventData.event.tournament.name} Match Report and Live Scores for ${
+                    eventData.event.name
+                } on ${moment(eventData.event.startTimestamp).format('ll')} at ${moment(
+                    eventData.event.startTimestamp
+                ).format('HH:mm')}, including lineups, all goals and incidents`,
+                keywords: `${eventData.event.teams.home.slug} match results, ${eventData.event.teams.away.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`,
+                alternate: HelperTranslateUrlTo('tr'),
+                hrefLang: 'tr'
+            });
+        } else if (language === 'tr') {
+            if (window.location.pathname.split('/')[1] === 'match')
+                window.location.href = HelperTranslateUrlTo('tr', true);
+            HelperUpdateMeta({
+                title: `Canlı: ${!isEmpty(eventData.event.scores) ? eventData.event.scores.home : ' '} - ${
+                    !isEmpty(eventData.event.scores) ? eventData.event.scores.away : ' '
+                } | ${eventData.event.name} Maçı canlı skor burada - Maç özeti ve goller için tıklayın`,
+                canonical: window.location.href,
+                description: `${eventData.event.tournament.name}, ${eventData.event.name} (${moment(
+                    eventData.event.startTimestamp * 1e3
+                ).format('LL')}, saat: ${moment(eventData.event.startTimestamp * 1e3).format(
+                    'HH:mm'
+                )}) maçının canlı skorlarını takip edebilirsiniz. İşte ${
+                    eventData.event.name
+                } maçının canlı anlatımı, ilk 11 leri ve maça dair istatistikler...`,
+                keywords: `${eventData.event.teams.home.slug} mac sonuclari, ${eventData.event.teams.away.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`,
+                alternate: HelperTranslateUrlTo('en'),
+                hrefLang: 'en'
+            });
+        }
+    };
 
     const getData = useCallback(() => {
         setState({
@@ -49,6 +91,7 @@ const Eventdetails = ({ t, i18n }) => {
                     isLoading: false,
                     error: null
                 });
+                updateMeta(res.data);
             })
             .catch(err => {
                 setState({
@@ -72,11 +115,11 @@ const Eventdetails = ({ t, i18n }) => {
     if (isLoading || !data) return <Loading />;
 
     const { event, ids, textList } = data;
-    const { id, injuries, teams, stats, isStanding, isLineups } = event;
+    const { injuries, teams, stats, isStanding, isLineups } = event;
     const slides = [];
 
-    const swipeByTabId = id => {
-        const targetIndex = slides.findIndex(x => x.id === id);
+    const swipeByTabId = tabId => {
+        const targetIndex = slides.findIndex(x => x.id === tabId);
         swiper.slideTo(targetIndex);
     };
 
@@ -116,7 +159,7 @@ const Eventdetails = ({ t, i18n }) => {
             label: t('Lineup'),
             Component: Lineups,
             props: {
-                id,
+                id: event.id,
                 teams,
                 updateAutoHeight
             }
@@ -150,7 +193,7 @@ const Eventdetails = ({ t, i18n }) => {
             label: t('Head To Head'),
             Component: H2h,
             props: {
-                id,
+                id: event.id,
                 teams,
                 textList,
                 updateAutoHeight
@@ -216,6 +259,66 @@ const Eventdetails = ({ t, i18n }) => {
                     );
                 })}
             </Swiper>
+            {event && (
+                <>
+                    {language === 'tr' ? (
+                        <p className="bottom-text">
+                            {event.tournament.name} ligindeki {event.teams.home.name} {event.teams.away.name} canlı skor
+                            ve canlı maç izle {moment(event.startTimestamp).format('DD.MM.YYYY')} tarihinde, saat{' '}
+                            {moment(event.startTimestamp).format('HH:mm')} 'te başlayacaktır. Maçın oynanacağı stadyum{' '}
+                            {event.venue ? event.venue.stadium.name : ''}, {event.venue ? event.venue.city.name : ''},{' '}
+                            {event.venue ? event.venue.country.name : ''}. Maç detayı sayfamızda {event.category.name},{' '}
+                            . Maçı {event.referee.name} yönetecek.
+                            <strong>
+                                {event.tournament.name} liginda oynanan {event.name} karşılaşması
+                            </strong>
+                            na ait canlı maç sonucu, istatistikler, topla oynama yüzdeleri, golleri, sarı ve kırmızı
+                            kartları, TV yayıncılarını, takımların ılk onbir ve diziliş bilgilerini, yedek oyunlaarını,
+                            hakemlerin kim olduğu bilgilerine ulaşabilirsiniz. Ayrıca bu sayfada,{' '}
+                            <strong>
+                                {event.tournament.name} liginde oynanan {event.name} maç hangi kanalda?
+                            </strong>
+                            , <strong>{event.name} maç özetleri</strong> ve{' '}
+                            <strong>{event.teams.home.name} canlı maç sonuçları</strong> gibi sorulara da cevaplar
+                            bulabilirsiniz.
+                            {event.teams.home.name} takımının teknik patronu {event.managerDuel.homeManager.name} ve{' '}
+                            {event.teams.away.name} takımı teknik patronu {event.managerDuel.awayManager.name}{' '}
+                            tarafından ilk onbirler açıklandığı anda, bu sayfada yayınlancaktır. Kesin onbirlerin
+                            açıklanması genellikle maça bir saat kala yapılmaktadır. {event.name} karşılaşması İddaa
+                            programında yer alıyor ise bu karşılaşma için açıklanmış İddaa oranların görebilir ve maç
+                            başladığı anda <strong>Canlı İddaa</strong> oranlarını takip edebilirsiniz. Yasalar gereği
+                            sitemiz malesef <strong>{event.name} Canlı İzle</strong> linkleri içermemektedir. Fakat{' '}
+                            <strong>Canlı Maç Takibi</strong> sekmesinden maçı canlı izlermiş gibi animasyonlu
+                            gösterimlerinde yardımıyla, maçı saniye saniye takip edebilirsiniz.
+                            <strong>Takım karşılaştırma</strong> sekmesinden
+                            {event.teams.home.name} ile {event.teams.away.name} takımlarının birbirleriyle ve başka
+                            takımlar ile yaptıkları maçların sonuçlarını görebilir ve karşılaştırma yapabilirsiniz.
+                        </p>
+                    ) : (
+                        <p className="bottom-text">
+                            {event.teams.home.name} {event.teams.away.name} live score and online live streaming starts
+                            on {moment(event.startTimestamp).format('DD.MM.YYYY')}. at{' '}
+                            {moment(event.startTimestamp).format('HH:mm')} at{' '}
+                            {event.venue ? event.venue.stadium.name : ''} stadium,{' '}
+                            {event.venue ? event.venue.city.name : ''}, {event.venue ? event.venue.country.name : ''} in{' '}
+                            {event.tournament.name}. The referee of the match will be {event.referee.name}. On our match
+                            details page, you can follow the <strong>{event.category.name} live scores</strong> that is
+                            being played in {event.tournament.name}. Within this page, you will find live scores, live
+                            stats, ball possessions, goals, yellow and/or red cards, substitutions, lineups and referee
+                            informations. Additionally, within this page you can get further details about{' '}
+                            <strong>{event.name} live stream, watch live</strong>. We will publish the confirmed lineups
+                            and formations as soon as {event.managerDuel.homeManager.name}, who is the manager of{' '}
+                            {event.teams.home.name}, and {event.managerDuel.awayManager.name}, who is the manager of{' '}
+                            {event.teams.away.name} declare them. Unfortunatelly, due to law enforcements, our website
+                            doesn't include <strong>Live Streaming links for {event.name}</strong> but throught our
+                            animation powered <strong>Live Tracking</strong> page, you can follow the game seconds by
+                            seconds as if you are watching live. Through H2h tab, you can compare{' '}
+                            {event.teams.home.name} and {event.teams.away.name} by looking at their h2h matches, and
+                            matches they played against other teams.
+                        </p>
+                    )}
+                </>
+            )}
         </div>
     );
 };

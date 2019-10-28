@@ -9,12 +9,14 @@
 		min-height: 253px;
 		background: url('../../assets/images/stadium12.jpg');
 		background-size: cover;
+
 		.top {
 			padding-top: 40px;
 			justify-content: center;
 			display: flex;
 			position: relative;
 			z-index: 2;
+
 			&-team-logo {
 				display: block;
 				width: 80px;
@@ -23,15 +25,18 @@
 				background: #fff;
 				border-radius: 60px 60px;
 				margin-bottom: -40px;
+
 				img {
 					width: 100%;
 					height: 100%;
 				}
 			}
 		}
+
 		.bottom {
 			position: relative;
 			padding: 50px 15px 15px 15px;
+
 			.bg {
 				opacity: 0.8;
 				position: absolute;
@@ -40,96 +45,30 @@
 				width: 100%;
 				z-index: 1;
 				height: 100%;
+
 				&-over {
 					position: relative;
 					z-index: 2;
 				}
 			}
+
 			h1 {
 				font-size: 1.5rem;
 			}
+
 			text-align: center;
+
 			.text {
 				margin: 10px 0 0 0;
 			}
 		}
-
-		//.row {
-		//	margin: 0;
-		//}
-		//.col {
-		//	padding: 0;
-		//}
-		//.col-logo {
-		//	max-width: 60px;
-		//	img {
-		//		max-height: 60px;
-		//	}
-		//}
-		//.col-info {
-		//	padding-left: 15px;
-		//}
-		//h1 {
-		//	font-size: 1.3rem;
-		//	font-weight: bolder;
-		//}
-		//p {
-		//	font-size: .8rem;
-		//	color: #777;
-		//	margin: 0 0 5px 0;
-		//}
+	}
+	.bottom-text {
+		padding: 15px;
+		font-size: .75rem;
+	}
+	.event-time.full-time .day {
+		display: block;
 	}
 
-	//&-header {
-	//	margin: 0;
-	//	padding: 15px 10px;
-	//	background: #f3f5f5;
-	//	min-height: 72px;
-	//	.col-info,
-	//	.col-stadium {
-	//		padding-right: 10px;
-	//		padding-left: 0;
-	//		max-width: calc((100% - 40px) / 2);
-	//	}
-	//	.col-info {
-	//		.name {
-	//			font-weight: 600;
-	//		}
-	//		.country {
-	//			color: #777;
-	//		}
-	//	}
-	//	.col-stadium {
-	//		font-size: .8rem;
-	//		padding: 0;
-	//		color: #999;
-	//		.name {
-	//			@include line-clamp(1);
-	//		}
-	//		.capacity {
-	//			@include line-clamp(1);
-	//		}
-	//	}
-	//	.col-img {
-	//		padding: 0 10px 0 0;
-	//		max-width: 50px;
-	//		img {
-	//			max-width: 100%;
-	//		}
-	//	}
-	//}
-	//.middle-tabs {
-	//	position: sticky;
-	//	z-index: 10;
-	//	top: 48px;
-	//}
-	//.fixture {
-	//	padding-top: 15px;
-	//	.tournament-title {
-	//		top: 0;
-	//	}
-	//	.day {
-	//		display: block;
-	//	}
-	//}
 }

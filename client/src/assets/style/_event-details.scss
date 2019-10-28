@@ -1,6 +1,10 @@
 .event-details {
 	background: #f1f2f3;
 	min-height: calc(100vh - 33px);
+	.bottom-text {
+		padding: 15px;
+		font-size: .75rem;
+	}
 	&-scoreboard {
 		padding: 25px 0;
 		&.stadium {
