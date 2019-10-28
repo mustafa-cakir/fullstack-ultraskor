@@ -3,8 +3,8 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { Trans, withTranslation } from 'react-i18next';
 import update from 'react-addons-update';
-import { generateSlug, storeScrollY } from '../../Helper';
-import { askForPermissioToReceiveNotifications } from '../../web-push';
+import { generateSlug, storeScrollY } from '../../core/utils/helper';
+import { askForPermissioToReceiveNotifications } from '../../core/utils/web-push';
 import Icon from './Icon';
 
 class Event extends Component {

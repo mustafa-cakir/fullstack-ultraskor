@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { printImageSrc } from '../../../core/utils';
-import { generateSlug } from '../../../Helper';
+import { generateSlug } from '../../../core/utils/helper';
 
 const StandingTable = ({ standingsTables, teams, t }) => {
     const [tab, setTab] = useState('Total');

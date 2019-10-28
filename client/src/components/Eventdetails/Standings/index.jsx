@@ -24,7 +24,7 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
                 });
                 setTimeout(() => {
                     updateAutoHeight();
-                })
+                });
             })
             .catch(() => {
                 setState({

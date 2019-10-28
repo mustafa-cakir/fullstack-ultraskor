@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import i18n from 'i18next';
-import { HelperTranslateUrlTo } from '../../Helper';
+import { HelperTranslateUrlTo } from '../../core/utils/helper';
 
 class LanguageSwitcher extends Component {
     render() {

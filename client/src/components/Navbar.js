@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import logo from '../logo.png';
+import logo from '../assets/images/logo.png';
 import Icon from './common/Icon';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { Trans, withTranslation } from 'react-i18next';
 import LanguageSwitcher from './common/LanguageSwitcher';
 import Search from './Search';
-import { generateSlug } from '../Helper';
+import { generateSlug } from '../core/utils/helper';
 import iconStandings from '../../src/assets/images/navbar-icon-standings.png';
 import iconFixture from '../../src/assets/images/navbar-icon-fixture.png';
 import Switch from './common/Switch';

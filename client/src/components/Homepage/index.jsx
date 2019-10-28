@@ -1,21 +1,35 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import moment from 'moment';
+import update from 'immutability-helper';
 import axios from 'axios';
-import { withTranslation } from 'react-i18next';
-// import { Trans, withTranslation } from 'react-i18next';
-import { getQueryStringFromUrl, prepareRes, restoreScrollY, trackPage } from '../../Helper';
-import { getFromLocalStorage, setToLocaleStorage } from '../../core/utils';
-import Headertabs from '../Headertabs';
+import { Trans, withTranslation } from 'react-i18next';
+import {
+    getQueryStringFromUrl,
+    HelperTranslateUrlTo,
+    HelperUpdateMeta,
+    prepareRes,
+    restoreScrollY,
+    trackPage
+} from '../../core/utils/helper';
+import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
 import Loading from '../common/Loading';
 import FavTournament from '../common/FavTournament';
 import Tournament from '../common/Tournament';
 import Errors from '../common/Errors';
+import RefreshButton from '../common/RefreshButton';
+import RedScoreBoard from '../common/RedScoreBar';
+import Headertabs from '../Headertabs';
+import Footer from '../common/Footer';
+import BottomParagrah from '../common/BottomParagrah';
+import Icon from '../common/Icon';
 
-const Homepage = ({ t, socket }) => {
+let redScoreBarTimer = null;
+
+const Homepage = ({ t, i18n, socket }) => {
     const stateFromLocalStorage = getFromLocalStorage('homepage');
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
-        data: null,
+        mainData: [],
         isLoading: true,
         favEvents: [],
         favEventsList: [],
@@ -31,7 +45,7 @@ const Homepage = ({ t, socket }) => {
         ...(stateFromLocalStorage && { ...stateFromLocalStorage })
     });
     const {
-        data,
+        mainData,
         isLoading,
         favEvents,
         favEventsList,
@@ -45,147 +59,151 @@ const Homepage = ({ t, socket }) => {
         isLazyLoad,
         lazyLoadCount
     } = state;
-    const params = useParams();
+    const refMainData = useRef(mainData);
+    const { language } = i18n;
+    const { date } = useParams();
     const location = useLocation();
     const { pathname: page } = location;
-    const { date } = params;
     const currentDate = date || moment().format('YYYY-MM-DD');
-    let redScoreBarTimer = null;
+    const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    setTimeout(() => {
-        setToLocaleStorage('homepage', state);
-    }, 2000);
+    const updateMeta = () => {
+        if (language === 'en') {
+            const title = date
+                ? `UltraSkor - Results & Matches on ${moment(date, 'YYYY-MM-DD').format(
+                      'dddd, MMMM DD, YYYY'
+                  )}. See all Scores, Results, Stats and Match Highlights`
+                : 'Live Score, Match Results and League Fixtures - UltraSkor | (No Ads) ';
 
-    const moveFavEventsToTop = res => {
-        res = res || data;
-        const newFavEventsList = [];
-        res.forEach(tournament => {
-            tournament.events.forEach(event => {
-                if (newFavEventsList.length > 0 && newFavEventsList.indexOf(event.id) > -1) {
-                    newFavEventsList.push(event);
-                }
+            const description = date
+                ? `No Ads. Get the football coverages for the matches on ${moment(date, 'YYYY-MM-DD').format(
+                      'dddd, MMMM DD, YYYY'
+                  )}. See results, league standings and watch highlights`
+                : 'No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world';
+
+            const keywords = date
+                ? `${moment(date, 'YYYY-MM-DD')
+                      .format('dddd')
+                      .toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
+                      .format('DD MMMM dddd')
+                      .toLowerCase()} match results, `
+                : '';
+
+            HelperUpdateMeta({
+                title,
+                canonical: window.location.href,
+                description,
+                keywords: `${keywords}live scores, live football results, match results, football fixtures, eufa champions league results, highlights`,
+                alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
+                hrefLang: 'tr'
             });
-        });
-        setState({
-            favEventsList: favEventsList.concat(newFavEventsList)
-        });
+        } else {
+            const title = date
+                ? `UltraSkor - ${moment(date, 'YYYY-MM-DD').format(
+                      'DD MMMM dddd'
+                  )} Günü Oynanan Tüm Maçlar burada. Sonuçlar, İstatistikler ve Maç Özetleri için tıklayın.`
+                : 'Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları - UltraSkor | (Reklamsız)';
+
+            const description = date
+                ? `Tamamen reklamsız olarak, ${moment(date, 'YYYY-MM-DD').format(
+                      'DD MMMM dddd'
+                  )} günü oynanmış tüm maçların sonuçlarını, lig puan durumlarını ve fikstürlerini takip edebilir, maç özetlerini izleyebilirsiniz.`
+                : 'Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.';
+
+            const keywords = date
+                ? `${moment(date, 'YYYY-MM-DD')
+                      .format('dddd')
+                      .toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
+                      .format('DD MMMM dddd')
+                      .toLowerCase()} maç sonucları, `
+                : '';
+
+            HelperUpdateMeta({
+                title,
+                canonical: window.location.href,
+                description,
+                keywords: `${keywords}canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri`,
+                alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
+                hrefLang: 'en'
+            });
+        }
     };
 
-    const handleGetData = (res, isInitial) => {
-        const tournaments = prepareRes(res);
-        if (favEvents.length > 0) moveFavEventsToTop(tournaments);
+    const handleGetData = res => {
+        const tournaments = prepareRes(res.data);
         setState({
-            data: tournaments,
-            isLoading: false,
-            refreshButton: false
+            mainData: tournaments,
+            refreshButton: false,
+            isLoading: false
         });
-        setTimeout(() => {
-            document.body.classList.add('initial-load');
-        }, 0);
-        // if (isInitial) updateMeta();
+        refMainData.current = tournaments;
+        updateMeta();
     };
 
-    const initGetData = useCallback(
-        isInitial => {
-            if (isInitial) setState({ isLoading: true, data: null });
-            axios
-                .get(`/api/homepage/list/${currentDate}`)
-                .then(res => {
-                    handleGetData(res.data, isInitial);
-                    if (isInitial) restoreScrollY();
-                })
-                .catch(() => {
-                    setState({
-                        isLoading: false,
-                        error: 'something went wrong'
-                    });
+    const initAxios = () => {
+        setState({ isLoading: true });
+        axios
+            .get(`/api/homepage/list/${currentDate}`)
+            .then(res => {
+                handleGetData(res);
+                setTimeout(() => {
+                    document.body.classList.add('initial-load');
                 });
-        },
-        [currentDate]
-    );
+                restoreScrollY();
+            })
+            .catch(err => {
+                console.log(err);
+                setState({
+                    isLoading: false,
+                    error: 'something went wrong'
+                });
+            });
+    };
 
-    const onSocketConnect = () => {};
+    const initGetData = useCallback(() => {
+        if (document.body.classList.contains('initial-load')) {
+            document.body.classList.remove('initial-load');
+            setTimeout(() => {
+                initAxios();
+            }, 600);
+        } else {
+            initAxios();
+        }
+    }, [currentDate]);
 
-    const onSocketReturnPushServiceData = res => {
-        if (!res) return false;
-        if (!data) return false;
-
+    const initRedScoreBar = (oldEvent, newEvent) => {
+        if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(newEvent.id) < 0) return false;
         let redScoreBarType = null;
-        // let newRedScoreBarIncident = null;
-
-        // const data = JSON.parse(JSON.stringify(data));
-        // if (data.length < 1) return false;
-        // console.log(res);
-
-        // let resEventId = res.emits[3].split('_')[1];
-        const getTournament = data.filter(x => x.tournament.id === res.tournament.id)[0];
-        if (!getTournament) return false;
-
-        const event = getTournament.events.filter(x => x.id === res.event.id)[0];
-        if (!event) return false;
-
-        if (res.updated.status && event.status.code !== res.event.status.code) {
-            event.status = res.event.status;
-            event.scores = res.event.scores;
-            event.scores = res.event.scores;
+        if (newEvent.status.code !== oldEvent.status.code) {
             redScoreBarType = 'status_update';
         }
-
-        if (res.event.redCards.home > event.redCards.home && res.event.redCards.home) {
-            event.redCards.home = res.redCards.home; // home Team Red Card
+        if (newEvent.redCards.home > oldEvent.redCards.home) {
             redScoreBarType = 'home_redcard';
         }
-        if (res.event.redCards.away && res.event.redCards.away > event.redCards.away) {
-            event.redCards.away = res.event.redCards.away; // home Team Red Card
+        if (newEvent.redCards.away > oldEvent.redCards.away) {
             redScoreBarType = 'away_redcard';
         }
-
-        if (res.updated.score) {
-            if (res.updated.scores.home) {
-                const oldScore = event.scores.home || 0;
-                const newScore = res.event.scores.home;
-
-                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
-                    if (newScore > oldScore) {
-                        // console.log(`${event.teams.home.name} Home Team Scored. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'home_scored';
-                    } else if (newScore < oldScore) {
-                        // console.log(`${event.teams.away.name} Home Team Score Cancelled. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'home_scored_cancel';
-                    }
-                    event.scores = res.event.scores; // update score Object
-                }
-            } else if (res.updated.scores.scoawayre) {
-                const oldScore = event.scores.away || 0;
-                const newScore = res.event.scores.away;
-
-                if (typeof newScore === 'number' && typeof newScore === 'number' && newScore !== oldScore) {
-                    if (newScore > oldScore) {
-                        // console.log(`${event.teams.away.name} Away Team Scored. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'away_scored';
-                    } else if (newScore < oldScore) {
-                        // console.log(`${event.teams.away.name} Away Team Score Cancelled. ${oldScore} -> ${newScore}`);
-                        redScoreBarType = 'away_scored_cancel';
-                    }
-                    event.scores = res.event.scores; // update score Object
-                }
-            }
+        if (newEvent.scores.home > oldEvent.scores.home) {
+            redScoreBarType = 'home_scored';
         }
-
-        // update statusDescription in all situations
-        event.statusBoxContent = res.event.statusBoxContent;
-        event.startTimestamp = res.event.startTimestamp;
-        event.winner = res.event.winner;
-
-        if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(event.id) < 0) {
-            redScoreBarType = null;
+        if (newEvent.scores.home < oldEvent.scores.home) {
+            redScoreBarType = 'home_scored_cancel';
+        }
+        if (newEvent.scores.away > oldEvent.scores.away) {
+            redScoreBarType = 'away_scored';
+        }
+        if (newEvent.scores.away < oldEvent.scores.away) {
+            redScoreBarType = 'away_scored_cancel';
         }
 
         if (redScoreBarType) {
-            // newRedScoreBarIncident = {
-            //     type: redScoreBarType,
-            //     event
-            // };
+            setState({
+                redScoreBarIncident: {
+                    type: redScoreBarType,
+                    event: newEvent
+                }
+            });
+
             clearTimeout(redScoreBarTimer);
             redScoreBarTimer = setTimeout(() => {
                 setState({
@@ -194,31 +212,42 @@ const Homepage = ({ t, socket }) => {
             }, 15000);
         }
 
-        // if (newRedScoreBarIncident && redScoreBarType) {
-        //     setState({
-        //                 mainData: data,
-        //                 redScoreBarIncident: newRedScoreBarIncident
-        //             });
-        // } else {
-        //     setState({
-        //         mainData: data,
-        //         ...(redScoreBarType && { redScoreBarIncident })
-        //     });
-        // }
-
-        if (favEvents.length > 0) moveFavEventsToTop();
         return false;
     };
 
-    const initGetPushService = () => {
-        socket.on('push-service', onSocketReturnPushServiceData);
+    const onSocketReturnPushServiceData = res => {
+        if (!res) return false;
+        if (refMainData.current.length === 0) return false;
+        const { tournament, event } = res.ids;
+
+        const tournamentIndex = refMainData.current.findIndex(x => x.tournament.id === tournament);
+        if (tournamentIndex < 0) return false;
+
+        const eventIndex = refMainData.current[tournamentIndex].events.findIndex(x => x.id === event);
+        if (eventIndex < 0) return false;
+
+        const oldEvent = refMainData.current[tournamentIndex].events[eventIndex];
+        const newEvent = { ...oldEvent, ...res.event };
+        const newMainData = update(refMainData.current, {
+            [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } }
+        });
+        refMainData.current = newMainData;
+        setState({
+            mainData: newMainData
+        });
+        initRedScoreBar(oldEvent, newEvent);
+        return false;
+    };
+
+    const onSocketConnect = () => {
+        console.log('Socket connected! - Homepage');
+        socket.emit('get-updates-homepage');
+        setState({
+            refreshButton: false
+        });
     };
 
     const onSocketDisconnect = () => {
-        socket.removeListener('connect', onSocketConnect);
-        socket.removeListener('disconnect', onSocketDisconnect);
-        socket.removeListener('return-error-updates', onSocketDisconnect);
-        socket.removeListener('push-service', onSocketReturnPushServiceData);
         socket.on('connect', onSocketConnect);
         setState({
             refreshButton: true
@@ -227,38 +256,57 @@ const Homepage = ({ t, socket }) => {
 
     const initSocket = useCallback(() => {
         socket.on('disconnect', onSocketDisconnect);
-        socket.on('return-error-updates', onSocketDisconnect);
-        initGetPushService();
+        socket.on('return-updates-homepage', handleGetData);
+        socket.on('push-service', onSocketReturnPushServiceData);
+    }, []);
+
+    const removeSocket = useCallback(() => {
+        socket.removeListener('connect', onSocketConnect);
+        socket.removeListener('disconnect', onSocketDisconnect);
+        socket.removeListener('return-updates-homepage', handleGetData);
+        socket.removeListener('push-service', onSocketReturnPushServiceData);
     }, []);
 
     useEffect(() => {
-        initGetData(true);
+        refMainData.current = mainData;
+    }, [mainData]);
+
+    useEffect(() => {
+        initGetData();
         trackPage(page);
-        initSocket();
+        if (isToday) initSocket();
         return () => {
-            socket.removeListener('connect', onSocketConnect);
-            socket.removeListener('disconnect', onSocketDisconnect);
-            socket.removeListener('return-error-updates', onSocketDisconnect);
-            socket.removeListener('push-service', onSocketReturnPushServiceData);
+            if (isToday) removeSocket();
             clearTimeout(redScoreBarTimer);
         };
-    }, [initSocket, trackPage, page]);
+    }, [initGetData, trackPage, page, initSocket, removeSocket, isToday]);
 
-    console.log(favEventsList);
-    // if (!data) return false;
+    useEffect(() => {
+        setToLocaleStorage('homepage', {
+            favEvents,
+            favEventsList,
+            filteredTournaments,
+            isLive,
+            redScoreMuted,
+            redScoreShrinked,
+            redScoreFavOnly
+        });
+    }, [favEvents, favEventsList, filteredTournaments, isLive, redScoreMuted, redScoreShrinked, redScoreFavOnly]);
 
     return (
         <>
             <Headertabs
                 isLive={isLive}
                 filteredTournaments={filteredTournaments}
-                updateParentState={setState}
-                initGetData={initGetData}
-                mainData={data}
-                todaysDateByUrl={date}
+                setParentState={setState}
+                mainData={mainData}
+                currentDate={currentDate}
+                isToday={isToday}
             />
-            {!data || isLoading ? (
-                <Loading />
+            {isLoading ? (
+                <div className="homepage-loading">
+                    <Loading type="inside" />
+                </div>
             ) : (
                 <section className="container px-0 homepage-list">
                     {favEventsList.length > 0 && (
@@ -271,12 +319,12 @@ const Homepage = ({ t, socket }) => {
                         />
                     )}
 
-                    {data.length > 0 ? (
+                    {mainData.length > 0 ? (
                         <Tournament
                             isLive={isLive}
                             filteredTournaments={filteredTournaments}
                             socket={socket}
-                            tournaments={data}
+                            tournaments={mainData}
                             updateParentState={setState}
                             favEvents={favEvents}
                             favEventsList={favEventsList}
@@ -288,6 +336,60 @@ const Homepage = ({ t, socket }) => {
                     )}
                 </section>
             )}
+            <section className="container date-prev-next-container">
+                <div className="row date-prev-next align-items-center">
+                    <div className="col col-yesterday">
+                        <Link
+                            onClick={scrollTopOnClick}
+                            to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
+                                .subtract(1, 'd')
+                                .format('YYYY-MM-DD')}`}
+                            title={`${moment()
+                                .subtract(1, 'd')
+                                .format('LL')} ${t('Football Results')}`}
+                        >
+                            <Icon name="fas fa-chevron-left" />
+                            <Trans>Yesterday</Trans>
+                        </Link>
+                    </div>
+                    <div className="col text-center col-today">
+                        <Link
+                            to={language === 'en' ? '/en/' : '/'}
+                            onClick={scrollTopOnClick}
+                            title={t("Today's football matches")}
+                        >
+                            <Trans>Today's Matches</Trans>
+                        </Link>
+                    </div>
+                    <div className="col text-right col-tomorrow">
+                        <Link
+                            onClick={scrollTopOnClick}
+                            to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
+                                .add(1, 'd')
+                                .format('YYYY-MM-DD')}`}
+                            title={`${moment()
+                                .add(1, 'd')
+                                .format('LL')} ${t('Football Results')}`}
+                        >
+                            <Trans>Tomorrow</Trans>
+                            <Icon name="fas fa-chevron-right" />
+                        </Link>
+                    </div>
+                </div>
+            </section>
+            <BottomParagrah page="homepage" />
+            {refreshButton && <RefreshButton />}
+
+            {redScoreBarIncident && (
+                <RedScoreBoard
+                    redScoreBarIncident={redScoreBarIncident}
+                    audioFiles={audioFiles}
+                    redScoreMuted={redScoreMuted}
+                    redScoreShrinked={redScoreShrinked}
+                    updateParentState={setState}
+                />
+            )}
+            <Footer />
         </>
     );
 };

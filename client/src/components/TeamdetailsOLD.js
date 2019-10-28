@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
-import Loading from '../common/Loading';
+import Loading from './common/Loading';
 import ReactSwipe from 'react-swipe';
 import smoothscroll from 'smoothscroll-polyfill';
-import Footer from '../common/Footer';
+import Footer from './common/Footer';
 import i18n from 'i18next';
-import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../Helper';
-import Errors from '../common/Errors';
-import Tournament from '../common/Tournament';
+import { HelperTranslateUrlTo, HelperUpdateMeta } from '../core/utils/helper';
+import Errors from './common/Errors';
+import Tournament from './common/Tournament';
 
-class Teamdetails extends PureComponent {
+class TeamdetailsOLD extends PureComponent {
     constructor(props) {
         super(props);
         this.swipeEl = React.createRef();
@@ -28,24 +28,6 @@ class Teamdetails extends PureComponent {
         };
         smoothscroll.polyfill();
     }
-
-    componentDidMount() {
-        this.tabs = [];
-        this.initGetData();
-    }
-
-    componentDidUpdate() {
-        // if (this.swipeEl.current) {
-        //     this.swipeAdjustHeight(this.state.index);
-        //     this.swipeMarkerAndScrollHandler();
-        // }
-    }
-
-    swipeChanging = index => {
-        this.setState({
-            index: index
-        });
-    };
 
     static preProcessTournamentsData(data) {
         data.tournaments.reverse();
@@ -69,6 +51,24 @@ class Teamdetails extends PureComponent {
         }, []);
         return newData;
     }
+
+    componentDidMount() {
+        this.tabs = [];
+        this.initGetData();
+    }
+
+    componentDidUpdate() {
+        // if (this.swipeEl.current) {
+        //     this.swipeAdjustHeight(this.state.index);
+        //     this.swipeMarkerAndScrollHandler();
+        // }
+    }
+
+    swipeChanging = index => {
+        this.setState({
+            index: index
+        });
+    };
 
     initGetData() {
         const { teamId } = this.props.match.params;
@@ -110,8 +110,8 @@ class Teamdetails extends PureComponent {
                 this.setState(
                     {
                         loading: false,
-                        teamTournamentsData: Teamdetails.preProcessTournamentsData(res),
-                        teamTournamentsDataByTournament: Teamdetails.preProcessTournamentsSortByTournament(res)
+                        teamTournamentsData: TeamdetailsOLD.preProcessTournamentsData(res),
+                        teamTournamentsDataByTournament: TeamdetailsOLD.preProcessTournamentsSortByTournament(res)
                     },
                     () => {
                         setTimeout(() => {
@@ -381,4 +381,4 @@ class Teamdetails extends PureComponent {
     }
 }
 
-export default withTranslation('translations')(Teamdetails);
+export default withTranslation('translations')(TeamdetailsOLD);

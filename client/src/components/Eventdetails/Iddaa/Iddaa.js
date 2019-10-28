@@ -4,7 +4,7 @@ import IddaLogo2 from '../../../assets/images/icon-iddaa2.png';
 import { Trans, withTranslation } from 'react-i18next';
 import Icon from '../../common/Icon';
 import Loading from '../../common/Loading';
-import { lockedOddsPlaceholder, marketGroups } from '../../../Helper';
+import { lockedOddsPlaceholder, marketGroups } from '../../../core/utils/helper';
 
 class Iddaa extends PureComponent {
     constructor(props) {

@@ -9,7 +9,7 @@ import Errors from '../common/Errors';
 import Loading from '../common/Loading';
 import Summary from './Summary';
 import LiveTracker from './LiveTracker';
-import { appendValueToArray } from '../../Helper';
+import { appendValueToArray } from '../../core/utils/helper';
 import H2h from './H2h';
 import Stats from './Stats';
 import Scoreboard from './Scoreboard';

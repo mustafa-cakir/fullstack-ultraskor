@@ -3,7 +3,7 @@ import Loading from './Loading';
 import { Trans } from 'react-i18next';
 import { withTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { generateSlug } from '../../Helper';
+import { generateSlug } from '../../core/utils/helper';
 
 class Standings extends Component {
     constructor(props) {

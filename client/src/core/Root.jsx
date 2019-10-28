@@ -4,7 +4,7 @@ import ReactGA from 'react-ga';
 import socketIOClient from 'socket.io-client';
 import Navbar from '../components/Navbar';
 import routes from './routes';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from './ErrorBoundary';
 import Error from '../components/common/Error';
 import '../assets/style/app.scss';
 import PullToRefresh from '../components/common/PullToRefresh';

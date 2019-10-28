@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
-import { ratingClass } from '../../../Helper';
+import { ratingClass } from '../../../core/utils/helper';
 import { printImageSrc } from '../../../core/utils';
 import Loading from '../../common/Loading';
 import Errors from '../../common/Errors';
@@ -26,7 +26,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                 });
                 setTimeout(() => {
                     updateAutoHeight();
-                })
+                });
             })
             .catch(() => {
                 setState({
@@ -48,13 +48,13 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
     const currentTeamClickHandler = newCurrentTeam => {
         setState({
             currentTeam: newCurrentTeam
-        })
+        });
     };
 
     const tabIndexClickHandler = newTabIndex => {
         setState({
             tabIndex: newTabIndex
-        })
+        });
     };
 
     const homeFormation = lineups.homeTeam.formation;
@@ -143,7 +143,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="clearfix"/>
+                                                        <div className="clearfix" />
                                                         <div
                                                             className="name"
                                                             style={{
@@ -187,11 +187,11 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                             )}
 
                                             {activeTeam.incidents &&
-                                            activeTeam.incidents[activeTeam.lineupsSorted[0].player.id] && (
-                                                <span className="lineup-icon">
+                                                activeTeam.incidents[activeTeam.lineupsSorted[0].player.id] && (
+                                                    <span className="lineup-icon">
                                                         {activeTeam.incidents[
                                                             activeTeam.lineupsSorted[0].player.id
-                                                            ].map(item => {
+                                                        ].map(item => {
                                                             return (
                                                                 <span
                                                                     key={Math.random()}
@@ -200,9 +200,9 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                             );
                                                         })}
                                                     </span>
-                                            )}
+                                                )}
                                         </div>
-                                        <div className="clearfix"/>
+                                        <div className="clearfix" />
                                         <div
                                             className="name"
                                             style={{
@@ -269,12 +269,20 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                 </div>
                 <div className="body list">
                     <div className="horizontal-tab">
-                        <button type="button" className={tabIndex === 0 ? 'active' : ''} onClick={() => tabIndexClickHandler(0)}>
+                        <button
+                            type="button"
+                            className={tabIndex === 0 ? 'active' : ''}
+                            onClick={() => tabIndexClickHandler(0)}
+                        >
                             <span>
                                 <Trans>Lineup</Trans>
                             </span>
                         </button>
-                        <button type="button" className={tabIndex === 1 ? 'active' : ''} onClick={() => tabIndexClickHandler(1)}>
+                        <button
+                            type="button"
+                            className={tabIndex === 1 ? 'active' : ''}
+                            onClick={() => tabIndexClickHandler(1)}
+                        >
                             <span>
                                 <Trans>Substitues</Trans>
                             </span>
@@ -310,7 +318,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                         )}
                                         {item.substitute && item.rating !== '–' && (
                                             <span className="mx-1 lineup-icon">
-                                                <span className="substitutionin"/>
+                                                <span className="substitutionin" />
                                             </span>
                                         )}
                                     </div>

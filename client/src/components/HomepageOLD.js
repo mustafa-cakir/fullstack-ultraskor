@@ -5,7 +5,7 @@ import i18n from 'i18next';
 import Tournament from './common/Tournament';
 import Errors from './common/Errors';
 import Loading from './common/Loading';
-import Headertabs from './Headertabs';
+// import Headertabs from './HeadertabsOLD';
 import Footer from './common/Footer';
 import Icon from './common/Icon';
 import RefreshButton from './common/RefreshButton';
@@ -16,7 +16,7 @@ import {
     restoreScrollY,
     prepareRes,
     trackPage
-} from '../Helper';
+} from '../core/utils/helper';
 import RedScoreBoard from './common/RedScoreBar';
 import FavTournament from './common/FavTournament';
 import BottomParagrah from './common/BottomParagrah';
@@ -460,14 +460,14 @@ class HomepageOLD extends Component {
         const { t, match, socket, audioFiles } = this.props;
         return (
             <>
-                <Headertabs
-                    isLive={isLive}
-                    filteredTournaments={filteredTournaments}
-                    updateParentState={this.updateParentState}
-                    initGetData={this.initGetData}
-                    mainData={mainData}
-                    todaysDateByUrl={match.params.date}
-                />
+                {/*<Headertabs*/}
+                {/*    isLive={isLive}*/}
+                {/*    filteredTournaments={filteredTournaments}*/}
+                {/*    updateParentState={this.updateParentState}*/}
+                {/*    initGetData={this.initGetData}*/}
+                {/*    mainData={mainData}*/}
+                {/*    todaysDateByUrl={match.params.date}*/}
+                {/*/>*/}
 
                 {loading ? <Loading /> : null}
                 <section className="container px-0 homepage-list">

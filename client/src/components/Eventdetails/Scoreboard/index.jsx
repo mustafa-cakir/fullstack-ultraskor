@@ -2,7 +2,7 @@ import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { generateSlug, ratingClass } from '../../../Helper';
+import { generateSlug, ratingClass } from '../../../core/utils/helper';
 
 const Scoreboard = ({ event, t }) => {
     return (

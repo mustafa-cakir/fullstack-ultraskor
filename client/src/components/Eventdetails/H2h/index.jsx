@@ -17,7 +17,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
         error: null
     });
 
-    const {tab, by, showMore, matches, isLoading, error} = state;
+    const { tab, by, showMore, matches, isLoading, error } = state;
 
     const getData = useCallback(() => {
         axios
@@ -29,7 +29,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
                 });
                 setTimeout(() => {
                     updateAutoHeight();
-                })
+                });
             })
             .catch(() => {
                 setState({
@@ -70,7 +70,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
         if (newBy !== by) {
             setState({
                 by: newBy
-            })
+            });
             updateAutoHeight();
         }
     };
