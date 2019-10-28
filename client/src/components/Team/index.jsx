@@ -93,14 +93,12 @@ const Team = ({ t, i18n }) => {
     };
 
     const updateAutoHeight = () => {
-        console.log(swiper);
         setTimeout(() => {
             swiper.updateAutoHeight();
         });
     };
 
     const onInitSwiper = swiperInstance => {
-        console.log('heyoo');
         swiper = swiperInstance;
         swiperInstance.on('slideChange', () => {
             setState({
