@@ -24,6 +24,7 @@ class Tournament extends Component {
 
     render() {
         const {
+            page,
             t,
             isLive,
             filteredTournaments,
@@ -119,7 +120,7 @@ class Tournament extends Component {
                                     />
                                 );
                             })}
-                            {tournamentCount === 2 && (
+                            {page === 'homepage' && tournamentCount === 2 && (
                                 <AdSense.Google
                                     client="ca-pub-6710014394558585"
                                     slot="6963275666"

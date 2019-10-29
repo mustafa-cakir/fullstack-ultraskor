@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
 import { ratingClass } from '../../../core/utils/helper';
-import { printImageSrc } from '../../../core/utils';
+import { invertColor, printImageSrc } from '../../../core/utils';
 import Loading from '../../common/Loading';
 import Errors from '../../common/Errors';
 
@@ -148,7 +148,10 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                             className="name"
                                                             style={{
                                                                 background: `#${activeTeam.color.player.outline}`,
-                                                                color: `#${activeTeam.color.player.number}`
+                                                                color: `${invertColor(
+                                                                    activeTeam.color.player.outline,
+                                                                    true
+                                                                )}`
                                                             }}
                                                         >
                                                             <span>{player.shortName}</span>
@@ -207,7 +210,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                             className="name"
                                             style={{
                                                 background: `#${activeTeam.color.goalkeeper.outline}`,
-                                                color: `#${activeTeam.color.goalkeeper.number}`
+                                                color: `${invertColor(activeTeam.color.goalkeeper.outline, true)}`
                                             }}
                                         >
                                             <span>{activeTeam.lineupsSorted[0].player.shortName}</span>

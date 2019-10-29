@@ -45,7 +45,7 @@ const BestPlayer = ({ event, swipeByTabId }) => {
                     </div>
                 </div>
             </div>
-            <div className="best-player-link text-center mb-4">
+            <div className="best-player-link text-center">
                 <span>
                     <Trans>See all</Trans> <Icon name="fas fa-angle-right" />
                 </span>

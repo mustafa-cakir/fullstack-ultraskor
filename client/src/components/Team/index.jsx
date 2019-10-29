@@ -8,6 +8,7 @@ import { Tabs, Tab } from '@material-ui/core';
 import Fixture from './Fixture';
 import UpdateMetaTeam from '../../core/utils/updatemeta/team';
 import Footer from '../common/Footer';
+import { invertColor } from '../../core/utils';
 
 let swiper;
 const Team = ({ t, i18n }) => {
@@ -94,7 +95,9 @@ const Team = ({ t, i18n }) => {
                         </div>
                         <div
                             className="bottom"
-                            style={{ color: `#${infoData.homejersey ? infoData.homejersey.number : '000'}` }}
+                            style={{
+                                color: `${infoData.homejersey ? invertColor(infoData.homejersey.base, true) : '#000'}`
+                            }}
                         >
                             <span
                                 className="bg"

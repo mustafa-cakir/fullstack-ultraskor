@@ -259,6 +259,7 @@ const Homepage = ({ t, i18n, socket }) => {
 
                     {mainData.length > 0 ? (
                         <Tournament
+                            page="homepage"
                             isLive={isLive}
                             filteredTournaments={filteredTournaments}
                             socket={socket}
