@@ -280,8 +280,9 @@ const Eventdetails = ({ t, i18n }) => {
                             , <strong>{event.name} maç özetleri</strong> ve{' '}
                             <strong>{event.teams.home.name} canlı maç sonuçları</strong> gibi sorulara da cevaplar
                             bulabilirsiniz.
-                            {event.teams.home.name} takımının teknik patronu {event.managerDuel.homeManager.name} ve{' '}
-                            {event.teams.away.name} takımı teknik patronu {event.managerDuel.awayManager.name}{' '}
+                            {event.teams.home.name} takımının teknik patronu{' '}
+                            {event.managerDuel ? event.managerDuel.homeManager.name : ''} ve {event.teams.away.name}{' '}
+                            takımı teknik patronu {event.managerDuel ? event.managerDuel.awayManager.name : ''}{' '}
                             tarafından ilk onbirler açıklandığı anda, bu sayfada yayınlancaktır. Kesin onbirlerin
                             açıklanması genellikle maça bir saat kala yapılmaktadır. {event.name} karşılaşması İddaa
                             programında yer alıyor ise bu karşılaşma için açıklanmış İddaa oranların görebilir ve maç
@@ -306,8 +307,9 @@ const Eventdetails = ({ t, i18n }) => {
                             stats, ball possessions, goals, yellow and/or red cards, substitutions, lineups and referee
                             informations. Additionally, within this page you can get further details about{' '}
                             <strong>{event.name} live stream, watch live</strong>. We will publish the confirmed lineups
-                            and formations as soon as {event.managerDuel.homeManager.name}, who is the manager of{' '}
-                            {event.teams.home.name}, and {event.managerDuel.awayManager.name}, who is the manager of{' '}
+                            and formations as soon as {event.managerDuel ? event.managerDuel.homeManager.name : ''}, who
+                            is the manager of {event.teams.home.name}, and{' '}
+                            {event.managerDuel ? event.managerDuel.awayManager.name : ''}, who is the manager of{' '}
                             {event.teams.away.name} declare them. Unfortunatelly, due to law enforcements, our website
                             doesn't include <strong>Live Streaming links for {event.name}</strong> but throught our
                             animation powered <strong>Live Tracking</strong> page, you can follow the game seconds by
