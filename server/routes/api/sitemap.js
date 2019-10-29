@@ -156,7 +156,7 @@ router.get('/matches/:year/:month', (req, res) => {
 
             xmlString += `
 				<sitemap>
-					<loc>https://www.ultraskor.com/sitemap/matches/${year}/${month}/${day < 10 ? `0${day}` : day}</loc>
+					<loc>https://www.ultraskor.com/api/sitemap/matches/${year}/${month}/${day < 10 ? `0${day}` : day}</loc>
 					<lastmod>${modifiedDate}</lastmod>
 				</sitemap>
 			`;
