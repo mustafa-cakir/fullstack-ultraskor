@@ -140,7 +140,7 @@ router.get('/matches/:year/:month', (req, res) => {
     const daysInMonth = moment(`${year}-${month}`, 'YYYY-MM').daysInMonth();
 
     for (let day = daysInMonth; day > 0; day -= 1) {
-        if (parseFloat(month) === thisMonth && day > toDay) {
+        if (parseFloat(month) === thisMonth && day > toDay + 7) {
             // do nothing...
         } else {
             // let day = moment(year + '-' + month, 'YYYY-MM').add(1, 'months').subtract(1, 'days').format('DD');
