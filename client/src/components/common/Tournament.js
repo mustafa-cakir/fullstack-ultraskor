@@ -124,7 +124,7 @@ class Tournament extends Component {
                                     client="ca-pub-6710014394558585"
                                     slot="6963275666"
                                     style={{ display: 'block' }}
-                                    layoutKey="-f5+5t+4z-d1+5q"
+                                    layoutKey="-fb+5w+4e-db+86"
                                     format="fluid"
                                 />
                             )}
