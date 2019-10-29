@@ -10,6 +10,8 @@ import Loading from '../common/Loading';
 import Errors from '../common/Errors';
 import StandingTable from '../common/StandingTable';
 import './Style.scss';
+import UpdateMetaLeague from '../../core/utils/updatemeta/league';
+import Footer from '../common/Footer';
 
 const Leageue = ({ t }) => {
     const { leagueid, seasonid } = useParams();
@@ -35,6 +37,7 @@ const Leageue = ({ t }) => {
                     isLoading: false,
                     error: null
                 });
+                UpdateMetaLeague(res.data, t);
             })
             .catch(err => {
                 setState({
@@ -42,7 +45,7 @@ const Leageue = ({ t }) => {
                     isLoading: false
                 });
             });
-    }, [leagueid, seasonid]);
+    }, [leagueid, seasonid, t]);
 
     const onInitSwiper = swiperInstance => {
         setState({
@@ -136,6 +139,7 @@ const Leageue = ({ t }) => {
                     );
                 })}
             </Swiper>
+            <Footer />
         </div>
     );
 };

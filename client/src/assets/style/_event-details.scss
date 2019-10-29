@@ -1123,7 +1123,7 @@
 
 .event-details > div {
 	opacity: 0;
-	animation: fadeInUp .2s linear forwards;
+	animation: fadeInUp 0.35825s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
 	animation-delay: 1s;
 	&:nth-child(1) {
 		animation-delay: .05s;

@@ -10,6 +10,7 @@ import { generateSlug } from '../core/utils/helper';
 import iconStandings from '../../src/assets/images/navbar-icon-standings.png';
 import iconFixture from '../../src/assets/images/navbar-icon-fixture.png';
 import Switch from './common/Switch';
+import { scrollTopOnClick } from '../core/utils';
 
 class Navbar extends Component {
     constructor(props) {
@@ -149,7 +150,7 @@ class Navbar extends Component {
                         <div className="col text-center">
                             <img src={logo} className="logo" alt="Canli Skor" />
                             <h1 className="header-title pl-0">
-                                <Link to="/" title="Canli Skor">
+                                <Link to="/" title="Canli Skor" onClick={scrollTopOnClick}>
                                     <strong>ultra</strong>skor.com
                                 </Link>
                             </h1>

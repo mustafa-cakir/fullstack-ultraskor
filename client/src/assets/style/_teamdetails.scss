@@ -5,8 +5,21 @@
 		margin: 10px 0;
 	}
 
+	.middle-tabs,
+	.swiper-container{
+		opacity: 0;
+		animation: fadeInUp 0.35825s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+		animation-delay: .3s;
+	}
+	.swiper-container {
+		animation-delay: .4s;
+	}
+	
 	&-info {
-		min-height: 253px;
+		opacity: 0;
+		animation: fadeInUp 0.35825s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+		animation-delay: .2s;
+		min-height: 196px;
 		background: url('../../assets/images/stadium12.jpg');
 		background-size: cover;
 

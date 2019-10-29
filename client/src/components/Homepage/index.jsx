@@ -4,14 +4,7 @@ import moment from 'moment';
 import update from 'immutability-helper';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
-import {
-    getQueryStringFromUrl,
-    HelperTranslateUrlTo,
-    HelperUpdateMeta,
-    prepareRes,
-    restoreScrollY,
-    trackPage
-} from '../../core/utils/helper';
+import { getQueryStringFromUrl, prepareRes, restoreScrollY, trackPage } from '../../core/utils/helper';
 import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
 import Loading from '../common/Loading';
 import FavTournament from '../common/FavTournament';
@@ -23,6 +16,7 @@ import Headertabs from '../Headertabs';
 import Footer from '../common/Footer';
 import BottomParagrah from '../common/BottomParagrah';
 import Icon from '../common/Icon';
+import UpdateMetaHomepage from '../../core/utils/updatemeta/homepage';
 
 let redScoreBarTimer = null;
 
@@ -67,69 +61,7 @@ const Homepage = ({ t, i18n, socket }) => {
     const currentDate = date || moment().format('YYYY-MM-DD');
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    const updateMeta = () => {
-        if (language === 'en') {
-            const title = date
-                ? `UltraSkor - Results & Matches on ${moment(date, 'YYYY-MM-DD').format(
-                      'dddd, MMMM DD, YYYY'
-                  )}. See all Scores, Results, Stats and Match Highlights`
-                : 'Live Score, Match Results and League Fixtures - UltraSkor | (No Ads) ';
-
-            const description = date
-                ? `No Ads. Get the football coverages for the matches on ${moment(date, 'YYYY-MM-DD').format(
-                      'dddd, MMMM DD, YYYY'
-                  )}. See results, league standings and watch highlights`
-                : 'No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world';
-
-            const keywords = date
-                ? `${moment(date, 'YYYY-MM-DD')
-                      .format('dddd')
-                      .toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
-                      .format('DD MMMM dddd')
-                      .toLowerCase()} match results, `
-                : '';
-
-            HelperUpdateMeta({
-                title,
-                canonical: window.location.href,
-                description,
-                keywords: `${keywords}live scores, live football results, match results, football fixtures, eufa champions league results, highlights`,
-                alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
-                hrefLang: 'tr'
-            });
-        } else {
-            const title = date
-                ? `UltraSkor - ${moment(date, 'YYYY-MM-DD').format(
-                      'DD MMMM dddd'
-                  )} Günü Oynanan Tüm Maçlar burada. Sonuçlar, İstatistikler ve Maç Özetleri için tıklayın.`
-                : 'Canlı Skor, Canlı Maç Sonuçları, İddaa Sonuçları - UltraSkor | (Reklamsız)';
-
-            const description = date
-                ? `Tamamen reklamsız olarak, ${moment(date, 'YYYY-MM-DD').format(
-                      'DD MMMM dddd'
-                  )} günü oynanmış tüm maçların sonuçlarını, lig puan durumlarını ve fikstürlerini takip edebilir, maç özetlerini izleyebilirsiniz.`
-                : 'Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.';
-
-            const keywords = date
-                ? `${moment(date, 'YYYY-MM-DD')
-                      .format('dddd')
-                      .toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
-                      .format('DD MMMM dddd')
-                      .toLowerCase()} maç sonucları, `
-                : '';
-
-            HelperUpdateMeta({
-                title,
-                canonical: window.location.href,
-                description,
-                keywords: `${keywords}canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri`,
-                alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
-                hrefLang: 'en'
-            });
-        }
-    };
-
-    const handleGetData = res => {
+    const handleGetData = useCallback(res => {
         const tournaments = prepareRes(res.data);
         setState({
             mainData: tournaments,
@@ -137,10 +69,10 @@ const Homepage = ({ t, i18n, socket }) => {
             isLoading: false
         });
         refMainData.current = tournaments;
-        updateMeta();
-    };
+        UpdateMetaHomepage();
+    }, []);
 
-    const initAxios = () => {
+    const initAxios = useCallback(() => {
         setState({ isLoading: true });
         axios
             .get(`/api/homepage/list/${currentDate}`)
@@ -158,7 +90,7 @@ const Homepage = ({ t, i18n, socket }) => {
                     error: 'something went wrong'
                 });
             });
-    };
+    }, [currentDate, handleGetData]);
 
     const initGetData = useCallback(() => {
         if (document.body.classList.contains('initial-load')) {
@@ -169,103 +101,109 @@ const Homepage = ({ t, i18n, socket }) => {
         } else {
             initAxios();
         }
-    }, [currentDate]);
+    }, [initAxios]);
 
-    const initRedScoreBar = (oldEvent, newEvent) => {
-        if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(newEvent.id) < 0) return false;
-        let redScoreBarType = null;
-        if (newEvent.status.code !== oldEvent.status.code) {
-            redScoreBarType = 'status_update';
-        }
-        if (newEvent.redCards.home > oldEvent.redCards.home) {
-            redScoreBarType = 'home_redcard';
-        }
-        if (newEvent.redCards.away > oldEvent.redCards.away) {
-            redScoreBarType = 'away_redcard';
-        }
-        if (newEvent.scores.home > oldEvent.scores.home) {
-            redScoreBarType = 'home_scored';
-        }
-        if (newEvent.scores.home < oldEvent.scores.home) {
-            redScoreBarType = 'home_scored_cancel';
-        }
-        if (newEvent.scores.away > oldEvent.scores.away) {
-            redScoreBarType = 'away_scored';
-        }
-        if (newEvent.scores.away < oldEvent.scores.away) {
-            redScoreBarType = 'away_scored_cancel';
-        }
+    const initRedScoreBar = useCallback(
+        (oldEvent, newEvent) => {
+            if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(newEvent.id) < 0) return false;
+            let redScoreBarType = null;
+            if (newEvent.status.code !== oldEvent.status.code) {
+                redScoreBarType = 'status_update';
+            }
+            if (newEvent.redCards.home > oldEvent.redCards.home) {
+                redScoreBarType = 'home_redcard';
+            }
+            if (newEvent.redCards.away > oldEvent.redCards.away) {
+                redScoreBarType = 'away_redcard';
+            }
+            if (newEvent.scores.home > oldEvent.scores.home) {
+                redScoreBarType = 'home_scored';
+            }
+            if (newEvent.scores.home < oldEvent.scores.home) {
+                redScoreBarType = 'home_scored_cancel';
+            }
+            if (newEvent.scores.away > oldEvent.scores.away) {
+                redScoreBarType = 'away_scored';
+            }
+            if (newEvent.scores.away < oldEvent.scores.away) {
+                redScoreBarType = 'away_scored_cancel';
+            }
 
-        if (redScoreBarType) {
-            setState({
-                redScoreBarIncident: {
-                    type: redScoreBarType,
-                    event: newEvent
-                }
-            });
-
-            clearTimeout(redScoreBarTimer);
-            redScoreBarTimer = setTimeout(() => {
+            if (redScoreBarType) {
                 setState({
-                    redScoreBarIncident: null
+                    redScoreBarIncident: {
+                        type: redScoreBarType,
+                        event: newEvent
+                    }
                 });
-            }, 15000);
-        }
 
-        return false;
-    };
+                clearTimeout(redScoreBarTimer);
+                redScoreBarTimer = setTimeout(() => {
+                    setState({
+                        redScoreBarIncident: null
+                    });
+                }, 15000);
+            }
+            return false;
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [redScoreFavOnly]
+    );
 
-    const onSocketReturnPushServiceData = res => {
-        if (!res) return false;
-        if (refMainData.current.length === 0) return false;
-        const { tournament, event } = res.ids;
+    const onSocketReturnPushServiceData = useCallback(
+        res => {
+            if (!res) return false;
+            if (refMainData.current.length === 0) return false;
+            const { tournament, event } = res.ids;
 
-        const tournamentIndex = refMainData.current.findIndex(x => x.tournament.id === tournament);
-        if (tournamentIndex < 0) return false;
+            const tournamentIndex = refMainData.current.findIndex(x => x.tournament.id === tournament);
+            if (tournamentIndex < 0) return false;
 
-        const eventIndex = refMainData.current[tournamentIndex].events.findIndex(x => x.id === event);
-        if (eventIndex < 0) return false;
+            const eventIndex = refMainData.current[tournamentIndex].events.findIndex(x => x.id === event);
+            if (eventIndex < 0) return false;
 
-        const oldEvent = refMainData.current[tournamentIndex].events[eventIndex];
-        const newEvent = { ...oldEvent, ...res.event };
-        const newMainData = update(refMainData.current, {
-            [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } }
-        });
-        refMainData.current = newMainData;
-        setState({
-            mainData: newMainData
-        });
-        initRedScoreBar(oldEvent, newEvent);
-        return false;
-    };
+            const oldEvent = refMainData.current[tournamentIndex].events[eventIndex];
+            const newEvent = { ...oldEvent, ...res.event };
+            const newMainData = update(refMainData.current, {
+                [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } }
+            });
+            refMainData.current = newMainData;
+            setState({
+                mainData: newMainData
+            });
+            initRedScoreBar(oldEvent, newEvent);
+            return false;
+        },
+        [initRedScoreBar]
+    );
 
-    const onSocketConnect = () => {
+    const onSocketConnect = useCallback(() => {
         console.log('Socket connected! - Homepage');
         socket.emit('get-updates-homepage');
         setState({
             refreshButton: false
         });
-    };
+    }, [socket]);
 
-    const onSocketDisconnect = () => {
+    const onSocketDisconnect = useCallback(() => {
         socket.on('connect', onSocketConnect);
         setState({
             refreshButton: true
         });
-    };
+    }, [socket, onSocketConnect]);
 
     const initSocket = useCallback(() => {
         socket.on('disconnect', onSocketDisconnect);
         socket.on('return-updates-homepage', handleGetData);
         socket.on('push-service', onSocketReturnPushServiceData);
-    }, []);
+    }, [socket, onSocketDisconnect, handleGetData, onSocketReturnPushServiceData]);
 
     const removeSocket = useCallback(() => {
         socket.removeListener('connect', onSocketConnect);
         socket.removeListener('disconnect', onSocketDisconnect);
         socket.removeListener('return-updates-homepage', handleGetData);
         socket.removeListener('push-service', onSocketReturnPushServiceData);
-    }, []);
+    }, [socket, onSocketConnect, onSocketDisconnect, handleGetData, onSocketReturnPushServiceData]);
 
     useEffect(() => {
         refMainData.current = mainData;
@@ -279,7 +217,7 @@ const Homepage = ({ t, i18n, socket }) => {
             if (isToday) removeSocket();
             clearTimeout(redScoreBarTimer);
         };
-    }, [initGetData, trackPage, page, initSocket, removeSocket, isToday]);
+    }, [initGetData, page, initSocket, removeSocket, isToday]);
 
     useEffect(() => {
         setToLocaleStorage('homepage', {
@@ -309,7 +247,7 @@ const Homepage = ({ t, i18n, socket }) => {
                 </div>
             ) : (
                 <section className="container px-0 homepage-list">
-                    {favEventsList.length > 0 && (
+                    {isToday && favEventsList.length > 0 && (
                         <FavTournament
                             isLive={isLive}
                             socket={socket}

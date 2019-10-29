@@ -1262,9 +1262,10 @@ code {
 		}
 	}
 
-	&:active,
 	&:focus {
 		outline: 0;
+	}
+	&:active {
 		background-color: rgba($color-link, .2);
 	}
 

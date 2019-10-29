@@ -5,7 +5,6 @@ import Tournament from '../common/Tournament';
 import Icon from '../common/Icon';
 import Loading from '../common/Loading';
 import Errors from '../common/Errors';
-import { isEmpty } from '../../core/utils';
 
 const Fixture = ({ teamId, updateAutoHeight }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -76,7 +75,7 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                     isLoading: false
                 });
             });
-    }, []);
+    }, [updateAutoHeight, teamId]);
 
     useEffect(() => {
         getData();
