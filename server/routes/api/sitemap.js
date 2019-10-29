@@ -172,7 +172,8 @@ router.get('/matches/:year/:month/:day', (req, res) => {
     // const lang = 'tr';
     res.header('Content-Type', 'application/xml');
     let xmlString =
-        '<?xml version="1.0" encoding="UTF-8"?> <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+        '<?xml version="1.0" encoding="UTF-8"?>' +
+        '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
 
     // const thisMonth = parseFloat(moment().format('MM'));
     // const toDay = parseFloat(moment().format('D'));
@@ -180,7 +181,7 @@ router.get('/matches/:year/:month/:day', (req, res) => {
 
     const configUltraSkorGetByDate = {
         method: 'GET',
-        uri: `https://www.ultraskor.com/api/?query=/football//${year}-${month}-${day}/json`,
+        uri: `https://www.ultraskor.com/api/homepage/list/${year}-${month}-${day}`,
         json: true,
         headers: {
             'Content-Type': 'application/json',
@@ -192,23 +193,14 @@ router.get('/matches/:year/:month/:day', (req, res) => {
     };
 
     request(configUltraSkorGetByDate)
-        .then(mainData => {
+        .then(data => {
             /**
              * @param mainData object
              * @param mainData.sportItem
              * */
-
-            if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
-                const tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
-                    tournament.events = tournament.events.filter(event => {
-                        return moment(event.startTimestamp).format('YYYY-MM-DD') === `${year}-${month}-${day}`;
-                    });
-                    tournament.events.forEach(() => {
-                        if (whole.indexOf(tournament) < 0) whole.push(tournament);
-                    });
-                    return whole;
-                }, []);
-
+            const { tournaments } = data;
+            // res.send(tournaments);
+            if (tournaments && tournaments.length > 0) {
                 // let urls = [];
                 tournaments.forEach(tournament => {
                     tournament.events.forEach(event => {
@@ -259,35 +251,35 @@ router.get('/matches/:year/:month/:day', (req, res) => {
                         xmlString += `
 								<url>
 									<loc>${`https://www.ultraskor.com/mac/${generateSlug(
-                                        `${t(event.homeTeam.name)}-${t(event.awayTeam.name)}`
+                                        `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
                                     )}-canli-skor-${event.id}`}</loc>
 									${stringLastModified}
 									${stringChangeFreq}
 									${stringPriority}
 									<xhtml:link rel="alternate" hreflang="tr" href="${`https://www.ultraskor.com/mac/${generateSlug(
-                                        `${t(event.homeTeam.name)}-${t(event.awayTeam.name)}`
+                                        `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
                                     )}-canli-skor-${event.id}`}"/>
 						            <xhtml:link rel="alternate" hreflang="en" href="${`https://www.ultraskor.com/en/match/${generateSlug(
-                                        `${event.homeTeam.name}-${event.awayTeam.name}`
+                                        `${event.teams.home.name}-${event.teams.away.name}`
                                     )}-live-score-${event.id}`}"/>   
 								</url>
 								<url>
 									<loc>${`https://www.ultraskor.com/en/match/${generateSlug(
-                                        `${event.homeTeam.name}-${event.awayTeam.name}`
+                                        `${event.teams.home.name}-${event.teams.away.name}`
                                     )}-live-score-${event.id}`}</loc>
 									${stringLastModified}
 									${stringChangeFreq}
 									${stringPriority}
 									<xhtml:link rel="alternate" hreflang="tr" href="${`https://www.ultraskor.com/mac/${generateSlug(
-                                        `${t(event.homeTeam.name)}-${t(event.awayTeam.name)}`
+                                        `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
                                     )}-canli-skor-${event.id}`}"/>
 						            <xhtml:link rel="alternate" hreflang="en" href="${`https://www.ultraskor.com/en/match/${generateSlug(
-                                        `${event.homeTeam.name}-${event.awayTeam.name}`
+                                        `${event.teams.home.name}-${event.teams.away.name}`
                                     )}-live-score-${event.id}`}"/>   
 								</url>`;
                     });
                 });
-                xmlString += '</urlset>';
+                xmlString += '\n</urlset>';
                 res.send(xmlString);
             } else {
                 res.status(500).send('Error 2');
