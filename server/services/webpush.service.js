@@ -114,10 +114,10 @@ exports.initWebPushByWebSocket = (oldEvent, newEvent) => {
                 .send(message)
                 .then(response => {
                     // Response is a message ID string.
-                    console.log("Successfully sent message. Type:", type, response);
+                    if (isDev) console.log("Successfully sent message. Type:", type, response);
                 })
                 .catch(error => {
-                    console.log("Error sending message:", error);
+                    if (isDev) console.log("Error sending push message:", error);
                 });
         } else if (isDev) {
             console.log(
