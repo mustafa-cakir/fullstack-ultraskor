@@ -4,7 +4,7 @@ import moment from 'moment';
 import update from 'immutability-helper';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
-import { getQueryStringFromUrl, prepareRes, restoreScrollY, trackPage } from '../../core/utils/helper';
+import { getQueryStringFromUrl, prepareRes, restoreScrollY } from '../../core/utils/helper';
 import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
 import Loading from '../common/Loading';
 import FavTournament from '../common/FavTournament';
@@ -177,33 +177,21 @@ const Homepage = ({ t, i18n, socket }) => {
         [initRedScoreBar]
     );
 
-    const onSocketConnect = useCallback(() => {
-        console.log('Socket connected! - Homepage');
-        socket.emit('get-updates-homepage');
-        setState({
-            refreshButton: false
-        });
-    }, [socket]);
-
     const onSocketDisconnect = useCallback(() => {
-        socket.on('connect', onSocketConnect);
         setState({
             refreshButton: true
         });
-    }, [socket, onSocketConnect]);
+    }, []);
 
     const initSocket = useCallback(() => {
         socket.on('disconnect', onSocketDisconnect);
-        socket.on('return-updates-homepage', handleGetData);
         socket.on('push-service', onSocketReturnPushServiceData);
-    }, [socket, onSocketDisconnect, handleGetData, onSocketReturnPushServiceData]);
+    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     const removeSocket = useCallback(() => {
-        socket.removeListener('connect', onSocketConnect);
         socket.removeListener('disconnect', onSocketDisconnect);
-        socket.removeListener('return-updates-homepage', handleGetData);
         socket.removeListener('push-service', onSocketReturnPushServiceData);
-    }, [socket, onSocketConnect, onSocketDisconnect, handleGetData, onSocketReturnPushServiceData]);
+    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     useEffect(() => {
         refMainData.current = mainData;
@@ -211,7 +199,6 @@ const Homepage = ({ t, i18n, socket }) => {
 
     useEffect(() => {
         initGetData();
-        trackPage(page);
         if (isToday) initSocket();
         return () => {
             if (isToday) removeSocket();

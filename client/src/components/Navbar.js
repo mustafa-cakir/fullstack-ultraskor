@@ -44,6 +44,7 @@ class Navbar extends Component {
     toggleNavBar = () => {
         if (this.props.history.location.state && this.props.history.location.state.isPrev) {
             this.goBack();
+            scrollTopOnClick();
         } else {
             this.bodyClassList.remove('searchbar-opened');
             this.bodyClassList.toggle('navbar-opened');

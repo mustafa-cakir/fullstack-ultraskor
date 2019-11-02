@@ -101,7 +101,7 @@ button, [type="button"], [type="reset"], [type="submit"] {
 
 .homepage-list,
 .homepage-loading {
-	min-height: calc(100vh - 90px);
+	min-height: 100vh;
 	position: relative;
 	z-index: 4;
 }

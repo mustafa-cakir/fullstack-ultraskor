@@ -1,6 +1,7 @@
-import React, { useReducer, useCallback, useEffect } from 'react';
+import React, { useReducer, useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import update from 'immutability-helper';
 import { withTranslation } from 'react-i18next';
 import { Tabs, Tab } from '@material-ui/core';
 import { Swiper, Slide } from 'react-dynamic-swiper';
@@ -17,9 +18,8 @@ import Lineups from './Lineups';
 import Injuries from './Injuries';
 import Standings from './Standings';
 import UpdateMetaEventdetails from '../../core/utils/updatemeta/eventdetails';
-import Footer from '../common/Footer';
 
-const Eventdetails = ({ t, i18n }) => {
+const Eventdetails = ({ t, i18n, socket }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         tabIndex: 0,
         clickedTabIndex: [0],
@@ -28,9 +28,9 @@ const Eventdetails = ({ t, i18n }) => {
         isLoading: true,
         swiper: null
     });
-
     const { language } = i18n;
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
+    const refData = useRef(data);
     const params = useParams();
     const { eventid } = params;
 
@@ -64,6 +64,47 @@ const Eventdetails = ({ t, i18n }) => {
     useEffect(() => {
         getData();
     }, [getData]);
+
+    // socket - START
+    const isLive = data && data.event ? data.event.status.type === 'inprogress' : false;
+    useEffect(() => {
+        refData.current = data;
+    }, [data]);
+
+    const onSocketDisconnect = useCallback(() => {
+        setState({
+            refreshButton: true
+        });
+    }, []);
+
+    const onSocketReturnPushServiceData = useCallback(res => {
+        if (!res || res.event.id !== eventid || !refData.current) return false;
+        const oldEvent = refData.current.event;
+        const newEvent = { ...oldEvent, ...res.event };
+        const newData = update(refData.current, { event: { $set: newEvent } });
+        refData.current = newData;
+        setState({
+            data: newData
+        });
+        return false;
+    }, []);
+
+    const initSocket = useCallback(() => {
+        socket.on('disconnect', onSocketDisconnect);
+        socket.on('push-service', onSocketReturnPushServiceData);
+    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
+
+    const removeSocket = useCallback(() => {
+        socket.removeListener('disconnect', onSocketDisconnect);
+        socket.removeListener('push-service', onSocketReturnPushServiceData);
+    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
+
+    useEffect(() => {
+        if (isLive) initSocket();
+        return () => {
+            if (isLive) removeSocket();
+        };
+    }, [initSocket, removeSocket, isLive]);
 
     const updateAutoHeight = useCallback(() => {
         setTimeout(() => {
@@ -136,17 +177,6 @@ const Eventdetails = ({ t, i18n }) => {
             }
         });
 
-    if (isStanding)
-        slides.push({
-            id: 5,
-            label: t('Standing'),
-            Component: Standings,
-            props: {
-                event,
-                updateAutoHeight
-            }
-        });
-
     if (teams)
         slides.push({
             id: 6,
@@ -156,6 +186,17 @@ const Eventdetails = ({ t, i18n }) => {
                 id: event.id,
                 teams,
                 textList,
+                updateAutoHeight
+            }
+        });
+
+    if (isStanding)
+        slides.push({
+            id: 5,
+            label: t('Standing'),
+            Component: Standings,
+            props: {
+                event,
                 updateAutoHeight
             }
         });
@@ -219,7 +260,6 @@ const Eventdetails = ({ t, i18n }) => {
                     );
                 })}
             </Swiper>
-            <Footer />
         </div>
     );
 };

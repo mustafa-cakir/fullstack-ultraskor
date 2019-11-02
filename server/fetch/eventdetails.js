@@ -1,4 +1,3 @@
-const { convertToSofaScoreID } = require('../utils');
 const { fetchSofaScore } = require('./sofascore');
 const { fetchSportRadar } = require('./sportradar');
 const { fetchOleyWidget } = require('./oleyWidget');
@@ -11,9 +10,9 @@ const fetchEventDetails = (eventId, language) => {
         if (!ids.id_so) {
             ids.id_so = eventId;
         }
-        const { min30, hour24 } = cacheDuration;
+        const { sec15, hour24 } = cacheDuration;
         return new Promise((resolve, reject) => {
-            const pAll = [fetchSofaScore(`/event/${ids.id_so}/json`, min30).catch(err => console.log(err))];
+            const pAll = [fetchSofaScore(`/event/${ids.id_so}/json`, sec15).catch(err => console.log(err))];
 
             if (ids.id_sp) {
                 pAll.push(

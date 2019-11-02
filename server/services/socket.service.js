@@ -1,7 +1,7 @@
 const moment = require('moment');
 const cacheService = require('./cache.service');
 const firebaseService = require('./firebase.service');
-const { fetchSofaScore } = require('../fetch/sofascore');
+const { fetchEventDetails } = require('../fetch/eventdetails');
 
 const { db, firebase } = firebaseService;
 
@@ -26,12 +26,7 @@ exports.init = (socket, io) => {
         if (db) {
             db.collection('ultraskor_forum')
                 .doc(String(data.topicId))
-                .update(
-                    {
-                        messages: firebase.firestore.FieldValue.arrayUnion(data)
-                    },
-                    { merge: true }
-                );
+                .update({ messages: firebase.firestore.FieldValue.arrayUnion(data) }, { merge: true });
         }
         io.sockets.emit('forum-new-submission', data);
     });
@@ -55,26 +50,15 @@ exports.init = (socket, io) => {
         }
     });
 
-    socket.on('get-updates-details', api => {
-        const cacheKey = `mainData-${api}-eventdetails`;
-        const initRemoteRequests = () => {
-            fetchSofaScore(api, 10)
-                .then(res => {
-                    socket.emit('return-updates-details', res);
-                })
-                .catch(() => {
-                    socket.emit('return-error-updates', 'Error while retrieving information from server');
-                });
-
-        };
-
-        const cachedData = cacheService.instance().get(cacheKey);
-        if (typeof cachedData !== 'undefined') {
-            // Cache is found, serve the data from cache
-            socket.emit('return-updates-details', cachedData);
-        } else {
-            initRemoteRequests();
-        }
+    socket.on('get-updates-eventdetails', params => {
+        const { eventId, language } = params; // YYYY-MM-DD
+        fetchEventDetails(eventId, language)
+            .then(data => {
+                socket.emit('return-updates-eventdetails', data);
+            })
+            .catch(() => {
+                socket.emit('return-updates-eventdetails', null);
+            });
     });
 
     socket.on('disconnect', () => {
