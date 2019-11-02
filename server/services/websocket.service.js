@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const SocksProxyAgent = require('socks-proxy-agent');
+// const SocksProxyAgent = require('socks-proxy-agent');
 const { simplifyWebSocketData } = require('../utils');
 const { pushServiceChangesForWebPush } = require('./cronjob.service');
 
@@ -24,8 +24,8 @@ const init = io => {
     console.log(getPushServiceUri);
     const ws = new WebSocket(`${getPushServiceUri}/ServicePush`, {
         origin: 'https://www.sofascore.com',
-        rejectUnauthorized: false,
-        ...{ agent: new SocksProxyAgent('socks://127.0.0.1:9050') }
+        rejectUnauthorized: false
+        // ...{ agent: new SocksProxyAgent('socks://127.0.0.1:9050') }
     });
 
     ws.on('error', err => {
