@@ -198,6 +198,7 @@ const Homepage = ({ t, i18n, socket }) => {
     }, [mainData]);
 
     useEffect(() => {
+        scrollTopOnClick();
         initGetData();
         if (isToday) initSocket();
         return () => {
