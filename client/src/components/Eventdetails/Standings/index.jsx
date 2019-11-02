@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import { withTranslation } from 'react-i18next';
-import axios from 'axios';
-import Loading from '../../common/Loading';
-import Errors from '../../common/Errors';
-import StandingTable from '../../common/StandingTable';
+import React, { useCallback, useEffect, useReducer } from "react";
+import { withTranslation } from "react-i18next";
+import axios from "axios";
+import Loading from "../../common/Loading";
+import Errors from "../../common/Errors";
+import StandingTable from "../../common/StandingTable";
 
 const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         standingsTables: null,
         error: null,
         isLoading: true,
-        tab: 'Total'
+        tab: "Total"
     });
     const { standingsTables, error, isLoading } = state;
     const { teams, tournament, season } = event;
@@ -29,7 +29,7 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t('Something went wrong')
+                    error: t("Something went wrong")
                 });
             });
     }, [tournament.id, season.id, updateAutoHeight, t]);
@@ -46,4 +46,4 @@ const Standings = ({ event, updateAutoHeight, hasActived, t }) => {
     return <StandingTable standingsTables={standingsTables} teams={teams} />;
 };
 
-export default withTranslation('translations')(Standings);
+export default withTranslation("translations")(Standings);

@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import axios from 'axios';
-import { Trans, withTranslation } from 'react-i18next';
-import { ratingClass } from '../../../core/utils/helper';
-import { invertColor, printImageSrc } from '../../../core/utils';
-import Loading from '../../common/Loading';
-import Errors from '../../common/Errors';
+import React, { useCallback, useEffect, useReducer } from "react";
+import axios from "axios";
+import { Trans, withTranslation } from "react-i18next";
+import { ratingClass } from "../../../core/utils/helper";
+import { invertColor, printImageSrc } from "../../../core/utils";
+import Loading from "../../common/Loading";
+import Errors from "../../common/Errors";
 
 const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
-        currentTeam: 'homeTeam',
+        currentTeam: "homeTeam",
         tabIndex: 0,
         lineups: null,
         isLoading: true,
@@ -31,7 +31,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t('Something went wrong')
+                    error: t("Something went wrong")
                 });
             });
     }, [id, updateAutoHeight, t]);
@@ -70,21 +70,21 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                     <div className="row">
                         <button
                             type="button"
-                            className={`col home${currentTeam === 'homeTeam' ? ' active' : ''}`}
-                            onClick={() => currentTeamClickHandler('homeTeam')}
+                            className={`col home${currentTeam === "homeTeam" ? " active" : ""}`}
+                            onClick={() => currentTeamClickHandler("homeTeam")}
                         >
                             <img
                                 alt={t(teams.home.name)}
                                 src={printImageSrc(`/images/team-logo/football_${teams.home.id}.png`)}
                             />
-                            {homeFormation.join(' - ')}
+                            {homeFormation.join(" - ")}
                         </button>
                         <button
                             type="button"
-                            className={`col away${currentTeam === 'awayTeam' ? ' active' : ''}`}
-                            onClick={() => currentTeamClickHandler('awayTeam')}
+                            className={`col away${currentTeam === "awayTeam" ? " active" : ""}`}
+                            onClick={() => currentTeamClickHandler("awayTeam")}
                         >
-                            {awayFormation.join(' - ')}
+                            {awayFormation.join(" - ")}
                             <img
                                 alt={t(teams.away.name)}
                                 src={printImageSrc(`/images/team-logo/football_${teams.away.id}.png`)}
@@ -186,7 +186,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                     {activeTeam.lineupsSorted[0].rating}
                                                 </span>
                                             ) : (
-                                                ''
+                                                ""
                                             )}
 
                                             {activeTeam.incidents &&
@@ -251,22 +251,22 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                         )}
                         {activeTeam.rating ? (
                             <div className="team-rating">
-                                <Trans>Team Avg. Rating</Trans>:{' '}
+                                <Trans>Team Avg. Rating</Trans>:{" "}
                                 <span className={`text-bold rating ${ratingClass(activeTeam.rating)}`}>
                                     {activeTeam.rating}
                                 </span>
                             </div>
                         ) : (
-                            ''
+                            ""
                         )}
 
                         {activeTeam.averageAge.startersAverageAge ? (
                             <div className="mt-1">
-                                <Trans>Avg. Age</Trans>:{' '}
+                                <Trans>Avg. Age</Trans>:{" "}
                                 <span className="f-500"> {activeTeam.averageAge.startersAverageAge}</span>
                             </div>
                         ) : (
-                            ''
+                            ""
                         )}
                     </div>
                 </div>
@@ -274,7 +274,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                     <div className="horizontal-tab">
                         <button
                             type="button"
-                            className={tabIndex === 0 ? 'active' : ''}
+                            className={tabIndex === 0 ? "active" : ""}
                             onClick={() => tabIndexClickHandler(0)}
                         >
                             <span>
@@ -283,7 +283,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                         </button>
                         <button
                             type="button"
-                            className={tabIndex === 1 ? 'active' : ''}
+                            className={tabIndex === 1 ? "active" : ""}
                             onClick={() => tabIndexClickHandler(1)}
                         >
                             <span>
@@ -305,8 +305,8 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
 
                                 <div className="col list-text">
                                     <div className="f-700">
-                                        {item.shirtNumber} - {item.player.name}{' '}
-                                        {item.captain ? <span className="captain">C</span> : ''}
+                                        {item.shirtNumber} - {item.player.name}{" "}
+                                        {item.captain ? <span className="captain">C</span> : ""}
                                         {activeTeam.incidents && activeTeam.incidents[item.player.id] && (
                                             <span className="lineup-icon">
                                                 {activeTeam.incidents[item.player.id].map(incident => {
@@ -319,7 +319,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                 })}
                                             </span>
                                         )}
-                                        {item.substitute && item.rating !== '–' && (
+                                        {item.substitute && item.rating !== "–" && (
                                             <span className="mx-1 lineup-icon">
                                                 <span className="substitutionin" />
                                             </span>
@@ -336,7 +336,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                         </span>
                                     </div>
                                 ) : (
-                                    ''
+                                    ""
                                 )}
                             </div>
                         );
@@ -347,4 +347,4 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
     );
 };
 
-export default withTranslation('translations')(Lineups);
+export default withTranslation("translations")(Lineups);

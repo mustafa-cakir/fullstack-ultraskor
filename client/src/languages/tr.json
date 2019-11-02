@@ -347,5 +347,7 @@
     "No match found!": "Maç bulunamadı!",
     "Prev": "Geri",
     "Next": "İleri",
-    "Contract Since": "Kontrat Başlangıcı"
+    "Contract Since": "Kontrat Başlangıcı",
+    "No Favorited Match": "Favorilerde hiç bir maç yok",
+    "Please uncheck the favorıtes filter to add match to your favorites list.": "Favoriler filtresini kaldirarak favorilerim listenize maç ekleyebilirsiniz."
 }

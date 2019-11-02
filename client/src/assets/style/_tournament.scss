@@ -39,12 +39,10 @@
     @include line-clamp(1);
 }
 
-.fav-container {
-    .event-container {
-	    background: rgba($color-fav, .05);
-	    &:nth-child(even) {
-		    background: rgba($color-fav, .12);
-	    }
+.fav-event {
+    background: rgba($color-fav, .05);
+    &.bg-gray {
+	    background: rgba($color-fav, .12);
     }
 }
 

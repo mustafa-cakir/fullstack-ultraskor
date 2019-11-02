@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import Loading from '../common/Loading';
+import React, { Component } from "react";
+import Loading from "../common/Loading";
 // import {Trans} from "react-i18next";
-import { ratingClass } from '../../core/utils/helper';
-import Icon from '../common/Icon';
-import { Trans } from 'react-i18next';
-import Errors from '../common/Errors';
+import { ratingClass } from "../../core/utils/helper";
+import Icon from "../common/Icon";
+import { Trans } from "react-i18next";
+import Errors from "../common/Errors";
 
 class TeamOfTheWeek extends Component {
     constructor(props) {
@@ -73,7 +73,7 @@ class TeamOfTheWeek extends Component {
         if (!teamOfTheWeekData) return <Loading type="inside" />;
         if (teamOfTheWeekData.error) return <Errors type="error" message={teamOfTheWeekData.error} />;
 
-        const formation = teamOfTheWeekData.formation.split('-');
+        const formation = teamOfTheWeekData.formation.split("-");
         const formationReverse = [...formation].reverse();
         const goalie = teamOfTheWeekData.players[0];
         let iteration = 11;
@@ -91,18 +91,18 @@ class TeamOfTheWeek extends Component {
                         <div className="px-3">
                             <div className="row heading align-items-center">
                                 <div
-                                    className={'col col-3 col-nav ' + (!prevRound ? 'not-exist' : '')}
-                                    onClick={() => (prevRound ? this.roundClicked(prevRound) : '')}
+                                    className={"col col-3 col-nav " + (!prevRound ? "not-exist" : "")}
+                                    onClick={() => (prevRound ? this.roundClicked(prevRound) : "")}
                                 >
                                     <Icon name="fas fa-chevron-left" /> <Trans>Prev</Trans>
                                 </div>
                                 <div className="col px-0 col-6 text-center col-dropdown">
                                     <div
-                                        className={'pure-dropdown' + (this.state.isDropdown ? ' open' : '')}
+                                        className={"pure-dropdown" + (this.state.isDropdown ? " open" : "")}
                                         onClick={() => this.setState({ isDropdown: !this.state.isDropdown })}
                                     >
                                         <Trans>{roundName}</Trans>
-                                        {roundName.length > 2 ? '' : <Trans>th Week</Trans>}
+                                        {roundName.length > 2 ? "" : <Trans>th Week</Trans>}
                                         <Icon name="fas fa-caret-down" />
                                         <div className="dropdown">
                                             <ul>
@@ -111,14 +111,14 @@ class TeamOfTheWeek extends Component {
                                                         <li
                                                             key={index}
                                                             className={
-                                                                roundName === round.roundName ? 'active this-round' : ''
+                                                                roundName === round.roundName ? "active this-round" : ""
                                                             }
                                                             onClick={() => this.roundClicked(round)}
                                                         >
                                                             <span>
                                                                 {round.roundName}
                                                                 {round.roundName.length > 2 ? (
-                                                                    ''
+                                                                    ""
                                                                 ) : (
                                                                     <Trans>th Week</Trans>
                                                                 )}
@@ -131,24 +131,24 @@ class TeamOfTheWeek extends Component {
                                     </div>
                                 </div>
                                 <div
-                                    className={'col col-3 text-right col-nav ' + (!nextRound ? 'not-exist' : '')}
-                                    onClick={() => (nextRound ? this.roundClicked(nextRound) : '')}
+                                    className={"col col-3 text-right col-nav " + (!nextRound ? "not-exist" : "")}
+                                    onClick={() => (nextRound ? this.roundClicked(nextRound) : "")}
                                 >
                                     <Trans>Next</Trans> <Icon name="fas fa-chevron-right" />
                                 </div>
                             </div>
                         </div>
                         <div className="position-relative">
-                            {loading ? <Loading type="inside" /> : ''}
+                            {loading ? <Loading type="inside" /> : ""}
                             <div className="container">
                                 <div className="row league-heading align-items-center py-2 bg-gray">
                                     <div className="col col-img">
                                         <img
                                             src={
                                                 window.ImageServer +
-                                                '/images/u-tournament/' +
+                                                "/images/u-tournament/" +
                                                 this.props.leagueData.uniqueTournament.id +
-                                                '.png'
+                                                ".png"
                                             }
                                             alt={this.props.leagueData.uniqueTournament.name}
                                         />
@@ -162,7 +162,7 @@ class TeamOfTheWeek extends Component {
                                     <div className="col text-right">
                                         <strong>
                                             <Trans>{roundName}</Trans>
-                                            {roundName.length > 2 ? '' : <Trans>th Week</Trans>}
+                                            {roundName.length > 2 ? "" : <Trans>th Week</Trans>}
                                         </strong>
                                         <br />
                                         <Trans>Team Of The Week</Trans>
@@ -170,10 +170,10 @@ class TeamOfTheWeek extends Component {
                                 </div>
                             </div>
                             <div className="pitch">
-                                <div className={'area-container row-' + formationReverse.length}>
+                                <div className={"area-container row-" + formationReverse.length}>
                                     {formationReverse.map((item, index) => {
                                         return (
-                                            <div key={index} className={'area area-' + item}>
+                                            <div key={index} className={"area area-" + item}>
                                                 <div className="row">
                                                     {[...Array(parseInt(item))].map((x, i) => {
                                                         iteration--;
@@ -188,9 +188,9 @@ class TeamOfTheWeek extends Component {
                                                                             alt={player.name}
                                                                             src={
                                                                                 window.ImageServer +
-                                                                                '/images/player/image_' +
+                                                                                "/images/player/image_" +
                                                                                 player.id +
-                                                                                '.png'
+                                                                                ".png"
                                                                             }
                                                                             className="player-picture"
                                                                         />
@@ -198,22 +198,22 @@ class TeamOfTheWeek extends Component {
                                                                         {rating ? (
                                                                             <span
                                                                                 className={
-                                                                                    'text-bold rating ' +
+                                                                                    "text-bold rating " +
                                                                                     ratingClass(rating)
                                                                                 }
                                                                             >
                                                                                 {rating}
                                                                             </span>
                                                                         ) : (
-                                                                            ''
+                                                                            ""
                                                                         )}
 
                                                                         <img
                                                                             src={
                                                                                 window.ImageServer +
-                                                                                '/images/team-logo/football_' +
+                                                                                "/images/team-logo/football_" +
                                                                                 team.id +
-                                                                                '.png'
+                                                                                ".png"
                                                                             }
                                                                             alt={team.name}
                                                                             className="team-logo"
@@ -223,8 +223,8 @@ class TeamOfTheWeek extends Component {
                                                                     <div
                                                                         className="name"
                                                                         style={{
-                                                                            background: '#3F1052',
-                                                                            color: '#f0f0f0'
+                                                                            background: "#3F1052",
+                                                                            color: "#f0f0f0"
                                                                         }}
                                                                     >
                                                                         <span>{player.shortName}</span>
@@ -237,7 +237,7 @@ class TeamOfTheWeek extends Component {
                                             </div>
                                         );
                                     })}
-                                    <div className={'area area-1'}>
+                                    <div className={"area area-1"}>
                                         <div className="row">
                                             <div className="col text-center">
                                                 <div className="player-container">
@@ -246,9 +246,9 @@ class TeamOfTheWeek extends Component {
                                                             alt={goalie.player.name}
                                                             src={
                                                                 window.ImageServer +
-                                                                '/images/player/image_' +
+                                                                "/images/player/image_" +
                                                                 goalie.player.id +
-                                                                '.png'
+                                                                ".png"
                                                             }
                                                             className="player-picture"
                                                         />
@@ -256,21 +256,21 @@ class TeamOfTheWeek extends Component {
                                                         {goalie.rating ? (
                                                             <span
                                                                 className={
-                                                                    'text-bold rating ' + ratingClass(goalie.rating)
+                                                                    "text-bold rating " + ratingClass(goalie.rating)
                                                                 }
                                                             >
                                                                 {goalie.rating}
                                                             </span>
                                                         ) : (
-                                                            ''
+                                                            ""
                                                         )}
 
                                                         <img
                                                             src={
                                                                 window.ImageServer +
-                                                                '/images/team-logo/football_' +
+                                                                "/images/team-logo/football_" +
                                                                 goalie.team.id +
-                                                                '.png'
+                                                                ".png"
                                                             }
                                                             alt={goalie.team.name}
                                                             className="team-logo"
@@ -280,8 +280,8 @@ class TeamOfTheWeek extends Component {
                                                     <div
                                                         className="name"
                                                         style={{
-                                                            background: '#3F1052',
-                                                            color: '#f0f0f0'
+                                                            background: "#3F1052",
+                                                            color: "#f0f0f0"
                                                         }}
                                                     >
                                                         <span>{goalie.player.shortName}</span>
@@ -302,17 +302,17 @@ class TeamOfTheWeek extends Component {
                                                     alt={item.player.name}
                                                     src={
                                                         window.ImageServer +
-                                                        '/images/player/image_' +
+                                                        "/images/player/image_" +
                                                         item.player.id +
-                                                        '.png'
+                                                        ".png"
                                                     }
                                                 />
                                                 <img
                                                     src={
                                                         window.ImageServer +
-                                                        '/images/team-logo/football_' +
+                                                        "/images/team-logo/football_" +
                                                         item.team.id +
-                                                        '.png'
+                                                        ".png"
                                                     }
                                                     alt={item.team.name}
                                                     className="team-logo-list"
@@ -327,12 +327,12 @@ class TeamOfTheWeek extends Component {
                                             </div>
                                             {item.rating ? (
                                                 <div className="col list-rating">
-                                                    <span className={'text-bold rating ' + ratingClass(item.rating)}>
+                                                    <span className={"text-bold rating " + ratingClass(item.rating)}>
                                                         {item.rating}
                                                     </span>
                                                 </div>
                                             ) : (
-                                                ''
+                                                ""
                                             )}
                                         </div>
                                     );

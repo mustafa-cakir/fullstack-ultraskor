@@ -1,32 +1,32 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
-import moment from 'moment';
-import update from 'immutability-helper';
-import axios from 'axios';
-import { Trans, withTranslation } from 'react-i18next';
-import { getQueryStringFromUrl, prepareRes, restoreScrollY } from '../../core/utils/helper';
-import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
-import Loading from '../common/Loading';
-import FavTournament from '../common/FavTournament';
-import Tournament from '../common/Tournament';
-import Errors from '../common/Errors';
-import RefreshButton from '../common/RefreshButton';
-import RedScoreBoard from '../common/RedScoreBar';
-import Headertabs from '../Headertabs';
-import Footer from '../common/Footer';
-import BottomParagrah from '../common/BottomParagrah';
-import Icon from '../common/Icon';
-import UpdateMetaHomepage from '../../core/utils/updatemeta/homepage';
+import React, { useCallback, useEffect, useReducer, useRef } from "react";
+import { useParams, useLocation, Link } from "react-router-dom";
+import moment from "moment";
+import update from "immutability-helper";
+import axios from "axios";
+import { Trans, withTranslation } from "react-i18next";
+import { getQueryStringFromUrl, prepareRes, restoreScrollY } from "../../core/utils/helper";
+import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from "../../core/utils";
+import Loading from "../common/Loading";
+import Tournament from "../common/Tournament";
+import Errors from "../common/Errors";
+import RefreshButton from "../common/RefreshButton";
+import RedScoreBoard from "../common/RedScoreBar";
+import Headertabs from "../Headertabs";
+import Footer from "../common/Footer";
+import BottomParagrah from "../common/BottomParagrah";
+import Icon from "../common/Icon";
+import UpdateMetaHomepage from "../../core/utils/updatemeta/homepage";
+import FavTournament from "../common/FavTournament";
 
 let redScoreBarTimer = null;
 
 const Homepage = ({ t, i18n, socket }) => {
-    const stateFromLocalStorage = getFromLocalStorage('homepage');
+    const stateFromLocalStorage = getFromLocalStorage("homepage");
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         mainData: [],
         isLoading: true,
         favEvents: [],
-        favEventsList: [],
+        isFav: false,
         refreshButton: false,
         filteredTournaments: [],
         isLive: false,
@@ -35,14 +35,14 @@ const Homepage = ({ t, i18n, socket }) => {
         redScoreFavOnly: false,
         redScoreBarIncident: null,
         isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
-        lazyLoadCount: getQueryStringFromUrl('load') || 10,
+        lazyLoadCount: getQueryStringFromUrl("load") || 10,
         ...(stateFromLocalStorage && { ...stateFromLocalStorage })
     });
     const {
         mainData,
         isLoading,
         favEvents,
-        favEventsList,
+        isFav,
         refreshButton,
         filteredTournaments,
         isLive,
@@ -58,8 +58,8 @@ const Homepage = ({ t, i18n, socket }) => {
     const { date } = useParams();
     const location = useLocation();
     const { pathname: page } = location;
-    const currentDate = date || moment().format('YYYY-MM-DD');
-    const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
+    const currentDate = date || moment().format("YYYY-MM-DD");
+    const isToday = moment(currentDate, "YYYY-MM-DD").isSame(moment(), "day");
 
     const handleGetData = useCallback(res => {
         const tournaments = prepareRes(res.data);
@@ -79,7 +79,7 @@ const Homepage = ({ t, i18n, socket }) => {
             .then(res => {
                 handleGetData(res);
                 setTimeout(() => {
-                    document.body.classList.add('initial-load');
+                    document.body.classList.add("initial-load");
                 });
                 restoreScrollY();
             })
@@ -87,14 +87,14 @@ const Homepage = ({ t, i18n, socket }) => {
                 console.log(err);
                 setState({
                     isLoading: false,
-                    error: 'something went wrong'
+                    error: "something went wrong"
                 });
             });
     }, [currentDate, handleGetData]);
 
     const initGetData = useCallback(() => {
-        if (document.body.classList.contains('initial-load')) {
-            document.body.classList.remove('initial-load');
+        if (document.body.classList.contains("initial-load")) {
+            document.body.classList.remove("initial-load");
             setTimeout(() => {
                 initAxios();
             }, 600);
@@ -108,25 +108,25 @@ const Homepage = ({ t, i18n, socket }) => {
             if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(newEvent.id) < 0) return false;
             let redScoreBarType = null;
             if (newEvent.status.code !== oldEvent.status.code) {
-                redScoreBarType = 'status_update';
+                redScoreBarType = "status_update";
             }
             if (newEvent.redCards.home > oldEvent.redCards.home) {
-                redScoreBarType = 'home_redcard';
+                redScoreBarType = "home_redcard";
             }
             if (newEvent.redCards.away > oldEvent.redCards.away) {
-                redScoreBarType = 'away_redcard';
+                redScoreBarType = "away_redcard";
             }
             if (newEvent.scores.home > oldEvent.scores.home) {
-                redScoreBarType = 'home_scored';
+                redScoreBarType = "home_scored";
             }
             if (newEvent.scores.home < oldEvent.scores.home) {
-                redScoreBarType = 'home_scored_cancel';
+                redScoreBarType = "home_scored_cancel";
             }
             if (newEvent.scores.away > oldEvent.scores.away) {
-                redScoreBarType = 'away_scored';
+                redScoreBarType = "away_scored";
             }
             if (newEvent.scores.away < oldEvent.scores.away) {
-                redScoreBarType = 'away_scored_cancel';
+                redScoreBarType = "away_scored_cancel";
             }
 
             if (redScoreBarType) {
@@ -184,13 +184,13 @@ const Homepage = ({ t, i18n, socket }) => {
     }, []);
 
     const initSocket = useCallback(() => {
-        socket.on('disconnect', onSocketDisconnect);
-        socket.on('push-service', onSocketReturnPushServiceData);
+        socket.on("disconnect", onSocketDisconnect);
+        socket.on("push-service", onSocketReturnPushServiceData);
     }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     const removeSocket = useCallback(() => {
-        socket.removeListener('disconnect', onSocketDisconnect);
-        socket.removeListener('push-service', onSocketReturnPushServiceData);
+        socket.removeListener("disconnect", onSocketDisconnect);
+        socket.removeListener("push-service", onSocketReturnPushServiceData);
     }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     useEffect(() => {
@@ -208,16 +208,16 @@ const Homepage = ({ t, i18n, socket }) => {
     }, [initGetData, page, initSocket, removeSocket, isToday]);
 
     useEffect(() => {
-        setToLocaleStorage('homepage', {
+        setToLocaleStorage("homepage", {
             favEvents,
-            favEventsList,
+            isFav,
             filteredTournaments,
             isLive,
             redScoreMuted,
             redScoreShrinked,
             redScoreFavOnly
         });
-    }, [favEvents, favEventsList, filteredTournaments, isLive, redScoreMuted, redScoreShrinked, redScoreFavOnly]);
+    }, [favEvents, isFav, filteredTournaments, isLive, redScoreMuted, redScoreShrinked, redScoreFavOnly]);
 
     return (
         <>
@@ -228,6 +228,7 @@ const Homepage = ({ t, i18n, socket }) => {
                 mainData={mainData}
                 currentDate={currentDate}
                 isToday={isToday}
+                isFav={isFav}
             />
             {isLoading ? (
                 <div className="homepage-loading">
@@ -235,17 +236,17 @@ const Homepage = ({ t, i18n, socket }) => {
                 </div>
             ) : (
                 <section className="container px-0 homepage-list">
-                    {isToday && favEventsList.length > 0 && (
+                    {favEvents.length > 0 && (
                         <FavTournament
+                            isFav={isFav}
                             isLive={isLive}
-                            socket={socket}
                             updateParentState={setState}
                             favEvents={favEvents}
-                            favEventsList={favEventsList}
+                            tournaments={mainData}
                         />
                     )}
 
-                    {mainData.length > 0 ? (
+                    {!isFav && mainData.length > 0 && (
                         <Tournament
                             page="homepage"
                             isLive={isLive}
@@ -254,13 +255,11 @@ const Homepage = ({ t, i18n, socket }) => {
                             tournaments={mainData}
                             updateParentState={setState}
                             favEvents={favEvents}
-                            favEventsList={favEventsList}
                             isLazyLoad={isLazyLoad}
                             lazyLoadCount={lazyLoadCount}
                         />
-                    ) : (
-                        <Errors type="no-matched-game" />
                     )}
+                    {mainData.length === 0 && <Errors type="no-matched-game" />}
                 </section>
             )}
             <section className="container date-prev-next-container">
@@ -268,12 +267,12 @@ const Homepage = ({ t, i18n, socket }) => {
                     <div className="col col-yesterday">
                         <Link
                             onClick={scrollTopOnClick}
-                            to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
-                                .subtract(1, 'd')
-                                .format('YYYY-MM-DD')}`}
+                            to={`/${language === "en" ? "en/" : ""}${t("matches")}/${t("date")}-${moment()
+                                .subtract(1, "d")
+                                .format("YYYY-MM-DD")}`}
                             title={`${moment()
-                                .subtract(1, 'd')
-                                .format('LL')} ${t('Football Results')}`}
+                                .subtract(1, "d")
+                                .format("LL")} ${t("Football Results")}`}
                         >
                             <Icon name="fas fa-chevron-left" />
                             <Trans>Yesterday</Trans>
@@ -281,7 +280,7 @@ const Homepage = ({ t, i18n, socket }) => {
                     </div>
                     <div className="col text-center col-today">
                         <Link
-                            to={language === 'en' ? '/en/' : '/'}
+                            to={language === "en" ? "/en/" : "/"}
                             onClick={scrollTopOnClick}
                             title={t("Today's football matches")}
                         >
@@ -291,12 +290,12 @@ const Homepage = ({ t, i18n, socket }) => {
                     <div className="col text-right col-tomorrow">
                         <Link
                             onClick={scrollTopOnClick}
-                            to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
-                                .add(1, 'd')
-                                .format('YYYY-MM-DD')}`}
+                            to={`/${language === "en" ? "en/" : ""}${t("matches")}/${t("date")}-${moment()
+                                .add(1, "d")
+                                .format("YYYY-MM-DD")}`}
                             title={`${moment()
-                                .add(1, 'd')
-                                .format('LL')} ${t('Football Results')}`}
+                                .add(1, "d")
+                                .format("LL")} ${t("Football Results")}`}
                         >
                             <Trans>Tomorrow</Trans>
                             <Icon name="fas fa-chevron-right" />
@@ -321,4 +320,4 @@ const Homepage = ({ t, i18n, socket }) => {
     );
 };
 
-export default withTranslation('translations')(Homepage);
+export default withTranslation("translations")(Homepage);

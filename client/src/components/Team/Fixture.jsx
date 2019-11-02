@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import { Trans } from 'react-i18next';
-import axios from 'axios';
-import Tournament from '../common/Tournament';
-import Icon from '../common/Icon';
-import Loading from '../common/Loading';
-import Errors from '../common/Errors';
+import React, { useCallback, useEffect, useReducer } from "react";
+import { Trans } from "react-i18next";
+import axios from "axios";
+import Tournament from "../common/Tournament";
+import Icon from "../common/Icon";
+import Loading from "../common/Loading";
+import Errors from "../common/Errors";
 
 const Fixture = ({ teamId, updateAutoHeight }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
-        by: 'byDates',
+        by: "byDates",
         isDropdown: false,
         data: null,
         isLoading: true,
@@ -19,7 +19,7 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
     const { by, isDropdown, data, isLoading, error, prevExist, nextExist } = state;
 
     const getOffset = nav => {
-        if (nav === 'prev') return String(data.byDates[0].events[0].startTimestamp).substr(0, 10);
+        if (nav === "prev") return String(data.byDates[0].events[0].startTimestamp).substr(0, 10);
         return String(
             data.byDates[data.byDates.length - 1].events[data.byDates[data.byDates.length - 1].events.length - 1]
                 .startTimestamp
@@ -43,7 +43,7 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                     });
                 } else {
                     setState({
-                        ...(nav === 'next' ? { nextExist: false } : { prevExist: false }),
+                        ...(nav === "next" ? { nextExist: false } : { prevExist: false }),
                         isLoading: false
                     });
                 }
@@ -106,27 +106,27 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                         <div className="row heading align-items-center">
                             <button
                                 type="button"
-                                className={`col col-3 text-left col-nav${prevExist ? '' : ' not-exist'}`}
-                                onClick={() => (prevExist ? getPrevNextData('prev') : undefined)}
+                                className={`col col-3 text-left col-nav${prevExist ? "" : " not-exist"}`}
+                                onClick={() => (prevExist ? getPrevNextData("prev") : undefined)}
                             >
                                 <Icon name="fas fa-chevron-left" /> <Trans>Prev</Trans>
                             </button>
                             <div className="col px-2 col-6 text-center col-dropdown">
-                                <div className={`pure-dropdown${isDropdown ? ' open' : ''}`}>
+                                <div className={`pure-dropdown${isDropdown ? " open" : ""}`}>
                                     <button type="button" className="pure-dropdown-btn" onClick={dropdownClickHandler}>
-                                        {by === 'byDates' && <Trans>Order By Dates</Trans>}
-                                        {by === 'byTournaments' && <Trans>Order By Tournaments</Trans>}
+                                        {by === "byDates" && <Trans>Order By Dates</Trans>}
+                                        {by === "byTournaments" && <Trans>Order By Tournaments</Trans>}
                                         <Icon name="fas fa-caret-down" />
                                     </button>
                                     <div className="dropdown">
                                         <ul>
-                                            <li className={by === 'byDates' ? 'active' : ''}>
-                                                <button type="button" onClick={() => byClickHandler('byDates')}>
+                                            <li className={by === "byDates" ? "active" : ""}>
+                                                <button type="button" onClick={() => byClickHandler("byDates")}>
                                                     <Trans>Order By Dates</Trans>
                                                 </button>
                                             </li>
-                                            <li className={by === 'byTournaments' ? 'active' : ''}>
-                                                <button type="button" onClick={() => byClickHandler('byTournaments')}>
+                                            <li className={by === "byTournaments" ? "active" : ""}>
+                                                <button type="button" onClick={() => byClickHandler("byTournaments")}>
                                                     <Trans>Order By Tournaments</Trans>
                                                 </button>
                                             </li>
@@ -136,8 +136,8 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                             </div>
                             <button
                                 type="button"
-                                className={`col col-3 text-right col-nav${nextExist ? '' : ' not-exist'}`}
-                                onClick={() => (nextExist ? getPrevNextData('next') : undefined)}
+                                className={`col col-3 text-right col-nav${nextExist ? "" : " not-exist"}`}
+                                onClick={() => (nextExist ? getPrevNextData("next") : undefined)}
                             >
                                 <Trans>Next</Trans> <Icon name="fas fa-chevron-right" />
                             </button>

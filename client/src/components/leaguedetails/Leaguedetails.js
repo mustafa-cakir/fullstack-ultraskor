@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { Trans, withTranslation } from 'react-i18next';
-import Loading from '../common/Loading';
-import Standings from '../common/Standings';
-import ReactSwipe from 'react-swipe';
-import smoothscroll from 'smoothscroll-polyfill';
-import Footer from '../common/Footer';
-import i18n from 'i18next';
-import { HelperTranslateUrlTo, HelperUpdateMeta } from '../../core/utils/helper';
-import Fixture from './Fixture';
-import Errors from '../common/Errors';
-import TeamOfTheWeek from './TeamOfTheWeek';
+import React, { Component } from "react";
+import { Trans, withTranslation } from "react-i18next";
+import Loading from "../common/Loading";
+import Standings from "../common/Standings";
+import ReactSwipe from "react-swipe";
+import smoothscroll from "smoothscroll-polyfill";
+import Footer from "../common/Footer";
+import i18n from "i18next";
+import { HelperTranslateUrlTo, HelperUpdateMeta } from "../../core/utils/helper";
+import Fixture from "./Fixture";
+import Errors from "../common/Errors";
+import TeamOfTheWeek from "./TeamOfTheWeek";
 
 class Leaguedetails extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class Leaguedetails extends Component {
         this.state = {
             index: this.props.match.params.activeTab ? parseInt(this.props.match.params.activeTab) : 0,
             leagueData: null,
-            isFixtureTabClicked: this.props.match.params.activeTab === '1',
+            isFixtureTabClicked: this.props.match.params.activeTab === "1",
             activeTab: this.props.match.params.activeTab || null,
             isTeamOfTheWeekClicked: false
         };
@@ -75,9 +75,9 @@ class Leaguedetails extends Component {
 
     updateMeta(leagueData) {
         const { t } = this.props;
-        if (i18n.language === 'en') {
-            if (window.location.pathname.split('/')[2] === 'lig')
-                window.location.href = HelperTranslateUrlTo('en', true);
+        if (i18n.language === "en") {
+            if (window.location.pathname.split("/")[2] === "lig")
+                window.location.href = HelperTranslateUrlTo("en", true);
             HelperUpdateMeta({
                 title: `${leagueData.uniqueTournament.name} Standings, League Fixtures, ${leagueData.uniqueTournament.name} Weekly Highlights - UltraSkor`,
                 canonical: window.location.href,
@@ -89,12 +89,12 @@ class Leaguedetails extends Component {
                 )} highlights, ${t(leagueData.uniqueTournament.name)} team of the week, ${t(
                     leagueData.uniqueTournament.name
                 )} top scorers, league stats`,
-                alternate: HelperTranslateUrlTo('tr'),
-                hrefLang: 'tr'
+                alternate: HelperTranslateUrlTo("tr"),
+                hrefLang: "tr"
             });
-        } else if (i18n.language === 'tr') {
-            if (window.location.pathname.split('/')[1] === 'league')
-                window.location.href = HelperTranslateUrlTo('tr', true);
+        } else if (i18n.language === "tr") {
+            if (window.location.pathname.split("/")[1] === "league")
+                window.location.href = HelperTranslateUrlTo("tr", true);
             HelperUpdateMeta({
                 title: `${t(leagueData.uniqueTournament.name)} Puan Durumu, Lig Fikstürü, ${t(
                     leagueData.uniqueTournament.name
@@ -110,18 +110,18 @@ class Leaguedetails extends Component {
                 )} özetleri, ${t(leagueData.uniqueTournament.name)} haftanın takımı, ${t(
                     leagueData.uniqueTournament.name
                 )} gol krallığı`,
-                alternate: HelperTranslateUrlTo('en'),
-                hrefLang: 'en'
+                alternate: HelperTranslateUrlTo("en"),
+                hrefLang: "en"
             });
         }
     }
 
     swipeComplete = (index, el) => {
-        let tab = el.getAttribute('data-tab');
+        let tab = el.getAttribute("data-tab");
 
-        if (tab === 'fixture') {
+        if (tab === "fixture") {
             this.setState({ isFixtureTabClicked: true });
-        } else if (tab === 'team-of-week') {
+        } else if (tab === "team-of-week") {
             this.setState({ isTeamOfTheWeekClicked: true });
         }
     };
@@ -145,27 +145,27 @@ class Leaguedetails extends Component {
             index = index || this.swipeEl.current.getPos();
             let container = this.swipeEl.current.containerEl.firstChild;
             let active = container.childNodes[index];
-            container.style.height = active.offsetHeight + 'px';
+            container.style.height = active.offsetHeight + "px";
         }
     }
 
     swipeMarkerAndScrollHandler() {
         let marker = this.swipeMarkerEl.current,
-            active = document.querySelector('.swipe-tabs .active'),
+            active = document.querySelector(".swipe-tabs .active"),
             tabs = this.swipeTabsEl.current;
 
-        marker.style.width = active.offsetWidth + 'px';
-        marker.style.left = active.offsetLeft + 'px';
+        marker.style.width = active.offsetWidth + "px";
+        marker.style.left = active.offsetLeft + "px";
 
         tabs.scrollTo({
             left: active.offsetLeft - (window.innerWidth - active.offsetWidth) / 2 + 7,
-            behavior: 'smooth'
+            behavior: "smooth"
         });
     }
 
     rippleEffectHandler(e) {
         let el = e.target,
-            rippleEl = document.createElement('span'),
+            rippleEl = document.createElement("span"),
             rect = el.getBoundingClientRect(),
             clientX = e.clientX ? e.clientX : e.touches[0].clientX,
             clientY = e.clientY ? e.clientY : e.touches[0].clientY,
@@ -173,14 +173,14 @@ class Leaguedetails extends Component {
             rippleY = Math.round(clientY - rect.top),
             rippleSize = Math.max(el.offsetWidth, el.offsetHeight);
 
-        rippleEl.className = 'ripple';
+        rippleEl.className = "ripple";
         el.appendChild(rippleEl);
 
-        rippleEl.style.width = rippleSize + 'px';
-        rippleEl.style.height = rippleSize + 'px';
-        rippleEl.style.top = -(rippleSize / 2) + rippleY + 'px';
-        rippleEl.style.left = -(rippleSize / 2) + rippleX + 'px';
-        rippleEl.className += ' rippleEffect';
+        rippleEl.style.width = rippleSize + "px";
+        rippleEl.style.height = rippleSize + "px";
+        rippleEl.style.top = -(rippleSize / 2) + rippleY + "px";
+        rippleEl.style.left = -(rippleSize / 2) + rippleX + "px";
+        rippleEl.className += " rippleEffect";
         setTimeout(() => {
             rippleEl.remove();
         }, 600);
@@ -193,9 +193,9 @@ class Leaguedetails extends Component {
         if (leagueData.error) return <Errors type="error" message={leagueData.error} />;
 
         this.tabs = [
-            ...(leagueData.standingsTables.length > 0 ? [t('LANG_Standing')] : []),
-            t('Fixture'),
-            ...(this.state.leagueData.tournamentInfo.teamOfTheWeek ? [t('Team Of The Week')] : [])
+            ...(leagueData.standingsTables.length > 0 ? [t("LANG_Standing")] : []),
+            t("Fixture"),
+            ...(this.state.leagueData.tournamentInfo.teamOfTheWeek ? [t("Team Of The Week")] : [])
             //t('Player Stats'),
             //t('Top Scorers'),
             //t('Weekly Highlights'),
@@ -210,7 +210,7 @@ class Leaguedetails extends Component {
                                     <li
                                         key={index}
                                         onClick={event => this.swipeTabClick(event, index)}
-                                        className={(this.state.index === index ? 'active' : '') + ' ripple-effect pink'}
+                                        className={(this.state.index === index ? "active" : "") + " ripple-effect pink"}
                                     >
                                         <span>{tab}</span>
                                     </li>
@@ -243,7 +243,7 @@ class Leaguedetails extends Component {
                             />
                         </div>
                     ) : (
-                        ''
+                        ""
                     )}
 
                     <div className="swipe-content fixture" data-tab="fixture">
@@ -255,7 +255,7 @@ class Leaguedetails extends Component {
                                 swipeAdjustHeight={this.swipeAdjustHeight}
                             />
                         ) : (
-                            ''
+                            ""
                         )}
                     </div>
 
@@ -266,7 +266,7 @@ class Leaguedetails extends Component {
                                 swipeAdjustHeight={this.swipeAdjustHeight}
                             />
                         ) : (
-                            ''
+                            ""
                         )}
                     </div>
 
@@ -294,4 +294,4 @@ class Leaguedetails extends Component {
     }
 }
 
-export default withTranslation('translations')(Leaguedetails);
+export default withTranslation("translations")(Leaguedetails);

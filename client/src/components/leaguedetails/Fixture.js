@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import Tournament from '../common/Tournament';
-import Icon from '../common/Icon';
-import { Trans } from 'react-i18next';
-import Loading from '../common/Loading';
-import Errors from '../common/Errors';
+import React, { Component } from "react";
+import Tournament from "../common/Tournament";
+import Icon from "../common/Icon";
+import { Trans } from "react-i18next";
+import Loading from "../common/Loading";
+import Errors from "../common/Errors";
 
 class Fixture extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class Fixture extends Component {
     initGetData(round, name) {
         const { leagueid, seasonid } = this.props.params;
 
-        let api = `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? '/' + name : ''}`;
+        let api = `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? "/" + name : ""}`;
 
         fetch(`/api/?query=${api}&page=leaguedetailsFixture`)
             .then(res => {
@@ -77,7 +77,7 @@ class Fixture extends Component {
 
         if (roundMatches.error) return <Errors type="error" message={roundMatches.error} />;
         const currentRoundIndex = this.props.events.rounds.findIndex(
-            x => x[isNaN(currentRound) ? 'name' : 'round'] === currentRound
+            x => x[isNaN(currentRound) ? "name" : "round"] === currentRound
         );
         const prevRound = this.props.events.rounds[currentRoundIndex - 1];
         const nextRound = this.props.events.rounds[currentRoundIndex + 1];
@@ -88,15 +88,15 @@ class Fixture extends Component {
                     <div className="px-3">
                         <div className="row heading align-items-center">
                             <div
-                                className={'col col-3 col-nav ' + (!prevRound ? 'not-exist' : '')}
-                                onClick={() => (prevRound ? this.roundClicked(prevRound) : '')}
+                                className={"col col-3 col-nav " + (!prevRound ? "not-exist" : "")}
+                                onClick={() => (prevRound ? this.roundClicked(prevRound) : "")}
                             >
                                 <Icon name="fas fa-chevron-left" /> <Trans>Prev</Trans>
                             </div>
                             <div className="col px-0 col-6 text-center col-dropdown">
                                 <div
                                     onClick={() => this.setState({ isDropdown: !this.state.isDropdown })}
-                                    className={'pure-dropdown' + (this.state.isDropdown ? ' open' : '')}
+                                    className={"pure-dropdown" + (this.state.isDropdown ? " open" : "")}
                                 >
                                     {roundName ? (
                                         <Trans>{roundName}</Trans>
@@ -105,7 +105,7 @@ class Fixture extends Component {
                                             {currentRound}
                                             <Trans>th Week</Trans>
                                         </span>
-                                    )}{' '}
+                                    )}{" "}
                                     <Icon name="fas fa-caret-down" />
                                     <div className="dropdown">
                                         <ul>
@@ -127,8 +127,8 @@ class Fixture extends Component {
                                                     <li
                                                         key={index}
                                                         className={
-                                                            (isActive ? 'active' : '') +
-                                                            (isThisTournament ? ' this-round' : '')
+                                                            (isActive ? "active" : "") +
+                                                            (isThisTournament ? " this-round" : "")
                                                         }
                                                         onClick={() => this.roundClicked(round)}
                                                     >
@@ -148,15 +148,15 @@ class Fixture extends Component {
                                 </div>
                             </div>
                             <div
-                                className={'col col-3 text-right col-nav ' + (!nextRound ? 'not-exist' : '')}
-                                onClick={() => (nextRound ? this.roundClicked(nextRound) : '')}
+                                className={"col col-3 text-right col-nav " + (!nextRound ? "not-exist" : "")}
+                                onClick={() => (nextRound ? this.roundClicked(nextRound) : "")}
                             >
                                 <Trans>Next</Trans> <Icon name="fas fa-chevron-right" />
                             </div>
                         </div>
                     </div>
                     <div className="fixture-list position-relative">
-                        {loading ? <Loading type="inside" /> : ''}
+                        {loading ? <Loading type="inside" /> : ""}
                         <Tournament tournaments={roundMatches.tournaments} from="fixture" selected="h2h" />
                     </div>
                 </div>
