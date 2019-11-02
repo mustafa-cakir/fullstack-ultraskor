@@ -31,4 +31,10 @@ io.on('connection', socket => {
     socketService.init(socket, io);
 });
 
+setTimeout(() => {
+    console.log('## CacheData for Juventus');
+    const cachedData = cacheService.instance().get('/topics/match_us1897338');
+    console.log('## CacheData for Juventus: ', cachedData);
+}, 5000);
+
 server.listen(5001, () => console.log(`Listening on port ${5001}`));

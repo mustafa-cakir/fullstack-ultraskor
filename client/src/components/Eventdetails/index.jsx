@@ -77,17 +77,20 @@ const Eventdetails = ({ t, i18n, socket }) => {
         });
     }, []);
 
-    const onSocketReturnPushServiceData = useCallback(res => {
-        if (!res || res.event.id !== eventid || !refData.current) return false;
-        const oldEvent = refData.current.event;
-        const newEvent = { ...oldEvent, ...res.event };
-        const newData = update(refData.current, { event: { $set: newEvent } });
-        refData.current = newData;
-        setState({
-            data: newData
-        });
-        return false;
-    }, []);
+    const onSocketReturnPushServiceData = useCallback(
+        res => {
+            if (!res || res.event.id !== eventid || !refData.current) return false;
+            const oldEvent = refData.current.event;
+            const newEvent = { ...oldEvent, ...res.event };
+            const newData = update(refData.current, { event: { $set: newEvent } });
+            refData.current = newData;
+            setState({
+                data: newData
+            });
+            return false;
+        },
+        [eventid]
+    );
 
     const initSocket = useCallback(() => {
         socket.on('disconnect', onSocketDisconnect);
