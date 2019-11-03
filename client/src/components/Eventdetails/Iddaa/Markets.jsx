@@ -4,7 +4,7 @@ import { marketsPlaceholder } from "../../../core/utils/helper";
 
 const Markets = ({ markets }) => {
     const marketsData = markets && markets.length > 0 ? markets : marketsPlaceholder;
-    marketsData.sort((a, b) => (a.muk > b.muk ? -1 : 1));
+    marketsData.sort((a, b) => (a.muk < b.muk ? -1 : 1));
 
     return marketsData.map(market => {
         return (
