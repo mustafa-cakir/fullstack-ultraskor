@@ -1,5 +1,6 @@
 const WebSocket = require("ws");
 const SocksProxyAgent = require("socks-proxy-agent");
+const { newTor } = require("./newTorSession.service");
 const { simplifyWebSocketData, isDev } = require("../utils");
 const { pushServiceChangesForWebPush } = require("./cronjob.service");
 
@@ -50,9 +51,20 @@ const init = io => {
 
     ws.on("close", err => {
         console.log("ws disconnected. ", err);
-        if (wsMaxRetry > 0) init();
-        clearInterval(swTimeout);
-        wsMaxRetry -= 1;
+        if (wsMaxRetry > 0) {
+            setTimeout(() => {
+                // wait 15 seconds and try again after refreshing tor session
+                newTor()
+                    .then(() => {
+                        if (isDev) console.log("Retry connecting to WebSocket");
+                        clearInterval(swTimeout);
+                        init();
+                    })
+                    .catch(() => {
+                        wsMaxRetry -= 1;
+                    });
+            }, 15000);
+        }
     });
 
     // ws.on('pong', () => {
