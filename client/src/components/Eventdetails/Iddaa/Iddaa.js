@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react';
-import IddaLogo from '../../../assets/images/icon-iddaa.png';
-import IddaLogo2 from '../../../assets/images/icon-iddaa2.png';
-import { Trans, withTranslation } from 'react-i18next';
-import Icon from '../../common/Icon';
-import Loading from '../../common/Loading';
-import { lockedOddsPlaceholder, marketGroups } from '../../../core/utils/helper';
+import React, { PureComponent } from "react";
+import IddaLogo from "../../../assets/images/icon-iddaa.png";
+import IddaLogo2 from "../../../assets/images/icon-iddaa2.png";
+import { Trans, withTranslation } from "react-i18next";
+import Icon from "../../common/Icon";
+import Loading from "../../common/Loading";
+import { marketsPlaceholder, marketGroups } from "../../../core/utils/helper";
 
 class Iddaa extends PureComponent {
     constructor(props) {
@@ -15,7 +15,7 @@ class Iddaa extends PureComponent {
             isDropdown: false,
             selectedGroup: {
                 id: 1,
-                name: 'All Bets',
+                name: "All Bets",
                 priority: 1,
                 markets: []
             },
@@ -43,7 +43,7 @@ class Iddaa extends PureComponent {
     initGetIddaaOdds = () => {
         fetch(
             `/api/iddaaOdds/${this.props.iddaaMatchData.eid}${
-                this.props.eventData.event.status.type === 'inprogress' ? '/live' : ''
+                this.props.eventData.event.status.type === "inprogress" ? "/live" : ""
             }`
         )
             .then(res => {
@@ -61,13 +61,13 @@ class Iddaa extends PureComponent {
                     ...((!res.m || res.m.length === 0) && {
                         selectedGroup: {
                             id: 1,
-                            name: 'All Bets',
+                            name: "All Bets",
                             priority: 1,
                             markets: []
                         }
                     })
                 });
-                if (this.props.eventData.event.status.type === 'inprogress' && res.min) {
+                if (this.props.eventData.event.status.type === "inprogress" && res.min) {
                     this.timeout = setTimeout(() => {
                         this.initGetIddaaOdds();
                     }, 15000);
@@ -117,23 +117,23 @@ class Iddaa extends PureComponent {
                     <div className="white-box mt-2 pb-2">
                         <ul className="horizontal-tab">
                             <li
-                                className={this.state.tabIndex === 0 ? 'active' : ''}
+                                className={this.state.tabIndex === 0 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(0)}
                             >
                                 <span>
                                     <img src={IddaLogo} className="tab-logo" alt="Iddaa Analiz, Bahis Analiz" />
-                                    <Trans>Iddaa Odds</Trans>{' '}
+                                    <Trans>Iddaa Odds</Trans>{" "}
                                     {iddaaFullMarketData && iddaaFullMarketData.m && (
                                         <em>({iddaaFullMarketData.m.length})</em>
                                     )}
                                 </span>
                             </li>
                             <li
-                                className={this.state.tabIndex === 1 ? 'active' : ''}
+                                className={this.state.tabIndex === 1 ? "active" : ""}
                                 onClick={() => this.tabSwitcherHandler(1)}
                             >
                                 <span>
-                                    <img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari" />{' '}
+                                    <img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari" />{" "}
                                     <Trans>Iddaa Analyze</Trans>
                                 </span>
                             </li>
@@ -151,7 +151,7 @@ class Iddaa extends PureComponent {
                                                         {iddaaFullMarketData.m && iddaaFullMarketData.m.length > 0 && (
                                                             <div
                                                                 className={
-                                                                    'pure-dropdown' + (isDropdown ? ' open' : '')
+                                                                    "pure-dropdown" + (isDropdown ? " open" : "")
                                                                 }
                                                                 onClick={() =>
                                                                     this.setState({ isDropdown: !isDropdown })
@@ -171,8 +171,8 @@ class Iddaa extends PureComponent {
                                                                                     className={
                                                                                         group.name ===
                                                                                         selectedGroup.name
-                                                                                            ? 'active this-round'
-                                                                                            : ''
+                                                                                            ? "active this-round"
+                                                                                            : ""
                                                                                     }
                                                                                     onClick={() =>
                                                                                         this.clickGroupHandler(group)
@@ -191,10 +191,10 @@ class Iddaa extends PureComponent {
                                                         )}
                                                     </div>
                                                     <div className="col">
-                                                        {eventData.event.status.type === 'inprogress' &&
+                                                        {eventData.event.status.type === "inprogress" &&
                                                             iddaaFullMarketData.min && (
                                                                 <div className="iddaa-live-text">
-                                                                    <span className="live-pulse" />{' '}
+                                                                    <span className="live-pulse" />{" "}
                                                                     <Trans>Live Iddaa Odds</Trans>
                                                                 </div>
                                                             )}
@@ -215,7 +215,7 @@ class Iddaa extends PureComponent {
                                 )}
                             </div>
                         ) : (
-                            ''
+                            ""
                         )}
                         {this.state.tabIndex === 1 ? (
                             <MatchTextInfo
@@ -223,14 +223,14 @@ class Iddaa extends PureComponent {
                                 swipeAdjustHeight={this.props.swipeAdjustHeight}
                             />
                         ) : (
-                            ''
+                            ""
                         )}
                         {this.state.tabIndex === 2 ? (
                             <div className="iddaa-notfound">
                                 <Trans>Coming soon</Trans>.
                             </div>
                         ) : (
-                            ''
+                            ""
                         )}
                     </div>
                 </div>
@@ -258,7 +258,7 @@ const IddaaContainer = props => {
     let markets = selectedGroup && selectedGroup.id > 1 ? m.filter(x => selectedGroup.markets.indexOf(x.muk) > -1) : m;
 
     if (markets.length === 0) {
-        markets = lockedOddsPlaceholder;
+        markets = marketsPlaceholder;
     }
 
     return markets.map(market => {
@@ -268,7 +268,7 @@ const IddaaContainer = props => {
                 <div className="col col-labels">
                     <div className="row m-0">
                         <div className="col col-mbs p-0">
-                            <span className={'mbs mbs-' + mbs}>{mbs}</span>
+                            <span className={"mbs mbs-" + mbs}>{mbs}</span>
                         </div>
                         <div className="col p-0"> {market.mn}</div>
                     </div>
@@ -279,13 +279,13 @@ const IddaaContainer = props => {
                             return (
                                 <div
                                     key={odd.ov || Math.random()}
-                                    className={`col${market.o.length > 4 ? ' col-4' : ''}
-								        ${odd.locked ? ' locked' : ''}`}
+                                    className={`col${market.o.length > 4 ? " col-4" : ""}
+								        ${odd.locked ? " locked" : ""}`}
                                 >
                                     <span>{odd.ona}</span>
                                     {odd.locked && <i className="fas fa-lock" />}
                                     {odd.lock}
-                                    {odd.odd > 1 ? odd.odd.toFixed(2) : '-'}
+                                    {odd.odd > 1 ? odd.odd.toFixed(2) : "-"}
                                 </div>
                             );
                         })}
@@ -324,12 +324,12 @@ class MatchTextInfo extends PureComponent {
             );
         }
         let generalInfo = matchTextInfo.textList.filter(item => {
-            return item.smartType === 'SmartList' || item.smartType === 'Smartist';
+            return item.smartType === "SmartList" || item.smartType === "Smartist";
         });
 
         if (generalInfo.length === 0) {
             generalInfo = matchTextInfo.textList.filter(item => {
-                return item.textGroupName !== 'Ev Sahibi Takım' && item.textGroupName !== 'Misafir Takım';
+                return item.textGroupName !== "Ev Sahibi Takım" && item.textGroupName !== "Misafir Takım";
             });
         }
 
@@ -337,8 +337,8 @@ class MatchTextInfo extends PureComponent {
             <div className="match-text-info">
                 {generalInfo.map((item, index) => (
                     <React.Fragment key={index}>
-                        <p className={index >= 4 && !this.state.showMore ? 'd-none' : ''}>
-                            {item.textTitle ? <strong>{item.textTitle}</strong> : ''}
+                        <p className={index >= 4 && !this.state.showMore ? "d-none" : ""}>
+                            {item.textTitle ? <strong>{item.textTitle}</strong> : ""}
                             <Icon name="fa fa-angle-right" /> {item.textValue}
                         </p>
                         {index === 4 && !this.state.showMore ? (
@@ -346,7 +346,7 @@ class MatchTextInfo extends PureComponent {
                                 <Trans>Show More</Trans> <Icon name="fa fa-angle-down" />
                             </div>
                         ) : (
-                            ''
+                            ""
                         )}
                     </React.Fragment>
                 ))}
@@ -355,4 +355,4 @@ class MatchTextInfo extends PureComponent {
     }
 }
 
-export default withTranslation('translations')(Iddaa);
+export default withTranslation("translations")(Iddaa);

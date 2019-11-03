@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import Loading from './Loading';
-import { Trans } from 'react-i18next';
-import { withTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { generateSlug } from '../../core/utils/helper';
+import React, { Component } from "react";
+import Loading from "./Loading";
+import { Trans } from "react-i18next";
+import { withTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { generateSlug } from "../../core/utils/helper";
 
 class Standings extends Component {
     constructor(props) {
         super(props);
         this.state = {
             standingsTables: this.props.standingsTables,
-            tab: 'Total'
+            tab: "Total"
         };
     }
 
@@ -25,7 +25,7 @@ class Standings extends Component {
         const { t } = this.props;
         if (!standingsTables) return <Loading />;
         const tabLower = tab.toLowerCase();
-        let positionLabel = tab === 'Home' ? 'homePosition' : tab === 'Away' ? 'awayPosition' : 'position';
+        let positionLabel = tab === "Home" ? "homePosition" : tab === "Away" ? "awayPosition" : "position";
         return (
             <div>
                 {standingsTables.map((standingsTable, index) => {
@@ -40,9 +40,9 @@ class Standings extends Component {
                                         <img
                                             src={
                                                 window.ImageServer +
-                                                '/images/u-tournament/' +
+                                                "/images/u-tournament/" +
                                                 standingsTable.tournament.uniqueId +
-                                                '.png'
+                                                ".png"
                                             }
                                             alt={t(standingsTable.tournament.name)}
                                         />
@@ -58,29 +58,29 @@ class Standings extends Component {
                                             <Trans>Live Table!</Trans>!
                                         </div>
                                     ) : (
-                                        ''
+                                        ""
                                     )}
                                 </div>
                                 <ul className="horizontal-tab mt-4 mb-1">
                                     <li
-                                        className={tab === 'Total' ? 'active' : ''}
-                                        onClick={() => this.tabSwitcherHandler('Total')}
+                                        className={tab === "Total" ? "active" : ""}
+                                        onClick={() => this.tabSwitcherHandler("Total")}
                                     >
                                         <span>
                                             <Trans>Overall</Trans>
                                         </span>
                                     </li>
                                     <li
-                                        className={tab === 'Home' ? 'active' : ''}
-                                        onClick={() => this.tabSwitcherHandler('Home')}
+                                        className={tab === "Home" ? "active" : ""}
+                                        onClick={() => this.tabSwitcherHandler("Home")}
                                     >
                                         <span>
                                             <Trans>Home</Trans>
                                         </span>
                                     </li>
                                     <li
-                                        className={tab === 'Away' ? 'active' : ''}
-                                        onClick={() => this.tabSwitcherHandler('Away')}
+                                        className={tab === "Away" ? "active" : ""}
+                                        onClick={() => this.tabSwitcherHandler("Away")}
                                     >
                                         <span>
                                             <Trans>Away</Trans>
@@ -117,17 +117,17 @@ class Standings extends Component {
                                                 return (
                                                     <tr
                                                         key={index}
-                                                        className={row.isLive ? 'live-game ' + row.liveMatchStatus : ''}
+                                                        className={row.isLive ? "live-game " + row.liveMatchStatus : ""}
                                                     >
                                                         <td
                                                             className={
-                                                                'order ' +
+                                                                "order " +
                                                                 (row.promotion && standingsTable.promotionsColoring
-                                                                    ? 'promotion ' +
+                                                                    ? "promotion " +
                                                                       standingsTable.promotionsColoring[
                                                                           row.promotion.id
                                                                       ].class
-                                                                    : '')
+                                                                    : "")
                                                             }
                                                         >
                                                             <span>{row.position}</span>
@@ -135,13 +135,13 @@ class Standings extends Component {
                                                         <td className="team-logo">
                                                             <Link
                                                                 to={{
-                                                                    pathname: `/${t('team')}/${generateSlug(
+                                                                    pathname: `/${t("team")}/${generateSlug(
                                                                         t(row.team.shortName)
                                                                     )}-${row.team.id}`,
                                                                     state: { isPrev: true }
                                                                 }}
                                                                 title={`${t(row.team.shortName)} - ${t(
-                                                                    'Fixtures, highlights and standings, click for more'
+                                                                    "Fixtures, highlights and standings, click for more"
                                                                 )}`}
                                                             >
                                                                 <img
@@ -153,13 +153,13 @@ class Standings extends Component {
                                                         <td className="team">
                                                             <Link
                                                                 to={{
-                                                                    pathname: `/${t('team')}/${generateSlug(
+                                                                    pathname: `/${t("team")}/${generateSlug(
                                                                         t(row.team.shortName)
                                                                     )}-${row.team.id}`,
                                                                     state: { isPrev: true }
                                                                 }}
                                                                 title={`${t(row.team.shortName)} - ${t(
-                                                                    'Fixtures, highlights and standings, click for more'
+                                                                    "Fixtures, highlights and standings, click for more"
                                                                 )}`}
                                                             >
                                                                 <span className="line-clamp team-name">
@@ -199,4 +199,4 @@ class Standings extends Component {
     }
 }
 
-export default withTranslation('translations')(Standings);
+export default withTranslation("translations")(Standings);

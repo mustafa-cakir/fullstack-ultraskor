@@ -18,6 +18,8 @@ import Lineups from "./Lineups";
 import Injuries from "./Injuries";
 import Standings from "./Standings";
 import UpdateMetaEventdetails from "../../core/utils/updatemeta/eventdetails";
+import Iddaa from "./Iddaa";
+import iddaaIcon from "../../assets/images/icon-iddaa.png";
 
 const Eventdetails = ({ t, i18n, socket }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -26,13 +28,28 @@ const Eventdetails = ({ t, i18n, socket }) => {
         data: null,
         error: null,
         isLoading: true,
-        swiper: null
+        swiper: null,
+        iddaaData: null
     });
     const { language } = i18n;
-    const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
+    const { tabIndex, clickedTabIndex, data, error, isLoading, swiper, iddaaData } = state;
     const refData = useRef(data);
     const params = useParams();
     const { eventid } = params;
+
+    const getIddaaData = useCallback((ids, event) => {
+        const isLive = event.status.type === "inprogress";
+        axios
+            .get(`/api/iddaa/match/${ids.id_i}${isLive ? "/live" : ""}`)
+            .then(res => {
+                setState({
+                    iddaaData: res.data ? res.data : null
+                });
+            })
+            .catch(() => {
+                // do nothing
+            });
+    }, []);
 
     const getData = useCallback(() => {
         setState({
@@ -51,6 +68,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
                     isLoading: false,
                     error: null
                 });
+                const { ids, event } = res.data;
+                if (ids && ids.id_i) getIddaaData(ids, event);
                 UpdateMetaEventdetails(res.data);
             })
             .catch(err => {
@@ -59,7 +78,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
                     isLoading: false
                 });
             });
-    }, [eventid, language]);
+    }, [eventid, getIddaaData, language]);
 
     useEffect(() => {
         getData();
@@ -112,7 +131,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     const updateAutoHeight = useCallback(() => {
         setTimeout(() => {
             swiper.updateAutoHeight();
-        });
+        }, 300);
     }, [swiper]);
 
     if (error) return <Errors message={error} />;
@@ -133,7 +152,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
         Component: Summary,
         props: {
             data,
-            swipeByTabId
+            swipeByTabId,
+            iddaaData
         }
     });
 
@@ -180,6 +200,25 @@ const Eventdetails = ({ t, i18n, socket }) => {
             }
         });
 
+    console.log(iddaaData);
+
+    if (iddaaData)
+        slides.push({
+            id: 5,
+            label: (
+                <>
+                    <img src={iddaaIcon} alt="iddaa" /> {t("Iddaa Odds")}
+                </>
+            ),
+            Component: Iddaa,
+            props: {
+                iddaaData,
+                textList,
+                updateAutoHeight,
+                isLive
+            }
+        });
+
     if (teams)
         slides.push({
             id: 6,
@@ -195,7 +234,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
 
     if (isStanding)
         slides.push({
-            id: 5,
+            id: 7,
             label: t("Standing"),
             Component: Standings,
             props: {

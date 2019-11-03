@@ -1471,7 +1471,14 @@ footer {
 }
 
 .MuiTabs-root {
-
+	.MuiTab-wrapper {
+		flex-direction: row;
+		img {
+			width: 20px;
+			height: 20px;
+			margin-right: 5px;
+		}
+	}
 }
 
 .MuiTab-root.MuiButtonBase-root{

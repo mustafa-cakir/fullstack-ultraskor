@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import i18n from 'i18next';
-import { HelperTranslateUrlTo } from '../../core/utils/helper';
+import React, { Component } from "react";
+import i18n from "i18next";
+import { HelperTranslateUrlTo } from "../../core/utils/helper";
 
 class LanguageSwitcher extends Component {
     render() {
@@ -9,18 +9,18 @@ class LanguageSwitcher extends Component {
         return (
             <div className="language-switcher">
                 <a
-                    href={HelperTranslateUrlTo('tr')}
-                    className={'btn ' + (language === 'tr' ? 'active' : '')}
+                    href={HelperTranslateUrlTo("tr")}
+                    className={"btn " + (language === "tr" ? "active" : "")}
                     alt="Dili Türkçe'ye çevirebilirsiniz"
                 >
-                    {type === 'small' ? 'Tr' : 'Türkçe'}
+                    {type === "small" ? "Tr" : "Türkçe"}
                 </a>
                 <a
-                    href={HelperTranslateUrlTo('en')}
-                    className={'btn ' + (language === 'en' ? 'active' : '')}
+                    href={HelperTranslateUrlTo("en")}
+                    className={"btn " + (language === "en" ? "active" : "")}
                     alt="Change language to English"
                 >
-                    {type === 'small' ? 'En' : 'English'}
+                    {type === "small" ? "En" : "English"}
                 </a>
             </div>
         );

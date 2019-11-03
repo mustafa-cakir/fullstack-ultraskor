@@ -1,12 +1,12 @@
-const tor = require('tor-request');
-const cloudscraper = require('cloudscraper');
-const Agent = require('socks5-https-client/lib/Agent');
-const cacheService = require('../services/cache.service');
-const { isDev } = require('../utils');
+const tor = require("tor-request");
+const cloudscraper = require("cloudscraper");
+const Agent = require("socks5-https-client/lib/Agent");
+const cacheService = require("../services/cache.service");
+const { isDev } = require("../utils");
 
-tor.TorControlPort.password = 'muztafultra';
+tor.TorControlPort.password = "muztafultra";
 
-module.exports = (options, resolve, reject, cache, isTor) => {
+module.exports = (options, resolve, reject, cache, isTor = false) => {
     const onSuccess = response => {
         if (cache && response) {
             cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
@@ -15,16 +15,16 @@ module.exports = (options, resolve, reject, cache, isTor) => {
         resolve(response);
     };
     const onError = err => {
-        reject(Error(isDev ? err : '501'));
+        reject(Error(isDev ? err : "501"));
     };
 
     const remoteRequest = () => {
-        if (isDev) console.log('--> Fetch init: ', options.uri);
+        if (isDev) console.log("--> Fetch init: ", options.uri);
         if (isTor) {
-            if (isDev) console.log('cloudscraper request using tor');
+            if (isDev) console.log("cloudscraper request using tor");
             options.agentClass = Agent;
             options.agentOptions = {
-                socksHost: 'localhost',
+                socksHost: "localhost",
                 socksPort: 9050
             };
         }

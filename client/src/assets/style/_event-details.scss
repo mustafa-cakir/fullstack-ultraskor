@@ -545,12 +545,16 @@
 		}
 	}
 	.pre-iddaa{
-		padding-bottom: 15px;
+		margin: 25px 0;
 		.title-logo {
 			max-height: 20px;
 		}
 		.item {
-			margin: 10px 0;
+			margin: 0 0 5px;
+			border-bottom: 1px solid #eee;
+			background: rgba(1,1,1,.05);
+			padding: 5px 5px 0 10px;
+			border-radius: 4px;
 		}
 		.col-mbs {
 			max-width: 16px;
@@ -559,7 +563,11 @@
 		.item-title {
 			font-size: 1rem;
 		}
+		&-container {
+			margin-top: 15px;
+		}
 		&-link {
+			width: 100%;
 			cursor: pointer;
 			font-weight: 700;
 			font-size: .7rem;
@@ -574,13 +582,14 @@
 			margin: 0;
 			.col {
 				//max-width: 70px;
-				padding: 0 5px;
+				padding: 0 0 0 4px
 			}
 			.odd-box {
 				align-items: center;
 				cursor: pointer;
 				display: flex;
 				flex-direction: column;
+				margin-bottom: 5px;
 				div {
 					padding: 3px 5px;
 					align-items: center;
@@ -599,7 +608,11 @@
 				&-value {
 					font-weight: bolder;
 					background-color: rgba(0,0,0,.2);
-					border-radius: 0 0 4px 4px
+					border-radius: 0 0 4px 4px;
+					i {
+						color: #999;
+						margin: 5px 0;
+					}
 				}
 			}
 			//.col {
@@ -655,6 +668,7 @@
 			text-align: center;
 		}
 		.iddaa-live-text {
+			font-weight: normal;
 			text-align: right;
 			color: #c1272d;
 		}
