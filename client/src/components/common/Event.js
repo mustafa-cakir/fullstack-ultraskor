@@ -261,8 +261,9 @@ class Event extends Component {
                         onClick={this.favClickHandler.bind(this)}
                     >
                         {favEventLoading ? <Icon name="fas fa-spinner fav-loading" /> : ""}
-                        {(favContainer || favActive) && <Icon name="fas fa-star active" />}
-                        {!favContainer && favActive && event.status.type !== "finished" && <Icon name="far fa-star" />}
+                        {(favContainer || favActive || event.status.type !== "finished") && (
+                            <Icon name={`fa-star${favContainer || favActive ? " fas active" : " far"}`} />
+                        )}
                     </div>
                 )}
             </div>
