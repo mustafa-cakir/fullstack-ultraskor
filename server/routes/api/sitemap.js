@@ -205,10 +205,7 @@ router.get("/matches/:year/:month/:day", (req, res) => {
                 tournaments.forEach(tournament => {
                     tournament.events.forEach(event => {
                         // let startTime = moment.unix(event.startTimestamp).utc().utcOffset('+0300').format();
-                        const finishTimeUTC = moment
-                            .unix(event.startTimestamp)
-                            .utc()
-                            .utcOffset("+0300")
+                        const finishTimeUTC = moment(event.startTimestamp)
                             .add(90, "minutes")
                             .format();
 
