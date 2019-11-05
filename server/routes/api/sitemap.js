@@ -212,7 +212,7 @@ router.get("/matches/:year/:month/:day", (req, res) => {
                             .add(90, "minutes")
                             .format();
 
-                        const notStartedYet = event.status.type !== 100;
+                        const notStartedYet = event.status.code !== 100;
                         const differenceDays = Math.abs(
                             moment(moment().unix(), "X").diff(moment(event.startTimestamp / 1000, "X"), "days")
                         );
