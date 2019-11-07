@@ -1,7 +1,7 @@
 import React from "react";
 import i18n from "i18next";
 import moment from "moment";
-import AdSense from "react-adsense";
+// import AdSense from "react-adsense";
 import PressureGraph from "../PressureGraph";
 import Bestplayer from "../BestPlayer";
 import PreIddaa from "../Preiddaa";
@@ -21,15 +21,15 @@ const Summary = ({ data, iddaaData, swipeByTabId }) => {
                         <PressureGraph event={event} />
                         <Bestplayer event={event} swipeByTabId={swipeByTabId} />
 
-                        <div className="my-3">
-                            <AdSense.Google
-                                client="ca-pub-6710014394558585"
-                                slot="8431699183"
-                                style={{ display: "block", textAlign: "center" }}
-                                layout="in-article"
-                                format="fluid"
-                            />
-                        </div>
+                        {/*<div className="my-3">*/}
+                        {/*    <AdSense.Google*/}
+                        {/*        client="ca-pub-6710014394558585"*/}
+                        {/*        slot="8431699183"*/}
+                        {/*        style={{ display: "block", textAlign: "center" }}*/}
+                        {/*        layout="in-article"*/}
+                        {/*        format="fluid"*/}
+                        {/*    />*/}
+                        {/*</div>*/}
 
                         {iddaaData && <PreIddaa isLive={isLive} iddaaData={iddaaData} swipeByTabId={swipeByTabId} />}
                         <Incidents incidents={event.incidents} />

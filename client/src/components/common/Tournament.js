@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Trans, withTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import AdSense from "react-adsense";
+// import AdSense from "react-adsense";
 import { generateSlug, flagImg, updateQueryString, storeScrollY } from "../../core/utils/helper";
 import Event from "./Event";
 
@@ -120,15 +120,15 @@ class Tournament extends Component {
                                     />
                                 );
                             })}
-                            {page === "homepage" && tournamentCount === 2 && (
-                                <AdSense.Google
-                                    client="ca-pub-6710014394558585"
-                                    slot="6963275666"
-                                    style={{ display: "block" }}
-                                    layoutKey="-fb+5w+4e-db+86"
-                                    format="fluid"
-                                />
-                            )}
+                            {/*{page === "homepage" && tournamentCount === 2 && (*/}
+                            {/*    <AdSense.Google*/}
+                            {/*        client="ca-pub-6710014394558585"*/}
+                            {/*        slot="6963275666"*/}
+                            {/*        style={{ display: "block" }}*/}
+                            {/*        layoutKey="-fb+5w+4e-db+86"*/}
+                            {/*        format="fluid"*/}
+                            {/*    />*/}
+                            {/*)}*/}
                         </React.Fragment>
                     ) : (
                         ""
