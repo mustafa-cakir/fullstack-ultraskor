@@ -350,5 +350,7 @@
     "Next": "İleri",
     "Contract Since": "Kontrat Başlangıcı",
     "No Favorited Match": "Favorilerde hiç bir maç yok",
-    "Please uncheck the favorıtes filter to add match to your favorites list.": "Favoriler filtresini kaldirarak favorilerim listenize maç ekleyebilirsiniz."
+    "Please uncheck the favorıtes filter to add match to your favorites list.": "Favoriler filtresini kaldirarak favorilerim listenize maç ekleyebilirsiniz.",
+    "Match Results, Stats, Live Scores, Match Lineups and Weekend Highlights": "Maç Sonuçları, Canlı Skorlar, Iddaa Bülteni, Maç Kadroları ve Maç Özetleri için tıklayın",
+    "UltraSkor - Live Scores": "UltraSkor - Canlı Skorlar"
 }

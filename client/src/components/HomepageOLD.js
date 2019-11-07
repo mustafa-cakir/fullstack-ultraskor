@@ -14,8 +14,7 @@ import {
     HelperTranslateUrlTo,
     getQueryStringFromUrl,
     restoreScrollY,
-    prepareRes,
-    trackPage
+    prepareRes
 } from "../core/utils/helper";
 import RedScoreBoard from "./common/RedScoreBar";
 import FavTournament from "./common/FavTournament";
@@ -65,7 +64,6 @@ class HomepageOLD extends Component {
         this.once = true;
         this.redScoreBarTimer = null;
         const page = location.pathname;
-        trackPage(page);
         this.initSocket();
     }
 

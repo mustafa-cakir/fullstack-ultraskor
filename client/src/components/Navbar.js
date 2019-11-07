@@ -149,12 +149,17 @@ class Navbar extends Component {
                             </div>
                         </div>
                         <div className="col text-center">
-                            <img src={logo} className="logo" alt="Canli Skor" />
-                            <h1 className="header-title pl-0">
-                                <Link to="/" title="Canli Skor" onClick={scrollTopOnClick}>
+                            <a
+                                href="/"
+                                className="header-logo"
+                                title={t("Match Results, Stats, Live Scores, Match Lineups and Weekend Highlights")}
+                                onClick={scrollTopOnClick}
+                            >
+                                <img src={logo} className="logo" alt={t("UltraSkor - Live Scores")} />
+                                <div className="header-title pl-0">
                                     <strong>ultra</strong>skor.com
-                                </Link>
-                            </h1>
+                                </div>
+                            </a>
                         </div>
                         <div className="col col-search px-0">
                             <button className="header-btn" onClick={this.toggleSearchBar}>

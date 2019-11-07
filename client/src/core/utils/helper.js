@@ -1,5 +1,4 @@
 import React from "react";
-import ReactGA from "react-ga";
 
 class TranslateUrlHandler {
     constructor() {
@@ -561,13 +560,6 @@ export const prepareRes = res => {
     // }
 
     return tournaments;
-};
-
-export const trackPage = page => {
-    ReactGA.set({
-        page
-    });
-    ReactGA.pageview(page);
 };
 
 export const appendValueToArray = (arr, value) => {

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
-import ReactGA from "react-ga";
 import socketIOClient from "socket.io-client";
 import Navbar from "../components/Navbar";
 import routes from "./routes";
@@ -8,8 +7,6 @@ import ErrorBoundary from "./ErrorBoundary";
 import Error from "../components/common/Error";
 import "../assets/style/app.scss";
 import PullToRefresh from "../components/common/PullToRefresh";
-
-ReactGA.initialize("UA-132328627-1");
 
 const Root = () => {
     const socket = socketIOClient.connect(window.location.origin.replace("3000", "5001"), {

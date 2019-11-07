@@ -20,6 +20,7 @@ import Standings from "./Standings";
 import UpdateMetaEventdetails from "../../core/utils/updatemeta/eventdetails";
 import Iddaa from "./Iddaa";
 import iddaaIcon from "../../assets/images/icon-iddaa.png";
+import RefreshButton from "../common/RefreshButton";
 
 const Eventdetails = ({ t, i18n, socket }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -27,12 +28,13 @@ const Eventdetails = ({ t, i18n, socket }) => {
         clickedTabIndex: [0],
         data: null,
         error: null,
+        refreshButton: false,
         isLoading: true,
         swiper: null,
         iddaaData: null
     });
     const { language } = i18n;
-    const { tabIndex, clickedTabIndex, data, error, isLoading, swiper, iddaaData } = state;
+    const { tabIndex, clickedTabIndex, data, error, refreshButton, isLoading, swiper, iddaaData } = state;
     const refData = useRef(data);
     const params = useParams();
     const { eventid } = params;
@@ -90,12 +92,6 @@ const Eventdetails = ({ t, i18n, socket }) => {
         refData.current = data;
     }, [data]);
 
-    const onSocketDisconnect = useCallback(() => {
-        setState({
-            refreshButton: true
-        });
-    }, []);
-
     const onSocketReturnPushServiceData = useCallback(
         res => {
             if (!res || res.event.id !== eventid || !refData.current) return false;
@@ -111,6 +107,24 @@ const Eventdetails = ({ t, i18n, socket }) => {
         [eventid]
     );
 
+    const onSocketConnect = useCallback(() => {
+        console.log("on connected!");
+        getData();
+        setState({
+            refreshButton: false
+        });
+        socket.on("push-service", onSocketReturnPushServiceData);
+    }, [getData, socket, onSocketReturnPushServiceData]);
+
+    const onSocketDisconnect = useCallback(() => {
+        socket.removeListener("connect", onSocketConnect);
+        socket.on("connect", onSocketConnect);
+        socket.removeListener("push-service", onSocketReturnPushServiceData);
+        setState({
+            refreshButton: true
+        });
+    }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
+
     const initSocket = useCallback(() => {
         socket.on("disconnect", onSocketDisconnect);
         socket.on("push-service", onSocketReturnPushServiceData);
@@ -122,11 +136,11 @@ const Eventdetails = ({ t, i18n, socket }) => {
     }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     useEffect(() => {
-        if (isLive) initSocket();
+        initSocket();
         return () => {
-            if (isLive) removeSocket();
+            removeSocket();
         };
-    }, [initSocket, removeSocket, isLive]);
+    }, [initSocket, removeSocket]);
 
     const updateAutoHeight = useCallback(() => {
         setTimeout(() => {
@@ -199,8 +213,6 @@ const Eventdetails = ({ t, i18n, socket }) => {
                 injuries
             }
         });
-
-    console.log(iddaaData);
 
     if (iddaaData)
         slides.push({
@@ -302,6 +314,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
                     );
                 })}
             </Swiper>
+            {refreshButton && <RefreshButton />}
         </div>
     );
 };

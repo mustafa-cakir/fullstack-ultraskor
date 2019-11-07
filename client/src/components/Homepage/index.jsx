@@ -177,11 +177,23 @@ const Homepage = ({ t, i18n, socket }) => {
         [initRedScoreBar]
     );
 
+    const onSocketConnect = useCallback(() => {
+        console.log("on connected!");
+        initGetData();
+        setState({
+            refreshButton: false
+        });
+        socket.on("push-service", onSocketReturnPushServiceData);
+    }, [socket, onSocketReturnPushServiceData]);
+
     const onSocketDisconnect = useCallback(() => {
+        socket.removeListener("connect", onSocketConnect);
+        socket.on("connect", onSocketConnect);
+        socket.removeListener("push-service", onSocketReturnPushServiceData);
         setState({
             refreshButton: true
         });
-    }, []);
+    }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
 
     const initSocket = useCallback(() => {
         socket.on("disconnect", onSocketDisconnect);
@@ -200,12 +212,12 @@ const Homepage = ({ t, i18n, socket }) => {
     useEffect(() => {
         scrollTopOnClick();
         initGetData();
-        if (isToday) initSocket();
+        initSocket();
         return () => {
-            if (isToday) removeSocket();
+            removeSocket();
             clearTimeout(redScoreBarTimer);
         };
-    }, [initGetData, page, initSocket, removeSocket, isToday]);
+    }, [initGetData, page, initSocket, removeSocket]);
 
     useEffect(() => {
         setToLocaleStorage("homepage", {

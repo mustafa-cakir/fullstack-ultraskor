@@ -56,21 +56,25 @@
 	width: 30px;
 }
 
-.header-title {
+.header-logo {
 	display: inline-block;
 	font-size: 1.2rem;
 	font-weight: lighter;
 	line-height: 50px;
 	margin: 0;
 	vertical-align: top;
+	text-decoration: none;
 	strong {
 		font-weight: bold;
+	}
+	.header-title {
+		display: inline-block;
+		color: #fff;
 	}
 }
 
 .header-title a {
-	color: #fff;
-	text-decoration: none;
+
 }
 
 .header-btn {
