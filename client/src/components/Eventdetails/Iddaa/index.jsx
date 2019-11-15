@@ -6,7 +6,6 @@ import Markets from "./Markets";
 import Icon from "../../common/Icon";
 
 const Iddaa = ({ iddaaData, updateAutoHeight, textList, isLive }) => {
-    console.log("checkpoint!");
     const [tabIndex, setTabIndex] = useState(0);
 
     const tabClickHandler = newIndex => {

@@ -184,7 +184,7 @@ const Homepage = ({ t, i18n, socket }) => {
             refreshButton: false
         });
         socket.on("push-service", onSocketReturnPushServiceData);
-    }, [socket, onSocketReturnPushServiceData]);
+    }, [initGetData, socket, onSocketReturnPushServiceData]);
 
     const onSocketDisconnect = useCallback(() => {
         socket.removeListener("connect", onSocketConnect);

@@ -24,7 +24,6 @@ class Tournament extends Component {
 
     render() {
         const {
-            page,
             t,
             isLive,
             filteredTournaments,

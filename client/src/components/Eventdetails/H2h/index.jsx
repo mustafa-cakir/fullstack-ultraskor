@@ -37,7 +37,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
                     error: t("Something went wrong")
                 });
             });
-    }, [id, updateAutoHeight, t]);
+    }, [id, teams.home.id, teams.away.id, updateAutoHeight, t]);
 
     useEffect(() => {
         if (hasActived) {

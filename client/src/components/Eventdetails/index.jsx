@@ -72,7 +72,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
                 });
                 const { ids, event } = res.data;
                 if (ids && ids.id_i) getIddaaData(ids, event);
-                UpdateMetaEventdetails(res.data);
+                UpdateMetaEventdetails(res.data, t);
             })
             .catch(err => {
                 setState({
@@ -80,7 +80,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
                     isLoading: false
                 });
             });
-    }, [eventid, getIddaaData, language]);
+    }, [eventid, getIddaaData, language, t]);
 
     useEffect(() => {
         getData();

@@ -177,13 +177,14 @@ const Team = ({ t, i18n }) => {
                 <>
                     {language === "tr" ? (
                         <p className="bottom-text">
-                            Fikstür sayfamızdan {infoData.team.name} takımının {infoData.stadium.country} liginde bu
-                            sezona ve geçmiş sezonlar ait maç fikstürlerine kolayca ulaşabilirsiniz. Fikstür seçimi
-                            yaptığınızda {infoData.team.name} takımının turnuva ve kupalarda aldığı sonuçlar karşınıza
-                            gelecektir. Dilerseniz {infoData.manager ? infoData.manager.name : ""} yönetimindeki{" "}
-                            {infoData.team.name} takımının ideal onbirini, geçmiş maçlarını, gelecek maçlarına, takım
-                            kadrosuna, {infoData.stadium ? infoData.stadium.name : ""} stadyumundaki iç saha
-                            performansına göz atabilirsiniz.
+                            Fikstür sayfamızdan {infoData.team.name} takımının{" "}
+                            {infoData.stadium ? infoData.stadium.country : ""} liginde bu sezona ve geçmiş sezonlar ait
+                            maç fikstürlerine kolayca ulaşabilirsiniz. Fikstür seçimi yaptığınızda {infoData.team.name}{" "}
+                            takımının turnuva ve kupalarda aldığı sonuçlar karşınıza gelecektir. Dilerseniz{" "}
+                            {infoData.manager ? infoData.manager.name : ""} yönetimindeki {infoData.team.name} takımının
+                            ideal onbirini, geçmiş maçlarını, gelecek maçlarına, takım kadrosuna,{" "}
+                            {infoData.stadium ? infoData.stadium.name : ""} stadyumundaki iç saha performansına göz
+                            atabilirsiniz.
                         </p>
                     ) : (
                         <p className="bottom-text">
