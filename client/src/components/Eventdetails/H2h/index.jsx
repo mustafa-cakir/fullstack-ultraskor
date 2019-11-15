@@ -21,7 +21,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
 
     const getData = useCallback(() => {
         axios
-            .get(`/api/eventdetails/${id}/matches`)
+            .get(`/api/eventdetails/${id}/head2head/${teams.home.id}/${teams.away.id}`)
             .then(res => {
                 setState({
                     isLoading: false,
@@ -48,7 +48,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
     if (!matches || isLoading || !hasActived) return <Loading type="whitebox container" />;
     if (error) return <Errors message={error} />;
 
-    const tournaments = matches[by][tab];
+    const tournaments = matches[tab][by];
     const tabClickHandler = newTab => {
         if (newTab !== tab) {
             setState({

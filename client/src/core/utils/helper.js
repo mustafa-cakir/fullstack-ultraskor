@@ -461,75 +461,41 @@ export const marketsPlaceholder = [
 
 export const prepareRes = res => {
     let { tournaments } = res;
-    // UEFA - CL - 7
-    // UEFA - Europa League - 679
-    // Turkey - Super Lig - 52
-    // Turkey - TFF 1. Lig - 98
-    // England - Premier League - 17
-    // England - Championship - 18
-
-    // Spain - LaLiga - 8
-    // Germany - Bundesliga - 35
-    // Italy - Seria A - 23
-    // France - Liga 1 - 34
-    // Holland - Eredivisie - 37
-    // Belgium - First Division A - 38
-
-    // Portugal - Primeira Liga - 238
-    // Norway - Eliteserien - 20
-    // Sweeden - Allsvenskan - 40
-    // Denmark - Superliga - 39
-    // Russia - Premier Liga - 203
-    // Croatia - 1. HNL - 170
-    // Czech Republic - 1. Liga - 172
-    // Greece - Super League - 185
-    // Israel - Premier League - 266
-    // Ukraine - Premier League - 218
-
-    // Spain - LaLiga 2 - 54
-    // Germany - Bundesliga 2 - 44
-    // Italy - Serie B - 53
-    // France - Ligue 2 - 182
-    // Holland - Eerste Divisie - 131
-    // England - League One - 24
-    // Switzerland - Super League - 215
-    //
     // Mexico - Primera Division, Apertura - 11621
     // Argentina - Superliga - 155
     // Brasileiro Série A - 325
-    //
-
     // Custom Sorting - Move some tournaments to the top or bottom of the list (FYI: 62 = Turkey Super Lig, 309 = CONMEBOL Libertadores)
     const moveToTop = [
-        7,
-        679,
-        52,
-        98,
-        17,
-        18,
-        8,
-        35,
-        23,
-        34,
-        37,
-        38,
-        238,
-        20,
-        40,
-        39,
-        203,
-        170,
-        172,
-        185,
-        266,
-        218,
-        54,
-        44,
-        53,
-        182,
-        131,
-        24,
-        215
+        27, // UEFA EURO 2020
+        7, // UEFA - CL
+        679, // UEFA - Europa League
+        52, // Turkey - Super Lig
+        98, // Turkey - TFF 1. Lig
+        17, // England - Premier League
+        18, // England - Championship
+        8, // Spain - LaLiga
+        35, // Germany - Bundesliga
+        23, // Italy - Seria A
+        34, // France - Liga 1
+        37, // Holland - Eredivisie
+        38, // Belgium - First Division A
+        238, // Portugal - Primeira Liga
+        20, // Norway - Eliteserien
+        40, // Sweeden - Allsvenskan
+        39, // Denmark - Superliga
+        203, // Russia - Premier Liga
+        170, // Croatia - 1. HNL
+        172, // Czech Republic - 1. Liga
+        185, // Greece - Super League
+        266, // Israel - Premier League
+        218, // Ukraine - Premier League
+        24, // England - League One
+        54, // Spain - LaLiga 2
+        44, // Germany - Bundesliga 2
+        53, // Italy - Serie B
+        182, // France - Ligue 2
+        131, // Holland - Eerste Divisie
+        215 // Switzerland - Super League
     ]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
 
     const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) > -1);

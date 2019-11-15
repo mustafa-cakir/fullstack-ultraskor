@@ -25,3 +25,5 @@ chrome-user-data
 src/assets/style/app\.css\.map
 src/assets/style/app\.css
 client/public/static/images
+.DS_Store
+

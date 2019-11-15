@@ -267,7 +267,7 @@ const simplifyWebSocketData = res => {
 const preprocessEvents = (events, includeNotStartedEvents = false) => {
     const result = [];
     events.forEach(event => {
-        if (event.sport.id !== 1) return false;
+        // if (event.sport && event.sport.id !== 1) return false;
         if (!includeNotStartedEvents && event.status.type !== "finished") return false;
         result.push({
             teams: {
@@ -331,23 +331,6 @@ const preprocessTournaments = (tournaments, includeNotStartedEvents = false) => 
     return result;
 };
 
-const getH2hByDates = data => {
-    const result = {};
-    const homeTournaments = [];
-    if (data.home.recent) homeTournaments.push(...preprocessTournaments(data.home.recent.tournaments));
-
-    const awayTournaments = [];
-    if (data.away.recent) awayTournaments.push(...preprocessTournaments(data.away.recent.tournaments));
-
-    const h2hTournaments = [];
-    if (data.h2h.events) h2hTournaments.push(...preprocessTournaments(data.h2h.events.tournaments));
-
-    result.home = homeTournaments;
-    result.away = awayTournaments;
-    result.h2h = h2hTournaments;
-    return result;
-};
-
 const reorderTournamentsByTournament = tournaments => {
     const tempTournaments = [];
 
@@ -365,41 +348,25 @@ const reorderTournamentsByTournament = tournaments => {
     return tempTournaments;
 };
 
-const getH2hByTournaments = data => {
+const mergeHead2HeadDatas = (h2h, home, away) => {
     const result = {};
-    const tempHomeTournaments = [];
-    if (data.home.recent) tempHomeTournaments.push(...preprocessTournaments(data.home.recent.tournaments));
-    if (data.home.playedAt) tempHomeTournaments.push(...preprocessTournaments(data.home.playedAt.tournaments));
-    if (data.home.playedAtThisTournament)
-        tempHomeTournaments.push(...preprocessTournaments(data.home.playedAtThisTournament.tournaments));
-    if (data.home.thisTournament)
-        tempHomeTournaments.push(...preprocessTournaments(data.home.thisTournament.tournaments));
-    const homeTournaments = reorderTournamentsByTournament(tempHomeTournaments);
 
-    const tempAwayTournaments = [];
-    if (data.away.recent) tempAwayTournaments.push(...preprocessTournaments(data.away.recent.tournaments));
-    if (data.away.playedAt) tempAwayTournaments.push(...preprocessTournaments(data.away.playedAt.tournaments));
-    if (data.away.playedAtThisTournament)
-        tempAwayTournaments.push(...preprocessTournaments(data.away.playedAtThisTournament.tournaments));
-    if (data.away.thisTournament)
-        tempAwayTournaments.push(...preprocessTournaments(data.away.thisTournament.tournaments));
-    const awayTournaments = reorderTournamentsByTournament(tempAwayTournaments);
-
-    const tempH2hTournaments = [];
-    if (data.h2h.events) tempH2hTournaments.push(...preprocessTournaments(data.h2h.events.tournaments));
-    const h2hTournaments = reorderTournamentsByTournament(tempH2hTournaments);
-
-    result.home = homeTournaments;
-    result.away = awayTournaments;
-    result.h2h = h2hTournaments;
-    return result;
-};
-
-const processSofaH2hData = data => {
-    return {
-        byDates: data ? getH2hByDates(data) : null,
-        byTournaments: data ? getH2hByTournaments(data) : null
+    result.h2h = {
+        byDates: preprocessTournaments(h2h.tournaments),
+        byTournaments: reorderTournamentsByTournament(preprocessTournaments(h2h.tournaments))
     };
+
+    result.home = {
+        byDates: preprocessTournaments(home.last.tournaments),
+        byTournaments: reorderTournamentsByTournament(preprocessTournaments(home.last.tournaments))
+    };
+
+    result.away = {
+        byDates: preprocessTournaments(away.last.tournaments),
+        byTournaments: reorderTournamentsByTournament(preprocessTournaments(away.last.tournaments))
+    };
+
+    return result;
 };
 
 const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
@@ -635,6 +602,8 @@ const mergeHomepageData = (sofa, radar, broad) => {
                         });
                 }
             });
+        } else {
+            resolve(result);
         }
     });
 };
@@ -670,6 +639,7 @@ exports.isDev = isDev;
 exports.isProd = isProd;
 exports.isTorDisabled = isTorDisabled;
 exports.t = t;
+exports.mergeHead2HeadDatas = mergeHead2HeadDatas;
 exports.simplifyHomeData = simplifyHomeData;
 exports.preProcessSportRadarData = preProcessSportRadarData;
 exports.simplifyIddaaHelperData = simplifyIddaaHelperData;
@@ -682,6 +652,5 @@ exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;
 exports.preprocessEvents = preprocessEvents;
-exports.processSofaH2hData = processSofaH2hData;
 exports.mergeTeamData = mergeTeamData;
 exports.preprocessTournaments = preprocessTournaments;
