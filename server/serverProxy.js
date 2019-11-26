@@ -1,5 +1,6 @@
 const express = require("express");
 const cloudscraper = require("cloudscraper");
+const request = require("request");
 const fs = require("fs");
 
 const app = express();
@@ -27,29 +28,30 @@ app.get("/images/:type/:filename", (req, res) => {
         if (err) {
             // file not exist
             let pathname = `/images/${type}/${filename}`;
-
             if (type === "u-tournament") {
                 pathname = `/u-tournament/${filename.slice(0, -4)}/logo`;
             } else if (type === "manager") {
                 pathname = `/api/v1/manager/${filename.slice(0, -4)}/image`;
             }
-
-            const requestOptions = {
+            const options = {
                 url: `https://www.sofascore.com${pathname}`
             };
-
-            // console.log(requestOptions.url);
-            const stream = cloudscraper(requestOptions);
-
-            stream.on("error", () => {
-                console.log("## Image Error - 404");
-                res.status(404).send(404);
-            });
-
-            stream.on("response", response => {
-                if (response.headers["content-type"].indexOf("image") > -1) {
-                    stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
-                    stream.pipe(res);
+            request.head(options, (headErr, headRes) => {
+                if (headRes.headers["content-type"].indexOf("image") > -1) {
+                    const stream = request(options);
+                    stream.on("error", () => {
+                        console.log("## Image Error - 404");
+                        res.status(404).send(404);
+                    });
+                    stream.on("response", response => {
+                        if (response.headers["content-type"].indexOf("image") > -1) {
+                            stream.pipe(fs.createWriteStream(sendFileOptions.root + filename));
+                            stream.pipe(res);
+                        } else {
+                            console.log("## Image Error 2 - 404");
+                            res.status(404).send("404");
+                        }
+                    });
                 } else {
                     console.log("## Image Error 2 - 404");
                     res.status(404).send("404");
