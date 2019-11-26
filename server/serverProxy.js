@@ -37,7 +37,7 @@ app.get("/images/:type/:filename", (req, res) => {
                 url: `https://www.sofascore.com${pathname}`
             };
             request.head(options, (headErr, headRes) => {
-                if (headRes.headers["content-type"].indexOf("image") > -1) {
+                if (headRes && headRes.headers["content-type"].indexOf("image") > -1) {
                     const stream = request(options);
                     stream.on("error", () => {
                         console.log("## Image Error - 404");
@@ -66,6 +66,10 @@ function pushDomain(body) {
     // return body.replace("if(!1===i)u", 'i[0].domains.push("ultraskor.com",);if(!1===i)u');
     return body.replace("location.hostname", '"www.sportradar.com"');
 }
+
+app.get("/favicon.ico", (req, res) => {
+    res.status(404).send("404");
+});
 
 // define a simple route
 app.get("*", (req, res) => {
