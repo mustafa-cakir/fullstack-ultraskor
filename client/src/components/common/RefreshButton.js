@@ -1,14 +1,19 @@
-import React, {Component} from 'react';
-import Icon from "./Icon";
-import {Trans} from "react-i18next";
+import React, { Component } from 'react';
+import Icon from './Icon';
+import { Trans } from 'react-i18next';
 
 class RefreshButton extends Component {
     render() {
         let currentUrl = window.location.href;
         return (
-	        <a href={currentUrl} className="refresh-btn"><div className="icon"><Icon name="fas fa-sync"/></div><Trans>Refresh</Trans></a>
-        )
+            <a href={currentUrl} className="refresh-btn">
+                <div className="icon">
+                    <Icon name="fas fa-sync" />
+                </div>
+                <Trans>Refresh</Trans>
+            </a>
+        );
     }
 }
 
-export default RefreshButton
+export default RefreshButton;

@@ -1,8 +1,8 @@
-import React from "react";
-import { Trans } from "react-i18next";
-import Icon from "../Icon";
-import Event from "../Event";
-import Errors from "../Errors";
+import React from 'react';
+import { Trans } from 'react-i18next';
+import Icon from '../Icon';
+import Event from '../Event';
+import Errors from '../Errors';
 
 const FavTournament = ({ favEvents, tournaments, isLive, updateParentState, isFav }) => {
     let index = 0;
@@ -10,7 +10,7 @@ const FavTournament = ({ favEvents, tournaments, isLive, updateParentState, isFa
         <>
             {tournaments.map(tournament => {
                 return tournament.events.map(event => {
-                    if (isLive && event.status.type !== "inprogress") return false;
+                    if (isLive && event.status.type !== 'inprogress') return false;
                     if (favEvents.indexOf(event.id) < 0) return false;
                     index += 1;
                     return (

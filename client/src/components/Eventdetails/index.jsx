@@ -1,26 +1,26 @@
-import React, { useReducer, useCallback, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import update from "immutability-helper";
-import { withTranslation } from "react-i18next";
-import { Tabs, Tab } from "@material-ui/core";
-import { Swiper, Slide } from "react-dynamic-swiper";
-import "react-dynamic-swiper/lib/styles.css";
-import Errors from "../common/Errors";
-import Loading from "../common/Loading";
-import Summary from "./Summary";
-import LiveTracker from "./LiveTracker";
-import { appendValueToArray } from "../../core/utils/helper";
-import H2h from "./H2h";
-import Stats from "./Stats";
-import Scoreboard from "./Scoreboard";
-import Lineups from "./Lineups";
-import Injuries from "./Injuries";
-import Standings from "./Standings";
-import UpdateMetaEventdetails from "../../core/utils/updatemeta/eventdetails";
-import Iddaa from "./Iddaa";
-import iddaaIcon from "../../assets/images/icon-iddaa.png";
-import RefreshButton from "../common/RefreshButton";
+import React, { useReducer, useCallback, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import update from 'immutability-helper';
+import { withTranslation } from 'react-i18next';
+import { Tabs, Tab } from '@material-ui/core';
+import { Swiper, Slide } from 'react-dynamic-swiper';
+import 'react-dynamic-swiper/lib/styles.css';
+import Errors from '../common/Errors';
+import Loading from '../common/Loading';
+import Summary from './Summary';
+import LiveTracker from './LiveTracker';
+import { appendValueToArray } from '../../core/utils/helper';
+import H2h from './H2h';
+import Stats from './Stats';
+import Scoreboard from './Scoreboard';
+import Lineups from './Lineups';
+import Injuries from './Injuries';
+import Standings from './Standings';
+import UpdateMetaEventdetails from '../../core/utils/updatemeta/eventdetails';
+import Iddaa from './Iddaa';
+import iddaaIcon from '../../assets/images/icon-iddaa.png';
+import RefreshButton from '../common/RefreshButton';
 
 const Eventdetails = ({ t, i18n, socket }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -40,9 +40,9 @@ const Eventdetails = ({ t, i18n, socket }) => {
     const { eventid } = params;
 
     const getIddaaData = useCallback((ids, event) => {
-        const isLive = event.status.type === "inprogress";
+        const isLive = event.status.type === 'inprogress';
         axios
-            .get(`/api/iddaa/match/${ids.id_i}${isLive ? "/live" : ""}`)
+            .get(`/api/iddaa/match/${ids.id_i}${isLive ? '/live' : ''}`)
             .then(res => {
                 setState({
                     iddaaData: res.data ? res.data : null
@@ -87,7 +87,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     }, [getData]);
 
     // socket - START
-    const isLive = data && data.event ? data.event.status.type === "inprogress" : false;
+    const isLive = data && data.event ? data.event.status.type === 'inprogress' : false;
     useEffect(() => {
         refData.current = data;
     }, [data]);
@@ -108,31 +108,31 @@ const Eventdetails = ({ t, i18n, socket }) => {
     );
 
     const onSocketConnect = useCallback(() => {
-        console.log("on connected!");
+        console.log('on connected!');
         getData();
         setState({
             refreshButton: false
         });
-        socket.on("push-service", onSocketReturnPushServiceData);
+        socket.on('push-service', onSocketReturnPushServiceData);
     }, [getData, socket, onSocketReturnPushServiceData]);
 
     const onSocketDisconnect = useCallback(() => {
-        socket.removeListener("connect", onSocketConnect);
-        socket.on("connect", onSocketConnect);
-        socket.removeListener("push-service", onSocketReturnPushServiceData);
+        socket.removeListener('connect', onSocketConnect);
+        socket.on('connect', onSocketConnect);
+        socket.removeListener('push-service', onSocketReturnPushServiceData);
         setState({
             refreshButton: true
         });
     }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
 
     const initSocket = useCallback(() => {
-        socket.on("disconnect", onSocketDisconnect);
-        socket.on("push-service", onSocketReturnPushServiceData);
+        socket.on('disconnect', onSocketDisconnect);
+        socket.on('push-service', onSocketReturnPushServiceData);
     }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     const removeSocket = useCallback(() => {
-        socket.removeListener("disconnect", onSocketDisconnect);
-        socket.removeListener("push-service", onSocketReturnPushServiceData);
+        socket.removeListener('disconnect', onSocketDisconnect);
+        socket.removeListener('push-service', onSocketReturnPushServiceData);
     }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
 
     useEffect(() => {
@@ -162,7 +162,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
 
     slides.push({
         id: 0,
-        label: t("Summary"),
+        label: t('Summary'),
         Component: Summary,
         props: {
             data,
@@ -174,7 +174,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (ids.id_sp)
         slides.push({
             id: 1,
-            label: t("Live Tracker"),
+            label: t('Live Tracker'),
             Component: LiveTracker,
             props: {
                 id: ids.id_sp
@@ -184,7 +184,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (stats)
         slides.push({
             id: 2,
-            label: t("Stats"),
+            label: t('Stats'),
             Component: Stats,
             props: {
                 stats
@@ -194,7 +194,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (isLineups)
         slides.push({
             id: 3,
-            label: t("Lineup"),
+            label: t('Lineup'),
             Component: Lineups,
             props: {
                 id: event.id,
@@ -206,7 +206,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (injuries)
         slides.push({
             id: 4,
-            label: t("Injuries & Susp."),
+            label: t('Injuries & Susp.'),
             Component: Injuries,
             props: {
                 teams,
@@ -219,7 +219,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
             id: 5,
             label: (
                 <>
-                    <img src={iddaaIcon} alt="iddaa" /> {t("Iddaa Odds")}
+                    <img src={iddaaIcon} alt="iddaa" /> {t('Iddaa Odds')}
                 </>
             ),
             Component: Iddaa,
@@ -234,7 +234,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (teams)
         slides.push({
             id: 6,
-            label: t("Head To Head"),
+            label: t('Head To Head'),
             Component: H2h,
             props: {
                 id: event.id,
@@ -247,7 +247,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (isStanding)
         slides.push({
             id: 7,
-            label: t("Standing"),
+            label: t('Standing'),
             Component: Standings,
             props: {
                 event,
@@ -267,7 +267,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
         setState({
             swiper: swiperInstance
         });
-        swiperInstance.on("slideChange", () => {
+        swiperInstance.on('slideChange', () => {
             setState({
                 tabIndex: swiperInstance.activeIndex,
                 clickedTabIndex: appendValueToArray(
@@ -319,4 +319,4 @@ const Eventdetails = ({ t, i18n, socket }) => {
     );
 };
 
-export default withTranslation("translations")(Eventdetails);
+export default withTranslation('translations')(Eventdetails);

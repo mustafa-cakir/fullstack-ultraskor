@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Trans } from "react-i18next";
-import IddaLogo from "../../../assets/images/icon-iddaa.png";
-import IddaLogo2 from "../../../assets/images/icon-iddaa2.png";
-import Markets from "./Markets";
-import Icon from "../../common/Icon";
+import React, { useState } from 'react';
+import { Trans } from 'react-i18next';
+import IddaLogo from '../../../assets/images/icon-iddaa.png';
+import IddaLogo2 from '../../../assets/images/icon-iddaa2.png';
+import Markets from './Markets';
+import Icon from '../../common/Icon';
 
 const Iddaa = ({ iddaaData, updateAutoHeight, textList, isLive }) => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -20,7 +20,7 @@ const Iddaa = ({ iddaaData, updateAutoHeight, textList, isLive }) => {
                     <ul className="horizontal-tab">
                         <button
                             type="button"
-                            className={tabIndex === 0 ? "active" : ""}
+                            className={tabIndex === 0 ? 'active' : ''}
                             onClick={() => tabClickHandler(0)}
                         >
                             <span>
@@ -30,11 +30,11 @@ const Iddaa = ({ iddaaData, updateAutoHeight, textList, isLive }) => {
                         </button>
                         <button
                             type="button"
-                            className={tabIndex === 1 ? "active" : ""}
+                            className={tabIndex === 1 ? 'active' : ''}
                             onClick={() => tabClickHandler(1)}
                         >
                             <span>
-                                <img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari" />{" "}
+                                <img src={IddaLogo2} className="tab-logo" alt="Iddaa Oranlari" />{' '}
                                 <Trans>Iddaa Analyze</Trans>
                             </span>
                         </button>

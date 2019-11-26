@@ -1,12 +1,12 @@
-import React, { useReducer } from "react";
-import { Trans, withTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
-import DayPicker from "react-day-picker";
-import MomentLocaleUtils from "react-day-picker/moment";
-import moment from "moment";
-import Icon from "../common/Icon";
-import { flagImg } from "../../core/utils/helper";
-import { toggleValueInArray } from "../../core/utils";
+import React, { useReducer } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import DayPicker from 'react-day-picker';
+import MomentLocaleUtils from 'react-day-picker/moment';
+import moment from 'moment';
+import Icon from '../common/Icon';
+import { flagImg } from '../../core/utils/helper';
+import { toggleValueInArray } from '../../core/utils';
 
 const Headertabs = ({
     t,
@@ -66,12 +66,12 @@ const Headertabs = ({
     };
 
     const handleSelectedDay = day => {
-        const selectedDay = moment(day).format("YYYY-MM-DD");
+        const selectedDay = moment(day).format('YYYY-MM-DD');
         if (currentDate !== selectedDay) {
             const url =
-                moment().format("DD") === moment(selectedDay).format("DD")
-                    ? "/"
-                    : `/${t("matches")}/${t("date")}-${selectedDay}`;
+                moment().format('DD') === moment(selectedDay).format('DD')
+                    ? '/'
+                    : `/${t('matches')}/${t('date')}-${selectedDay}`;
             history.push(url);
         }
 
@@ -117,10 +117,10 @@ const Headertabs = ({
                 <button type="button" className="header-tabs-btn" onClick={openSportDropdown}>
                     <Icon name="far fa-futbol mr-2" />
                     Futbol
-                    <Icon name={`ml-2 fas fa-angle-${isSportDropdown ? "up" : "down"}`} />
+                    <Icon name={`ml-2 fas fa-angle-${isSportDropdown ? 'up' : 'down'}`} />
                 </button>
                 <div
-                    className={`dropdown-menu sports left${isSportDropdown ? " show" : ""}`}
+                    className={`dropdown-menu sports left${isSportDropdown ? ' show' : ''}`}
                     aria-labelledby="dropdownMenuButton"
                 >
                     <a className="dropdown-item" href="/">
@@ -130,7 +130,7 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-basketball-ball" /> Basketball
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>very soon</Trans>
                         </small>
                     </a>
@@ -138,7 +138,7 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-table-tennis" /> Tennis
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
@@ -146,15 +146,15 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-baseball-ball" /> Baseball
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
                     <hr className="separator" />
                     <a className="dropdown-item soon" href="/">
-                        <Icon name="fas fa-football-ball" /> Amr. Football{" "}
+                        <Icon name="fas fa-football-ball" /> Amr. Football{' '}
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
@@ -162,7 +162,7 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-football-ball" /> Rugby
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
@@ -170,7 +170,7 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-hockey-puck" /> Hokey
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
@@ -178,19 +178,19 @@ const Headertabs = ({
                     <a className="dropdown-item soon" href="/">
                         <Icon name="fas fa-volleyball-ball" /> Voleyball
                         <small>
-                            {" "}
+                            {' '}
                             - <Trans>soon</Trans>
                         </small>
                     </a>
                 </div>
             </li>
 
-            <li className={`col col-fav p-0${isFav ? " active" : ""}`}>
+            <li className={`col col-fav p-0${isFav ? ' active' : ''}`}>
                 <button type="button" className="header-tabs-btn justify-content-center" onClick={toggleFav}>
                     <Icon name="far fa-star" />
                 </button>
             </li>
-            <li className={`col col-live p-0${isLive ? " active" : ""}`}>
+            <li className={`col col-live p-0${isLive ? ' active' : ''}`}>
                 <button type="button" className="header-tabs-btn justify-content-center" onClick={toggleLive}>
                     <Icon name="far fa-clock mr-1" /> <Trans>Live</Trans>
                 </button>
@@ -201,8 +201,8 @@ const Headertabs = ({
                         <Trans>Today</Trans>
                     ) : (
                         <div className="selected-date">
-                            <span>{moment(currentDate).format("DD")}</span>
-                            <span>{moment(currentDate).format("MMM")}</span>
+                            <span>{moment(currentDate).format('DD')}</span>
+                            <span>{moment(currentDate).format('MMM')}</span>
                         </div>
                     )}
                     <Icon name="mx-2 fas fa-angle-down" />
@@ -217,12 +217,12 @@ const Headertabs = ({
                     />
                 ) : null}
             </li>
-            <li className={`col col-filter p-0${filteredTournaments.length > 0 ? " active" : ""}`}>
+            <li className={`col col-filter p-0${filteredTournaments.length > 0 ? ' active' : ''}`}>
                 <button type="button" className="header-tabs-btn justify-content-center" onClick={openFilterDropdown}>
                     <Icon name="ml-1 fas fa-filter" />
                 </button>
                 <div
-                    className={`dropdown-menu filters right${isFilterDropdown ? " show" : ""}`}
+                    className={`dropdown-menu filters right${isFilterDropdown ? ' show' : ''}`}
                     aria-labelledby="dropdownMenuButton"
                 >
                     <div className="list-container">
@@ -235,7 +235,7 @@ const Headertabs = ({
                                 language={language}
                             />
                         ) : (
-                            ""
+                            ''
                         )}
                     </div>
                     <div className="confirm-container row m-0">
@@ -256,7 +256,7 @@ const FilterItems = ({ mainData, itemClickHandler, filteredTournamentsLocale, la
     let index = 1;
     return mainData.map(tournament => {
         index += 1;
-        const classname = filteredTournamentsLocale.indexOf(tournament.tournament.uniqueId) > -1 ? " checked" : "";
+        const classname = filteredTournamentsLocale.indexOf(tournament.tournament.uniqueId) > -1 ? ' checked' : '';
         return (
             <div key={`${tournament.tournament.uniqueId}_${index}`}>
                 <button
@@ -269,7 +269,7 @@ const FilterItems = ({ mainData, itemClickHandler, filteredTournamentsLocale, la
                     <div className="col tournament-name px-2">
                         <strong>
                             <Trans>{tournament.category.name}</Trans>
-                        </strong>{" "}
+                        </strong>{' '}
                         - {tournament.tournament.name[language]}
                     </div>
                 </button>
@@ -279,4 +279,4 @@ const FilterItems = ({ mainData, itemClickHandler, filteredTournamentsLocale, la
     });
 };
 
-export default withTranslation("translations")(Headertabs);
+export default withTranslation('translations')(Headertabs);

@@ -1,13 +1,13 @@
-import React, { PureComponent } from "react";
-import { Trans, withTranslation } from "react-i18next";
-import Loading from "./common/Loading";
-import ReactSwipe from "react-swipe";
-import smoothscroll from "smoothscroll-polyfill";
-import Footer from "./common/Footer";
-import i18n from "i18next";
-import { HelperTranslateUrlTo, HelperUpdateMeta } from "../core/utils/helper";
-import Errors from "./common/Errors";
-import Tournament from "./common/Tournament";
+import React, { PureComponent } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import Loading from './common/Loading';
+import ReactSwipe from 'react-swipe';
+import smoothscroll from 'smoothscroll-polyfill';
+import Footer from './common/Footer';
+import i18n from 'i18next';
+import { HelperTranslateUrlTo, HelperUpdateMeta } from '../core/utils/helper';
+import Errors from './common/Errors';
+import Tournament from './common/Tournament';
 
 class TeamdetailsOLD extends PureComponent {
     constructor(props) {
@@ -24,7 +24,7 @@ class TeamdetailsOLD extends PureComponent {
             teamTournamentsData: null,
             teamTournamentsDataByTournament: null,
             isTeamOfTheWeekClicked: false,
-            sortBy: "date"
+            sortBy: 'date'
         };
         smoothscroll.polyfill();
     }
@@ -136,9 +136,9 @@ class TeamdetailsOLD extends PureComponent {
 
     updateMeta(teamInfoData) {
         const { t } = this.props;
-        if (i18n.language === "en") {
-            if (window.location.pathname.split("/")[2] === "takim")
-                window.location.href = HelperTranslateUrlTo("en", true);
+        if (i18n.language === 'en') {
+            if (window.location.pathname.split('/')[2] === 'takim')
+                window.location.href = HelperTranslateUrlTo('en', true);
             HelperUpdateMeta({
                 title: `${teamInfoData.team.name} Live Match Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
                 canonical: window.location.href,
@@ -150,12 +150,12 @@ class TeamdetailsOLD extends PureComponent {
                 )} match results, ${t(teamInfoData.team.name)} highlights, ${t(
                     teamInfoData.team.name
                 )} transfer news, lineups, league fixtures`,
-                alternate: HelperTranslateUrlTo("tr"),
-                hrefLang: "tr"
+                alternate: HelperTranslateUrlTo('tr'),
+                hrefLang: 'tr'
             });
-        } else if (i18n.language === "tr") {
-            if (window.location.pathname.split("/")[1] === "team")
-                window.location.href = HelperTranslateUrlTo("tr", true);
+        } else if (i18n.language === 'tr') {
+            if (window.location.pathname.split('/')[1] === 'team')
+                window.location.href = HelperTranslateUrlTo('tr', true);
             HelperUpdateMeta({
                 title: `${t(teamInfoData.team.name)} Fikstür, Kadro, Puan Durumu ve Maç Özetleri - UltraSkor.com`,
                 canonical: window.location.href,
@@ -167,16 +167,16 @@ class TeamdetailsOLD extends PureComponent {
                 )} fixture, lig fikstürü, haftalık lıg fikstürü, ${t(teamInfoData.team.name)} özetleri, ${t(
                     teamInfoData.team.name
                 )} haftanın takımı, ${t(teamInfoData.team.name)} gol krallığı`,
-                alternate: HelperTranslateUrlTo("en"),
-                hrefLang: "en"
+                alternate: HelperTranslateUrlTo('en'),
+                hrefLang: 'en'
             });
         }
     }
 
     swipeComplete = (index, el) => {
-        let tab = el.getAttribute("data-tab");
+        let tab = el.getAttribute('data-tab');
 
-        if (tab === "team-of-week") {
+        if (tab === 'team-of-week') {
             this.setState({ isTeamOfTheWeekClicked: true });
         }
 
@@ -212,27 +212,27 @@ class TeamdetailsOLD extends PureComponent {
             index = index || this.swipeEl.current.getPos();
             let container = this.swipeEl.current.containerEl.firstChild;
             let active = container.childNodes[index];
-            container.style.height = active.offsetHeight + "px";
+            container.style.height = active.offsetHeight + 'px';
         }
     }
 
     swipeMarkerAndScrollHandler() {
         let marker = this.swipeMarkerEl.current,
-            active = document.querySelector(".swipe-tabs .active"),
+            active = document.querySelector('.swipe-tabs .active'),
             tabs = this.swipeTabsEl.current;
 
-        marker.style.width = active.offsetWidth + "px";
-        marker.style.left = active.offsetLeft + "px";
+        marker.style.width = active.offsetWidth + 'px';
+        marker.style.left = active.offsetLeft + 'px';
 
         tabs.scrollTo({
             left: active.offsetLeft - (window.innerWidth - active.offsetWidth) / 2 + 7,
-            behavior: "smooth"
+            behavior: 'smooth'
         });
     }
 
     rippleEffectHandler(e) {
         let el = e.target,
-            rippleEl = document.createElement("span"),
+            rippleEl = document.createElement('span'),
             rect = el.getBoundingClientRect(),
             clientX = e.clientX ? e.clientX : e.touches[0].clientX,
             clientY = e.clientY ? e.clientY : e.touches[0].clientY,
@@ -240,14 +240,14 @@ class TeamdetailsOLD extends PureComponent {
             rippleY = Math.round(clientY - rect.top),
             rippleSize = Math.max(el.offsetWidth, el.offsetHeight);
 
-        rippleEl.className = "ripple";
+        rippleEl.className = 'ripple';
         el.appendChild(rippleEl);
 
-        rippleEl.style.width = rippleSize + "px";
-        rippleEl.style.height = rippleSize + "px";
-        rippleEl.style.top = -(rippleSize / 2) + rippleY + "px";
-        rippleEl.style.left = -(rippleSize / 2) + rippleX + "px";
-        rippleEl.className += " rippleEffect";
+        rippleEl.style.width = rippleSize + 'px';
+        rippleEl.style.height = rippleSize + 'px';
+        rippleEl.style.top = -(rippleSize / 2) + rippleY + 'px';
+        rippleEl.style.left = -(rippleSize / 2) + rippleX + 'px';
+        rippleEl.className += ' rippleEffect';
         setTimeout(() => {
             rippleEl.remove();
         }, 600);
@@ -266,7 +266,7 @@ class TeamdetailsOLD extends PureComponent {
         //if (teamInfoData.error) return <Errors type="error" message={teamInfoData.error}/>;
         if (teamTournamentsData.error) return <Errors type="error" message={teamTournamentsData.error} />;
 
-        this.tabs = [t("Fixture"), t("LANG_Players"), t("Standing")];
+        this.tabs = [t('Fixture'), t('LANG_Players'), t('Standing')];
         const { teamId } = this.props.match.params;
         return (
             <div className="team-details">
@@ -275,13 +275,13 @@ class TeamdetailsOLD extends PureComponent {
                         <React.Fragment>
                             <div className="col col-img">
                                 <img
-                                    src={window.ImageServer + "/images/team-logo/football_" + teamId + ".png"}
+                                    src={window.ImageServer + '/images/team-logo/football_' + teamId + '.png'}
                                     alt={t(teamInfoData.team.name)}
                                 />
                             </div>
                             <div className="col col-info">
                                 <div className="name">{t(teamInfoData.team.name)}</div>
-                                {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ""}
+                                {teamInfoData.manager ? <div className="country">{teamInfoData.manager.name}</div> : ''}
                             </div>
                             {teamInfoData.venue ? (
                                 <div className="col col-stadium text-right">
@@ -291,11 +291,11 @@ class TeamdetailsOLD extends PureComponent {
                                     </div>
                                 </div>
                             ) : (
-                                ""
+                                ''
                             )}
                         </React.Fragment>
                     ) : (
-                        ""
+                        ''
                     )}
                 </div>
                 <div className="middle-tabs">
@@ -306,13 +306,13 @@ class TeamdetailsOLD extends PureComponent {
                                     <li
                                         key={index}
                                         onClick={event => this.swipeTabClick(event, index)}
-                                        className={(this.state.index === index ? "active " : "") + "ripple-effect pink"}
+                                        className={(this.state.index === index ? 'active ' : '') + 'ripple-effect pink'}
                                     >
                                         <span>{tab}</span>
                                     </li>
                                 );
                             })}
-                            <li className="marker" ref={this.swipeMarkerEl} style={{ width: "85px", left: "0px" }} />
+                            <li className="marker" ref={this.swipeMarkerEl} style={{ width: '85px', left: '0px' }} />
                         </ul>
                         <div className="swipe-shadows" />
                     </div>
@@ -333,18 +333,18 @@ class TeamdetailsOLD extends PureComponent {
                     <div className="swipe-content fixture" data-tab="standing">
                         <div className="sort-by-container">
                             <span
-                                className={"sort-by-btn" + (sortBy === "date" ? " checked" : "")}
+                                className={'sort-by-btn' + (sortBy === 'date' ? ' checked' : '')}
                                 onClick={() => {
-                                    this.sortByClickHandler("date");
+                                    this.sortByClickHandler('date');
                                 }}
                             >
                                 <span className="checkbox" />
                                 Tarihe Göre
                             </span>
                             <span
-                                className={"sort-by-btn" + (sortBy === "league" ? " checked" : "")}
+                                className={'sort-by-btn' + (sortBy === 'league' ? ' checked' : '')}
                                 onClick={() => {
-                                    this.sortByClickHandler("league");
+                                    this.sortByClickHandler('league');
                                 }}
                             >
                                 <span className="checkbox" />
@@ -353,11 +353,11 @@ class TeamdetailsOLD extends PureComponent {
                         </div>
                         <Tournament
                             tournaments={
-                                sortBy === "league"
+                                sortBy === 'league'
                                     ? teamTournamentsDataByTournament.tournaments
                                     : teamTournamentsData.tournaments
                             }
-                            from={"h2h"}
+                            from={'h2h'}
                             selectedId={teamId}
                             selected="home"
                         />
@@ -381,4 +381,4 @@ class TeamdetailsOLD extends PureComponent {
     }
 }
 
-export default withTranslation("translations")(TeamdetailsOLD);
+export default withTranslation('translations')(TeamdetailsOLD);

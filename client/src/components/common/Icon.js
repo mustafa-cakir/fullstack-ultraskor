@@ -1,10 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 class Icon extends Component {
     render() {
-        return (
-            <i className={this.props.name}/>
-        )
+        return <i className={this.props.name} />;
     }
 }
-export default Icon
+export default Icon;

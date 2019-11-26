@@ -1,6 +1,6 @@
-import React from "react";
-import Icon from "../../common/Icon";
-import { marketsPlaceholder } from "../../../core/utils/helper";
+import React from 'react';
+import Icon from '../../common/Icon';
+import { marketsPlaceholder } from '../../../core/utils/helper';
 
 const Markets = ({ markets }) => {
     const marketsData = markets && markets.length > 0 ? markets : marketsPlaceholder;

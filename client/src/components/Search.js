@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import Icon from "./common/Icon";
-import {withTranslation} from "react-i18next";
-import {withRouter} from "react-router-dom";
+import React, { Component } from 'react';
+import Icon from './common/Icon';
+import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 
 class Search extends Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class Search extends Component {
 
     debounce = (cb, delay) => {
         let timeout;
-        return function () {
+        return function() {
             const context = this;
             const args = arguments;
             if (timeout) {
@@ -25,7 +25,7 @@ class Search extends Component {
                 timeout = null;
                 cb.apply(context, args);
             }, delay);
-        }
+        };
     };
 
     componentDidUpdate() {
@@ -47,27 +47,25 @@ class Search extends Component {
     };
 
     render() {
-        const {t} = this.props;
+        const { t } = this.props;
         return (
             <section className="searchbar">
                 <div className="container px-0 position-relative">
-                    <Icon name="fas fa-search search-icon"/>
+                    <Icon name="fas fa-search search-icon" />
                     <input
                         ref={this.searchInput}
-                        placeholder={t("Search...")}
+                        placeholder={t('Search...')}
                         className="search-input"
                         onChange={this.onChangeHandler}
                     />
                     <button className="header-btn search-clear-btn" onClick={this.clearInput.bind(this)}>
-                        <div className="close-icon"/>
+                        <div className="close-icon" />
                     </button>
                 </div>
-                <div className="result-dropdown">
-
-                </div>
+                <div className="result-dropdown"></div>
             </section>
-        )
+        );
     }
 }
 
-export default withTranslation('translations')(withRouter(Search))
+export default withTranslation('translations')(withRouter(Search));

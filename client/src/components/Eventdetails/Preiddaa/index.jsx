@@ -1,13 +1,13 @@
-import React from "react";
-import { Trans } from "react-i18next";
-import IddaLogo from "../../../assets/images/icon-iddaa.png";
-import Markets from "../Iddaa/Markets";
+import React from 'react';
+import { Trans } from 'react-i18next';
+import IddaLogo from '../../../assets/images/icon-iddaa.png';
+import Markets from '../Iddaa/Markets';
 
 const PreIddaa = ({ iddaaData, isLive, swipeByTabId }) => {
     if (iddaaData.length === 0 && !isLive) return false;
     const displayedOdds = isLive
-        ? ["4_4", "4_14", "4_14_3.5", "4_14_1.5", "4_14_2.5", "4_23", "4_34"]
-        : ["1_1", "2_101_2.5", "2_87", "2_101_3.5", "2_89"];
+        ? ['4_4', '4_14', '4_14_3.5', '4_14_1.5', '4_14_2.5', '4_23', '4_34']
+        : ['1_1', '2_101_2.5', '2_87', '2_101_3.5', '2_89'];
 
     let markets = iddaaData.reduce((whole, current) => {
         if (displayedOdds.indexOf(current.muk) > -1) whole.push(current);
@@ -19,8 +19,8 @@ const PreIddaa = ({ iddaaData, isLive, swipeByTabId }) => {
     return (
         <div className="pre-iddaa">
             <div className="title">
-                <img src={IddaLogo} className="title-logo" alt="Iddaa Oranlari, Iddaa Tahminleri" />{" "}
-                <Trans>{isLive ? "Live " : ""}Iddaa Odds</Trans>
+                <img src={IddaLogo} className="title-logo" alt="Iddaa Oranlari, Iddaa Tahminleri" />{' '}
+                <Trans>{isLive ? 'Live ' : ''}Iddaa Odds</Trans>
             </div>
             <div
                 className="pre-iddaa-container"
@@ -32,9 +32,9 @@ const PreIddaa = ({ iddaaData, isLive, swipeByTabId }) => {
                 <Markets markets={markets} />
             </div>
             <button type="button" onClick={() => swipeByTabId(5)} className="pre-iddaa-link text-center">
-                <span className="live-pulse" />{" "}
+                <span className="live-pulse" />{' '}
                 <span>
-                    <Trans>See All {isLive ? "Live " : ""}Iddaa Odds</Trans> <i className="fas fa-angle-right" />
+                    <Trans>See All {isLive ? 'Live ' : ''}Iddaa Odds</Trans> <i className="fas fa-angle-right" />
                 </span>
             </button>
         </div>

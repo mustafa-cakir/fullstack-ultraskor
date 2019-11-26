@@ -1,17 +1,17 @@
-import React, { Component } from "react";
-import Icon from "./Icon";
-import { Trans } from "react-i18next";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import Icon from './Icon';
+import { Trans } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 class Errors extends Component {
     render() {
-        if (this.props.type === "no-live-game") {
+        if (this.props.type === 'no-live-game') {
             return <NoLiveGame />;
-        } else if (this.props.type === "no-matched-game") {
+        } else if (this.props.type === 'no-matched-game') {
             return <NothingFound />;
-        } else if (this.props.type === "no-fav-game") {
+        } else if (this.props.type === 'no-fav-game') {
             return <NoFavFound />;
-        } else if (this.props.type === "page-not-found") {
+        } else if (this.props.type === 'page-not-found') {
             return <PageNotFound />;
         } else {
             return <Error message={this.props.message} />;
@@ -40,7 +40,7 @@ const NoFavFound = () => {
                     <div className="bold">Whoops!</div>
                     <Trans>No Favorited Match</Trans>
                 </div>
-                <img className="picture mb-4 pt-3" src={"/static/media/not-found.png"} alt="Page Not Found" />
+                <img className="picture mb-4 pt-3" src={'/static/media/not-found.png'} alt="Page Not Found" />
                 <div className="mb-4 subtitle">
                     <Trans>Please uncheck the favorıtes filter to add match to your favorites list.</Trans>.
                 </div>
@@ -57,7 +57,7 @@ const NothingFound = () => {
                     <div className="bold">Whoops!</div>
                     <Trans>No Match Found</Trans>
                 </div>
-                <img className="picture mb-4 pt-3" src={"/static/media/not-found.png"} alt="Page Not Found" />
+                <img className="picture mb-4 pt-3" src={'/static/media/not-found.png'} alt="Page Not Found" />
                 <div className="mb-4 subtitle">
                     <Trans>Please use a different filter</Trans>.
                 </div>
@@ -73,7 +73,7 @@ const PageNotFound = () => {
                 <div className="title">
                     <span className="bold">404.</span> Whoops!
                 </div>
-                <img className="picture mb-4" src={"/static/media/not-found.png"} alt="Page Not Found" />
+                <img className="picture mb-4" src={'/static/media/not-found.png'} alt="Page Not Found" />
                 <p className="mb-4 subtitle">
                     <Trans>We couldn't find the page you are looking for</Trans>
                 </p>
@@ -93,9 +93,9 @@ const Error = props => {
         <div className="not-found error">
             <div className="container text-center">
                 <div className="title">Whoops!</div>
-                <img className="picture mb-4" src={"/static/media/not-found.png"} alt="Page Not Found" />
+                <img className="picture mb-4" src={'/static/media/not-found.png'} alt="Page Not Found" />
                 <p className="mb-4 subtitle">
-                    <Trans>{props.message || ""}</Trans>
+                    <Trans>{props.message || ''}</Trans>
                 </p>
                 <span to="/" className="btn mb-2" onClick={refresh}>
                     <Trans>Refresh the Page</Trans> <Icon name="fas fa-redo ml-1" />

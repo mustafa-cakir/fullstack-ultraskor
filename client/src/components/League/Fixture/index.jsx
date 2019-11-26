@@ -1,12 +1,12 @@
-import React, { useReducer } from "react";
-import PropTypes from "prop-types";
-import axios from "axios";
-import { withTranslation, Trans } from "react-i18next";
-import Icon from "../../common/Icon";
-import Loading from "../../common/Loading";
-import Tournament from "../../common/Tournament";
-import "./Style.scss";
-import Errors from "../../common/Errors";
+import React, { useReducer } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import { withTranslation, Trans } from 'react-i18next';
+import Icon from '../../common/Icon';
+import Loading from '../../common/Loading';
+import Tournament from '../../common/Tournament';
+import './Style.scss';
+import Errors from '../../common/Errors';
 
 const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
     const initialStates = {
@@ -21,7 +21,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
 
     const initGetData = (round, name) => {
         axios
-            .get(`/api/u-tournament/${leagueid}/${seasonid}/matches/round/${round}${name ? `/${name}` : ""}`)
+            .get(`/api/u-tournament/${leagueid}/${seasonid}/matches/round/${round}${name ? `/${name}` : ''}`)
             .then(res => {
                 setState({
                     isLoading: false,
@@ -33,7 +33,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t("Something went wrong")
+                    error: t('Something went wrong')
                 });
             });
     };
@@ -69,13 +69,13 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
                         <div className="row heading align-items-center">
                             <button
                                 type="button"
-                                className={`col col-3 text-left col-nav ${!prevRound ? "not-exist" : ""}`}
-                                onClick={() => (prevRound ? roundClicked(prevRound) : "")}
+                                className={`col col-3 text-left col-nav ${!prevRound ? 'not-exist' : ''}`}
+                                onClick={() => (prevRound ? roundClicked(prevRound) : '')}
                             >
                                 <Icon name="fas fa-chevron-left" /> <Trans>Prev</Trans>
                             </button>
                             <div className="col px-2 col-6 text-center col-dropdown">
-                                <div className={`pure-dropdown${isDropdown ? " open" : ""}`}>
+                                <div className={`pure-dropdown${isDropdown ? ' open' : ''}`}>
                                     <button type="button" className="pure-dropdown-btn" onClick={dropdownClickHandler}>
                                         {roundName ? (
                                             <Trans>{roundName}</Trans>
@@ -84,7 +84,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
                                                 {roundIndex}
                                                 <Trans>th Week</Trans>
                                             </span>
-                                        )}{" "}
+                                        )}{' '}
                                         <Icon name="fas fa-caret-down" />
                                     </button>
                                     <div className="dropdown">
@@ -117,8 +117,8 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
                                                     <li
                                                         key={`${round.name}_${round.round}`}
                                                         className={
-                                                            (isActive ? "active" : "") +
-                                                            (isThisTournament ? " this-round" : "")
+                                                            (isActive ? 'active' : '') +
+                                                            (isThisTournament ? ' this-round' : '')
                                                         }
                                                     >
                                                         <button type="button" onClick={() => roundClicked(round)}>
@@ -140,15 +140,15 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
                             </div>
                             <button
                                 type="button"
-                                className={`col col-3 text-right col-nav ${!nextRound ? "not-exist" : ""}`}
-                                onClick={() => (nextRound ? roundClicked(nextRound) : "")}
+                                className={`col col-3 text-right col-nav ${!nextRound ? 'not-exist' : ''}`}
+                                onClick={() => (nextRound ? roundClicked(nextRound) : '')}
                             >
                                 <Trans>Next</Trans> <Icon name="fas fa-chevron-right" />
                             </button>
                         </div>
                     </div>
                     <div className="fixture-list position-relative">
-                        {isLoading ? <Loading type="inside" /> : ""}
+                        {isLoading ? <Loading type="inside" /> : ''}
                         <Tournament tournaments={roundMatchesLocal.tournaments} from="fixture" selected="h2h" />
                     </div>
                 </div>
@@ -165,4 +165,4 @@ Fixture.propTypes = {
 
 Fixture.defaultProps = {};
 
-export default withTranslation("translations")(Fixture);
+export default withTranslation('translations')(Fixture);

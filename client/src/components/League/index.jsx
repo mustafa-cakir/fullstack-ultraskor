@@ -1,17 +1,17 @@
-import React, { useEffect, useReducer } from "react";
-import { Swiper, Slide } from "react-dynamic-swiper";
-import axios from "axios";
-import { Tabs, Tab } from "@material-ui/core";
-import { withTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import Fixture from "./Fixture";
-import TeamOfTheWeek from "./TeamOfTheWeek";
-import Loading from "../common/Loading";
-import Errors from "../common/Errors";
-import StandingTable from "../common/StandingTable";
-import "./Style.scss";
-import UpdateMetaLeague from "../../core/utils/updatemeta/league";
-import Footer from "../common/Footer";
+import React, { useEffect, useReducer } from 'react';
+import { Swiper, Slide } from 'react-dynamic-swiper';
+import axios from 'axios';
+import { Tabs, Tab } from '@material-ui/core';
+import { withTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import Fixture from './Fixture';
+import TeamOfTheWeek from './TeamOfTheWeek';
+import Loading from '../common/Loading';
+import Errors from '../common/Errors';
+import StandingTable from '../common/StandingTable';
+import './Style.scss';
+import UpdateMetaLeague from '../../core/utils/updatemeta/league';
+import Footer from '../common/Footer';
 
 const Leageue = ({ t }) => {
     const { leagueid, seasonid } = useParams();
@@ -51,7 +51,7 @@ const Leageue = ({ t }) => {
         setState({
             swiper: swiperInstance
         });
-        swiperInstance.on("slideChange", () => {
+        swiperInstance.on('slideChange', () => {
             setState({
                 tabIndex: swiperInstance.activeIndex
             });
@@ -75,7 +75,7 @@ const Leageue = ({ t }) => {
     if (standingsTables && standingsTables.length > 0)
         slides.push({
             id: 1,
-            label: t("LANG_Standing"),
+            label: t('LANG_Standing'),
             Component: StandingTable,
             props: {
                 standingsTables
@@ -84,7 +84,7 @@ const Leageue = ({ t }) => {
 
     slides.push({
         id: 0,
-        label: t("Fixture"),
+        label: t('Fixture'),
         Component: Fixture,
         props: {
             roundMatches,
@@ -97,7 +97,7 @@ const Leageue = ({ t }) => {
     if (tournamentInfo && tournamentInfo.teamOfTheWeek)
         slides.push({
             id: 2,
-            label: t("Team Of The Week"),
+            label: t('Team Of The Week'),
             Component: TeamOfTheWeek,
             props: {
                 teamOfTheWeek: tournamentInfo.teamOfTheWeek
@@ -144,4 +144,4 @@ const Leageue = ({ t }) => {
     );
 };
 
-export default withTranslation("translations")(Leageue);
+export default withTranslation('translations')(Leageue);

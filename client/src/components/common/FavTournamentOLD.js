@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import Event from "./Event";
-import { Trans, withTranslation } from "react-i18next";
-import Icon from "./Icon";
+import React, { Component } from 'react';
+import Event from './Event';
+import { Trans, withTranslation } from 'react-i18next';
+import Icon from './Icon';
 
 class FavTournamentOLD extends Component {
     render() {
@@ -17,7 +17,7 @@ class FavTournamentOLD extends Component {
                         </div>
                     </div>
                     {this.props.favEventsList.map((event, i) => {
-                        if (this.props.isLive && event.status.type !== "inprogress") return false;
+                        if (this.props.isLive && event.status.type !== 'inprogress') return false;
                         return (
                             <Event
                                 key={i}
@@ -36,4 +36,4 @@ class FavTournamentOLD extends Component {
     }
 }
 
-export default withTranslation("translations")(FavTournamentOLD);
+export default withTranslation('translations')(FavTournamentOLD);

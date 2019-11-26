@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import logo from "../assets/images/logo.png";
-import Icon from "./common/Icon";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import { Trans, withTranslation } from "react-i18next";
-import LanguageSwitcher from "./common/LanguageSwitcher";
-import Search from "./Search";
-import { generateSlug } from "../core/utils/helper";
-import iconStandings from "../../src/assets/images/navbar-icon-standings.png";
-import iconFixture from "../../src/assets/images/navbar-icon-fixture.png";
-import Switch from "./common/Switch";
-import { scrollTopOnClick } from "../core/utils";
+import React, { Component } from 'react';
+import logo from '../assets/images/logo.png';
+import Icon from './common/Icon';
+import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { Trans, withTranslation } from 'react-i18next';
+import LanguageSwitcher from './common/LanguageSwitcher';
+import Search from './Search';
+import { generateSlug } from '../core/utils/helper';
+import iconStandings from '../../src/assets/images/navbar-icon-standings.png';
+import iconFixture from '../../src/assets/images/navbar-icon-fixture.png';
+import Switch from './common/Switch';
+import { scrollTopOnClick } from '../core/utils';
 
 class Navbar extends Component {
     constructor(props) {
@@ -34,10 +34,10 @@ class Navbar extends Component {
     }
 
     toggleSearchBar = () => {
-        this.bodyClassList.remove("navbar-opened");
-        this.bodyClassList.toggle("searchbar-opened");
+        this.bodyClassList.remove('navbar-opened');
+        this.bodyClassList.toggle('searchbar-opened');
         setTimeout(() => {
-            if (this.bodyClassList.contains("searchbar-opened")) this.setState({ searchbarOpened: true });
+            if (this.bodyClassList.contains('searchbar-opened')) this.setState({ searchbarOpened: true });
         }, 500);
     };
 
@@ -46,13 +46,13 @@ class Navbar extends Component {
             this.goBack();
             scrollTopOnClick();
         } else {
-            this.bodyClassList.remove("searchbar-opened");
-            this.bodyClassList.toggle("navbar-opened");
+            this.bodyClassList.remove('searchbar-opened');
+            this.bodyClassList.toggle('navbar-opened');
         }
     };
 
     hideSearch = () => {
-        this.bodyClassList.remove("searchbar-opened");
+        this.bodyClassList.remove('searchbar-opened');
         this.setState({ searchbarOpened: false });
     };
 
@@ -75,7 +75,7 @@ class Navbar extends Component {
     }
 
     getFromLocaleStorage() {
-        const persistState = JSON.parse(localStorage.getItem("ultraskor_homepage"));
+        const persistState = JSON.parse(localStorage.getItem('ultraskor_homepage'));
         if (
             persistState &&
             (persistState.redScoreMuted || persistState.redScoreShrinked || persistState.redScoreFavOnly)
@@ -89,9 +89,9 @@ class Navbar extends Component {
     }
 
     setToLocaleStorage(newState, status) {
-        const currentStore = JSON.parse(localStorage.getItem("ultraskor_homepage")) || {};
+        const currentStore = JSON.parse(localStorage.getItem('ultraskor_homepage')) || {};
         currentStore[newState] = status;
-        localStorage.setItem("ultraskor_homepage", JSON.stringify(currentStore));
+        localStorage.setItem('ultraskor_homepage', JSON.stringify(currentStore));
     }
 
     redScoreMuteClickHandler(e) {
@@ -101,7 +101,7 @@ class Navbar extends Component {
             {
                 redScoreMuted: newState
             },
-            this.setToLocaleStorage("redScoreMuted", newState)
+            this.setToLocaleStorage('redScoreMuted', newState)
         );
     }
 
@@ -112,7 +112,7 @@ class Navbar extends Component {
             {
                 redScoreFavOnly: newState
             },
-            this.setToLocaleStorage("redScoreFavOnly", newState)
+            this.setToLocaleStorage('redScoreFavOnly', newState)
         );
     }
 
@@ -123,7 +123,7 @@ class Navbar extends Component {
             {
                 redScoreShrinked: newState
             },
-            this.setToLocaleStorage("redScoreShrinked", newState)
+            this.setToLocaleStorage('redScoreShrinked', newState)
         );
     }
 
@@ -131,7 +131,7 @@ class Navbar extends Component {
         const { t } = this.props;
         const isPrev = this.props.history.location.state ? this.props.history.location.state.isPrev === true : false;
         return (
-            <header className={"header" + (isPrev ? " goback-active" : "")} ref={this.headerEl}>
+            <header className={'header' + (isPrev ? ' goback-active' : '')} ref={this.headerEl}>
                 <div className="header-animation" />
                 <div className="container">
                     <div className="row">
@@ -143,7 +143,7 @@ class Navbar extends Component {
                                 <span className="ham-border ham-border-bottom">
                                     <span className="ham-border-inner ham-border-inner-bottom" />
                                 </span>
-                                <span className={"goback-text" + (isPrev ? " show" : "")}>
+                                <span className={'goback-text' + (isPrev ? ' show' : '')}>
                                     <Trans>Back</Trans>
                                 </span>
                             </div>
@@ -152,10 +152,10 @@ class Navbar extends Component {
                             <a
                                 href="/"
                                 className="header-logo"
-                                title={t("Match Results, Stats, Live Scores, Match Lineups and Weekend Highlights")}
+                                title={t('Match Results, Stats, Live Scores, Match Lineups and Weekend Highlights')}
                                 onClick={scrollTopOnClick}
                             >
-                                <img src={logo} className="logo" alt={t("UltraSkor - Live Scores")} />
+                                <img src={logo} className="logo" alt={t('UltraSkor - Live Scores')} />
                                 <div className="header-title pl-0">
                                     <strong>ultra</strong>skor.com
                                 </div>
@@ -170,7 +170,7 @@ class Navbar extends Component {
                 </div>
                 <ul className="nav-list">
                     <li>
-                        <a href="/" className="p-0" title={t("Live Scores")}>
+                        <a href="/" className="p-0" title={t('Live Scores')}>
                             <div className="row align-items-center m-0">
                                 <div className="col col-icon">
                                     <div className="bg">
@@ -194,7 +194,7 @@ class Navbar extends Component {
                         >
                             <div className="col col-icon">
                                 <div className="bg">
-                                    <img src={iconStandings} alt={t("Live Standings")} />
+                                    <img src={iconStandings} alt={t('Live Standings')} />
                                 </div>
                             </div>
                             <div className="col col-text">
@@ -213,7 +213,7 @@ class Navbar extends Component {
                                 )}
                             </div>
                         </div>
-                        {this.state.standingMenuOpened ? <PopularLeagues t={this.props.t} type="standing" /> : ""}
+                        {this.state.standingMenuOpened ? <PopularLeagues t={this.props.t} type="standing" /> : ''}
                         <hr className="separator" />
                         <div
                             className="row align-items-center m-0 clickable"
@@ -221,7 +221,7 @@ class Navbar extends Component {
                         >
                             <div className="col col-icon">
                                 <div className="bg">
-                                    <img src={iconFixture} alt={t("Fixtures")} />
+                                    <img src={iconFixture} alt={t('Fixtures')} />
                                 </div>
                             </div>
                             <div className="col col-text">
@@ -240,7 +240,7 @@ class Navbar extends Component {
                                 )}
                             </div>
                         </div>
-                        {this.state.fixtureMenuOpened ? <PopularLeagues t={this.props.t} type="fixture" /> : ""}
+                        {this.state.fixtureMenuOpened ? <PopularLeagues t={this.props.t} type="fixture" /> : ''}
                     </li>
                     <li className="separator">
                         <Trans>Settings</Trans>
@@ -318,74 +318,74 @@ const PopularLeagues = props => {
     const { t } = props;
     let popularLeagues = [
         {
-            name: "UEFA Champions League",
-            country: "World",
+            name: 'UEFA Champions League',
+            country: 'World',
             seasonId: 23766,
             uniqueId: 7
         },
         {
-            name: "UEFA Europa League",
-            country: "World",
+            name: 'UEFA Europa League',
+            country: 'World',
             seasonId: 23755,
             uniqueId: 679
         },
         {
-            name: "Süper Lig",
-            country: "Turkey",
+            name: 'Süper Lig',
+            country: 'Turkey',
             seasonId: 24407,
             uniqueId: 52
         },
         {
-            name: "Premier League",
-            country: "England",
+            name: 'Premier League',
+            country: 'England',
             seasonId: 23776,
             uniqueId: 17
         },
         {
-            name: "LaLiga",
-            country: "Spain",
+            name: 'LaLiga',
+            country: 'Spain',
             seasonId: 24127,
             uniqueId: 8
         },
         {
-            name: "Bundesliga",
-            country: "Germany",
+            name: 'Bundesliga',
+            country: 'Germany',
             seasonId: 23538,
             uniqueId: 35
         },
         {
-            name: "Serie A",
-            country: "Italy",
+            name: 'Serie A',
+            country: 'Italy',
             seasonId: 24644,
             uniqueId: 23
         },
         {
-            name: "Ligue 1",
-            country: "France",
+            name: 'Ligue 1',
+            country: 'France',
             seasonId: 23872,
             uniqueId: 34
         },
         {
-            name: "Eredivisie",
-            country: "Netherlands",
+            name: 'Eredivisie',
+            country: 'Netherlands',
             seasonId: 23873,
             uniqueId: 37
         },
         {
-            name: "Primeira Liga",
-            country: "Portugal",
+            name: 'Primeira Liga',
+            country: 'Portugal',
             seasonId: 24150,
             uniqueId: 238
         },
         {
-            name: "Premier Liga",
-            country: "Russia",
+            name: 'Premier Liga',
+            country: 'Russia',
             seasonId: 23682,
             uniqueId: 203
         },
         {
-            name: "Championship",
-            country: "England",
+            name: 'Championship',
+            country: 'England',
             seasonId: 23976,
             uniqueId: 18
         }
@@ -396,22 +396,22 @@ const PopularLeagues = props => {
                 <li key={index}>
                     <Link
                         to={{
-                            pathname: `/${t("league")}/${generateSlug(t(item.country))}-${generateSlug(
+                            pathname: `/${t('league')}/${generateSlug(t(item.country))}-${generateSlug(
                                 t(item.name)
-                            )}${t("-standing-")}${item.uniqueId}${t("-season-")}${item.seasonId ? item.seasonId : "0"}${
-                                props.type === "fixture" ? "/1" : ""
+                            )}${t('-standing-')}${item.uniqueId}${t('-season-')}${item.seasonId ? item.seasonId : '0'}${
+                                props.type === 'fixture' ? '/1' : ''
                             }`,
                             state: { isPrev: true }
                         }}
                         onClick={() => {
-                            document.body.classList.remove("navbar-opened");
+                            document.body.classList.remove('navbar-opened');
                         }}
                     >
                         <img
-                            src={window.ImageServer + "/images/u-tournament/" + item.uniqueId + ".png"}
-                            alt={t(item.country) + " - " + t(item.name)}
+                            src={window.ImageServer + '/images/u-tournament/' + item.uniqueId + '.png'}
+                            alt={t(item.country) + ' - ' + t(item.name)}
                         />
-                        {item.country !== "World" ? t(item.country) + " - " : ""}
+                        {item.country !== 'World' ? t(item.country) + ' - ' : ''}
                         {t(item.name)}
                     </Link>
                 </li>
@@ -420,4 +420,4 @@ const PopularLeagues = props => {
     );
 };
 
-export default withTranslation("translations")(withRouter(Navbar));
+export default withTranslation('translations')(withRouter(Navbar));

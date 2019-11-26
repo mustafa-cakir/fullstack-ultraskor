@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import moment from "moment";
-import { Link } from "react-router-dom";
-import { Trans, withTranslation } from "react-i18next";
-import update from "react-addons-update";
-import { generateSlug, storeScrollY } from "../../core/utils/helper";
-import { askForPermissioToReceiveNotifications } from "../../core/utils/web-push";
-import Icon from "./Icon";
+import React, { Component } from 'react';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { Trans, withTranslation } from 'react-i18next';
+import update from 'react-addons-update';
+import { generateSlug, storeScrollY } from '../../core/utils/helper';
+import { askForPermissioToReceiveNotifications } from '../../core/utils/web-push';
+import Icon from './Icon';
 
 class Event extends Component {
     constructor(props) {
@@ -40,30 +40,30 @@ class Event extends Component {
         if (event.teams.home.name !== prevProps.event.teams.home.name) return false;
 
         if (prevProps.event.scores.away !== event.scores.away) {
-            if (typeof prevProps.event.scores.away === "undefined") {
+            if (typeof prevProps.event.scores.away === 'undefined') {
                 return false;
             }
             if (!this.awayTeamEl.current) return false;
 
-            this.awayTeamEl.current.classList.add("flash-blinker-5");
+            this.awayTeamEl.current.classList.add('flash-blinker-5');
             clearTimeout(this.liveBlinkerTimeout);
             this.liveBlinkerTimeout = setTimeout(() => {
                 if (!this.awayTeamEl) return false;
                 if (!this.awayTeamEl.current) return false;
-                this.awayTeamEl.current.classList.remove("flash-blinker-5");
+                this.awayTeamEl.current.classList.remove('flash-blinker-5');
                 return false;
             }, 10000);
         }
 
         if (event.scores.home !== prevProps.event.scores.home) {
-            if (typeof prevProps.event.scores.home === "undefined") return false;
+            if (typeof prevProps.event.scores.home === 'undefined') return false;
             if (!this.homeTeamEl.current) return false;
-            this.homeTeamEl.current.classList.add("flash-blinker-5");
+            this.homeTeamEl.current.classList.add('flash-blinker-5');
             clearTimeout(this.liveBlinkerTimeout);
             this.liveBlinkerTimeout = setTimeout(() => {
                 if (!this.homeTeamEl) return false;
                 if (!this.homeTeamEl.current) return false;
-                this.homeTeamEl.current.classList.remove("flash-blinker-5");
+                this.homeTeamEl.current.classList.remove('flash-blinker-5');
                 return false;
             }, 10000);
         }
@@ -79,49 +79,49 @@ class Event extends Component {
         const liveBlinkerCodes = [6, 7];
         const { from, event } = this.props;
         switch (event.status.type) {
-            case "inprogress":
+            case 'inprogress':
                 text = (
                     <div className="col event-time pr-0 pl-2 red font-weight-bold">
                         <Trans>{event.statusBoxContent}</Trans>
-                        {event.status.code === 6 ? "" : ""}
+                        {event.status.code === 6 ? '' : ''}
                         {liveBlinkerCodes.indexOf(event.status.code) > -1 ? (
                             // eslint-disable-next-line react/no-unescaped-entities
                             <span className="live-blinker">'</span>
                         ) : (
-                            ""
+                            ''
                         )}
                     </div>
                 );
                 break;
-            case "notstarted":
+            case 'notstarted':
                 text = (
                     <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
                         <div className="day">
-                            {moment(event.startTimestamp).isSame(moment(), "day") ? (
+                            {moment(event.startTimestamp).isSame(moment(), 'day') ? (
                                 <Trans>Today</Trans>
                             ) : (
-                                <span>{moment(event.startTimestamp).format("D MMM")}</span>
+                                <span>{moment(event.startTimestamp).format('D MMM')}</span>
                             )}
                         </div>
-                        {moment(event.startTimestamp).format("HH:mm")}
+                        {moment(event.startTimestamp).format('HH:mm')}
                     </div>
                 );
                 break;
-            case "canceled":
+            case 'canceled':
                 text = (
                     <div className="col event-time pr-0 pl-2 red small-text line-clamp">
                         <Trans>Cancelled</Trans>
                     </div>
                 );
                 break;
-            case "postponed":
+            case 'postponed':
                 text = (
                     <div className="col event-time pr-0 pl-2 red small-text line-clamp">
                         <Trans>Postponed</Trans>
                     </div>
                 );
                 break;
-            case "interrupted":
+            case 'interrupted':
                 text = (
                     <div className="col event-time pr-0 pl-2 red small-text line-clamp">
                         <Trans>Interrupted</Trans>
@@ -130,9 +130,9 @@ class Event extends Component {
                 break;
             default:
                 text =
-                    from === "h2h" || from === "fixture" ? (
+                    from === 'h2h' || from === 'fixture' ? (
                         <div className="col event-time pr-0 pl-2 full-time in-the-past">
-                            {moment(event.startTimestamp).format("DD.MM.YY")}
+                            {moment(event.startTimestamp).format('DD.MM.YY')}
                         </div>
                     ) : (
                         <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
@@ -148,9 +148,9 @@ class Event extends Component {
         const { id: eventId } = event;
 
         let newFavEvents = [];
-        const method = favEvents.indexOf(eventId) < 0 ? "subscribeToTopic" : "unsubscribeFromTopic";
+        const method = favEvents.indexOf(eventId) < 0 ? 'subscribeToTopic' : 'unsubscribeFromTopic';
 
-        if (method === "subscribeToTopic") {
+        if (method === 'subscribeToTopic') {
             newFavEvents = update(favEvents, { $push: [eventId] });
         } else {
             newFavEvents = favEvents.filter(item => item !== eventId);
@@ -161,10 +161,10 @@ class Event extends Component {
         askForPermissioToReceiveNotifications().then(token => {
             const { updateParentState } = this.props;
             fetch(`/api/webpush`, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     token: [token],
@@ -201,53 +201,53 @@ class Event extends Component {
         const { favEventLoading } = this.state;
         const favActive = favEvents.indexOf(event.id) > -1;
         return (
-            <div className={`event-container ${index % 2 !== 0 && "bg-gray"} ${customClass || ""}`}>
+            <div className={`event-container ${index % 2 !== 0 && 'bg-gray'} ${customClass || ''}`}>
                 {this.isInProgress()}
                 <Link
                     onClick={storeScrollY}
                     to={{
-                        pathname: `/${t("match")}/${generateSlug(
+                        pathname: `/${t('match')}/${generateSlug(
                             `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
-                        )}-${t("live-score")}-${event.id}`,
+                        )}-${t('live-score')}-${event.id}`,
                         state: { isPrev: true, scrollY: 123 }
                     }}
-                    className={`event-link col p-0 row m-0 ${event.winner ? `winner-${event.winner}` : ""}`}
+                    className={`event-link col p-0 row m-0 ${event.winner ? `winner-${event.winner}` : ''}`}
                     title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
-                        "click for live scores, lineup and stats"
+                        'click for live scores, lineup and stats'
                     )}`}
                 >
                     <span className="col event-team home text-right pr-0 pl-2">
-                        {event.redCards.home > 0 ? <span className="red-card">{event.redCards.home}</span> : ""}
+                        {event.redCards.home > 0 ? <span className="red-card">{event.redCards.home}</span> : ''}
                         {t(event.teams.home.name)}
                     </span>
                     <span
                         className={`col event-score text-center font-weight-bold px-0${
-                            event.status.type === "inprogress" ? " live" : ""
+                            event.status.type === 'inprogress' ? ' live' : ''
                         }`}
                     >
-                        {typeof event.scores.home !== "undefined" || typeof event.scores.away !== "undefined" ? (
+                        {typeof event.scores.home !== 'undefined' || typeof event.scores.away !== 'undefined' ? (
                             <>
                                 <span ref={this.homeTeamEl}>{event.scores.home || 0}</span>
                                 <span className="score-separator">:</span>
                                 <span ref={this.awayTeamEl}>{event.scores.away || 0}</span>
                             </>
                         ) : (
-                            " - "
+                            ' - '
                         )}
                     </span>
                     <span className="col event-team away text-left pl-0 pr-2">
-                        {event.redCards.away > 0 ? <span className="red-card">{event.redCards.away}</span> : ""}
+                        {event.redCards.away > 0 ? <span className="red-card">{event.redCards.away}</span> : ''}
                         {t(event.teams.away.name)}
                     </span>
                 </Link>
-                {from === "h2h" || from === "fixture" ? (
+                {from === 'h2h' || from === 'fixture' ? (
                     <div className="col event-fav half-time-score pl-0 text-right pr-2">
-                        {selected !== "h2h" ? (
+                        {selected !== 'h2h' ? (
                             <TeamForm selectedId={selectedId} event={event} />
                         ) : (
                             <span>
-                                {typeof event.scores.ht.home !== "undefined" &&
-                                    typeof event.scores.ht.away !== "undefined" &&
+                                {typeof event.scores.ht.home !== 'undefined' &&
+                                    typeof event.scores.ht.away !== 'undefined' &&
                                     `(${event.scores.ht.home || 0} - ${event.scores.ht.away || 0})`}
                             </span>
                         )}
@@ -260,9 +260,9 @@ class Event extends Component {
                         onKeyDown={this.favClickHandler.bind(this)}
                         onClick={this.favClickHandler.bind(this)}
                     >
-                        {favEventLoading ? <Icon name="fas fa-spinner fav-loading" /> : ""}
-                        {(favContainer || favActive || event.status.type !== "finished") && (
-                            <Icon name={`fa-star${favContainer || favActive ? " fas active" : " far"}`} />
+                        {favEventLoading ? <Icon name="fas fa-spinner fav-loading" /> : ''}
+                        {(favContainer || favActive || event.status.type !== 'finished') && (
+                            <Icon name={`fa-star${favContainer || favActive ? ' fas active' : ' far'}`} />
                         )}
                     </div>
                 )}
@@ -275,14 +275,14 @@ const TeamForm = props => {
     const { event, selectedId } = props;
     let result = null;
     if (event.winner === 1) {
-        result = parseFloat(selectedId) === event.teams.home.id ? "W" : "L";
+        result = parseFloat(selectedId) === event.teams.home.id ? 'W' : 'L';
     } else if (event.winner === 2) {
-        result = parseFloat(selectedId) === event.teams.home.id ? "L" : "W";
+        result = parseFloat(selectedId) === event.teams.home.id ? 'L' : 'W';
     } else if (event.winner === 3) {
-        result = "D";
+        result = 'D';
     }
 
     return result ? <span className={`team-form team-form-${result}`}>{result}</span> : <span />;
 };
 
-export default withTranslation("translations")(Event);
+export default withTranslation('translations')(Event);

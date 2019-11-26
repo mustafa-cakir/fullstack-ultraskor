@@ -1,8 +1,8 @@
-import React from "react";
-import { withTranslation, Trans } from "react-i18next";
-import Icon from "../../common/Icon";
-import { printImageSrc } from "../../../core/utils";
-import { ratingClass } from "../../../core/utils/helper";
+import React from 'react';
+import { withTranslation, Trans } from 'react-i18next';
+import Icon from '../../common/Icon';
+import { printImageSrc } from '../../../core/utils';
+import { ratingClass } from '../../../core/utils/helper';
 
 const BestPlayer = ({ event, swipeByTabId }) => {
     if (!event || !event.bestAwayTeamPlayer || !event.bestHomeTeamPlayer) return false;
@@ -54,4 +54,4 @@ const BestPlayer = ({ event, swipeByTabId }) => {
     );
 };
 
-export default withTranslation("translations")(BestPlayer);
+export default withTranslation('translations')(BestPlayer);

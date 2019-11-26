@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import { Trans, withTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 // import AdSense from "react-adsense";
-import { generateSlug, flagImg, updateQueryString, storeScrollY } from "../../core/utils/helper";
-import Event from "./Event";
+import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../core/utils/helper';
+import Event from './Event';
 
-import Errors from "./Errors";
+import Errors from './Errors';
 
 class Tournament extends Component {
     lazyLoadLoadMoreBtn() {
         const { lazyLoadCount, updateParentState } = this.props;
         const newLazyLoadCount = parseFloat(lazyLoadCount) + 10;
-        const newUrl = updateQueryString("load", newLazyLoadCount);
+        const newUrl = updateQueryString('load', newLazyLoadCount);
 
         if (window.history.replaceState) {
-            window.history.replaceState("data", `${document.title} - ${newLazyLoadCount}`, newUrl);
+            window.history.replaceState('data', `${document.title} - ${newLazyLoadCount}`, newUrl);
         }
 
         updateParentState({
@@ -43,7 +43,7 @@ class Tournament extends Component {
                 {tournaments.map((tournament, index) => {
                     if (isLive) {
                         const checkLive = tournament.events.filter(event => {
-                            return event.status.type === "inprogress";
+                            return event.status.type === 'inprogress';
                         });
                         if (checkLive.length < 1) return false;
                     }
@@ -80,31 +80,31 @@ class Tournament extends Component {
                                 <Link
                                     onClick={storeScrollY}
                                     to={{
-                                        pathname: `/${t("league")}/${generateSlug(
+                                        pathname: `/${t('league')}/${generateSlug(
                                             t(tournament.category.name)
                                         )}-${generateSlug(
                                             tournament.tournament.name[i18n.language]
                                                 ? tournament.tournament.name[i18n.language]
                                                 : tournament.tournament.name
-                                        )}${t("-standing-")}${tournament.tournament.uniqueId}${t("-season-")}${
-                                            tournament.season ? tournament.season.id : "0"
+                                        )}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${
+                                            tournament.season ? tournament.season.id : '0'
                                         }`,
                                         state: { isPrev: true }
                                     }}
                                     className="col tournament-name"
                                     title={`${t(tournament.category.name)} - ${
                                         tournament.tournament.name[i18n.language]
-                                    }  ${t("click for standings, highlights and league fixtures")}`}
+                                    }  ${t('click for standings, highlights and league fixtures')}`}
                                 >
                                     <strong>
                                         <Trans>{tournament.category.name}</Trans>
-                                    </strong>{" "}
+                                    </strong>{' '}
                                     - {tournament.tournament.name[i18n.language]}
                                 </Link>
                             </div>
 
                             {tournament.events.map((event, k) => {
-                                if (isLive && event.status.type !== "inprogress") return false;
+                                if (isLive && event.status.type !== 'inprogress') return false;
                                 return (
                                     <Event
                                         key={event.id}
@@ -130,13 +130,13 @@ class Tournament extends Component {
                             {/*)}*/}
                         </React.Fragment>
                     ) : (
-                        ""
+                        ''
                     );
                 })}
-                {tournamentCount < 1 ? <Errors type="no-matched-game" /> : ""}
+                {tournamentCount < 1 ? <Errors type="no-matched-game" /> : ''}
             </>
         );
     }
 }
 
-export default withTranslation("translations")(Tournament);
+export default withTranslation('translations')(Tournament);

@@ -1,11 +1,11 @@
-import React, { PureComponent } from "react";
-import { Link } from "react-router-dom";
-import i18n from "i18next";
-import { withTranslation, Trans } from "react-i18next";
-import iconIOS from "../../assets/images/app-stores-ios.png";
-import iconPlay from "../../assets/images/app-stores-play.png";
-import Icon from "./Icon";
-import { generateSlug } from "../../core/utils/helper";
+import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
+import i18n from 'i18next';
+import { withTranslation, Trans } from 'react-i18next';
+import iconIOS from '../../assets/images/app-stores-ios.png';
+import iconPlay from '../../assets/images/app-stores-play.png';
+import Icon from './Icon';
+import { generateSlug } from '../../core/utils/helper';
 
 class BottomParagrah extends PureComponent {
     constructor(props) {
@@ -64,16 +64,16 @@ class BottomParagrah extends PureComponent {
                                 <ul className="popular-matches-ul">
                                     {popularEvents.map((event, index) => (
                                         <li key={index}>
-                                            <Icon name="fas fa-chevron-right" />{" "}
+                                            <Icon name="fas fa-chevron-right" />{' '}
                                             <Link
                                                 to={{
-                                                    pathname: `/${t("match")}/${generateSlug(
-                                                        t(event.teams.home.name) + "-" + t(event.teams.home.name)
-                                                    )}-${t("live-score")}-${event.id}`,
+                                                    pathname: `/${t('match')}/${generateSlug(
+                                                        t(event.teams.home.name) + '-' + t(event.teams.home.name)
+                                                    )}-${t('live-score')}-${event.id}`,
                                                     state: { isPrev: true }
                                                 }}
                                                 title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
-                                                    "click for live scores, lineup and stats"
+                                                    'click for live scores, lineup and stats'
                                                 )}`}
                                             >
                                                 {event.teams.home.name} - {event.teams.away.name}
@@ -82,7 +82,7 @@ class BottomParagrah extends PureComponent {
                                     ))}
                                 </ul>
                             ) : (
-                                ""
+                                ''
                             )}
                             <h1 className="popular-leagues-title">
                                 <Trans>Popular Leagues</Trans>
@@ -92,29 +92,29 @@ class BottomParagrah extends PureComponent {
                                     <li key={index}>
                                         <Link
                                             to={{
-                                                pathname: `/${t("league")}/${generateSlug(
+                                                pathname: `/${t('league')}/${generateSlug(
                                                     t(item.country)
-                                                )}-${generateSlug(t(item.name))}${t("-standing-")}${item.uniqueId}${t(
-                                                    "-season-"
-                                                )}${item.seasonId ? item.seasonId : "0"}`,
+                                                )}-${generateSlug(t(item.name))}${t('-standing-')}${item.uniqueId}${t(
+                                                    '-season-'
+                                                )}${item.seasonId ? item.seasonId : '0'}`,
                                                 state: { isPrev: true }
                                             }}
                                             title={`${t(item.country)} - ${t(item.name)} ${t(
-                                                "click for standings, highlights and league fixtures"
+                                                'click for standings, highlights and league fixtures'
                                             )}`}
                                         >
                                             <img
                                                 src={
                                                     window.ImageServer +
-                                                    "/images/u-tournament/" +
+                                                    '/images/u-tournament/' +
                                                     item.uniqueId +
-                                                    ".png"
+                                                    '.png'
                                                 }
                                                 alt={`${t(item.country)} - ${t(item.name)} ${t(
-                                                    "click for standings, highlights and league fixtures"
+                                                    'click for standings, highlights and league fixtures'
                                                 )}`}
                                             />
-                                            {item.country !== "World" ? t(item.country) + " - " : ""}
+                                            {item.country !== 'World' ? t(item.country) + ' - ' : ''}
                                             {t(item.name)}
                                         </Link>
                                     </li>
@@ -126,8 +126,8 @@ class BottomParagrah extends PureComponent {
                             <img className="app-download-icon ios" src={iconIOS} alt="Get our app on App Store" />
                             <img className="app-download-icon ios" src={iconPlay} alt="Get our app on App Store" />
                         </div>
-                        <div className={"col col-12 col-md-6 col-about-us " + (!this.state.expand ? "shrink" : "")}>
-                            {i18n.language === "en" ? englishSeoText() : turkishSeoText()}
+                        <div className={'col col-12 col-md-6 col-about-us ' + (!this.state.expand ? 'shrink' : '')}>
+                            {i18n.language === 'en' ? englishSeoText() : turkishSeoText()}
                             {!this.state.expand ? (
                                 <div className="readmore" onClick={this.clickHandlerExpand}>
                                     <Icon name="fas fa-chevron-down" /> <Trans>Read more</Trans>
@@ -143,74 +143,74 @@ class BottomParagrah extends PureComponent {
 
 const popularLeagues = [
     {
-        name: "UEFA Champions League",
-        country: "World",
+        name: 'UEFA Champions League',
+        country: 'World',
         seasonId: 23766,
         uniqueId: 7
     },
     {
-        name: "UEFA Europa League",
-        country: "World",
+        name: 'UEFA Europa League',
+        country: 'World',
         seasonId: 23755,
         uniqueId: 679
     },
     {
-        name: "Süper Lig",
-        country: "Turkey",
+        name: 'Süper Lig',
+        country: 'Turkey',
         seasonId: 24407,
         uniqueId: 52
     },
     {
-        name: "Premier League",
-        country: "England",
+        name: 'Premier League',
+        country: 'England',
         seasonId: 23776,
         uniqueId: 17
     },
     {
-        name: "LaLiga",
-        country: "Spain",
+        name: 'LaLiga',
+        country: 'Spain',
         seasonId: 24127,
         uniqueId: 8
     },
     {
-        name: "Bundesliga",
-        country: "Germany",
+        name: 'Bundesliga',
+        country: 'Germany',
         seasonId: 23538,
         uniqueId: 35
     },
     {
-        name: "Serie A",
-        country: "Italy",
+        name: 'Serie A',
+        country: 'Italy',
         seasonId: 24644,
         uniqueId: 23
     },
     {
-        name: "Ligue 1",
-        country: "France",
+        name: 'Ligue 1',
+        country: 'France',
         seasonId: 23872,
         uniqueId: 34
     },
     {
-        name: "Eredivisie",
-        country: "Netherlands",
+        name: 'Eredivisie',
+        country: 'Netherlands',
         seasonId: 23873,
         uniqueId: 37
     },
     {
-        name: "Primeira Liga",
-        country: "Portugal",
+        name: 'Primeira Liga',
+        country: 'Portugal',
         seasonId: 24150,
         uniqueId: 238
     },
     {
-        name: "Premier Liga",
-        country: "Russia",
+        name: 'Premier Liga',
+        country: 'Russia',
         seasonId: 23682,
         uniqueId: 203
     },
     {
-        name: "Championship",
-        country: "England",
+        name: 'Championship',
+        country: 'England',
         seasonId: 23976,
         uniqueId: 18
     }
@@ -329,4 +329,4 @@ const turkishSeoText = () => {
     );
 };
 
-export default withTranslation("translations")(BottomParagrah);
+export default withTranslation('translations')(BottomParagrah);
