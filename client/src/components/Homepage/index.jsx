@@ -58,7 +58,11 @@ const Homepage = ({ t, i18n, socket }) => {
     const { date } = useParams();
     const location = useLocation();
     const { pathname: page } = location;
-    const currentDate = date || moment().format('YYYY-MM-DD');
+    const currentDate =
+        date ||
+        moment()
+            .subtract(2, 'hours')
+            .format('YYYY-MM-DD');
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
     const handleGetData = useCallback(res => {

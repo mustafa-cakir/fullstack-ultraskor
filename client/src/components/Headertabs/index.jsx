@@ -68,11 +68,7 @@ const Headertabs = ({
     const handleSelectedDay = day => {
         const selectedDay = moment(day).format('YYYY-MM-DD');
         if (currentDate !== selectedDay) {
-            const url =
-                moment().format('DD') === moment(selectedDay).format('DD')
-                    ? '/'
-                    : `/${t('matches')}/${t('date')}-${selectedDay}`;
-            history.push(url);
+            history.push(`/${t('matches')}/${t('date')}-${selectedDay}`);
         }
 
         if (filteredTournaments.length > 0) {

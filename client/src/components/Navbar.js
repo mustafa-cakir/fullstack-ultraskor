@@ -43,8 +43,8 @@ class Navbar extends Component {
 
     toggleNavBar = () => {
         if (this.props.history.location.state && this.props.history.location.state.isPrev) {
-            this.goBack();
             scrollTopOnClick();
+            this.goBack();
         } else {
             this.bodyClassList.remove('searchbar-opened');
             this.bodyClassList.toggle('navbar-opened');
@@ -131,22 +131,22 @@ class Navbar extends Component {
         const { t } = this.props;
         const isPrev = this.props.history.location.state ? this.props.history.location.state.isPrev === true : false;
         return (
-            <header className={'header' + (isPrev ? ' goback-active' : '')} ref={this.headerEl}>
+            <header className={`header${isPrev ? ' goback-active' : ''}`} ref={this.headerEl}>
                 <div className="header-animation" />
                 <div className="container">
                     <div className="row">
                         <div className="col col-menu px-0">
-                            <div className="ham-button" onClick={this.toggleNavBar}>
+                            <button type="button" className="ham-button" onClick={this.toggleNavBar}>
                                 <span className="ham-border ham-border-top">
                                     <span className="ham-border-inner ham-border-inner-top" />
                                 </span>
                                 <span className="ham-border ham-border-bottom">
                                     <span className="ham-border-inner ham-border-inner-bottom" />
                                 </span>
-                                <span className={'goback-text' + (isPrev ? ' show' : '')}>
+                                <span className={`goback-text${isPrev ? ' show' : ''}`}>
                                     <Trans>Back</Trans>
                                 </span>
-                            </div>
+                            </button>
                         </div>
                         <div className="col text-center">
                             <a
