@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { withTranslation, Trans } from "react-i18next";
-import { Link } from "react-router-dom";
-import { printImageSrc } from "../../../core/utils";
-import { generateSlug } from "../../../core/utils/helper";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { withTranslation, Trans } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { printImageSrc } from '../../../core/utils';
+import { generateSlug } from '../../../core/utils/helper';
 
 const StandingTable = ({ standingsTables, teams, t }) => {
-    const [tab, setTab] = useState("Total");
+    const [tab, setTab] = useState('Total');
     const getPositionLabel = () => {
-        if (tab === "Home") return "homePosition";
-        if (tab === "Away") return "awayPosition";
-        return "position";
+        if (tab === 'Home') return 'homePosition';
+        if (tab === 'Away') return 'awayPosition';
+        return 'position';
     };
 
     const tabLower = tab.toLowerCase();
@@ -46,14 +46,14 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                         <Trans>Live Table</Trans>!
                                     </div>
                                 ) : (
-                                    ""
+                                    ''
                                 )}
                             </div>
                             <div className="horizontal-tab mt-4 mb-1">
                                 <button
                                     type="button"
-                                    className={tab === "Total" ? "active" : ""}
-                                    onClick={() => tabSwitcherHandler("Total")}
+                                    className={tab === 'Total' ? 'active' : ''}
+                                    onClick={() => tabSwitcherHandler('Total')}
                                 >
                                     <span>
                                         <Trans>Overall</Trans>
@@ -61,8 +61,8 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                 </button>
                                 <button
                                     type="button"
-                                    className={tab === "Home" ? "active" : ""}
-                                    onClick={() => tabSwitcherHandler("Home")}
+                                    className={tab === 'Home' ? 'active' : ''}
+                                    onClick={() => tabSwitcherHandler('Home')}
                                 >
                                     <span>
                                         <Trans>Home</Trans>
@@ -70,8 +70,8 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                 </button>
                                 <button
                                     type="button"
-                                    className={tab === "Away" ? "active" : ""}
-                                    onClick={() => tabSwitcherHandler("Away")}
+                                    className={tab === 'Away' ? 'active' : ''}
+                                    onClick={() => tabSwitcherHandler('Away')}
                                 >
                                     <span>
                                         <Trans>Away</Trans>
@@ -110,19 +110,19 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                     key={row.team.id}
                                                     className={
                                                         (teams && row.team.id === teams.home.id
-                                                            ? "highlight-home "
-                                                            : "") +
-                                                        (teams && row.team.id === teams.home.id
-                                                            ? "highlight-away "
-                                                            : "") +
-                                                        (row.isLive ? `live-game ${row.liveMatchStatus}` : "")
+                                                            ? 'highlight-home '
+                                                            : '') +
+                                                        (teams && row.team.id === teams.away.id
+                                                            ? 'highlight-away '
+                                                            : '') +
+                                                        (row.isLive ? `live-game ${row.liveMatchStatus}` : '')
                                                     }
                                                 >
                                                     <td
                                                         className={`order ${
                                                             row.promotion && item.promotionsColoring
                                                                 ? `promotion ${item.promotionsColoring[row.promotion.id].class}`
-                                                                : ""
+                                                                : ''
                                                         }`}
                                                     >
                                                         <span>{row.position}</span>
@@ -130,13 +130,13 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                     <td className="team-logo">
                                                         <Link
                                                             to={{
-                                                                pathname: `/${t("team")}/${generateSlug(
+                                                                pathname: `/${t('team')}/${generateSlug(
                                                                     t(row.team.shortName)
                                                                 )}-${row.team.id}`,
                                                                 state: { isPrev: true }
                                                             }}
                                                             title={`${t(row.team.shortName)} - ${t(
-                                                                "Fixtures, highlights and standings, click for more"
+                                                                'Fixtures, highlights and standings, click for more'
                                                             )}`}
                                                         >
                                                             <img
@@ -148,13 +148,13 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                     <td className="team">
                                                         <Link
                                                             to={{
-                                                                pathname: `/${t("team")}/${generateSlug(
+                                                                pathname: `/${t('team')}/${generateSlug(
                                                                     t(row.team.shortName)
                                                                 )}-${row.team.id}`,
                                                                 state: { isPrev: true }
                                                             }}
                                                             title={`${t(row.team.shortName)} - ${t(
-                                                                "Fixtures, highlights and standings, click for more"
+                                                                'Fixtures, highlights and standings, click for more'
                                                             )}`}
                                                         >
                                                             <span className="line-clamp team-name">
@@ -200,4 +200,4 @@ StandingTable.defaultProps = {
     t: () => {}
 };
 
-export default withTranslation("translations")(StandingTable);
+export default withTranslation('translations')(StandingTable);

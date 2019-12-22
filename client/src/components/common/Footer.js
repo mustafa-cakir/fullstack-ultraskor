@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { Trans } from "react-i18next";
-import LanguageSwitcher from "./LanguageSwitcher";
+import React, { Component } from 'react';
+import { Trans } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 class Footer extends Component {
     // emailLinkAction(e) {
@@ -11,7 +11,7 @@ class Footer extends Component {
         return (
             <footer className="row mx-0 align-items-center">
                 <div className="col text-left">
-                    Copyright © 2019 —{" "}
+                    Copyright © 2019 —{' '}
                     <a href="mailto:contact@ultraskor.com" title="Contact">
                         <Trans>Contact</Trans>
                     </a>

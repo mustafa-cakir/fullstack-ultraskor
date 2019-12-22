@@ -18,6 +18,11 @@
 	display: inline-block;
 	font-weight: lighter;
 	@include line-clamp(1);
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		line-height: 50px;
+		height: 50px;
+		font-size: 1.3rem;
+	}
 	strong {
 		font-weight: bold;
 	}
@@ -52,6 +57,11 @@
 	margin: 0;
 	display: flex;
 	flex-wrap: wrap;
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		line-height: 75px;
+		height: 75px;
+		font-size: 1.5rem;
+	}
 }
 
 .event-team {
@@ -63,6 +73,11 @@
     max-width: 60px;
     text-align: center;
     @include line-clamp(1);
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		line-height: 75px;
+		height: 75px;
+		font-size: 1.5rem;
+	}
     &.full-time {
         position: relative;
         text-align: center;

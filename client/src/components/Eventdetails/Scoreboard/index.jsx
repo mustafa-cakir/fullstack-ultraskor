@@ -1,8 +1,8 @@
-import React from "react";
-import { Trans, withTranslation } from "react-i18next";
-import moment from "moment";
-import { Link } from "react-router-dom";
-import { generateSlug, ratingClass } from "../../../core/utils/helper";
+import React from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { generateSlug, ratingClass } from '../../../core/utils/helper';
 
 const Scoreboard = ({ event, t }) => {
     return (
@@ -11,12 +11,12 @@ const Scoreboard = ({ event, t }) => {
                 <div className="row text-center flex-nowrap">
                     <Link
                         to={{
-                            pathname: `/${t("team")}/${generateSlug(t(event.teams.home.name))}-${event.teams.home.id}`,
+                            pathname: `/${t('team')}/${generateSlug(t(event.teams.home.name))}-${event.teams.home.id}`,
                             state: { isPrev: true }
                         }}
                         className="col-4 team-link"
                         title={`${t(event.teams.home.name)} - ${t(
-                            "Fixtures, highlights and standings, click for more"
+                            'Fixtures, highlights and standings, click for more'
                         )}`}
                     >
                         <div className="team-logo mb-2">
@@ -27,7 +27,7 @@ const Scoreboard = ({ event, t }) => {
                         </div>
                         <div className="team-name">{t(event.teams.home.name)}</div>
                         <div className="team-coach mb-2">
-                            {event.managerDuel ? event.managerDuel.homeManager.name : ""}
+                            {event.managerDuel ? event.managerDuel.homeManager.name : ''}
                         </div>
                         {event.teamsForm && (
                             <>
@@ -44,7 +44,7 @@ const Scoreboard = ({ event, t }) => {
                         <div className="time">
                             <IsInProgress event={event} />
                         </div>
-                        <div className={`score${event.status.type === "inprogress" ? " live" : ""}`}>
+                        <div className={`score${event.status.type === 'inprogress' ? ' live' : ''}`}>
                             {event.scores.home} - {event.scores.away}
                         </div>
                         {event.scores.ht && (
@@ -55,12 +55,12 @@ const Scoreboard = ({ event, t }) => {
                     </div>
                     <Link
                         to={{
-                            pathname: `/${t("team")}/${generateSlug(t(event.teams.away.name))}-${event.teams.away.id}`,
+                            pathname: `/${t('team')}/${generateSlug(t(event.teams.away.name))}-${event.teams.away.id}`,
                             state: { isPrev: true }
                         }}
                         className="col-4 team-link"
                         title={`${t(event.teams.home.name)} - ${t(
-                            "Fixtures, highlights and standings, click for more"
+                            'Fixtures, highlights and standings, click for more'
                         )}`}
                     >
                         <div className="team-logo mb-2">
@@ -71,7 +71,7 @@ const Scoreboard = ({ event, t }) => {
                         </div>
                         <div className="team-name">{t(event.teams.away.name)}</div>
                         <div className="team-coach mb-2">
-                            {event.managerDuel ? event.managerDuel.awayManager.name : ""}
+                            {event.managerDuel ? event.managerDuel.awayManager.name : ''}
                         </div>
                         {event.teamsForm && (
                             <>
@@ -94,33 +94,33 @@ const IsInProgress = ({ event }) => {
     let text;
     const liveBlinkerCodes = [6, 7];
     switch (event.status.type) {
-        case "inprogress":
+        case 'inprogress':
             text = (
                 <div className="red font-weight-bold">
                     <Trans>{event.statusBoxContent}</Trans>
-                    {event.status.code === 6 ? "" : ""}
-                    {liveBlinkerCodes.indexOf(event.status.code) > -1 ? <span className="live-blinker">'</span> : ""}
+                    {event.status.code === 6 ? '' : ''}
+                    {liveBlinkerCodes.indexOf(event.status.code) > -1 ? <span className="live-blinker">'</span> : ''}
                 </div>
             );
             break;
-        case "notstarted":
-            text = <div className="full-time font-weight-bold">{moment(event.startTimestamp).format("HH:mm")}</div>;
+        case 'notstarted':
+            text = <div className="full-time font-weight-bold">{moment(event.startTimestamp).format('HH:mm')}</div>;
             break;
-        case "canceled":
+        case 'canceled':
             text = (
                 <div className="red small-text line-clamp">
                     <Trans>Cancelled</Trans>
                 </div>
             );
             break;
-        case "postponed":
+        case 'postponed':
             text = (
                 <div className="red small-text line-clamp">
                     <Trans>Postponed</Trans>
                 </div>
             );
             break;
-        case "interrupted":
+        case 'interrupted':
             text = (
                 <div className="red small-text line-clamp">
                     <Trans>Interrupted</Trans>
@@ -145,4 +145,4 @@ const TeamForm = ({ data }) => {
     ));
 };
 
-export default withTranslation("translations")(Scoreboard);
+export default withTranslation('translations')(Scoreboard);
