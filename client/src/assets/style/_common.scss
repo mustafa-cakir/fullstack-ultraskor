@@ -1256,6 +1256,9 @@ code {
 	position: relative;
 	cursor: pointer;
 	transition: background-color .2s linear;
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		font-size: 1.5rem;
+	}
 	@include media(web) {
 		&:hover {
 			background-color: rgba($color-link, .1);

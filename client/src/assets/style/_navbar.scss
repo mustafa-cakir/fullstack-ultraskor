@@ -571,6 +571,10 @@
 		justify-content: left;
 		padding: 0 5px;
 		height: 40px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			height: 60px;
+			font-size: 1.5rem;
+		}
 		&:hover {
 			text-decoration: none;
 		}
@@ -658,15 +662,27 @@
 	}
 	.col-live {
 		max-width: 100px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 120px;
+		}
 	}
 	.col-date {
 		max-width: 80px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 100px;
+		}
 	}
 	.col-filter {
 		max-width: 40px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 60px;
+		}
 	}
 	.col-fav {
 		max-width: 50px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 70px;
+		}
 	}
 	i {
 		font-size: 1.5rem;
