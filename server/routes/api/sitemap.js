@@ -1,70 +1,70 @@
-const router = require("express").Router();
-const request = require("request-promise-native");
-const moment = require("moment");
-const tor = require("tor-request");
-const auth = require("../auth");
-const { t, generateSlug } = require("../../utils");
+const router = require('express').Router();
+const request = require('request-promise-native');
+const moment = require('moment');
+const tor = require('tor-request');
+const auth = require('../auth');
+const { t, generateSlug } = require('../../utils');
 
-tor.TorControlPort.password = "muztafultra";
+tor.TorControlPort.password = 'muztafultra';
 
-router.get("/:lang/:sport/:type/:by/:date", auth.optional, (req, res) => {
+router.get('/:lang/:sport/:type/:by/:date', auth.optional, (req, res) => {
     const { lang, sport, type, by, date } = req.params;
 
-    if (type === "index") {
-        res.header("Content-Type", "application/xml");
+    if (type === 'index') {
+        res.header('Content-Type', 'application/xml');
         let xmlString =
             '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        if (by === "year") {
+        if (by === 'year') {
             for (let i = 1; i <= 12; i += 1) {
                 xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/index/month/${date}-${
                     i < 10 ? `0${i}` : i
                 }</loc></sitemap>`;
             }
-        } else if (by === "month") {
-            const daysInMonth = moment(date, "YYYY-MM").daysInMonth();
+        } else if (by === 'month') {
+            const daysInMonth = moment(date, 'YYYY-MM').daysInMonth();
             for (let i = 1; i <= daysInMonth; i += 1) {
                 xmlString += `<sitemap><loc>https://www.ultraskor.com/sitemap/${lang}/${sport}/list/day/${date}-${
                     i < 10 ? `0${i}` : i
                 }</loc></sitemap>`;
             }
         }
-        xmlString += "</sitemapindex>";
+        xmlString += '</sitemapindex>';
         res.send(xmlString);
-    } else if (type === "daily") {
+    } else if (type === 'daily') {
         // Sample: /sitemap/tr/football/daily/day/2019-03
-        res.header("Content-Type", "text/plain");
+        res.header('Content-Type', 'text/plain');
         const days = [];
-        const daysInMonth = moment(date, "YYYY-MM").daysInMonth();
+        const daysInMonth = moment(date, 'YYYY-MM').daysInMonth();
         for (let i = 1; i <= daysInMonth; i += 1) {
             days.push(
-                `https://www.ultraskor.com${lang === "tr" ? "/maclar/tarih" : "/en/matches/date"}-${date}-${
+                `https://www.ultraskor.com${lang === 'tr' ? '/maclar/tarih' : '/en/matches/date'}-${date}-${
                     i < 10 ? `0${i}` : i
                 }`
             );
         }
-        res.send(days.join("\r"));
-    } else if (type === "list" && by === "day") {
+        res.send(days.join('\r'));
+    } else if (type === 'list' && by === 'day') {
         const configUltraSkorGetByDate = {
-            method: "GET",
+            method: 'GET',
             uri: `https://www.ultraskor.com/api/?query=/${sport}//${date}/json`,
             json: true,
             headers: {
-                "Content-Type": "application/json",
-                Origin: "https://www.ultraskor.com",
-                referer: "https://www.ultraskor.com/",
-                "x-requested-with": "XMLHttpRequest"
+                'Content-Type': 'application/json',
+                Origin: 'https://www.ultraskor.com',
+                referer: 'https://www.ultraskor.com/',
+                'x-requested-with': 'XMLHttpRequest'
             },
             timeout: 10000
         };
-        res.header("Content-Type", "text/plain");
+        res.header('Content-Type', 'text/plain');
 
         request(configUltraSkorGetByDate)
             .then(mainData => {
                 if (mainData && mainData.sportItem && mainData.sportItem.tournaments.length > 0) {
                     const tournaments = mainData.sportItem.tournaments.reduce((whole, tournament) => {
                         tournament.events = tournament.events.filter(event => {
-                            return moment(event.startTimestamp).format("YYYY-MM-DD") === date;
+                            return moment(event.startTimestamp).format('YYYY-MM-DD') === date;
                         });
                         tournament.events.forEach(() => {
                             if (whole.indexOf(tournament) < 0) whole.push(tournament);
@@ -76,101 +76,99 @@ router.get("/:lang/:sport/:type/:by/:date", auth.optional, (req, res) => {
                     tournaments.forEach(tournament => {
                         tournament.events.forEach(event => {
                             urls.push(
-                                `https://www.ultraskor.com${lang === "tr" ? "/mac/" : "/en/match/"}${generateSlug(
+                                `https://www.ultraskor.com${lang === 'tr' ? '/mac/' : '/en/match/'}${generateSlug(
                                     `${t(event.homeTeam.name)}-${t(event.awayTeam.name)}`
-                                )}-${lang === "tr" ? "canli-skor" : "live-score"}-${event.id}`
+                                )}-${lang === 'tr' ? 'canli-skor' : 'live-score'}-${event.id}`
                             );
                         });
                     });
-                    res.send(urls.join("\r"));
+                    res.send(urls.join('\r'));
                 } else {
-                    res.status(500).send("Error");
+                    res.status(500).send('Error');
                 }
             })
             .catch(() => {
-                res.status(500).send("Error");
+                res.status(500).send('Error');
             });
     }
 });
 
-router.get("/matches/:year", (req, res) => {
-    const { year } = req.params;
+router.get('/matches/:year', (req, res) => {
+    const year = parseFloat(req.params.year);
 
-    res.header("Content-Type", "application/xml");
+    res.header('Content-Type', 'application/xml');
     let xmlString =
         '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-    const thisMonth = parseFloat(moment().format("MM"));
+    const thisMonth = parseFloat(moment().format('MM'));
+    const thisYear = parseFloat(moment().format('YYYY'));
 
     for (let month = 12; month > 0; month -= 1) {
-        if (year === "2019" && month > 4 && month <= thisMonth) {
-            let day = moment(`${year}-${month}`, "YYYY-MM")
-                .add(1, "months")
-                .subtract(1, "days")
-                .format("DD");
-            let modifiedDate = moment(`${year}-${month}-${day} 23:59`)
-                .utcOffset("+0300")
+        if ((year === thisYear && month <= thisMonth) || year < thisYear) {
+            let modifiedDate = moment(`${year}-${month}`, 'YYYY-MM')
+                .endOf('month')
                 .format();
-            if (month === thisMonth) {
-                day = moment().format("DD");
-                modifiedDate = moment()
-                    .utcOffset("+0300")
-                    .format();
+            if (year === thisYear && month === thisMonth) {
+                modifiedDate = moment().format();
             }
+
             xmlString += `
 				<sitemap>
-					<loc>https://www.ultraskor.com/sitemap/matches/${year}/${month < 10 ? `0${month}` : month}</loc>
+					<loc>https://www.ultraskor.com/api/sitemap/matches/${year}/${month < 10 ? `0${month}` : month}</loc>
 					<lastmod>${modifiedDate}</lastmod>
 				</sitemap>
 			`;
         }
     }
-    xmlString += "</sitemapindex>";
+    xmlString += '</sitemapindex>';
     res.send(xmlString);
     // }
 });
 
-router.get("/matches/:year/:month", (req, res) => {
-    const { year, month } = req.params;
-    res.header("Content-Type", "application/xml");
+router.get('/matches/:year/:month', (req, res) => {
+    const year = parseFloat(req.params.year);
+    const month = parseFloat(req.params.month);
+    res.header('Content-Type', 'application/xml');
     let xmlString =
         '<?xml version="1.0" encoding="utf-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-    const thisMonth = parseFloat(moment().format("MM"));
-    const toDay = parseFloat(moment().format("D"));
-    const daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
+    const thisMonth = parseFloat(moment().format('MM'));
+    const thisYear = parseFloat(moment().format('YYYY'));
+    const toDay = parseFloat(moment().format('D'));
+    const getMoment = moment(`${year}-${month}`, 'YYYY-MM');
+    const daysInMonth = getMoment.daysInMonth();
 
     for (let day = daysInMonth; day > 0; day -= 1) {
-        if (parseFloat(month) === thisMonth && day > toDay + 7) {
+        if ((year === thisYear && month === thisMonth && day > toDay + 7) || (year === thisYear && month > thisMonth)) {
             // do nothing...
         } else {
             // let day = moment(year + '-' + month, 'YYYY-MM').add(1, 'months').subtract(1, 'days').format('DD');
-            let modifiedDate = moment(`${year}-${month}-${day < 10 ? `0${day}` : day} 23:59`)
-                .utcOffset("+0300")
+            let modifiedDate = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD')
+                .endOf('day')
                 .format();
 
-            if (parseFloat(month) === thisMonth && day === toDay) {
-                modifiedDate = moment()
-                    .utcOffset("+0300")
-                    .format();
+            if (month === thisMonth && day === toDay && year === thisYear) {
+                modifiedDate = moment().format();
             }
 
             xmlString += `
 				<sitemap>
-					<loc>https://www.ultraskor.com/api/sitemap/matches/${year}/${month}/${day < 10 ? `0${day}` : day}</loc>
+					<loc>https://www.ultraskor.com/api/sitemap/matches/${year}/${month < 10 ? `0${month}` : month}/${
+                day < 10 ? `0${day}` : day
+            }</loc>
 					<lastmod>${modifiedDate}</lastmod>
 				</sitemap>
 			`;
         }
     }
-    xmlString += "</sitemapindex>";
+    xmlString += '</sitemapindex>';
     res.send(xmlString);
     // }
 });
 
-router.get("/matches/:year/:month/:day", (req, res) => {
+router.get('/matches/:year/:month/:day', (req, res) => {
     const { year, month, day } = req.params;
     // const lang = 'tr';
-    res.header("Content-Type", "application/xml");
+    res.header('Content-Type', 'application/xml');
     let xmlString =
         '<?xml version="1.0" encoding="UTF-8"?>' +
         '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
@@ -180,14 +178,14 @@ router.get("/matches/:year/:month/:day", (req, res) => {
     // const daysInMonth = moment(`${year}-${month}`, 'YYYY-MM').daysInMonth();
 
     const configUltraSkorGetByDate = {
-        method: "GET",
+        method: 'GET',
         uri: `https://www.ultraskor.com/api/homepage/list/${year}-${month}-${day}`,
         json: true,
         headers: {
-            "Content-Type": "application/json",
-            Origin: "https://www.ultraskor.com",
-            referer: "https://www.ultraskor.com/",
-            "x-requested-with": "XMLHttpRequest"
+            'Content-Type': 'application/json',
+            Origin: 'https://www.ultraskor.com',
+            referer: 'https://www.ultraskor.com/',
+            'x-requested-with': 'XMLHttpRequest'
         },
         timeout: 10000
     };
@@ -206,43 +204,41 @@ router.get("/matches/:year/:month/:day", (req, res) => {
                     tournament.events.forEach(event => {
                         // let startTime = moment.unix(event.startTimestamp).utc().utcOffset('+0300').format();
                         const finishTimeUTC = moment(event.startTimestamp)
-                            .add(90, "minutes")
+                            .add(90, 'minutes')
                             .format();
 
                         const notStartedYet = event.status.code !== 100;
                         const differenceDays = Math.abs(
-                            moment(moment().unix(), "X").diff(moment(event.startTimestamp / 1000, "X"), "days")
+                            moment(moment().unix(), 'X').diff(moment(event.startTimestamp / 1000, 'X'), 'days')
                         );
 
-                        let stringChangeFreq = "";
-                        let stringPriority = "";
+                        let stringChangeFreq = '';
+                        let stringPriority = '';
 
                         if (differenceDays < 3) {
                             // within + or - 10 days
-                            stringPriority = "<priority>1.0</priority>";
-                            stringChangeFreq = "<changefreq>always</changefreq>";
+                            stringPriority = '<priority>1.0</priority>';
+                            stringChangeFreq = '<changefreq>always</changefreq>';
                         } else if (differenceDays < 7) {
-                            stringChangeFreq = "<changefreq>hourly</changefreq>";
-                            stringPriority = "<priority>0.9</priority>";
+                            stringChangeFreq = '<changefreq>hourly</changefreq>';
+                            stringPriority = '<priority>0.9</priority>';
                         } else if (differenceDays < 14) {
-                            stringChangeFreq = "<changefreq>daily</changefreq>";
-                            stringPriority = "<priority>0.8</priority>";
+                            stringChangeFreq = '<changefreq>daily</changefreq>';
+                            stringPriority = '<priority>0.8</priority>';
                         } else if (differenceDays < 20) {
-                            stringChangeFreq = "<changefreq>weekly</changefreq>";
-                            stringPriority = "<priority>0.7</priority>";
+                            stringChangeFreq = '<changefreq>weekly</changefreq>';
+                            stringPriority = '<priority>0.7</priority>';
                         } else if (differenceDays < 30) {
-                            stringChangeFreq = "<changefreq>monthly</changefreq>";
-                            stringPriority = "<priority>0.6</priority>";
+                            stringChangeFreq = '<changefreq>monthly</changefreq>';
+                            stringPriority = '<priority>0.6</priority>';
                         } else {
-                            stringChangeFreq = "<changefreq>yearly</changefreq>";
-                            stringPriority = "<priority>0.5</priority>";
+                            stringChangeFreq = '<changefreq>yearly</changefreq>';
+                            stringPriority = '<priority>0.5</priority>';
                         }
 
                         let stringLastModified = `<lastmod>${finishTimeUTC}</lastmod>`;
                         if (notStartedYet) {
-                            stringLastModified = `<lastmod>${moment()
-                                .utcOffset("+0300")
-                                .format()}</lastmod>`;
+                            stringLastModified = `<lastmod>${moment().format()}</lastmod>`;
                         }
 
                         xmlString += `
@@ -276,10 +272,10 @@ router.get("/matches/:year/:month/:day", (req, res) => {
 								</url>`;
                     });
                 });
-                xmlString += "\n</urlset>";
+                xmlString += '\n</urlset>';
                 res.send(xmlString);
             } else {
-                res.status(500).send("Error 2");
+                res.status(500).send('Error 2');
             }
         })
         .catch(err => {
@@ -287,8 +283,8 @@ router.get("/matches/:year/:month/:day", (req, res) => {
         });
 });
 
-router.get("/:lang/football-todaysmatches.txt", (req, res) => {
-    res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format("YYYY-MM-DD")}`);
+router.get('/:lang/football-todaysmatches.txt', (req, res) => {
+    res.redirect(`/sitemap/${req.params.lang}/football/list/day/${moment().format('YYYY-MM-DD')}`);
 });
 
 module.exports = router;
