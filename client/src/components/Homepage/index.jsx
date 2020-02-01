@@ -216,9 +216,9 @@ const Homepage = ({ t, i18n, socket }) => {
     useEffect(() => {
         scrollTopOnClick();
         initGetData();
-        initSocket();
+        // initSocket();
         return () => {
-            removeSocket();
+            // removeSocket();
             clearTimeout(redScoreBarTimer);
         };
     }, [initGetData, page, initSocket, removeSocket]);

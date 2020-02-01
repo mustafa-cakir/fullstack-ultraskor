@@ -1,9 +1,8 @@
-const moment = require('moment');
 const router = require('express').Router();
 const cacheService = require('../../services/cache.service');
 const { cacheDuration } = require('../../utils');
 const auth = require('../auth');
-const { isEmpty, isDev } = require('../../utils');
+const { isDev } = require('../../utils');
 const { fetchHomepage } = require('../../fetch/homepage');
 
 router.get('/:date/:language', auth.optional, (req, res) => {
@@ -13,8 +12,8 @@ router.get('/:date/:language', auth.optional, (req, res) => {
     const remoteRequest = () => {
         fetchHomepage(date, language)
             .then(data => {
-                if (!isEmpty(data)) {
-                    cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
+                if (data && data.length > 0) {
+                    // cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
                 }
                 res.send(data);
             })
@@ -23,13 +22,13 @@ router.get('/:date/:language', auth.optional, (req, res) => {
             });
     };
 
-    const cachedData = cacheService.instance().get(cacheKey);
-    if (typeof cachedData !== 'undefined') {
-        if (isDev) console.log('homepageListData is served from cached!');
-        res.send(cachedData);
-    } else {
-        remoteRequest();
-    }
+    // const cachedData = cacheService.instance().get(cacheKey);
+    // if (typeof cachedData !== 'undefined') {
+    //     if (isDev) console.log('homepageListData is served from cached!');
+    //     res.send(cachedData);
+    // } else {
+    remoteRequest();
+    // }
 });
 
 module.exports = router;

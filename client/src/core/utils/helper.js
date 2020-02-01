@@ -125,24 +125,32 @@ export function flagImg(tournament) {
     const storedCustomLogos = [7, 27];
     const customLogos = [11, 384, 480, 679];
 
-    if (storedCustomLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+    if (storedCustomLogos.indexOf(tournament._id) > -1) {
         return (
             <div className="col flag-img">
-                <img src={`/static/media/${tournament.tournament.uniqueId}.png`} alt={tournament.tournament.name} />
+                <img src={`/static/media/${tournament._id}.png`} alt={tournament.name} />
             </div>
         );
     }
-    if (customLogos.indexOf(tournament.tournament.uniqueId) > -1) {
+    if (customLogos.indexOf(tournament._id) > -1) {
+        return (
+            <div className="col flag-img">
+                <img src={`${window.ImageServer}/images/u-tournament/${tournament._id}.png`} alt={tournament.name} />
+            </div>
+        );
+    }
+
+    if (tournament.country)
         return (
             <div className="col flag-img">
                 <img
-                    src={`${window.ImageServer}/images/u-tournament/${tournament.tournament.uniqueId}.png`}
-                    alt={tournament.tournament.name}
+                    src={`https://ls.sportradar.com/ls/crest/big/${tournament.country.a2}.png`}
+                    alt={tournament.country.name}
                 />
             </div>
         );
-    }
-    return <div className={`col flag flag-${tournament.category.icon}`} />;
+
+    return <div className="col flag" />;
 }
 
 export function Throttle(func, wait, options) {
@@ -468,14 +476,14 @@ export const prepareHomepageData = tournaments => {
         // 27, // UEFA EURO 2020
         // 7, // UEFA - CL
         // 679, // UEFA - Europa League
-        67445, // Turkey - Super Lig
-        67441 // Turkey - TFF 1. Lig
-        // 17, // England - Premier League
+        62, // Turkey - Super Lig
+        101, // Turkey - TFF 1. Lig
+        1, // England - Premier League
         // 18, // England - Championship
-        // 8, // Spain - LaLiga
-        // 35, // Germany - Bundesliga
-        // 23, // Italy - Seria A
-        // 34, // France - Liga 1
+        36, // Spain - LaLiga
+        42, // Germany - Bundesliga
+        33, // Italy - Seria A
+        4, // France - Liga 1
         // 37, // Holland - Eredivisie
         // 38, // Belgium - First Division A
         // 238, // Portugal - Primeira Liga
@@ -490,25 +498,25 @@ export const prepareHomepageData = tournaments => {
         // 218, // Ukraine - Premier League
         // 24, // England - League One
         // 54, // Spain - LaLiga 2
-        // 44, // Germany - Bundesliga 2
-        // 53, // Italy - Serie B
+        41, // Germany - Bundesliga 2
+        34, // Italy - Serie B
         // 182, // France - Ligue 2
         // 131, // Holland - Eerste Divisie
-        // 215 // Switzerland - Super League
+        215 // Switzerland - Super League
     ]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
 
-    const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x.seasonid) > -1);
+    const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x._id) > -1);
     priorityTournaments.sort((a, b) => {
-        if (moveToTop.indexOf(a.seasonid) < moveToTop.indexOf(b.seasonid)) {
+        if (moveToTop.indexOf(a._id) < moveToTop.indexOf(b._id)) {
             return -1;
         }
-        if (moveToTop.indexOf(a.seasonid) > moveToTop.indexOf(b.seasonid)) {
+        if (moveToTop.indexOf(a._id) > moveToTop.indexOf(b._id)) {
             return 1;
         }
         return 0;
     });
 
-    const otherTournaments = tournaments.filter(x => moveToTop.indexOf(x.seasonid) === -1);
+    const otherTournaments = tournaments.filter(x => moveToTop.indexOf(x._id) === -1);
     tournaments = priorityTournaments.concat(otherTournaments);
 
     // const moveToBottom = [null]; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]
@@ -539,7 +547,7 @@ export const isMatchLive = match => {
     // 70 - Canceled
     // 100 - finished
     if (id === 6 || id === 7 || id === 31) return true;
-    return true;
+    return false;
 };
 
 export const appendValueToArray = (arr, value) => {

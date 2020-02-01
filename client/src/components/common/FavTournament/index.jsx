@@ -15,7 +15,7 @@ const FavTournament = ({ favEvents, tournaments, isLive, updateParentState, isFa
                     if (favEvents.indexOf(match._id) < 0) return false;
                     index += 1;
                     return (
-                        <React.Fragment key={`fav_${match.id}`}>
+                        <React.Fragment key={`fav_${match._id}`}>
                             {index === 1 && (
                                 <div className="tournament-title">
                                     <Icon name="fas fa-star event-fav-color" />

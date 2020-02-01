@@ -71,41 +71,37 @@ class Tournament extends Component {
                         }
                     }
                     tournamentCount += 1;
-                    return tournament.events.length > 0 ? (
-                        <React.Fragment key={`${tournament.tournament.uniqueId}_${tournamentCount}`}>
+                    return tournament.matches.length > 0 ? (
+                        <React.Fragment key={`${tournament._id}_${tournamentCount}`}>
                             <div className="tournament-title">
                                 {flagImg(tournament)}
                                 <Link
                                     onClick={storeScrollY}
                                     to={{
-                                        pathname: `/${t('league')}/${generateSlug(
-                                            t(tournament.category.name)
-                                        )}-${generateSlug(
-                                            tournament.tournament.name[i18n.language]
-                                                ? tournament.tournament.name[i18n.language]
-                                                : tournament.tournament.name
-                                        )}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${
-                                            tournament.season ? tournament.season.id : '0'
-                                        }`,
+                                        pathname: `/${t('league')}/${generateSlug(tournament.name)}${t('-standing-')}${
+                                            tournament._id
+                                        }${t('-season-')}${tournament.seasonid}`,
                                         state: { isPrev: true }
                                     }}
                                     className="col tournament-name"
-                                    title={`${t(tournament.category.name)} - ${
-                                        tournament.tournament.name[i18n.language]
-                                    }  ${t('click for standings, highlights and league fixtures')}`}
+                                    title={`${tournament.name} - ${t(
+                                        'click for standings, highlights and league fixtures'
+                                    )}`}
                                 >
-                                    <strong>
-                                        <Trans>{tournament.category.name}</Trans>
-                                    </strong>{' '}
-                                    - {tournament.tournament.name[i18n.language]}
+                                    {tournament.country && (
+                                        <strong>
+                                            <Trans>{tournament.country.name}</Trans> -{' '}
+                                        </strong>
+                                    )}
+                                    {tournament.name}
                                 </Link>
                             </div>
 
-                            {tournament.events.map((event, k) => {
+                            {tournament.matches.map((event, k) => {
                                 if (isLive && event.status.type !== 'inprogress') return false;
                                 return (
                                     <Event
-                                        key={event.id}
+                                        key={event._id}
                                         favEvents={favEvents || []}
                                         favEventsList={favEventsList}
                                         index={k}

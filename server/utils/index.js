@@ -634,7 +634,7 @@ const isEmpty = obj => {
 };
 
 const simplifyRadarHomepage = radar => {
-    let tournaments = [];
+    const tournaments = [];
     if (
         radar &&
         radar.doc[0] &&
@@ -645,7 +645,55 @@ const simplifyRadarHomepage = radar => {
     ) {
         radar.doc[0].data.sport.realcategories.forEach(item => {
             if (item.tournaments && item.tournaments.length > 0) {
-                tournaments = tournaments.concat(item.tournaments);
+                item.tournaments.forEach(tournament => {
+                    tournament.country = item.cc;
+                    if (tournament.matches && tournament.matches.length > 0) {
+                        tournament.matches.forEach(match => {
+                            switch (match.status._id) {
+                                case 0:
+                                    match.status.text = 'notstarted';
+                                    break;
+                                case 6:
+                                    match.status.text = Math.ceil(
+                                        (moment()
+                                            .utc()
+                                            .unix() -
+                                            match.ptime) /
+                                            60
+                                    );
+                                    break;
+                                case 7:
+                                    match.status.text = Math.ceil(
+                                        (moment()
+                                            .utc()
+                                            .unix() -
+                                            match.ptime) /
+                                            60 -
+                                            15
+                                    );
+                                    break;
+                                case 31:
+                                    match.status.text = 'HT';
+                                    break;
+                                case 70:
+                                    match.status.text = 'Cancelled';
+                                    break;
+                                case 90:
+                                    match.status.text = 'Postponed';
+                                    break;
+                                case 'interrupted':
+                                    match.status.text = 'Interrupted';
+                                    break;
+                                case 100:
+                                    match.status.text = 'FT';
+                                    break;
+                                default:
+                                    match.status.text = '';
+                            }
+                        });
+                    }
+                    tournaments.push(tournament);
+                });
             }
         });
     }
