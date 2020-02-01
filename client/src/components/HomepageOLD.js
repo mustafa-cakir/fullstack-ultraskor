@@ -14,7 +14,7 @@ import {
     HelperTranslateUrlTo,
     getQueryStringFromUrl,
     restoreScrollY,
-    prepareRes
+    prepareHomepageData
 } from '../core/utils/helper';
 import RedScoreBoard from './common/RedScoreBar';
 import FavTournament from './common/FavTournament';
@@ -290,7 +290,7 @@ class HomepageOLD extends Component {
                 document.body.classList.add('initial-load');
             }, 0);
         }
-        res = prepareRes(res);
+        res = prepareHomepageData(res);
         const { favEvents } = this.state;
         if (favEvents.length > 0) this.moveFavEventsToTop(res);
         this.updateStateGetData(res, isUpdated);

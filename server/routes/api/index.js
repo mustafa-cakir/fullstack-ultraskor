@@ -1,6 +1,6 @@
 const router = require('express').Router();
 router.use('/', require('./sofascore'));
-router.use('/homepage/list', require('./homepage'));
+router.use('/homepage', require('./homepage'));
 router.use('/Eventdetails', require('./eventdetails'));
 router.use('/tournament', require('./tournament'));
 router.use('/team', require('./team'));

@@ -1,4 +1,5 @@
 const fetch = require('./fetch');
+const { generateSlug } = require('../utils');
 
 const fetchSportRadar = (query, cacheDuration, isTor) =>
     new Promise((resolve, reject) => {
@@ -15,7 +16,7 @@ const fetchSportRadar = (query, cacheDuration, isTor) =>
         };
         const cache = cacheDuration
             ? {
-                  cacheKey: query.replace(':', '-'),
+                  cacheKey: generateSlug(query),
                   cacheDuration
               }
             : null;

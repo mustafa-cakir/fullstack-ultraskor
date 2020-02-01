@@ -121,7 +121,9 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                     <td
                                                         className={`order ${
                                                             row.promotion && item.promotionsColoring
-                                                                ? `promotion ${item.promotionsColoring[row.promotion.id].class}`
+                                                                ? `promotion ${
+                                                                      item.promotionsColoring[row.promotion.id].class
+                                                                  }`
                                                                 : ''
                                                         }`}
                                                     >

@@ -1,22 +1,22 @@
-const moment = require("moment");
-const languageJson = require("../../client/src/languages/tr.json");
-const { db } = require("../services/firebase.service");
+const moment = require('moment');
+const languageJson = require('../../client/src/languages/tr.json');
+const { db } = require('../services/firebase.service');
 
 const generateSlug = text => {
-    const a = "çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;";
-    const b = "ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------";
-    const p = new RegExp(a.split("").join("|"), "g");
+    const a = 'çıüğöşàáäâèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
+    const b = 'ciugosaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
+    const p = new RegExp(a.split('').join('|'), 'g');
 
     return text
         .toString()
         .toLowerCase()
-        .replace(/\s+/g, "-") // Replace spaces with -
+        .replace(/\s+/g, '-') // Replace spaces with -
         .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
-        .replace(/&/g, "-and-") // Replace & with 'and'
-        .replace(/[^\w-]+/g, "") // Remove all non-word chars
-        .replace(/--+/g, "-") // Replace multiple - with single -
-        .replace(/^-+/, "") // Trim - from start of text
-        .replace(/-+$/, ""); // Trim - from end of text
+        .replace(/&/g, '-and-') // Replace & with 'and'
+        .replace(/[^\w-]+/g, '') // Remove all non-word chars
+        .replace(/--+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
 };
 const preProcessSportRadarData = data => {
     let result = null;
@@ -53,31 +53,31 @@ const simplifyIddaaHelperData = response => {
 const simplifyHomeData = res => {
     if (res && res.sportItem && res.sportItem.tournaments) {
         const eventIgnoredProperties = [
-            "changes",
-            "confirmedLineups",
-            "customId",
-            "hasAggregatedScore",
-            "hasDraw",
-            "hasEventPlayerHeatMap",
-            "hasEventPlayerStatistics",
-            "hasFirstToServe",
-            "hasOdds",
-            "hasGlobalHighlights",
-            "hasHighlights",
-            "hasHighlightsStream",
-            "hasLineups",
-            "hasLineupsList",
-            "hasLiveForm",
-            "hasLiveOdds",
-            "hasStatistics",
-            "hasSubScore",
-            "hasTime",
-            "isAwarded",
-            "isSyncable",
-            "roundInfo",
-            "sport",
-            "votingEnabled",
-            "odds"
+            'changes',
+            'confirmedLineups',
+            'customId',
+            'hasAggregatedScore',
+            'hasDraw',
+            'hasEventPlayerHeatMap',
+            'hasEventPlayerStatistics',
+            'hasFirstToServe',
+            'hasOdds',
+            'hasGlobalHighlights',
+            'hasHighlights',
+            'hasHighlightsStream',
+            'hasLineups',
+            'hasLineupsList',
+            'hasLiveForm',
+            'hasLiveOdds',
+            'hasStatistics',
+            'hasSubScore',
+            'hasTime',
+            'isAwarded',
+            'isSyncable',
+            'roundInfo',
+            'sport',
+            'votingEnabled',
+            'odds'
         ];
 
         res.sportItem.tournaments = res.sportItem.tournaments.reduce((whole, item) => {
@@ -159,9 +159,9 @@ const t = text => {
     return text;
 };
 
-const isDev = process.env.NODE_ENV === "dev";
-const isProd = process.env.NODE_ENV !== "dev";
-const isTorDisabled = process.env.TOR_DISABLED === "true";
+const isDev = process.env.NODE_ENV === 'dev';
+const isProd = process.env.NODE_ENV !== 'dev';
+const isTorDisabled = process.env.TOR_DISABLED === 'true';
 // exports.isTorDisabled = false
 
 const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
@@ -195,38 +195,38 @@ const getOleyEvent = (sofaEvent, eventRadar, oleyTournaments) => {
 
 const convertToUltraSkorId = id => {
     return `us${String(id)
-        .split("")
+        .split('')
         .reverse()
-        .join("")}`;
+        .join('')}`;
 };
 
 const convertToSofaScoreID = id => {
-    if (typeof id !== "string") return false;
-    if (id.indexOf("us") === -1) return false;
+    if (typeof id !== 'string') return false;
+    if (id.indexOf('us') === -1) return false;
     return parseFloat(
         id
             .substr(2)
-            .split("")
+            .split('')
             .reverse()
-            .join("")
+            .join('')
     );
 };
 
 const simplifyWebSocketData = res => {
     res = JSON.parse(res);
-    if (res.data.length === 0 && !res.data[1] && res.data[0] !== "service-push") return null;
+    if (res.data.length === 0 && !res.data[1] && res.data[0] !== 'service-push') return null;
     const resData = res.data[1];
-    const eventid = convertToUltraSkorId(parseFloat(resData.emits[0].split("_")[1]));
+    const eventid = convertToUltraSkorId(parseFloat(resData.emits[0].split('_')[1]));
     return {
         ids: {
             event: eventid,
-            type: resData.emits[1].split("_")[1],
-            tournament: parseFloat(resData.emits[2].split("_")[1]),
-            homeTeam: parseFloat(resData.emits[3].split("_")[1]),
-            awayTeam: parseFloat(resData.emits[4].split("_")[1])
+            type: resData.emits[1].split('_')[1],
+            tournament: parseFloat(resData.emits[2].split('_')[1]),
+            homeTeam: parseFloat(resData.emits[3].split('_')[1]),
+            awayTeam: parseFloat(resData.emits[4].split('_')[1])
         },
         tournament: {
-            id: parseFloat(resData.emits[2].split("_")[1])
+            id: parseFloat(resData.emits[2].split('_')[1])
         },
         event: {
             id: eventid,
@@ -268,7 +268,7 @@ const preprocessEvents = (events, includeNotStartedEvents = false) => {
     const result = [];
     events.forEach(event => {
         // if (event.sport && event.sport.id !== 1) return false;
-        if (!includeNotStartedEvents && event.status.type !== "finished") return false;
+        if (!includeNotStartedEvents && event.status.type !== 'finished') return false;
         result.push({
             teams: {
                 home: {
@@ -371,8 +371,8 @@ const mergeHead2HeadDatas = (h2h, home, away) => {
 
 const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
     if (!sofa) {
-        if (isDev) console.log("data can not be gathered from sofa");
-        throw Error("Whoops!");
+        if (isDev) console.log('data can not be gathered from sofa');
+        throw Error('Whoops!');
     }
     const result = {};
     const { event } = sofa;
@@ -449,11 +449,11 @@ const mergeEventDetailsData = (sofa, radar, oley, injuries, ids) => {
     return result;
 };
 
-const mergeHomepageData = (sofa, radar, broad) => {
+const OLDmergeHomepageData = (sofa, radar, broad) => {
     return new Promise((resolve, reject) => {
         if (!sofa) {
-            if (isDev) console.log("data can not be gathered from sofa");
-            resolve(Error("Whoops!"));
+            if (isDev) console.log('data can not be gathered from sofa');
+            resolve(Error('Whoops!'));
         }
         const result = {};
         const shortIds = [];
@@ -472,7 +472,7 @@ const mergeHomepageData = (sofa, radar, broad) => {
                 ? radarTournaments.filter(x => x._id === tournament.tournament.id)[0]
                 : null;
             tournament.events.forEach(event => {
-                if (moment(event.startTimestamp * 1000).format("YYYY-MM-DD") === sofa.params.date) {
+                if (moment(event.startTimestamp * 1000).format('YYYY-MM-DD') === sofa.params.date) {
                     const eventRadar =
                         tournamentRadar && tournamentRadar.matches && tournamentRadar.matches.length > 0
                             ? tournamentRadar.matches.filter(x => {
@@ -571,18 +571,18 @@ const mergeHomepageData = (sofa, radar, broad) => {
             }
         });
 
-        const dayDiff = Math.abs(moment(sofa.params.date, "YYYY-MM-DD").diff(moment(), "days"));
+        const dayDiff = Math.abs(moment(sofa.params.date, 'YYYY-MM-DD').diff(moment(), 'days'));
         if (sofa && radar && broad && dayDiff < 5) {
             const batch = db.batch();
-            const ref = db.collection("ultraskor_eventIds_by_date").doc(shortIds[0].id);
+            const ref = db.collection('ultraskor_eventIds_by_date').doc(shortIds[0].id);
             ref.get().then(doc => {
                 if (doc.exists) {
-                    if (isDev) console.log("these ids are already exist. Don not write: ", shortIds[0].id);
+                    if (isDev) console.log('these ids are already exist. Don not write: ', shortIds[0].id);
                     resolve(result);
                 } else {
-                    if (isDev) console.log("these ids do not exist. Write them to db");
+                    if (isDev) console.log('these ids do not exist. Write them to db');
                     shortIds.forEach(item => {
-                        const docRef = db.collection("ultraskor_eventIds_by_date").doc(item.id);
+                        const docRef = db.collection('ultraskor_eventIds_by_date').doc(item.id);
                         batch.set(docRef, item.data, { merge: true });
                     });
                     batch
@@ -633,6 +633,25 @@ const isEmpty = obj => {
     return Object.keys(obj).length === 0;
 };
 
+const simplifyRadarHomepage = radar => {
+    let tournaments = [];
+    if (
+        radar &&
+        radar.doc[0] &&
+        radar.doc[0].data &&
+        radar.doc[0].data.sport &&
+        radar.doc[0].data.sport.realcategories &&
+        radar.doc[0].data.sport.realcategories.length > 0
+    ) {
+        radar.doc[0].data.sport.realcategories.forEach(item => {
+            if (item.tournaments && item.tournaments.length > 0) {
+                tournaments = tournaments.concat(item.tournaments);
+            }
+        });
+    }
+    return tournaments;
+};
+
 exports.generateSlug = generateSlug;
 exports.cacheDuration = cacheDuration;
 exports.isDev = isDev;
@@ -647,7 +666,8 @@ exports.simplifyWebSocketData = simplifyWebSocketData;
 exports.convertToUltraSkorId = convertToUltraSkorId;
 exports.convertToSofaScoreID = convertToSofaScoreID;
 exports.mergeEventDetailsData = mergeEventDetailsData;
-exports.mergeHomepageData = mergeHomepageData;
+exports.OLDmergeHomepageData = OLDmergeHomepageData;
+exports.simplifyRadarHomepage = simplifyRadarHomepage;
 exports.mergeUTournamentData = mergeUTournamentData;
 exports.mergeUTournamentRoundsData = mergeUTournamentRoundsData;
 exports.isEmpty = isEmpty;

@@ -6,13 +6,12 @@ const auth = require('../auth');
 const { isEmpty, isDev } = require('../../utils');
 const { fetchHomepage } = require('../../fetch/homepage');
 
-router.get('/:date', auth.optional, (req, res) => {
-    const { date } = req.params; // YYYY-MM-DD
-    const isToday = moment(date, 'YYYY-MM-DD').isSame(moment(), 'day');
+router.get('/:date/:language', auth.optional, (req, res) => {
+    const { date, language } = req.params; // YYYY-MM-DD
     const cacheKey = `homepageListData-${date}`;
 
     const remoteRequest = () => {
-        fetchHomepage(date)
+        fetchHomepage(date, language)
             .then(data => {
                 if (!isEmpty(data)) {
                     cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
@@ -24,7 +23,6 @@ router.get('/:date', auth.optional, (req, res) => {
             });
     };
 
-    // if (isToday) {
     const cachedData = cacheService.instance().get(cacheKey);
     if (typeof cachedData !== 'undefined') {
         if (isDev) console.log('homepageListData is served from cached!');
@@ -32,9 +30,6 @@ router.get('/:date', auth.optional, (req, res) => {
     } else {
         remoteRequest();
     }
-    // } else {
-    //     remoteRequest();
-    // }
 });
 
 module.exports = router;

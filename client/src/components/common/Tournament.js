@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 // import AdSense from "react-adsense";
-import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../core/utils/helper';
+import { generateSlug, flagImg, updateQueryString, storeScrollY, isMatchLive } from '../../core/utils/helper';
 import Event from './Event';
 
 import Errors from './Errors';
@@ -42,14 +42,12 @@ class Tournament extends Component {
             <>
                 {tournaments.map((tournament, index) => {
                     if (isLive) {
-                        const checkLive = tournament.events.filter(event => {
-                            return event.status.type === 'inprogress';
-                        });
-                        if (checkLive.length < 1) return false;
+                        const isAnyLive = tournament.matches.findIndex(match => isMatchLive(match));
+                        if (isAnyLive < 0) return false;
                     }
 
                     if (filteredTournaments && filteredTournaments.length > 0) {
-                        if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
+                        if (filteredTournaments.indexOf(tournament._id) < 0) return false;
                     }
 
                     if (isLazyLoad && !isLive && filteredTournaments.length < 1) {
@@ -119,15 +117,15 @@ class Tournament extends Component {
                                     />
                                 );
                             })}
-                            {/*{page === "homepage" && tournamentCount === 2 && (*/}
-                            {/*    <AdSense.Google*/}
-                            {/*        client="ca-pub-6710014394558585"*/}
-                            {/*        slot="6963275666"*/}
-                            {/*        style={{ display: "block" }}*/}
-                            {/*        layoutKey="-fb+5w+4e-db+86"*/}
-                            {/*        format="fluid"*/}
-                            {/*    />*/}
-                            {/*)}*/}
+                            {/* {page === "homepage" && tournamentCount === 2 && ( */}
+                            {/*    <AdSense.Google */}
+                            {/*        client="ca-pub-6710014394558585" */}
+                            {/*        slot="6963275666" */}
+                            {/*        style={{ display: "block" }} */}
+                            {/*        layoutKey="-fb+5w+4e-db+86" */}
+                            {/*        format="fluid" */}
+                            {/*    /> */}
+                            {/* )} */}
                         </React.Fragment>
                     ) : (
                         ''

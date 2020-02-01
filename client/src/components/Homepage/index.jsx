@@ -4,7 +4,7 @@ import moment from 'moment';
 import update from 'immutability-helper';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
-import { getQueryStringFromUrl, prepareRes, restoreScrollY } from '../../core/utils/helper';
+import { getQueryStringFromUrl, prepareHomepageData, restoreScrollY } from '../../core/utils/helper';
 import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
 import Loading from '../common/Loading';
 import Tournament from '../common/Tournament';
@@ -66,7 +66,7 @@ const Homepage = ({ t, i18n, socket }) => {
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
     const handleGetData = useCallback(res => {
-        const tournaments = prepareRes(res.data);
+        const tournaments = prepareHomepageData(res.data);
         setState({
             mainData: tournaments,
             refreshButton: false,
@@ -79,7 +79,7 @@ const Homepage = ({ t, i18n, socket }) => {
     const initAxios = useCallback(() => {
         setState({ isLoading: true });
         axios
-            .get(`/api/homepage/list/${currentDate}`)
+            .get(`/api/homepage/${currentDate}/${language}`)
             .then(res => {
                 handleGetData(res);
                 setTimeout(() => {
@@ -94,7 +94,7 @@ const Homepage = ({ t, i18n, socket }) => {
                     error: 'something went wrong'
                 });
             });
-    }, [currentDate, handleGetData]);
+    }, [currentDate, handleGetData, language]);
 
     const initGetData = useCallback(() => {
         if (document.body.classList.contains('initial-load')) {
