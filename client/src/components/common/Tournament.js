@@ -37,7 +37,7 @@ class Tournament extends Component {
             updateParentState
         } = this.props;
         let tournamentCount = 0;
-        const { tournaments, i18n } = this.props;
+        const { tournaments } = this.props;
         return (
             <>
                 {tournaments.map((tournament, index) => {
