@@ -1,11 +1,11 @@
-import i18n from "i18next";
-import { HelperTranslateUrlTo, HelperUpdateMeta } from "../helper";
+import i18n from 'i18next';
+import { HelperTranslateUrlTo, HelperUpdateMeta } from '../helper';
 
 const { language } = i18n;
 
 const UpdateMetaTeam = (teamInfoData, t) => {
-    if (language === "en") {
-        if (window.location.pathname.split("/")[2] === "takim") window.location.href = HelperTranslateUrlTo("en", true);
+    if (language === 'en') {
+        if (window.location.pathname.split('/')[2] === 'takim') window.location.href = HelperTranslateUrlTo('en', true);
         HelperUpdateMeta({
             title: `${teamInfoData.team.name} Live Match Results, League Fixtures, Weekly Highlights and Lineups - UltraSkor`,
             canonical: window.location.href,
@@ -19,11 +19,11 @@ const UpdateMetaTeam = (teamInfoData, t) => {
             )} highlights, ${t(teamInfoData.team.name)} transfer news, lineups, league fixtures, ${t(
                 teamInfoData.team.mediumname
             )} highlights`,
-            alternate: HelperTranslateUrlTo("tr"),
-            hrefLang: "tr"
+            alternate: HelperTranslateUrlTo('tr'),
+            hrefLang: 'tr'
         });
-    } else if (language === "tr") {
-        if (window.location.pathname.split("/")[1] === "team") window.location.href = HelperTranslateUrlTo("tr", true);
+    } else if (language === 'tr') {
+        if (window.location.pathname.split('/')[1] === 'team') window.location.href = HelperTranslateUrlTo('tr', true);
         HelperUpdateMeta({
             title: `${t(teamInfoData.team.name)} Fikstür, Kadro, Puan Durumu ve Maç Özetleri - UltraSkor.com`,
             canonical: window.location.href,
@@ -37,8 +37,8 @@ const UpdateMetaTeam = (teamInfoData, t) => {
             )} maç sonuşları, lig fikstürü, haftalık lig fikstürü, ${t(teamInfoData.team.name)} maç özetleri, ${t(
                 teamInfoData.team.name
             )} haftanın takımı, ${t(teamInfoData.team.mediumname)} gol krallığı`,
-            alternate: HelperTranslateUrlTo("en"),
-            hrefLang: "en"
+            alternate: HelperTranslateUrlTo('en'),
+            hrefLang: 'en'
         });
     }
 };

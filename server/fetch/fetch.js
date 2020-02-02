@@ -21,16 +21,18 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
     const remoteRequest = () => {
         if (isDev) console.log('--> Fetch init: ', options.uri);
         if (isTor) {
-            if (isDev) console.log('cloudscraper request using tor');
-            options.agentClass = Agent;
-            options.agentOptions = {
-                socksHost: 'localhost',
-                socksPort: 9050
-            };
+            tor.request(options, (err, status, response) => {
+                if (!err && status.statusCode === 200) {
+                    onSuccess(response);
+                } else {
+                    onError(err);
+                }
+            });
+        } else {
+            cloudscraper(options)
+                .then(onSuccess)
+                .catch(onError);
         }
-        cloudscraper(options)
-            .then(onSuccess)
-            .catch(onError);
     };
 
     const cachedData = cache ? cacheService.instance().get(cache.cacheKey) : null;
