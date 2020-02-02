@@ -17,6 +17,7 @@ import BottomParagrah from '../common/BottomParagrah';
 import Icon from '../common/Icon';
 import UpdateMetaHomepage from '../../core/utils/updatemeta/homepage';
 import FavTournament from '../common/FavTournament';
+import ScrollToTop from '../common/ScrollToTop';
 
 let redScoreBarTimer = null;
 
@@ -244,6 +245,7 @@ const Homepage = ({ t, i18n, socket }) => {
             />
             {isLoading ? (
                 <div className="homepage-loading">
+                    <ScrollToTop />
                     <Loading type="inside" />
                 </div>
             ) : (

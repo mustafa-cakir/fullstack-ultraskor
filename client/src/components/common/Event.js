@@ -266,18 +266,18 @@ const PrintAdditionalStatusText = ({ statusText }) => {
     const textArr = statusText.split('+');
     if (textArr.length === 1) {
         return (
-            <span className="status-text">
+            <>
                 {textArr[0]}
                 <span className="live-blinker">'</span>
-            </span>
+            </>
         );
     }
     return (
-        <span className="status-text">
+        <>
             {textArr[0]}
             <span className="live-blinker">'</span>
-            <span className="extra">+{textArr[1]}</span>
-        </span>
+            <sup>+{textArr[1]}</sup>
+        </>
     );
 };
 

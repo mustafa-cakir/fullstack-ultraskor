@@ -74,23 +74,13 @@
 .event-time {
     font-size: .9rem;
     max-width: 60px;
-    text-align: left;
+    text-align: center;
     @include line-clamp(1);
 	@media (min-width: 768px) and (max-width: 991.98px) {
 		max-width: 90px;
 		line-height: 75px;
 		height: 75px;
 		font-size: 1.5rem;
-	}
-	.status-text {
-		position: relative;
-		.extra {
-			position: absolute;
-			left: 100%;
-			top: 0;
-			font-size: .7rem;
-			line-height: 1;
-		}
 	}
     &.full-time {
         position: relative;
