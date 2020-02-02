@@ -1,6 +1,6 @@
 const fetch = require('./fetch');
 
-const fetchSofaScore = (query, cacheDuration, isTor = true) => {
+const fetchSofaScore = (query, cacheDuration, isTor = false) => {
     return new Promise((resolve, reject) => {
         const options = {
             method: 'GET',
