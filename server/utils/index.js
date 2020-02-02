@@ -633,6 +633,28 @@ const isEmpty = obj => {
     return Object.keys(obj).length === 0;
 };
 
+const calculateFirstHalfMinute = ptime => {
+    const minute = Math.ceil(
+        (moment()
+            .utc()
+            .unix() -
+            ptime) /
+            60
+    );
+    return minute > 45 ? `45+${minute - 45}` : String(minute);
+};
+const calculateSecondHalfMinute = ptime => {
+    const minute =
+        Math.ceil(
+            (moment()
+                .utc()
+                .unix() -
+                ptime) /
+                60
+        ) + 45;
+    return minute > 90 ? `90+${minute - 90}` : String(minute);
+};
+
 const simplifyRadarHomepage = radar => {
     const tournaments = [];
     if (
@@ -654,23 +676,10 @@ const simplifyRadarHomepage = radar => {
                                     match.status.text = 'notstarted';
                                     break;
                                 case 6:
-                                    match.status.text = Math.ceil(
-                                        (moment()
-                                            .utc()
-                                            .unix() -
-                                            match.ptime) /
-                                            60
-                                    );
+                                    match.status.text = calculateFirstHalfMinute(match.ptime);
                                     break;
                                 case 7:
-                                    match.status.text = Math.ceil(
-                                        (moment()
-                                            .utc()
-                                            .unix() -
-                                            match.ptime) /
-                                            60 -
-                                            15
-                                    );
+                                    match.status.text = calculateSecondHalfMinute(match.ptime);
                                     break;
                                 case 31:
                                     match.status.text = 'HT';

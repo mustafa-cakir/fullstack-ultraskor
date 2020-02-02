@@ -4,8 +4,8 @@ import moment from 'moment';
 import update from 'immutability-helper';
 import axios from 'axios';
 import { Trans, withTranslation } from 'react-i18next';
-import { getQueryStringFromUrl, prepareHomepageData, restoreScrollY } from '../../core/utils/helper';
-import { audioFiles, getFromLocalStorage, scrollTopOnClick, setToLocaleStorage } from '../../core/utils';
+import { getQueryStringFromUrl, prepareHomepageData, restoreScrollY, storeScrollY } from '../../core/utils/helper';
+import { audioFiles, getFromLocalStorage, scrollTopOnClick, scrollToTop, setToLocaleStorage } from '../../core/utils';
 import Loading from '../common/Loading';
 import Tournament from '../common/Tournament';
 import Errors from '../common/Errors';
@@ -65,27 +65,23 @@ const Homepage = ({ t, i18n, socket }) => {
             .format('YYYY-MM-DD');
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    const handleGetData = useCallback(res => {
-        const tournaments = prepareHomepageData(res.data);
-        setState({
-            mainData: tournaments,
-            refreshButton: false,
-            isLoading: false
-        });
-        refMainData.current = tournaments;
-        UpdateMetaHomepage();
-    }, []);
-
     const initAxios = useCallback(() => {
         setState({ isLoading: true });
         axios
             .get(`/api/homepage/${currentDate}/${language}`)
             .then(res => {
-                handleGetData(res);
+                const tournaments = prepareHomepageData(res.data);
+                setState({
+                    mainData: tournaments,
+                    refreshButton: false,
+                    isLoading: false
+                });
                 setTimeout(() => {
                     document.body.classList.add('initial-load');
+                    restoreScrollY();
                 });
-                restoreScrollY();
+                refMainData.current = tournaments;
+                UpdateMetaHomepage();
             })
             .catch(err => {
                 console.log(err);
@@ -94,17 +90,17 @@ const Homepage = ({ t, i18n, socket }) => {
                     error: 'something went wrong'
                 });
             });
-    }, [currentDate, handleGetData, language]);
+    }, [currentDate, language]);
 
     const initGetData = useCallback(() => {
-        if (document.body.classList.contains('initial-load')) {
-            document.body.classList.remove('initial-load');
-            setTimeout(() => {
-                initAxios();
-            }, 600);
-        } else {
-            initAxios();
-        }
+        // if (document.body.classList.contains('initial-load')) {
+        //     document.body.classList.remove('initial-load');
+        //     setTimeout(() => {
+        //         initAxios();
+        //     }, 600);
+        // } else {
+        initAxios();
+        // }
     }, [initAxios]);
 
     const initRedScoreBar = useCallback(

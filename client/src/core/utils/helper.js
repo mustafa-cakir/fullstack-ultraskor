@@ -261,14 +261,14 @@ export function storeScrollY() {
 }
 
 export function restoreScrollY() {
-    let prev_scrollY;
+    let prevScrollY;
     try {
-        prev_scrollY = sessionStorage.getItem('ultraskor_homepage_scrollY');
+        prevScrollY = sessionStorage.getItem('ultraskor_homepage_scrollY');
     } catch (err) {
         console.log('error getting from sessionStorage', err);
     }
-    if (prev_scrollY) {
-        window.scroll(0, prev_scrollY);
+    if (prevScrollY) {
+        window.scroll(0, prevScrollY);
         removeScrollY();
     }
 }

@@ -81,18 +81,21 @@ class Event extends Component {
             case 6:
             case 7:
                 text = (
-                    <div className="col event-time pr-0 pl-2 red font-weight-bold">
-                        {event.status.text}
-                        <span className="live-blinker">'</span>
+                    <div className="col event-time pr-0 red font-weight-bold">
+                        <PrintAdditionalStatusText statusText={event.status.text} />
                     </div>
                 );
                 break;
             case 31:
-                text = <div className="col event-time pr-0 pl-2 red font-weight-bold">{event.status.text}</div>;
+                text = (
+                    <div className="col event-time pr-0 red font-weight-bold">
+                        <Trans>{event.status.text}</Trans>
+                    </div>
+                );
                 break;
             case 0:
                 text = (
-                    <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
+                    <div className="col event-time pr-0 full-time font-weight-bold">
                         <div className="day">
                             {moment(event._dt.uts * 1000).isSame(moment(), 'day') ? (
                                 <Trans>Today</Trans>
@@ -107,16 +110,16 @@ class Event extends Component {
             case 70:
             case 90:
             case 91:
-                text = <div className="col event-time pr-0 pl-2 red small-text line-clamp">{event.status.text}</div>;
+                text = <div className="col event-time pr-0 red small-text line-clamp">{event.status.text}</div>;
                 break;
             default:
                 text =
                     from === 'h2h' || from === 'fixture' ? (
-                        <div className="col event-time pr-0 pl-2 full-time in-the-past">
+                        <div className="col event-time pr-0 full-time in-the-past">
                             {moment(event._dt.uts * 1000).format('DD.MM.YY')}
                         </div>
                     ) : (
-                        <div className="col event-time pr-0 pl-2 full-time font-weight-bold">
+                        <div className="col event-time pr-0 full-time font-weight-bold">
                             <Trans>FT</Trans>
                         </div>
                     );
@@ -257,6 +260,26 @@ class Event extends Component {
         );
     }
 }
+
+const PrintAdditionalStatusText = ({ statusText }) => {
+    if (!statusText) return false;
+    const textArr = statusText.split('+');
+    if (textArr.length === 1) {
+        return (
+            <span className="status-text">
+                {textArr[0]}
+                <span className="live-blinker">'</span>
+            </span>
+        );
+    }
+    return (
+        <span className="status-text">
+            {textArr[0]}
+            <span className="live-blinker">'</span>
+            <span className="extra">+{textArr[1]}</span>
+        </span>
+    );
+};
 
 const TeamForm = props => {
     const { event, selectedId } = props;
