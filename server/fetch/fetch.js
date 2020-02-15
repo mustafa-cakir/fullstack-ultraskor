@@ -5,7 +5,8 @@ const cacheService = require('../services/cache.service');
 const { isDev } = require('../utils');
 
 tor.TorControlPort.password = 'muztafultra';
-let maxRetry = 20;
+let maxRetry = 100;
+let isIdle = true;
 
 module.exports = (options, resolve, reject, cache, isTor = false) => {
     const onSuccess = response => {
@@ -28,21 +29,21 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
     const remoteRequestUsingTor = () => {
         tor.request(options, (err, status, response) => {
             if (!err && status.statusCode === 200) {
-                maxRetry = 20;
                 onSuccess(response);
-            } else if (maxRetry > 0) {
-                setTimeout(() => {
-                    maxRetry -= 1;
-                    console.log(`## Failed on Request, TOR is refreshing! maxRetry is currently: ${maxRetry} `);
-                    tor.newTorSession((torError, torResponse) => {
-                        if (!torError && torResponse) {
-                            console.log(`## TOR refreshed! New IP: `, torResponse);
-                            remoteRequestUsingTor();
-                        } else {
-                            onError();
-                        }
-                    });
-                }, 2000);
+            } else if (maxRetry > 0 && isIdle) {
+                maxRetry -= 1;
+                console.log(`## Failed on Request, TOR is refreshing! maxRetry is currently: ${maxRetry} `);
+                isIdle = false;
+                tor.newTorSession((torError, torResponse) => {
+                    isIdle = true;
+                    if (!torError && torResponse) {
+                        maxRetry = 100;
+                        console.log(`## TOR refreshed! New IP: `, torResponse);
+                        remoteRequestUsingTor();
+                    } else {
+                        onError();
+                    }
+                });
             } else {
                 onError();
             }
