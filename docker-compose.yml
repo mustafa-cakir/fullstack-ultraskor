@@ -5,6 +5,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
     depends_on:
       - backend
   backend:
@@ -12,3 +13,4 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
