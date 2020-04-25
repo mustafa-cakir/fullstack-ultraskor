@@ -9,7 +9,7 @@ RUN yarn build
 
 FROM nginx:1.16.0-alpine
 COPY --from=build /app/build /var/www
-COPY ../nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 #EXPOSE 8080
 
