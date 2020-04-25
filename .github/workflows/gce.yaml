@@ -48,12 +48,13 @@ jobs:
 
       # Docker Compose
       - name: Build the stack
-        run: docker-compose up -d
+        run: |-
+          docker-compose up
 
       # Build the Docker image
-      - name: Build
-        run: |-
-          docker build --tag "gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA" .
+      #- name: Build
+      #  run: |-
+      #    docker build --tag "gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA" .
 
       # Push the Docker image to Google Container Registry
       - name: Publish
