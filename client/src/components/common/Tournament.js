@@ -1,84 +1,142 @@
-import React, {PureComponent} from 'react';
-import Event from "./Event";
-import {Trans, withTranslation} from "react-i18next";
-import {generateSlug, flagImg, updateQueryString, storeScrollY} from "../../Helper";
-import {Link} from "react-router-dom"
-import Errors from "./Errors";
+import React, { Component } from 'react';
+import { Trans, withTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+// import AdSense from "react-adsense";
+import { generateSlug, flagImg, updateQueryString, storeScrollY } from '../../core/utils/helper';
+import Event from './Event';
 
-class Tournament extends PureComponent {
+import Errors from './Errors';
 
-	lazyLoadLoadMoreBtn() {
-		let newLazyLoadCount = parseInt(this.props.lazyLoadCount) + 10;
-		let newUrl = updateQueryString("load", newLazyLoadCount);
+class Tournament extends Component {
+    lazyLoadLoadMoreBtn() {
+        const { lazyLoadCount, updateParentState } = this.props;
+        const newLazyLoadCount = parseFloat(lazyLoadCount) + 10;
+        const newUrl = updateQueryString('load', newLazyLoadCount);
 
-		if (window.history.replaceState) {
-			window.history.replaceState("data", `${document.title} - ${newLazyLoadCount}`, newUrl);
-		}
+        if (window.history.replaceState) {
+            window.history.replaceState('data', `${document.title} - ${newLazyLoadCount}`, newUrl);
+        }
 
-		this.props.updateParentState({
-			lazyLoadCount: newLazyLoadCount
-		});
-	}
+        updateParentState({
+            lazyLoadCount: newLazyLoadCount
+        });
+    }
 
-	render() {
-		const {t, isLive, filteredTournaments, isLazyLoad, lazyLoadCount} = this.props;
-		let tournamentCount = 0;
-		return (
-			<React.Fragment>
-				{this.props.tournaments.map((tournament, index) => {
-					if (isLive) {
-						let checkLive = tournament.events.filter(event => {
-							return event.status.type === "inprogress";
-						});
-						if (checkLive.length < 1) return false;
-					}
+    render() {
+        const {
+            t,
+            isLive,
+            filteredTournaments,
+            isLazyLoad,
+            lazyLoadCount,
+            favEvents,
+            favEventsList,
+            selectedId,
+            selected,
+            from,
+            updateParentState
+        } = this.props;
+        let tournamentCount = 0;
+        const { tournaments, i18n } = this.props;
+        return (
+            <>
+                {tournaments.map((tournament, index) => {
+                    if (isLive) {
+                        const checkLive = tournament.events.filter(event => {
+                            return event.status.type === 'inprogress';
+                        });
+                        if (checkLive.length < 1) return false;
+                    }
 
-					if (filteredTournaments && filteredTournaments.length > 0) {
-						if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
-					}
+                    if (filteredTournaments && filteredTournaments.length > 0) {
+                        if (filteredTournaments.indexOf(tournament.tournament.uniqueId) < 0) return false;
+                    }
 
-					if (isLazyLoad && !isLive && filteredTournaments.length < 1) {
-						if (index === parseInt(lazyLoadCount)) {
-							return <div key="more" onClick={(e) => {this.lazyLoadLoadMoreBtn()}} className="load-more-homepage"><i className="fas"/><Trans>Load more</Trans></div>
-						} else if (index > parseInt(lazyLoadCount)) {
-							return false
-						}
-					}
-					tournamentCount++;
-					return tournament.events.length > 0 ? (
-						<React.Fragment key={tournament.tournament.uniqueId + "_" + index}>
-							<div className="tournament-title">
-								{flagImg(tournament)}
-								<Link
-									onClick={storeScrollY}
-									to={{
-									pathname: `/${t('league')}/${generateSlug(t(tournament.category.name))}-${generateSlug(t(tournament.tournament.name))}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${tournament.season ? tournament.season.id : "0"}`,
-									state: {isPrev: true}
-								}} className="col tournament-name"
-								      title={`${t(tournament.category.name)} - ${t(tournament.tournament.name)}  ${t('click for standings, highlights and league fixtures')}`}>
-									<strong><Trans>{tournament.category.name}</Trans></strong> - {t(tournament.tournament.name)}
-								</Link>
-							</div>
+                    if (isLazyLoad && !isLive && filteredTournaments.length < 1) {
+                        if (index === parseFloat(lazyLoadCount)) {
+                            return (
+                                <div
+                                    role="button"
+                                    tabIndex={1}
+                                    key="more"
+                                    onKeyPress={this.lazyLoadLoadMoreBtn.bind(this)}
+                                    onClick={this.lazyLoadLoadMoreBtn.bind(this)}
+                                    className="load-more-homepage"
+                                >
+                                    <i className="fas" />
+                                    <Trans>Load more</Trans>
+                                </div>
+                            );
+                        }
+                        if (index > parseFloat(lazyLoadCount)) {
+                            return false;
+                        }
+                    }
+                    tournamentCount += 1;
+                    return tournament.events.length > 0 ? (
+                        <React.Fragment key={`${tournament.tournament.uniqueId}_${tournamentCount}`}>
+                            <div className="tournament-title">
+                                {flagImg(tournament)}
+                                <Link
+                                    onClick={storeScrollY}
+                                    to={{
+                                        pathname: `/${t('league')}/${generateSlug(
+                                            t(tournament.category.name)
+                                        )}-${generateSlug(
+                                            tournament.tournament.name[i18n.language]
+                                                ? tournament.tournament.name[i18n.language]
+                                                : tournament.tournament.name
+                                        )}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${
+                                            tournament.season ? tournament.season.id : '0'
+                                        }`,
+                                        state: { isPrev: true }
+                                    }}
+                                    className="col tournament-name"
+                                    title={`${t(tournament.category.name)} - ${
+                                        tournament.tournament.name[i18n.language]
+                                    }  ${t('click for standings, highlights and league fixtures')}`}
+                                >
+                                    <strong>
+                                        <Trans>{tournament.category.name}</Trans>
+                                    </strong>{' '}
+                                    - {tournament.tournament.name[i18n.language]}
+                                </Link>
+                            </div>
 
-							{tournament.events.map((event, k) => {
-								if (isLive && event.status.type !== "inprogress") return false;
-								return (<Event key={event.id}
-								               favEvents={this.props.favEvents}
-								               favEventsList={this.props.favEventsList}
-								               index={k}
-								               selectedId={this.props.selectedId}
-								               selected={this.props.selected}
-								               from={this.props.from}
-								               event={event}
-								               updateParentState={this.props.updateParentState}/>)
-							})}
-						</React.Fragment>
-					) : ""
-				})}
-				{tournamentCount < 1 ? <Errors type="no-matched-game"/> : ""}
-			</React.Fragment>
-		)
-	}
+                            {tournament.events.map((event, k) => {
+                                if (isLive && event.status.type !== 'inprogress') return false;
+                                return (
+                                    <Event
+                                        key={event.id}
+                                        favEvents={favEvents || []}
+                                        favEventsList={favEventsList}
+                                        index={k}
+                                        selectedId={selectedId}
+                                        selected={selected}
+                                        from={from}
+                                        event={event}
+                                        updateParentState={updateParentState}
+                                    />
+                                );
+                            })}
+                            {/*{page === "homepage" && tournamentCount === 2 && (*/}
+                            {/*    <AdSense.Google*/}
+                            {/*        client="ca-pub-6710014394558585"*/}
+                            {/*        slot="6963275666"*/}
+                            {/*        style={{ display: "block" }}*/}
+                            {/*        layoutKey="-fb+5w+4e-db+86"*/}
+                            {/*        format="fluid"*/}
+                            {/*    />*/}
+                            {/*)}*/}
+                        </React.Fragment>
+                    ) : (
+                        ''
+                    );
+                })}
+                {tournamentCount < 1 ? <Errors type="no-matched-game" /> : ''}
+            </>
+        );
+    }
 }
 
-export default withTranslation('translations')(Tournament)
+export default withTranslation('translations')(Tournament);

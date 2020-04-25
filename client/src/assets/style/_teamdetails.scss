@@ -1,72 +1,87 @@
 .team-details {
-	&-header {
-		margin: 0;
-		padding: 15px 10px;
-		background: #f3f5f5;
-		min-height: 72px;
-		.col-info,
-		.col-stadium {
-			padding-right: 10px;
-			padding-left: 0;
-			max-width: calc((100% - 40px) / 2);
+	background: #f1f2f3;
+	min-height: 400px;
+	.sort-by-container {
+		margin: 10px 0;
+	}
+
+	.middle-tabs,
+	.swiper-container{
+		opacity: 0;
+		animation: fadeInUp 0.35825s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+		animation-delay: .3s;
+	}
+	.swiper-container {
+		animation-delay: .4s;
+	}
+
+	&-info {
+		opacity: 0;
+		animation: fadeInUp 0.35825s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+		animation-delay: .2s;
+		min-height: 196px;
+		background: url('../../assets/images/stadium12.jpg');
+		background-size: cover;
+
+		.top {
+			padding-top: 40px;
+			justify-content: center;
+			display: flex;
+			position: relative;
+			z-index: 2;
+
+			&-team-logo {
+				display: block;
+				width: 80px;
+				height: 80px;
+				padding: 15px;
+				background: #fff;
+				border-radius: 60px 60px;
+				margin-bottom: -40px;
+
+				img {
+					width: 100%;
+					height: 100%;
+				}
+			}
 		}
-		.col-info {
-			.name {
-				font-weight: 600;
+
+		.bottom {
+			position: relative;
+			padding: 50px 15px 15px 15px;
+
+			.bg {
+				opacity: 0.8;
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				z-index: 1;
+				height: 100%;
+
+				&-over {
+					position: relative;
+					z-index: 2;
+				}
 			}
-			.country {
-				color: #777;
+
+			h1 {
+				font-size: 1.5rem;
 			}
-		}
-		.col-stadium {
-			font-size: .8rem;
-			padding: 0;
-			color: #999;
-			.name {
-				@include line-clamp(1);
-			}
-			.capacity {
-				@include line-clamp(1);
-			}
-		}
-		.col-img {
-			padding: 0 10px 0 0;
-			max-width: 50px;
-			img {
-				max-width: 100%;
+
+			text-align: center;
+
+			.text {
+				margin: 10px 0 0 0;
 			}
 		}
 	}
-	.middle-tabs {
-		position: sticky;
-		z-index: 10;
-		top: 48px;
+	.bottom-text {
+		padding: 15px;
+		font-size: .75rem;
 	}
-	.fixture {
-		padding-top: 15px;
-		.tournament-title {
-			top: 0;
-		}
-		.day {
-			display: block;
-		}
+	.event-time.full-time .day {
+		display: block;
 	}
-	.sort-by {
-		&-container {
-			margin: 0 0 13px;
-			text-align: right;
-			padding: 0 10px;
-		}
-		&-btn {
-			margin-left: 15px;
-			line-height: 16px;
-			color: $link-color;
-			border: 1px solid #eee;
-			padding: 5px 10px;
-			.checkbox {
-				margin-right: 1.8rem;
-				top: 3px;
-			}
-		}
-	}
+
 }

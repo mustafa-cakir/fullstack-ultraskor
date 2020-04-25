@@ -56,21 +56,25 @@
 	width: 30px;
 }
 
-.header-title {
+.header-logo {
 	display: inline-block;
 	font-size: 1.2rem;
 	font-weight: lighter;
 	line-height: 50px;
 	margin: 0;
 	vertical-align: top;
+	text-decoration: none;
 	strong {
 		font-weight: bold;
+	}
+	.header-title {
+		display: inline-block;
+		color: #fff;
 	}
 }
 
 .header-title a {
-	color: #fff;
-	text-decoration: none;
+
 }
 
 .header-btn {
@@ -550,27 +554,29 @@
 	min-height: 40px;
 	position: relative;
 	z-index: 5;
-	&-container {
+	li {
+		color: #fff;
+		&.active {
+			background: rgba(2,11,64,.3);
+			color: #00e688;
+		}
+	}
+	&-btn {
+		color: inherit;
 		align-items: center;
+		width: 100%;
 		border-left: 1px solid rgba($color-cl-3, .4);
 		cursor: pointer;
 		display: flex;
 		justify-content: left;
 		padding: 0 5px;
 		height: 40px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			height: 60px;
+			font-size: 1.5rem;
+		}
 		&:hover {
 			text-decoration: none;
-		}
-		&:focus {
-			outline: 0;
-		}
-	}
-	li {
-		color: #fff;
-		&.active,
-		&.active:hover {
-			background: rgba($color-cl-2, .3);
-			color: #00E688;
 		}
 		&:focus {
 			outline: 0;
@@ -609,13 +615,6 @@
 		}
 	}
 	.filters {
-		.dropdown-item {
-			&:hover,
-			&:focus,
-			&:active {
-				background: inherit;
-			}
-		}
 		.flag-img img {
 			background: #000;
 		}
@@ -629,10 +628,15 @@
 		.tournament-name {
 			color: #333;
 		}
-		&.checked,
-		&.checked:hover {
-			color: $color-cl-4;
+		&:active {
+			background: rgba($color-cl-4, .1);
+			outline: 0;
+		}
+		&.checked {
 			background: rgba($color-cl-4, .05);
+			&:hover {
+				background: rgba($color-cl-4, .05);
+			}
 		}
 		&.soon {
 			color: #aaa;
@@ -658,12 +662,27 @@
 	}
 	.col-live {
 		max-width: 100px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 120px;
+		}
 	}
 	.col-date {
 		max-width: 80px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 100px;
+		}
 	}
 	.col-filter {
 		max-width: 40px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 60px;
+		}
+	}
+	.col-fav {
+		max-width: 50px;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			max-width: 70px;
+		}
 	}
 	i {
 		font-size: 1.5rem;

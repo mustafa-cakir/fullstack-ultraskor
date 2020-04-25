@@ -1,0 +1,43 @@
+{
+    "name": "ultraskor.com",
+    "version": "1.0.0",
+    "description": "ultraskor.com - A live score app built using ReactJS, NodeJs, Express and MongoDB that provides live coverage for almost all football leagues",
+    "author": "Mustafa Cakir",
+    "license": "MIT",
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.610.0",
+        "body-parser": "^1.19.0",
+        "cloudscraper": "^4.5.0",
+        "concurrently": "^5.1.0",
+        "cors": "^2.8.5",
+        "cron": "^1.8.2",
+        "deep-diff": "^1.0.2",
+        "express": "^4.16.4",
+        "express-jwt": "^5.3.1",
+        "firebase-admin": "^8.9.2",
+        "fs": "^0.0.1-security",
+        "immutability-helper": "^3.0.1",
+        "lodash": "^4.17.11",
+        "moment": "^2.24.0",
+        "mongodb": "^3.5.2",
+        "node-cache": "^5.1.0",
+        "nodemon": "^2.0.2",
+        "pm2": "^4.2.3",
+        "request": "^2.88.0",
+        "request-promise-native": "^1.0.8",
+        "shortid": "^2.2.15",
+        "socket.io": "^2.3.0",
+        "socket.io-client": "^2.3.0",
+        "socks-proxy-agent": "^4.0.2",
+        "socks5-https-client": "^1.2.1",
+        "tor-request": "^3.1.0",
+        "ws": "^7.2.1"
+    },
+    "scripts": {
+        "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch serverProxy.js serverProxy.js\"",
+        "prod": "yarn install && concurrently \"pm2 restart server.js\" \"pm2 restart serverProxy.js\""
+    }
+}
