@@ -46,6 +46,10 @@ jobs:
       - run: |-
           gcloud --quiet auth configure-docker
 
+      # Docker Compose
+      - name: Build the stack
+        run: docker-compose up -d
+
       # Build the Docker image
       - name: Build
         run: |-
