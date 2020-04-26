@@ -10,14 +10,13 @@ services:
       - server
     links:
       - server
+    ports:
+      - "8080:80"
   server:
     container_name: ultraskor_server
     expose:
       - "5001"
       - "5002"
-    ports:
-      - "5001:5001"
-      - "5002:5002"
     build:
       context: ./server
       dockerfile: Dockerfile

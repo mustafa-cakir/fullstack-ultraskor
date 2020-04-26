@@ -10,5 +10,6 @@ RUN yarn install
 COPY . ./
 
 #Expose port and start application
-EXPOSE 5001 5002
+#EXPOSE 5001 5002
+
 CMD [ "yarn", "prod-server" ]
