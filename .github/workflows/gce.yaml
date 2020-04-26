@@ -21,7 +21,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
-  GCE_INSTANCE: instance-1
+  GCE_INSTANCE: my-instance
   GCE_INSTANCE_ZONE: europe-west3-a
 
 jobs:
