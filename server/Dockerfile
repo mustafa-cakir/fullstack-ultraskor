@@ -1,12 +1,13 @@
-FROM node:12
+FROM node:10-alpine
 # Create app directory
 WORKDIR /appServer
 # Install app dependencies
 COPY package.json ./
+COPY yarn.lock ./
 
 RUN yarn install
-# Copy app source code
-COPY . .
+
+COPY . ./
 
 #Expose port and start application
 EXPOSE 5001 5002

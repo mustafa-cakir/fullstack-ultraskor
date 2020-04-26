@@ -39,6 +39,6 @@
     "scripts": {
         "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch serverProxy.js serverProxy.js\"",
         "prod": "yarn install && concurrently \"pm2 restart server.js\" \"pm2 restart serverProxy.js\"",
-	    "prod-server":  "concurrently \"pm2 start server.js\" \"pm2 start serverProxy.js\""
+	    "prod-server":  "yarn concurrently \"pm2 start server.js\" \"pm2 start serverProxy.js\""
     }
 }
