@@ -1,5 +1,5 @@
 const moment = require('moment');
-const languageJson = require('../../client/src/languages/tr.json');
+const languageJson = require('./languages/tr.json');
 const { db } = require('../services/firebase.service');
 
 const generateSlug = text => {

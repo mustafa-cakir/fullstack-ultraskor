@@ -9,7 +9,7 @@ app.get("/images/:type/:filename", (req, res) => {
     const { type, filename } = req.params;
     // console.log(type, filename);
     const sendFileOptions = {
-        root: `${__dirname}/../client/public/static/images/${type}/`,
+        root: `./utils/images/${type}/`,
         dotfiles: "deny",
         headers: {
             "X-Powered-By": "ultraskor.com",
