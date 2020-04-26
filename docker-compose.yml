@@ -10,9 +10,6 @@ services:
       - backend
   backend:
     container_name: ultraskor_server
-    ports:
-      - "5001:5001"
-      - "5002:5002"
     expose:
       - "5001"
       - "5002"
