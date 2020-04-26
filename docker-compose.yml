@@ -1,18 +1,23 @@
 version: "3"
 services:
-  frontend:
+  client:
     container_name: ultraskor_client
     build:
       context: ./client
       dockerfile: Dockerfile
     image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
     depends_on:
-      - backend
-  backend:
+      - server
+    links:
+      - server
+  server:
     container_name: ultraskor_server
     expose:
       - "5001"
       - "5002"
+    ports:
+      - "5001:5001"
+      - "5002:5002"
     build:
       context: ./server
       dockerfile: Dockerfile
