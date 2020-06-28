@@ -24,14 +24,14 @@ class TeamdetailsOLD extends PureComponent {
             teamTournamentsData: null,
             teamTournamentsDataByTournament: null,
             isTeamOfTheWeekClicked: false,
-            sortBy: 'date'
+            sortBy: 'date',
         };
         smoothscroll.polyfill();
     }
 
     static preProcessTournamentsData(data) {
         data.tournaments.reverse();
-        data.tournaments.forEach(item => {
+        data.tournaments.forEach((item) => {
             item.events.reverse();
         });
         return data;
@@ -41,7 +41,7 @@ class TeamdetailsOLD extends PureComponent {
         let newData = JSON.parse(JSON.stringify(data));
         newData.tournaments = newData.tournaments.reduce((whole, item) => {
             let id = item.tournament.id;
-            let matchedObj = whole.filter(x => x.tournament.id === id);
+            let matchedObj = whole.filter((x) => x.tournament.id === id);
             if (matchedObj.length > 0) {
                 matchedObj[0].events.push(...item.events);
             } else {
@@ -64,9 +64,9 @@ class TeamdetailsOLD extends PureComponent {
         // }
     }
 
-    swipeChanging = index => {
+    swipeChanging = (index) => {
         this.setState({
-            index: index
+            index: index,
         });
     };
 
@@ -75,17 +75,17 @@ class TeamdetailsOLD extends PureComponent {
         const { language } = i18n;
 
         fetch(`/api/helper4/${language}/teams/${teamId}`)
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`404 - Malesef takım hakkında detaylı bilgiye ulaşılamadı`);
                 }
             })
-            .then(res => {
+            .then((res) => {
                 this.setState(
                     {
-                        teamInfoData: res
+                        teamInfoData: res,
                     },
                     () => {
                         this.updateMeta(res);
@@ -94,24 +94,24 @@ class TeamdetailsOLD extends PureComponent {
             })
             .catch(() => {
                 this.setState({
-                    teamInfoData: null
+                    teamInfoData: null,
                 });
             });
 
         fetch(`/api/?query=/team/${teamId}/events/json&page=teamdetails-fixture-round-matches`)
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then(res => {
+            .then((res) => {
                 this.setState(
                     {
                         loading: false,
                         teamTournamentsData: TeamdetailsOLD.preProcessTournamentsData(res),
-                        teamTournamentsDataByTournament: TeamdetailsOLD.preProcessTournamentsSortByTournament(res)
+                        teamTournamentsDataByTournament: TeamdetailsOLD.preProcessTournamentsSortByTournament(res),
                     },
                     () => {
                         setTimeout(() => {
@@ -120,10 +120,10 @@ class TeamdetailsOLD extends PureComponent {
                     }
                 );
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState(
                     {
-                        teamTournamentsData: { error: err.toString() }
+                        teamTournamentsData: { error: err.toString() },
                     },
                     () => {
                         setTimeout(() => {
@@ -151,7 +151,7 @@ class TeamdetailsOLD extends PureComponent {
                     teamInfoData.team.name
                 )} transfer news, lineups, league fixtures`,
                 alternate: HelperTranslateUrlTo('tr'),
-                hrefLang: 'tr'
+                hrefLang: 'tr',
             });
         } else if (i18n.language === 'tr') {
             if (window.location.pathname.split('/')[1] === 'team')
@@ -168,7 +168,7 @@ class TeamdetailsOLD extends PureComponent {
                     teamInfoData.team.name
                 )} haftanın takımı, ${t(teamInfoData.team.name)} gol krallığı`,
                 alternate: HelperTranslateUrlTo('en'),
-                hrefLang: 'en'
+                hrefLang: 'en',
             });
         }
     }
@@ -197,7 +197,7 @@ class TeamdetailsOLD extends PureComponent {
         this.rippleEffectHandler(event);
         this.setState(
             {
-                index: index
+                index: index,
             },
             () => {
                 if (this.swipeEl && this.swipeEl.current) this.swipeEl.current.slide(index);
@@ -226,7 +226,7 @@ class TeamdetailsOLD extends PureComponent {
 
         tabs.scrollTo({
             left: active.offsetLeft - (window.innerWidth - active.offsetWidth) / 2 + 7,
-            behavior: 'smooth'
+            behavior: 'smooth',
         });
     }
 
@@ -255,7 +255,7 @@ class TeamdetailsOLD extends PureComponent {
 
     sortByClickHandler(by) {
         this.setState({
-            sortBy: by
+            sortBy: by,
         });
     }
 
@@ -305,7 +305,7 @@ class TeamdetailsOLD extends PureComponent {
                                 return (
                                     <li
                                         key={index}
-                                        onClick={event => this.swipeTabClick(event, index)}
+                                        onClick={(event) => this.swipeTabClick(event, index)}
                                         className={(this.state.index === index ? 'active ' : '') + 'ripple-effect pink'}
                                     >
                                         <span>{tab}</span>
@@ -326,7 +326,7 @@ class TeamdetailsOLD extends PureComponent {
                         callback: this.swipeChanging,
                         transitionEnd: this.swipeComplete,
                         swiping: this.swipeSwiping,
-                        disableScroll: false
+                        disableScroll: false,
                     }}
                     ref={this.swipeEl}
                 >

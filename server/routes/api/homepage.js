@@ -13,7 +13,7 @@ router.get('/:date', auth.optional, (req, res) => {
 
     const remoteRequest = () => {
         fetchHomepage(date)
-            .then(data => {
+            .then((data) => {
                 if (!isEmpty(data)) {
                     cacheService.instance().set(cacheKey, data, cacheDuration.homepageList);
                 }

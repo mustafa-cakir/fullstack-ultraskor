@@ -9,7 +9,7 @@ let maxRetry = 100;
 let isIdle = true;
 
 module.exports = (options, resolve, reject, cache, isTor = false) => {
-    const onSuccess = response => {
+    const onSuccess = (response) => {
         if (cache && response) {
             cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
             if (isDev) console.log(`## Cached: ${cache.cacheKey}`);
@@ -21,9 +21,7 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
     };
 
     const remoteRequest = () => {
-        cloudscraper(options)
-            .then(onSuccess)
-            .catch(onError);
+        cloudscraper(options).then(onSuccess).catch(onError);
     };
 
     const remoteRequestUsingTor = () => {

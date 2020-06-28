@@ -14,7 +14,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
         showMore: true,
         matches: null,
         isLoading: true,
-        error: null
+        error: null,
     });
 
     const { tab, by, showMore, matches, isLoading, error } = state;
@@ -22,10 +22,10 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
     const getData = useCallback(() => {
         axios
             .get(`/api/eventdetails/${id}/head2head/${teams.home.id}/${teams.away.id}`)
-            .then(res => {
+            .then((res) => {
                 setState({
                     isLoading: false,
-                    matches: res.data
+                    matches: res.data,
                 });
                 setTimeout(() => {
                     updateAutoHeight();
@@ -34,7 +34,7 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t('Something went wrong')
+                    error: t('Something went wrong'),
                 });
             });
     }, [id, teams.home.id, teams.away.id, updateAutoHeight, t]);
@@ -49,11 +49,11 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
     if (error) return <Errors message={error} />;
 
     const tournaments = matches[tab][by];
-    const tabClickHandler = newTab => {
+    const tabClickHandler = (newTab) => {
         if (newTab !== tab) {
             setState({
                 tab: newTab,
-                showMore: true
+                showMore: true,
             });
             updateAutoHeight();
         }
@@ -61,15 +61,15 @@ const H2h = ({ id, teams, textList, t, updateAutoHeight, hasActived }) => {
 
     const showMoreClickHandler = () => {
         setState({
-            showMore: !showMore
+            showMore: !showMore,
         });
         updateAutoHeight();
     };
 
-    const byClickHandler = newBy => {
+    const byClickHandler = (newBy) => {
         if (newBy !== by) {
             setState({
-                by: newBy
+                by: newBy,
             });
             updateAutoHeight();
         }
@@ -169,7 +169,7 @@ const MatchTextInfo = ({ textList, tab, showMore, showMoreClickHandler }) => {
     let filterBy = 'Aralarında Oynanan Maçlar';
     if (tab === 'home') filterBy = 'Ev Sahibi Takım';
     else if (tab === 'away') filterBy = 'Misafir Takım';
-    const list = textList.filter(x => x.textGroupName === filterBy);
+    const list = textList.filter((x) => x.textGroupName === filterBy);
     return (
         <div className="match-text-info">
             {list.map((item, index) => (

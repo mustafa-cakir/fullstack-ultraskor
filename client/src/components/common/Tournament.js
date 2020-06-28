@@ -18,7 +18,7 @@ class Tournament extends Component {
         }
 
         updateParentState({
-            lazyLoadCount: newLazyLoadCount
+            lazyLoadCount: newLazyLoadCount,
         });
     }
 
@@ -34,7 +34,7 @@ class Tournament extends Component {
             selectedId,
             selected,
             from,
-            updateParentState
+            updateParentState,
         } = this.props;
         let tournamentCount = 0;
         const { tournaments, i18n } = this.props;
@@ -42,7 +42,7 @@ class Tournament extends Component {
             <>
                 {tournaments.map((tournament, index) => {
                     if (isLive) {
-                        const checkLive = tournament.events.filter(event => {
+                        const checkLive = tournament.events.filter((event) => {
                             return event.status.type === 'inprogress';
                         });
                         if (checkLive.length < 1) return false;
@@ -89,7 +89,7 @@ class Tournament extends Component {
                                         )}${t('-standing-')}${tournament.tournament.uniqueId}${t('-season-')}${
                                             tournament.season ? tournament.season.id : '0'
                                         }`,
-                                        state: { isPrev: true }
+                                        state: { isPrev: true },
                                     }}
                                     className="col tournament-name"
                                     title={`${t(tournament.category.name)} - ${

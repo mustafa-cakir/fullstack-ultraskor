@@ -7,16 +7,16 @@ const fetchSportRadar = (query, cacheDuration, isTor) =>
             headers: {
                 'Content-Type': 'application/json',
                 Origin: 'https://ls.betradar.com',
-                Referer: 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page'
+                Referer: 'https://ls.betradar.com/ls/livescore/?/tempobet/en/page',
             },
             uri: `https://ls.fn.sportradar.com/tempobet${query}`,
             json: true,
-            timeout: 10000
+            timeout: 10000,
         };
         const cache = cacheDuration
             ? {
                   cacheKey: query.replace(':', '-'),
-                  cacheDuration
+                  cacheDuration,
               }
             : null;
 

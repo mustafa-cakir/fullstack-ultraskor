@@ -8,8 +8,8 @@ const FavTournament = ({ favEvents, tournaments, isLive, updateParentState, isFa
     let index = 0;
     return (
         <>
-            {tournaments.map(tournament => {
-                return tournament.events.map(event => {
+            {tournaments.map((tournament) => {
+                return tournament.events.map((event) => {
                     if (isLive && event.status.type !== 'inprogress') return false;
                     if (favEvents.indexOf(event.id) < 0) return false;
                     index += 1;

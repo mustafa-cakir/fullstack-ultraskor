@@ -6,7 +6,7 @@ const Markets = ({ markets }) => {
     const marketsData = markets && markets.length > 0 ? markets : marketsPlaceholder;
     marketsData.sort((a, b) => (a.muk < b.muk ? -1 : 1));
 
-    return marketsData.map(market => {
+    return marketsData.map((market) => {
         return (
             <div key={market.mid} className="item">
                 <div className="row align-items-center">
@@ -16,7 +16,7 @@ const Markets = ({ markets }) => {
                     </div>
                     <div className="col pl-1">
                         <div className="row row-odds">
-                            {market.o.map(odd => (
+                            {market.o.map((odd) => (
                                 <div key={odd.ov} className="col">
                                     <div className="odd-box">
                                         <div className="odd-box-name">{odd.ona}</div>

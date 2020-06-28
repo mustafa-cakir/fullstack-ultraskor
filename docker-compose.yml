@@ -1,27 +1,27 @@
-version: "3"
+version: '3'
 services:
-  frontend:
-    container_name: frontend
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
-    depends_on:
-      - backend
-    links:
-      - backend
-    ports:
-      - "3000:3000"
-      - "80:80"
-  backend:
-    container_name: backend
-    expose:
-      - "5001"
-      - "5002"
-    ports:
-      - "5001:5001"
-      - "5002:5002"
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
+    frontend:
+        container_name: frontend
+        build:
+            context: ./client
+            dockerfile: Dockerfile
+        image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA
+        depends_on:
+            - backend
+        links:
+            - backend
+        ports:
+            - '3000:3000'
+            - '80:80'
+    backend:
+        container_name: backend
+        expose:
+            - '5001'
+            - '5002'
+        ports:
+            - '5001:5001'
+            - '5002:5002'
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        image: gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA

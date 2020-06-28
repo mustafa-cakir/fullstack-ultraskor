@@ -16,7 +16,7 @@ class Fixture extends Component {
             roundMatches: this.props.events.roundMatches,
             currentRound: this.props.events.roundMatches.data.roundName
                 ? this.props.events.roundMatches.data.roundName
-                : this.props.events.roundMatches.data.index
+                : this.props.events.roundMatches.data.index,
         };
     }
 
@@ -26,28 +26,28 @@ class Fixture extends Component {
         let api = `/u-tournament/${leagueid}/season/${seasonid}/matches/round/${round}${name ? '/' + name : ''}`;
 
         fetch(`/api/?query=${api}&page=leaguedetailsFixture`)
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then(res => {
+            .then((res) => {
                 this.setState(
                     {
                         loading: false,
-                        roundMatches: res.roundMatches
+                        roundMatches: res.roundMatches,
                     },
                     () => {
                         this.props.swipeAdjustHeight();
                     }
                 );
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState(
                     {
-                        roundMatches: { error: err.toString() }
+                        roundMatches: { error: err.toString() },
                     },
                     () => {
                         this.props.swipeAdjustHeight();
@@ -64,7 +64,7 @@ class Fixture extends Component {
                 roundName: round.name,
                 currentRound: round.round,
                 isDropdown: false,
-                loading: true
+                loading: true,
             },
             () => {
                 this.initGetData(round.round, round.name);
@@ -77,7 +77,7 @@ class Fixture extends Component {
 
         if (roundMatches.error) return <Errors type="error" message={roundMatches.error} />;
         const currentRoundIndex = this.props.events.rounds.findIndex(
-            x => x[isNaN(currentRound) ? 'name' : 'round'] === currentRound
+            (x) => x[isNaN(currentRound) ? 'name' : 'round'] === currentRound
         );
         const prevRound = this.props.events.rounds[currentRoundIndex - 1];
         const nextRound = this.props.events.rounds[currentRoundIndex + 1];

@@ -27,7 +27,7 @@ cronService.init();
 newTorSessionService.init();
 websocketService.init(io);
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
     socketService.init(socket, io);
 });
 

@@ -14,11 +14,11 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
         isLoading: true,
         error: null,
         prevExist: true,
-        nextExist: true
+        nextExist: true,
     });
     const { by, isDropdown, data, isLoading, error, prevExist, nextExist } = state;
 
-    const getOffset = nav => {
+    const getOffset = (nav) => {
         if (nav === 'prev') return String(data.byDates[0].events[0].startTimestamp).substr(0, 10);
         return String(
             data.byDates[data.byDates.length - 1].events[data.byDates[data.byDates.length - 1].events.length - 1]
@@ -26,17 +26,17 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
         ).substr(0, 10);
     };
 
-    const getPrevNextData = nav => {
+    const getPrevNextData = (nav) => {
         const offset = getOffset(nav);
         setState({ isLoading: true, nextExist: true, prevExist: true });
         axios
             .get(`/api/team/${teamId}/${offset}/${nav}`)
-            .then(res => {
+            .then((res) => {
                 if (res.data) {
                     setState({
                         data: res.data,
                         isLoading: false,
-                        error: null
+                        error: null,
                     });
                     setTimeout(() => {
                         updateAutoHeight();
@@ -44,14 +44,14 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
                 } else {
                     setState({
                         ...(nav === 'next' ? { nextExist: false } : { prevExist: false }),
-                        isLoading: false
+                        isLoading: false,
                     });
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 setState({
                     error: err,
-                    isLoading: false
+                    isLoading: false,
                 });
             });
     };
@@ -59,20 +59,20 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
     const getData = useCallback(() => {
         axios
             .get(`/api/team/${teamId}`)
-            .then(res => {
+            .then((res) => {
                 setState({
                     data: res.data,
                     isLoading: false,
-                    error: null
+                    error: null,
                 });
                 setTimeout(() => {
                     updateAutoHeight();
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 setState({
                     error: err,
-                    isLoading: false
+                    isLoading: false,
                 });
             });
     }, [updateAutoHeight, teamId]);
@@ -81,18 +81,18 @@ const Fixture = ({ teamId, updateAutoHeight }) => {
         getData();
     }, [getData]);
 
-    const byClickHandler = newBy => {
+    const byClickHandler = (newBy) => {
         if (newBy !== by) {
             setState({
                 by: newBy,
-                isDropdown: false
+                isDropdown: false,
             });
         }
     };
 
     const dropdownClickHandler = () => {
         setState({
-            isDropdown: !isDropdown
+            isDropdown: !isDropdown,
         });
     };
 

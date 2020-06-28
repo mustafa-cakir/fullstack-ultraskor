@@ -36,7 +36,7 @@ const Homepage = ({ t, i18n, socket }) => {
         redScoreBarIncident: null,
         isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
         lazyLoadCount: getQueryStringFromUrl('load') || 10,
-        ...(stateFromLocalStorage && { ...stateFromLocalStorage })
+        ...(stateFromLocalStorage && { ...stateFromLocalStorage }),
     });
     const {
         mainData,
@@ -51,26 +51,22 @@ const Homepage = ({ t, i18n, socket }) => {
         redScoreFavOnly,
         redScoreBarIncident,
         isLazyLoad,
-        lazyLoadCount
+        lazyLoadCount,
     } = state;
     const refMainData = useRef(mainData);
     const { language } = i18n;
     const { date } = useParams();
     const location = useLocation();
     const { pathname: page } = location;
-    const currentDate =
-        date ||
-        moment()
-            .subtract(2, 'hours')
-            .format('YYYY-MM-DD');
+    const currentDate = date || moment().subtract(2, 'hours').format('YYYY-MM-DD');
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    const handleGetData = useCallback(res => {
+    const handleGetData = useCallback((res) => {
         const tournaments = prepareRes(res.data);
         setState({
             mainData: tournaments,
             refreshButton: false,
-            isLoading: false
+            isLoading: false,
         });
         refMainData.current = tournaments;
         UpdateMetaHomepage();
@@ -80,18 +76,18 @@ const Homepage = ({ t, i18n, socket }) => {
         setState({ isLoading: true });
         axios
             .get(`/api/homepage/list/${currentDate}`)
-            .then(res => {
+            .then((res) => {
                 handleGetData(res);
                 setTimeout(() => {
                     document.body.classList.add('initial-load');
                 });
                 restoreScrollY();
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 setState({
                     isLoading: false,
-                    error: 'something went wrong'
+                    error: 'something went wrong',
                 });
             });
     }, [currentDate, handleGetData]);
@@ -137,14 +133,14 @@ const Homepage = ({ t, i18n, socket }) => {
                 setState({
                     redScoreBarIncident: {
                         type: redScoreBarType,
-                        event: newEvent
-                    }
+                        event: newEvent,
+                    },
                 });
 
                 clearTimeout(redScoreBarTimer);
                 redScoreBarTimer = setTimeout(() => {
                     setState({
-                        redScoreBarIncident: null
+                        redScoreBarIncident: null,
                     });
                 }, 15000);
             }
@@ -155,25 +151,25 @@ const Homepage = ({ t, i18n, socket }) => {
     );
 
     const onSocketReturnPushServiceData = useCallback(
-        res => {
+        (res) => {
             if (!res) return false;
             if (refMainData.current.length === 0) return false;
             const { tournament, event } = res.ids;
 
-            const tournamentIndex = refMainData.current.findIndex(x => x.tournament.id === tournament);
+            const tournamentIndex = refMainData.current.findIndex((x) => x.tournament.id === tournament);
             if (tournamentIndex < 0) return false;
 
-            const eventIndex = refMainData.current[tournamentIndex].events.findIndex(x => x.id === event);
+            const eventIndex = refMainData.current[tournamentIndex].events.findIndex((x) => x.id === event);
             if (eventIndex < 0) return false;
 
             const oldEvent = refMainData.current[tournamentIndex].events[eventIndex];
             const newEvent = { ...oldEvent, ...res.event };
             const newMainData = update(refMainData.current, {
-                [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } }
+                [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } },
             });
             refMainData.current = newMainData;
             setState({
-                mainData: newMainData
+                mainData: newMainData,
             });
             initRedScoreBar(oldEvent, newEvent);
             return false;
@@ -185,7 +181,7 @@ const Homepage = ({ t, i18n, socket }) => {
         console.log('on connected!');
         initGetData();
         setState({
-            refreshButton: false
+            refreshButton: false,
         });
         socket.on('push-service', onSocketReturnPushServiceData);
     }, [initGetData, socket, onSocketReturnPushServiceData]);
@@ -195,7 +191,7 @@ const Homepage = ({ t, i18n, socket }) => {
         socket.on('connect', onSocketConnect);
         socket.removeListener('push-service', onSocketReturnPushServiceData);
         setState({
-            refreshButton: true
+            refreshButton: true,
         });
     }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
 
@@ -231,7 +227,7 @@ const Homepage = ({ t, i18n, socket }) => {
             isLive,
             redScoreMuted,
             redScoreShrinked,
-            redScoreFavOnly
+            redScoreFavOnly,
         });
     }, [favEvents, isFav, filteredTournaments, isLive, redScoreMuted, redScoreShrinked, redScoreFavOnly]);
 
@@ -286,9 +282,7 @@ const Homepage = ({ t, i18n, socket }) => {
                             to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
                                 .subtract(1, 'd')
                                 .format('YYYY-MM-DD')}`}
-                            title={`${moment()
-                                .subtract(1, 'd')
-                                .format('LL')} ${t('Football Results')}`}
+                            title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}
                         >
                             <Icon name="fas fa-chevron-left" />
                             <Trans>Yesterday</Trans>
@@ -309,9 +303,7 @@ const Homepage = ({ t, i18n, socket }) => {
                             to={`/${language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
                                 .add(1, 'd')
                                 .format('YYYY-MM-DD')}`}
-                            title={`${moment()
-                                .add(1, 'd')
-                                .format('LL')} ${t('Football Results')}`}
+                            title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}
                         >
                             <Trans>Tomorrow</Trans>
                             <Icon name="fas fa-chevron-right" />

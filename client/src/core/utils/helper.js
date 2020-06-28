@@ -11,7 +11,7 @@ class TranslateUrlHandler {
                 '-sezon-': '-season-',
                 '/maclar/': '/matches/',
                 'tarih-': 'date-',
-                '/takim/': '/team/'
+                '/takim/': '/team/',
             },
             toTurkish: {
                 '/en': '',
@@ -22,14 +22,14 @@ class TranslateUrlHandler {
                 '-season-': '-sezon-',
                 '/matches/': '/maclar/',
                 'date-': 'tarih-',
-                '/team/': '/takim/'
-            }
+                '/team/': '/takim/',
+            },
         };
     }
 
     replaceAll(str, mapObj) {
         const re = new RegExp(Object.keys(mapObj).join('|'), 'gi');
-        return str.replace(re, function(matched) {
+        return str.replace(re, function (matched) {
             return mapObj[matched.toLowerCase()];
         });
     }
@@ -73,7 +73,7 @@ class UpdateMetaHandler {
             canonical: document.querySelector('[data-meta="canonical"]'),
             alternate: document.querySelector('[data-meta="alternate"]'),
             description: document.querySelector('[data-meta="description"]'),
-            keywords: document.querySelector('[data-meta="keywords"]')
+            keywords: document.querySelector('[data-meta="keywords"]'),
         };
     }
 
@@ -158,7 +158,7 @@ export function Throttle(func, wait, options) {
         result = func.apply(context, args);
         if (!timeout) context = args = null;
     };
-    return function() {
+    return function () {
         const now = Date.now();
         if (!previous && options.leading === false) previous = now;
         const remaining = wait - (now - previous);
@@ -206,7 +206,7 @@ export function generateSlug(text) {
         .toString()
         .toLowerCase()
         .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(p, c => b.charAt(a.indexOf(c))) // Replace special chars
+        .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special chars
         .replace(/&/g, '-and-') // Replace & with 'and'
         .replace(/[^\w-]+/g, '') // Remove all non-word chars
         .replace(/--+/g, '-') // Replace multiple - with single -
@@ -269,7 +269,7 @@ export const marketGroups = [
     {
         id: 1,
         name: 'All Bets',
-        markets: []
+        markets: [],
     },
     {
         id: 2,
@@ -297,13 +297,13 @@ export const marketGroups = [
             '4-47',
             '4-129',
             '4-321',
-            '4-625'
-        ]
+            '4-625',
+        ],
     },
     {
         id: 3,
         name: 'Over/Under',
-        markets: ['2-101-0.5', '2-101-1.5', '2-101-2.5', '2-101-3.5', '2-101-4.5', '2-101-5.5']
+        markets: ['2-101-0.5', '2-101-1.5', '2-101-2.5', '2-101-3.5', '2-101-4.5', '2-101-5.5'],
     },
     {
         id: 4,
@@ -335,8 +335,8 @@ export const marketGroups = [
             '4-199',
             '4-203',
             '4-207',
-            '4-262'
-        ]
+            '4-262',
+        ],
     },
     {
         id: 5,
@@ -354,24 +354,24 @@ export const marketGroups = [
             '4-215',
             '4-217',
             '4-218',
-            '4-222'
-        ]
+            '4-222',
+        ],
     },
     {
         id: 6,
         name: 'Handicap',
-        markets: ['2-100-1', '2-100-2', '2-100-3', '2-100-4', '2-100--1', '2-100--2', '2-100--3', '2-100--4']
+        markets: ['2-100-1', '2-100-2', '2-100-3', '2-100-4', '2-100--1', '2-100--2', '2-100--3', '2-100--4'],
     },
     {
         id: 7,
         name: 'Score',
-        markets: ['2-86', '4-252']
+        markets: ['2-86', '4-252'],
     },
     {
         id: 8,
         name: 'Special',
-        markets: ['2-3', '2-12', '2-17', '2-658', '2-661']
-    }
+        markets: ['2-3', '2-12', '2-17', '2-658', '2-661'],
+    },
 ];
 
 export const marketsPlaceholder = [
@@ -381,85 +381,85 @@ export const marketsPlaceholder = [
         o: [
             {
                 ona: '1',
-                locked: true
+                locked: true,
             },
             {
                 ona: '0',
-                locked: true
+                locked: true,
             },
             {
                 ona: '2',
-                locked: true
-            }
-        ]
+                locked: true,
+            },
+        ],
     },
     {
         mn: 'Karşılıklı Gol',
         o: [
             {
                 ona: 'Var',
-                locked: true
+                locked: true,
             },
             {
                 ona: 'Yok',
-                locked: true
-            }
-        ]
+                locked: true,
+            },
+        ],
     },
     {
         mn: 'Maçın Geri Kalanını Kim Kazanır ',
         o: [
             {
                 ona: '1',
-                locked: true
+                locked: true,
             },
             {
                 ona: '0',
-                locked: true
+                locked: true,
             },
             {
                 ona: '2',
-                locked: true
-            }
-        ]
+                locked: true,
+            },
+        ],
     },
     {
         mn: 'Sıradaki Golü Kim Atar',
         o: [
             {
                 ona: '1',
-                locked: true
+                locked: true,
             },
             {
                 ona: 'Olmaz',
-                locked: true
+                locked: true,
             },
             {
                 ona: '2',
-                locked: true
-            }
-        ]
+                locked: true,
+            },
+        ],
     },
     {
         mn: 'Toplam Korner Sayısı',
         o: [
             {
                 ona: '0-8',
-                locked: true
+                locked: true,
             },
             {
                 ona: '9-11',
-                locked: true
+                locked: true,
             },
             {
                 ona: '12+',
-                locked: true
-            }
-        ]
-    }
+                locked: true,
+            },
+        ],
+    },
 ];
 
-export const prepareRes = res => {
+export const prepareRes = (res) => {
     let { tournaments } = res;
     // Mexico - Primera Division, Apertura - 11621
     // Argentina - Superliga - 155
@@ -495,10 +495,10 @@ export const prepareRes = res => {
         53, // Italy - Serie B
         182, // France - Ligue 2
         131, // Holland - Eerste Divisie
-        215 // Switzerland - Super League
+        215, // Switzerland - Super League
     ]; // tournament Id's in order that you want at top i.e: [62, 36, 33]
 
-    const priorityTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) > -1);
+    const priorityTournaments = tournaments.filter((x) => moveToTop.indexOf(x.tournament.uniqueId) > -1);
     priorityTournaments.sort((a, b) => {
         if (moveToTop.indexOf(a.tournament.uniqueId) < moveToTop.indexOf(b.tournament.uniqueId)) {
             return -1;
@@ -509,7 +509,7 @@ export const prepareRes = res => {
         return 0;
     });
 
-    const otherTournaments = tournaments.filter(x => moveToTop.indexOf(x.tournament.uniqueId) === -1);
+    const otherTournaments = tournaments.filter((x) => moveToTop.indexOf(x.tournament.uniqueId) === -1);
     tournaments = priorityTournaments.concat(otherTournaments);
 
     // const moveToBottom = [null]; // tournament Id's in the reverse order that you want at the bottom i.e: [309,310]

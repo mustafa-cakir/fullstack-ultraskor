@@ -8,7 +8,7 @@ import Icon from '../../common/Icon';
 const Iddaa = ({ iddaaData, updateAutoHeight, textList, isLive }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
-    const tabClickHandler = newIndex => {
+    const tabClickHandler = (newIndex) => {
         setTabIndex(newIndex);
         updateAutoHeight();
     };
@@ -74,7 +74,7 @@ const MatchTextInfo = ({ textList }) => {
     if (!textList || textList.length < 0) return <div>Malesef bu maç için Iddaa Analiz bilgisi bulunamadı.</div>;
     return (
         <div className="match-text-info">
-            {textList.map(item => (
+            {textList.map((item) => (
                 <p key={item.textValue}>
                     <Icon name="fa fa-angle-right" /> {item.textValue}
                 </p>

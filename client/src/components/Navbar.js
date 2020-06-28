@@ -24,7 +24,7 @@ class Navbar extends Component {
             fixtureMenuOpened: false,
             redScoreMuted: false,
             redScoreShrinked: false,
-            redScoreFavOnly: false
+            redScoreFavOnly: false,
         };
     }
 
@@ -63,14 +63,14 @@ class Navbar extends Component {
     standingClickHandler() {
         this.setState({
             standingMenuOpened: !this.state.standingMenuOpened,
-            fixtureMenuOpened: false
+            fixtureMenuOpened: false,
         });
     }
 
     fixtureClickHandler() {
         this.setState({
             fixtureMenuOpened: !this.state.fixtureMenuOpened,
-            standingMenuOpened: false
+            standingMenuOpened: false,
         });
     }
 
@@ -99,7 +99,7 @@ class Navbar extends Component {
         let newState = !this.state.redScoreMuted;
         this.setState(
             {
-                redScoreMuted: newState
+                redScoreMuted: newState,
             },
             this.setToLocaleStorage('redScoreMuted', newState)
         );
@@ -110,7 +110,7 @@ class Navbar extends Component {
         let newState = !this.state.redScoreFavOnly;
         this.setState(
             {
-                redScoreFavOnly: newState
+                redScoreFavOnly: newState,
             },
             this.setToLocaleStorage('redScoreFavOnly', newState)
         );
@@ -121,7 +121,7 @@ class Navbar extends Component {
         let newState = !this.state.redScoreShrinked;
         this.setState(
             {
-                redScoreShrinked: newState
+                redScoreShrinked: newState,
             },
             this.setToLocaleStorage('redScoreShrinked', newState)
         );
@@ -314,81 +314,81 @@ class Navbar extends Component {
     }
 }
 
-const PopularLeagues = props => {
+const PopularLeagues = (props) => {
     const { t } = props;
     let popularLeagues = [
         {
             name: 'UEFA Champions League',
             country: 'World',
             seasonId: 23766,
-            uniqueId: 7
+            uniqueId: 7,
         },
         {
             name: 'UEFA Europa League',
             country: 'World',
             seasonId: 23755,
-            uniqueId: 679
+            uniqueId: 679,
         },
         {
             name: 'Süper Lig',
             country: 'Turkey',
             seasonId: 24407,
-            uniqueId: 52
+            uniqueId: 52,
         },
         {
             name: 'Premier League',
             country: 'England',
             seasonId: 23776,
-            uniqueId: 17
+            uniqueId: 17,
         },
         {
             name: 'LaLiga',
             country: 'Spain',
             seasonId: 24127,
-            uniqueId: 8
+            uniqueId: 8,
         },
         {
             name: 'Bundesliga',
             country: 'Germany',
             seasonId: 23538,
-            uniqueId: 35
+            uniqueId: 35,
         },
         {
             name: 'Serie A',
             country: 'Italy',
             seasonId: 24644,
-            uniqueId: 23
+            uniqueId: 23,
         },
         {
             name: 'Ligue 1',
             country: 'France',
             seasonId: 23872,
-            uniqueId: 34
+            uniqueId: 34,
         },
         {
             name: 'Eredivisie',
             country: 'Netherlands',
             seasonId: 23873,
-            uniqueId: 37
+            uniqueId: 37,
         },
         {
             name: 'Primeira Liga',
             country: 'Portugal',
             seasonId: 24150,
-            uniqueId: 238
+            uniqueId: 238,
         },
         {
             name: 'Premier Liga',
             country: 'Russia',
             seasonId: 23682,
-            uniqueId: 203
+            uniqueId: 203,
         },
         {
             name: 'Championship',
             country: 'England',
             seasonId: 23976,
-            uniqueId: 18
-        }
+            uniqueId: 18,
+        },
     ];
     return (
         <ul className="popularLeagues">
@@ -401,7 +401,7 @@ const PopularLeagues = props => {
                             )}${t('-standing-')}${item.uniqueId}${t('-season-')}${item.seasonId ? item.seasonId : '0'}${
                                 props.type === 'fixture' ? '/1' : ''
                             }`,
-                            state: { isPrev: true }
+                            state: { isPrev: true },
                         }}
                         onClick={() => {
                             document.body.classList.remove('navbar-opened');
