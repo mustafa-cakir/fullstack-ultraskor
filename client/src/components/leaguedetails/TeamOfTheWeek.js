@@ -13,7 +13,7 @@ class TeamOfTheWeek extends Component {
             teamOfTheWeekData: null,
             isDropdown: false,
             rounds: this.props.leagueData.tournamentInfo.teamOfTheWeek.rounds,
-            roundName: this.props.leagueData.tournamentInfo.teamOfTheWeek.rounds[0].roundName
+            roundName: this.props.leagueData.tournamentInfo.teamOfTheWeek.rounds[0].roundName,
         };
     }
 
@@ -26,28 +26,28 @@ class TeamOfTheWeek extends Component {
         this.props.swipeAdjustHeight();
     }
 
-    initGetData = roundSlug => {
+    initGetData = (roundSlug) => {
         const { leagueData } = this.props;
         const api = `/u-tournament/${leagueData.uniqueTournament.id}/season/${leagueData.season.id}/team-of-the-week/${roundSlug}/json`;
 
         fetch(`/api/?query=${api}&page=teamoftheweek`)
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then(res => {
+            .then((res) => {
                 this.setState({
                     teamOfTheWeekData: res,
-                    loading: false
+                    loading: false,
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState({
                     teamOfTheWeekData: { error: err.toString() },
-                    loading: false
+                    loading: false,
                 });
             });
     };
@@ -57,7 +57,7 @@ class TeamOfTheWeek extends Component {
             {
                 roundName: round.roundName,
                 isDropdown: false,
-                loading: true
+                loading: true,
             },
             () => {
                 this.initGetData(round.roundSlug);
@@ -78,7 +78,7 @@ class TeamOfTheWeek extends Component {
         const goalie = teamOfTheWeekData.players[0];
         let iteration = 11;
 
-        const currentRoundIndex = rounds.findIndex(x => x.roundName === roundName);
+        const currentRoundIndex = rounds.findIndex((x) => x.roundName === roundName);
         const prevRound = rounds[currentRoundIndex + 1];
         const nextRound = rounds[currentRoundIndex - 1];
 
@@ -224,7 +224,7 @@ class TeamOfTheWeek extends Component {
                                                                         className="name"
                                                                         style={{
                                                                             background: '#3F1052',
-                                                                            color: '#f0f0f0'
+                                                                            color: '#f0f0f0',
                                                                         }}
                                                                     >
                                                                         <span>{player.shortName}</span>
@@ -281,7 +281,7 @@ class TeamOfTheWeek extends Component {
                                                         className="name"
                                                         style={{
                                                             background: '#3F1052',
-                                                            color: '#f0f0f0'
+                                                            color: '#f0f0f0',
                                                         }}
                                                     >
                                                         <span>{goalie.player.shortName}</span>

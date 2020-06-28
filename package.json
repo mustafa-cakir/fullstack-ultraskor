@@ -8,11 +8,11 @@
         "node": ">=8.0.0"
     },
     "dependencies": {
-        "concurrently": "5.1.0",
-        "eslint-plugin-react-hooks": "^2.3.0"
+        "concurrently": "5.2.0",
+        "eslint-plugin-react-hooks": "^4.0.0"
     },
     "devDependencies": {
-        "babel-eslint": "^10.0.3",
+        "babel-eslint": "10.1.0",
         "eslint": "^6.8.0",
         "eslint-config-airbnb": "^18.0.1",
         "eslint-config-prettier": "^6.10.0",
@@ -21,7 +21,7 @@
         "eslint-plugin-prettier": "^3.1.2",
         "eslint-plugin-react": "^7.18.2",
         "node-sass": "^4.13.1",
-        "prettier": "^1.19.1"
+        "prettier": "^2.0.5"
     },
     "eslintConfig": {
         "extends": "react-app"

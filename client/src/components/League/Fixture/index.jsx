@@ -14,7 +14,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
         isLoading: false,
         isDropdown: false,
         roundName: roundMatches.data.roundName,
-        roundIndex: parseFloat(roundMatches.data.index)
+        roundIndex: parseFloat(roundMatches.data.index),
     };
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), initialStates);
     const { error, roundMatchesLocal, isLoading, isDropdown, roundIndex, roundName } = state;
@@ -22,41 +22,41 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
     const initGetData = (round, name) => {
         axios
             .get(`/api/u-tournament/${leagueid}/${seasonid}/matches/round/${round}${name ? `/${name}` : ''}`)
-            .then(res => {
+            .then((res) => {
                 setState({
                     isLoading: false,
                     roundMatchesLocal: res.data,
                     roundName: res.data.data.roundName,
-                    roundIndex: parseFloat(res.data.data.index)
+                    roundIndex: parseFloat(res.data.data.index),
                 });
             })
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t('Something went wrong')
+                    error: t('Something went wrong'),
                 });
             });
     };
 
-    const roundClicked = round => {
+    const roundClicked = (round) => {
         setState({
             isDropdown: false,
-            isLoading: true
+            isLoading: true,
         });
         initGetData(round.round, round.name);
     };
 
     const dropdownClickHandler = () => {
         setState({
-            isDropdown: !isDropdown
+            isDropdown: !isDropdown,
         });
     };
 
     // console.log(roundName, currentRound);
     // console.log(Number.isNaN(parseFloat(currentRound)), parseFloat(currentRound));
     const getCurrentRoundIndex = roundName
-        ? rounds.findIndex(x => x.name === roundName)
-        : rounds.findIndex(x => x.round === roundIndex && x.name === null);
+        ? rounds.findIndex((x) => x.name === roundName)
+        : rounds.findIndex((x) => x.round === roundIndex && x.name === null);
     const prevRound = rounds[getCurrentRoundIndex - 1];
     const nextRound = rounds[getCurrentRoundIndex + 1];
 
@@ -89,7 +89,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
                                     </button>
                                     <div className="dropdown">
                                         <ul>
-                                            {rounds.map(round => {
+                                            {rounds.map((round) => {
                                                 let isActive = null;
                                                 let isThisTournament = null;
 
@@ -160,7 +160,7 @@ const Fixture = ({ roundMatches, rounds, leagueid, seasonid, t }) => {
 Fixture.propTypes = {
     roundMatches: PropTypes.object.isRequired,
     leagueid: PropTypes.string.isRequired,
-    seasonid: PropTypes.string.isRequired
+    seasonid: PropTypes.string.isRequired,
 };
 
 Fixture.defaultProps = {};

@@ -20,7 +20,7 @@ const UpdateMetaTeam = (teamInfoData, t) => {
                 teamInfoData.team.mediumname
             )} highlights`,
             alternate: HelperTranslateUrlTo('tr'),
-            hrefLang: 'tr'
+            hrefLang: 'tr',
         });
     } else if (language === 'tr') {
         if (window.location.pathname.split('/')[1] === 'team') window.location.href = HelperTranslateUrlTo('tr', true);
@@ -38,7 +38,7 @@ const UpdateMetaTeam = (teamInfoData, t) => {
                 teamInfoData.team.name
             )} haftanın takımı, ${t(teamInfoData.team.mediumname)} gol krallığı`,
             alternate: HelperTranslateUrlTo('en'),
-            hrefLang: 'en'
+            hrefLang: 'en',
         });
     }
 };

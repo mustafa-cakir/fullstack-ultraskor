@@ -11,7 +11,7 @@ import PullToRefresh from '../components/common/PullToRefresh';
 const Root = () => {
     const socket = socketIOClient.connect(window.location.origin.replace('3000', '5001'), {
         reconnection: false,
-        autoConnect: false
+        autoConnect: false,
     });
 
     const pageVisibilityAPI = useCallback(() => {
@@ -46,7 +46,7 @@ const Root = () => {
         if (('WebSocket' in window && window.WebSocket !== undefined) || 'MozWebSocket' in window) {
             setTimeout(() => {
                 socket.open();
-                socket.on('connect_error', data => {
+                socket.on('connect_error', (data) => {
                     console.log('connection_error', data);
                 });
                 pageVisibilityAPI();

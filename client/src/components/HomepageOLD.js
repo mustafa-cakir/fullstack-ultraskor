@@ -14,7 +14,7 @@ import {
     HelperTranslateUrlTo,
     getQueryStringFromUrl,
     restoreScrollY,
-    prepareHomepageData
+    prepareHomepageData,
 } from '../core/utils/helper';
 import RedScoreBoard from './common/RedScoreBar';
 import FavTournament from './common/FavTournament';
@@ -36,7 +36,7 @@ class HomepageOLD extends Component {
             redScoreFavOnly: false,
             redScoreBarIncident: null,
             isLazyLoad: !/bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
-            lazyLoadCount: getQueryStringFromUrl('load') || 10
+            lazyLoadCount: getQueryStringFromUrl('load') || 10,
         };
         this.updateParentState = this.updateParentState.bind(this);
         this.initGetData = this.initGetData.bind(this);
@@ -85,10 +85,10 @@ class HomepageOLD extends Component {
         // console.log(res);
 
         // let resEventId = res.emits[3].split('_')[1];
-        const getTournament = newMainData.filter(x => x.tournament.id === res.tournament.id)[0];
+        const getTournament = newMainData.filter((x) => x.tournament.id === res.tournament.id)[0];
         if (!getTournament) return false;
 
-        const event = getTournament.events.filter(x => x.id === res.event.id)[0];
+        const event = getTournament.events.filter((x) => x.id === res.event.id)[0];
         if (!event) return false;
 
         if (res.updated.status && event.status.code !== res.event.status.code) {
@@ -152,12 +152,12 @@ class HomepageOLD extends Component {
         if (redScoreBarType) {
             redScoreBarIncident = {
                 type: redScoreBarType,
-                event
+                event,
             };
             clearTimeout(this.redScoreBarTimer);
             this.redScoreBarTimer = setTimeout(() => {
                 this.setState({
-                    redScoreBarIncident: null
+                    redScoreBarIncident: null,
                 });
             }, 15000);
         }
@@ -166,19 +166,19 @@ class HomepageOLD extends Component {
         if (isRedScoreBarIncident && redScoreBarType) {
             this.setState(
                 {
-                    redScoreBarIncident: null
+                    redScoreBarIncident: null,
                 },
                 () => {
                     this.setState({
                         mainData: newMainData,
-                        redScoreBarIncident
+                        redScoreBarIncident,
                     });
                 }
             );
         } else {
             this.setState({
                 mainData: newMainData,
-                ...(redScoreBarType && { redScoreBarIncident })
+                ...(redScoreBarType && { redScoreBarIncident }),
             });
         }
 
@@ -201,7 +201,7 @@ class HomepageOLD extends Component {
         this.removeSocketEvents();
         this.socket.on('connect', this.onSocketConnect);
         this.setState({
-            refreshButton: true
+            refreshButton: true,
         });
     }
 
@@ -212,7 +212,7 @@ class HomepageOLD extends Component {
         if (refreshButton) {
             this.setState(
                 {
-                    refreshButton: false
+                    refreshButton: false,
                 },
                 () => {
                     this.initSocket(true);
@@ -241,7 +241,7 @@ class HomepageOLD extends Component {
             ...(favEvents.length > 0 && { favEvents }),
             redScoreMuted,
             redScoreShrinked,
-            redScoreFavOnly
+            redScoreFavOnly,
         };
         localStorage.setItem('ultraskor_homepage', JSON.stringify(stateToStore));
     }
@@ -280,7 +280,7 @@ class HomepageOLD extends Component {
         this.setState({
             mainData: res,
             ...(!isUpdated && { loading: false }),
-            ...(!isUpdated && { refreshButton: false })
+            ...(!isUpdated && { refreshButton: false }),
         });
     }
 
@@ -305,16 +305,16 @@ class HomepageOLD extends Component {
         fetch(options.api, {
             headers: {
                 Authorization:
-                    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJVbHRyYVNrb3IgQVBJIEFVVEgiLCJpYXQiOjE1Njk4MDA0ODEsImV4cCI6MTYwMTMzNjQ4MSwiYXVkIjoidWx0cmFza29yLmNvbSIsInN1YiI6ImNvbnRhY3RAdWx0cmFza29yLmNvbSJ9.2BO51xRBwQ2YCoqQRjUjvImQru35VgSzUW9vpKoo82A'
-            }
+                    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJVbHRyYVNrb3IgQVBJIEFVVEgiLCJpYXQiOjE1Njk4MDA0ODEsImV4cCI6MTYwMTMzNjQ4MSwiYXVkIjoidWx0cmFza29yLmNvbSIsInN1YiI6ImNvbnRhY3RAdWx0cmFza29yLmNvbSJ9.2BO51xRBwQ2YCoqQRjUjvImQru35VgSzUW9vpKoo82A',
+            },
         })
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 }
                 throw Error(`Can't retrieve information from server, ${res.status}`);
             })
-            .then(res => {
+            .then((res) => {
                 if (!res) {
                     throw Error(`Response is empty`);
                 } else {
@@ -322,10 +322,10 @@ class HomepageOLD extends Component {
                     restoreScrollY();
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState({
                     mainData: { error: err.toString() },
-                    loading: false
+                    loading: false,
                 });
             });
     }
@@ -334,15 +334,15 @@ class HomepageOLD extends Component {
         const { favEvents, mainData } = this.state;
         res = res || mainData;
         const favEventsList = [];
-        res.forEach(tournament => {
-            tournament.events.forEach(event => {
+        res.forEach((tournament) => {
+            tournament.events.forEach((event) => {
                 if (favEvents.length > 0 && favEvents.indexOf(event.id) > -1) {
                     favEventsList.push(event);
                 }
             });
         });
         this.setState({
-            favEventsList
+            favEventsList,
         });
     }
 
@@ -358,7 +358,7 @@ class HomepageOLD extends Component {
             loading: true,
             today: moment(0, 'HH').diff(this.todaysDate, 'days') === 0 ? 1 : 0,
             page: 'homepage',
-            isUpdated
+            isUpdated,
         });
     }
 
@@ -390,9 +390,7 @@ class HomepageOLD extends Component {
                 : 'No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world';
 
             const keywords = date
-                ? `${moment(date, 'YYYY-MM-DD')
-                      .format('dddd')
-                      .toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
+                ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
                       .format('DD MMMM dddd')
                       .toLowerCase()} maç results, `
                 : '';
@@ -403,7 +401,7 @@ class HomepageOLD extends Component {
                 description,
                 keywords: `${keywords}live scores, live football results, match results, football fixtures, eufa champions league results, highlights`,
                 alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
-                hrefLang: 'tr'
+                hrefLang: 'tr',
             });
         } else if (i18n.language === 'tr') {
             const title = date
@@ -419,9 +417,7 @@ class HomepageOLD extends Component {
                 : 'Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.';
 
             const keywords = date
-                ? `${moment(date, 'YYYY-MM-DD')
-                      .format('dddd')
-                      .toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
+                ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
                       .format('DD MMMM dddd')
                       .toLowerCase()} maç sonucları, `
                 : '';
@@ -432,7 +428,7 @@ class HomepageOLD extends Component {
                 description,
                 keywords: `${keywords}canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri`,
                 alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
-                hrefLang: 'en'
+                hrefLang: 'en',
             });
         }
     }
@@ -450,7 +446,7 @@ class HomepageOLD extends Component {
             refreshButton,
             redScoreBarIncident,
             redScoreMuted,
-            redScoreShrinked
+            redScoreShrinked,
         } = this.state;
         if (!mainData) return <Loading />;
         if (mainData.error) return <Errors key={1} type="error" message={mainData.error} />;
@@ -501,12 +497,10 @@ class HomepageOLD extends Component {
                     <div className="row date-prev-next align-items-center">
                         <div className="col col-yesterday">
                             <a
-                                href={`/${i18n.language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
-                                    .subtract(1, 'd')
-                                    .format('YYYY-MM-DD')}`}
-                                title={`${moment()
-                                    .subtract(1, 'd')
-                                    .format('LL')} ${t('Football Results')}`}
+                                href={`/${i18n.language === 'en' ? 'en/' : ''}${t('matches')}/${t(
+                                    'date'
+                                )}-${moment().subtract(1, 'd').format('YYYY-MM-DD')}`}
+                                title={`${moment().subtract(1, 'd').format('LL')} ${t('Football Results')}`}
                             >
                                 <Icon name="fas fa-chevron-left" />
                                 <Trans>Yesterday</Trans>
@@ -520,12 +514,10 @@ class HomepageOLD extends Component {
                         </div>
                         <div className="col text-right col-tomorrow">
                             <a
-                                href={`/${i18n.language === 'en' ? 'en/' : ''}${t('matches')}/${t('date')}-${moment()
-                                    .add(1, 'd')
-                                    .format('YYYY-MM-DD')}`}
-                                title={`${moment()
-                                    .add(1, 'd')
-                                    .format('LL')} ${t('Football Results')}`}
+                                href={`/${i18n.language === 'en' ? 'en/' : ''}${t('matches')}/${t(
+                                    'date'
+                                )}-${moment().add(1, 'd').format('YYYY-MM-DD')}`}
+                                title={`${moment().add(1, 'd').format('LL')} ${t('Football Results')}`}
                             >
                                 <Trans>Tomorrow</Trans>
                                 <Icon name="fas fa-chevron-right" />

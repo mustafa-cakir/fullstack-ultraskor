@@ -1246,8 +1246,12 @@ code {
 }
 
 .load-more-homepage {
+	&-container {
+		padding: 26px 16px 32px 16px;;
+	}
+	width: 100%;
+	display: block;
 	border: 1px solid $color-link;
-	margin: 26px 16px 32px 16px;
 	padding: 10px;
 	text-align: center;
 	font-size: 1rem;

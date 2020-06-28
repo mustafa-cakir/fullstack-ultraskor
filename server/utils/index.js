@@ -159,8 +159,8 @@ const t = text => {
     return text;
 };
 
-const isDev = process.env.NODE_ENV === 'dev';
-const isProd = process.env.NODE_ENV !== 'dev';
+const isDev = process.env.APP_ENV === 'development';
+const isProd = process.env.APP_ENV === 'production';
 const isTorDisabled = process.env.TOR_DISABLED === 'true';
 // exports.isTorDisabled = false
 

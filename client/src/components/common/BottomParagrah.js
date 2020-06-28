@@ -12,7 +12,7 @@ class BottomParagrah extends PureComponent {
         super(props);
         this.state = {
             expand: /bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex/i.test(navigator.userAgent),
-            popularEvents: null
+            popularEvents: null,
         };
         this.clickHandlerExpand = this.clickHandlerExpand.bind(this);
     }
@@ -23,23 +23,23 @@ class BottomParagrah extends PureComponent {
 
     initGetData() {
         fetch(`/api/partial/footer/popularevents`)
-            .then(res => {
+            .then((res) => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then(res => {
+            .then((res) => {
                 if (res.length < 1) throw Error(`Can't retrieve information from server`);
 
                 this.setState({
-                    popularEvents: res
+                    popularEvents: res,
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState({
-                    popularEvents: { error: err.toString() }
+                    popularEvents: { error: err.toString() },
                 });
             });
     }
@@ -70,7 +70,7 @@ class BottomParagrah extends PureComponent {
                                                     pathname: `/${t('match')}/${generateSlug(
                                                         t(event.teams.home.name) + '-' + t(event.teams.home.name)
                                                     )}-${t('live-score')}-${event.id}`,
-                                                    state: { isPrev: true }
+                                                    state: { isPrev: true },
                                                 }}
                                                 title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
                                                     'click for live scores, lineup and stats'
@@ -97,7 +97,7 @@ class BottomParagrah extends PureComponent {
                                                 )}-${generateSlug(t(item.name))}${t('-standing-')}${item.uniqueId}${t(
                                                     '-season-'
                                                 )}${item.seasonId ? item.seasonId : '0'}`,
-                                                state: { isPrev: true }
+                                                state: { isPrev: true },
                                             }}
                                             title={`${t(item.country)} - ${t(item.name)} ${t(
                                                 'click for standings, highlights and league fixtures'
@@ -146,74 +146,74 @@ const popularLeagues = [
         name: 'UEFA Champions League',
         country: 'World',
         seasonId: 23766,
-        uniqueId: 7
+        uniqueId: 7,
     },
     {
         name: 'UEFA Europa League',
         country: 'World',
         seasonId: 23755,
-        uniqueId: 679
+        uniqueId: 679,
     },
     {
         name: 'Süper Lig',
         country: 'Turkey',
         seasonId: 24407,
-        uniqueId: 52
+        uniqueId: 52,
     },
     {
         name: 'Premier League',
         country: 'England',
         seasonId: 23776,
-        uniqueId: 17
+        uniqueId: 17,
     },
     {
         name: 'LaLiga',
         country: 'Spain',
         seasonId: 24127,
-        uniqueId: 8
+        uniqueId: 8,
     },
     {
         name: 'Bundesliga',
         country: 'Germany',
         seasonId: 23538,
-        uniqueId: 35
+        uniqueId: 35,
     },
     {
         name: 'Serie A',
         country: 'Italy',
         seasonId: 24644,
-        uniqueId: 23
+        uniqueId: 23,
     },
     {
         name: 'Ligue 1',
         country: 'France',
         seasonId: 23872,
-        uniqueId: 34
+        uniqueId: 34,
     },
     {
         name: 'Eredivisie',
         country: 'Netherlands',
         seasonId: 23873,
-        uniqueId: 37
+        uniqueId: 37,
     },
     {
         name: 'Primeira Liga',
         country: 'Portugal',
         seasonId: 24150,
-        uniqueId: 238
+        uniqueId: 238,
     },
     {
         name: 'Premier Liga',
         country: 'Russia',
         seasonId: 23682,
-        uniqueId: 203
+        uniqueId: 203,
     },
     {
         name: 'Championship',
         country: 'England',
         seasonId: 23976,
-        uniqueId: 18
-    }
+        uniqueId: 18,
+    },
 ];
 
 const englishSeoText = () => {

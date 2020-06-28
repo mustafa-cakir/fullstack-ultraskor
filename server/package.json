@@ -21,7 +21,7 @@
         "fs": "^0.0.1-security",
         "immutability-helper": "^3.0.1",
         "lodash": "^4.17.11",
-        "moment": "^2.24.0",
+        "moment": "^2.25.1",
         "mongodb": "^3.5.2",
         "node-cache": "^5.1.0",
         "nodemon": "^2.0.2",
@@ -31,13 +31,16 @@
         "shortid": "^2.2.15",
         "socket.io": "^2.3.0",
         "socket.io-client": "^2.3.0",
-        "socks-proxy-agent": "^4.0.2",
+        "socks-proxy-agent": "^5.0.0",
         "socks5-https-client": "^1.2.1",
         "tor-request": "^3.1.0",
         "ws": "^7.2.1"
     },
     "scripts": {
-        "dev": "yarn install && concurrently \"nodemon --watch ./ server.js\" \"nodemon --watch serverProxy.js serverProxy.js\"",
-        "prod": "yarn install && concurrently \"pm2 restart server.js\" \"pm2 restart serverProxy.js\""
+        "dev": "yarn install && concurrently \"env-cmd -f .env.development nodemon --watch ./ server.js\" \"env-cmd -f .env.development nodemon --watch serverProxy.js serverProxy.js\"",
+        "prod": "yarn install && concurrently \"env-cmd -f .env pm2 restart server.js\" \"env-cmd -f .env pm2 restart serverProxy.js\""
+    },
+    "devDependencies": {
+        "env-cmd": "^10.1.0"
     }
 }

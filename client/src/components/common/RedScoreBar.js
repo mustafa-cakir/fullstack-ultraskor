@@ -8,7 +8,7 @@ class RedScoreBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: null
+            data: null,
         };
     }
 
@@ -45,7 +45,7 @@ class RedScoreBar extends Component {
         }
 
         this.setState({
-            data
+            data,
         });
     }
 
@@ -61,7 +61,7 @@ class RedScoreBar extends Component {
                 else if (type === 'half-time' && audioFiles.halftime) audio = audioFiles.halftime.play();
                 else if (type === 'start' && audioFiles.start) audio = audioFiles.start.play();
                 if (audio) {
-                    audio.catch(err => {
+                    audio.catch((err) => {
                         console.log("AudioFile can't be played", err);
                     });
                 }
@@ -73,7 +73,7 @@ class RedScoreBar extends Component {
         const { updateParentState, redScoreShrinked } = this.props;
         updateParentState(
             {
-                redScoreShrinked: !redScoreShrinked
+                redScoreShrinked: !redScoreShrinked,
             },
             true
         );
@@ -83,7 +83,7 @@ class RedScoreBar extends Component {
         const { updateParentState, redScoreMuted } = this.props;
         updateParentState(
             {
-                redScoreMuted: !redScoreMuted
+                redScoreMuted: !redScoreMuted,
             },
             true
         );
@@ -114,7 +114,7 @@ class RedScoreBar extends Component {
                         <Link
                             to={{
                                 pathname: link,
-                                state: { isPrev: true }
+                                state: { isPrev: true },
                             }}
                             className="col home-team text-center"
                         >
@@ -128,7 +128,7 @@ class RedScoreBar extends Component {
                         <Link
                             to={{
                                 pathname: link,
-                                state: { isPrev: true }
+                                state: { isPrev: true },
                             }}
                             className="col col-score"
                         >
@@ -166,7 +166,7 @@ class RedScoreBar extends Component {
                         <Link
                             to={{
                                 pathname: link,
-                                state: { isPrev: true }
+                                state: { isPrev: true },
                             }}
                             className="col away-team text-center"
                         >
