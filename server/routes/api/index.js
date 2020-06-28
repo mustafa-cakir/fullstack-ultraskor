@@ -16,6 +16,7 @@ router.use('/logerrors', require('./logerrors'));
 router.use('/tor', require('./tor'));
 router.use('/partial', require('./partial'));
 router.use('/test', require('./test'));
+router.use('/get', require('./get'));
 
 router.use((err, req, res, next) => {
     if (err.name === 'ValidationError') {
@@ -23,7 +24,7 @@ router.use((err, req, res, next) => {
             errors: Object.keys(err.errors).reduce((errors, key) => {
                 errors[key] = err.errors[key].message;
                 return errors;
-            }, {})
+            }, {}),
         });
     }
     return next(err);

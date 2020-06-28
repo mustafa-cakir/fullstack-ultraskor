@@ -63,7 +63,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
             swiper: null,
         });
         axios
-            .get(`/api/eventdetails/${eventid}/${language}`)
+            .get(`/api/get/${language}/stats_match_get/${eventid}`)
             .then((res) => {
                 setState({
                     data: res.data,
@@ -152,7 +152,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
     if (isLoading || !data) return <Loading />;
 
     const { event, ids, textList } = data;
-    const { injuries, teams, stats, isStanding, isLineups } = event;
+    // const { injuries, teams, stats, isStanding, isLineups } = event;
     const slides = [];
 
     const swipeByTabId = (tabId) => {
@@ -171,48 +171,47 @@ const Eventdetails = ({ t, i18n, socket }) => {
         },
     });
 
-    if (ids.id_sp)
-        slides.push({
-            id: 1,
-            label: t('Live Tracker'),
-            Component: LiveTracker,
-            props: {
-                id: ids.id_sp,
-            },
-        });
+    slides.push({
+        id: 1,
+        label: t('Live Tracker'),
+        Component: LiveTracker,
+        props: {
+            id: data._id,
+        },
+    });
 
-    if (stats)
-        slides.push({
-            id: 2,
-            label: t('Stats'),
-            Component: Stats,
-            props: {
-                stats,
-            },
-        });
+    // if (stats)
+    //     slides.push({
+    //         id: 2,
+    //         label: t('Stats'),
+    //         Component: Stats,
+    //         props: {
+    //             stats,
+    //         },
+    //     });
 
-    if (isLineups)
-        slides.push({
-            id: 3,
-            label: t('Lineup'),
-            Component: Lineups,
-            props: {
-                id: event.id,
-                teams,
-                updateAutoHeight,
-            },
-        });
+    // if (isLineups)
+    //     slides.push({
+    //         id: 3,
+    //         label: t('Lineup'),
+    //         Component: Lineups,
+    //         props: {
+    //             id: event.id,
+    //             teams,
+    //             updateAutoHeight,
+    //         },
+    //     });
 
-    if (injuries)
-        slides.push({
-            id: 4,
-            label: t('Injuries & Susp.'),
-            Component: Injuries,
-            props: {
-                teams,
-                injuries,
-            },
-        });
+    // if (injuries)
+    //     slides.push({
+    //         id: 4,
+    //         label: t('Injuries & Susp.'),
+    //         Component: Injuries,
+    //         props: {
+    //             teams,
+    //             injuries,
+    //         },
+    //     });
 
     if (iddaaData)
         slides.push({
@@ -231,29 +230,29 @@ const Eventdetails = ({ t, i18n, socket }) => {
             },
         });
 
-    if (teams)
-        slides.push({
-            id: 6,
-            label: t('Head To Head'),
-            Component: H2h,
-            props: {
-                id: event.id,
-                teams,
-                textList,
-                updateAutoHeight,
-            },
-        });
+    // if (teams)
+    //     slides.push({
+    //         id: 6,
+    //         label: t('Head To Head'),
+    //         Component: H2h,
+    //         props: {
+    //             id: event.id,
+    //             teams,
+    //             textList,
+    //             updateAutoHeight,
+    //         },
+    //     });
 
-    if (isStanding)
-        slides.push({
-            id: 7,
-            label: t('Standing'),
-            Component: Standings,
-            props: {
-                event,
-                updateAutoHeight,
-            },
-        });
+    // if (isStanding)
+    //     slides.push({
+    //         id: 7,
+    //         label: t('Standing'),
+    //         Component: Standings,
+    //         props: {
+    //             event,
+    //             updateAutoHeight,
+    //         },
+    //     });
 
     const handleTabChange = (e, value) => {
         if (swiper) swiper.slideTo(value);
@@ -280,7 +279,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
 
     return (
         <div className="event-details">
-            <Scoreboard event={event} />
+            {/*<Scoreboard event={event} />*/}
             <div className="middle-tabs">
                 <div className="container">
                     <Tabs
