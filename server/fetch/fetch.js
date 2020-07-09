@@ -1,5 +1,5 @@
 const tor = require('tor-request');
-const cloudscraper = require('cloudscraper');
+const request = require('request-promise-native');
 const Agent = require('socks5-https-client/lib/Agent');
 const cacheService = require('../services/cache.service');
 const { isDev } = require('../utils');
@@ -9,7 +9,7 @@ let maxRetry = 100;
 let isIdle = true;
 
 module.exports = (options, resolve, reject, cache, isTor = false) => {
-    const onSuccess = (response) => {
+    const onSuccess = response => {
         if (cache && response) {
             cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
             if (isDev) console.log(`## Cached: ${cache.cacheKey}`);
@@ -21,7 +21,9 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
     };
 
     const remoteRequest = () => {
-        cloudscraper(options).then(onSuccess).catch(onError);
+        request(options)
+            .then(onSuccess)
+            .catch(onError);
     };
 
     const remoteRequestUsingTor = () => {
