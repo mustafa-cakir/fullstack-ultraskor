@@ -12,17 +12,17 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
         tabIndex: 0,
         lineups: null,
         isLoading: true,
-        error: null,
+        error: null
     });
     const { currentTeam, tabIndex, lineups, isLoading, error } = state;
 
     const getData = useCallback(() => {
         axios
             .get(`/api/eventdetails/${id}/lineups`)
-            .then((res) => {
+            .then(res => {
                 setState({
                     isLoading: false,
-                    lineups: res.data,
+                    lineups: res.data
                 });
                 setTimeout(() => {
                     updateAutoHeight();
@@ -31,7 +31,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
             .catch(() => {
                 setState({
                     isLoading: false,
-                    error: t('Something went wrong'),
+                    error: t('Something went wrong')
                 });
             });
     }, [id, updateAutoHeight, t]);
@@ -45,15 +45,15 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
     if (!lineups || isLoading || !hasActived) return <Loading type="whitebox container" />;
     if (error) return <Errors message={error} />;
 
-    const currentTeamClickHandler = (newCurrentTeam) => {
+    const currentTeamClickHandler = newCurrentTeam => {
         setState({
-            currentTeam: newCurrentTeam,
+            currentTeam: newCurrentTeam
         });
     };
 
-    const tabIndexClickHandler = (newTabIndex) => {
+    const tabIndexClickHandler = newTabIndex => {
         setState({
-            tabIndex: newTabIndex,
+            tabIndex: newTabIndex
         });
     };
 
@@ -132,7 +132,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
 
                                                             {incidents && (
                                                                 <span className="lineup-icon">
-                                                                    {incidents.map((incident) => {
+                                                                    {incidents.map(incident => {
                                                                         return (
                                                                             <span
                                                                                 key={Math.random()}
@@ -151,7 +151,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                                 color: `${invertColor(
                                                                     activeTeam.color.player.outline,
                                                                     true
-                                                                )}`,
+                                                                )}`
                                                             }}
                                                         >
                                                             <span>{player.shortName}</span>
@@ -194,7 +194,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                                     <span className="lineup-icon">
                                                         {activeTeam.incidents[
                                                             activeTeam.lineupsSorted[0].player.id
-                                                        ].map((item) => {
+                                                        ].map(item => {
                                                             return (
                                                                 <span
                                                                     key={Math.random()}
@@ -210,7 +210,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                             className="name"
                                             style={{
                                                 background: `#${activeTeam.color.goalkeeper.outline}`,
-                                                color: `${invertColor(activeTeam.color.goalkeeper.outline, true)}`,
+                                                color: `${invertColor(activeTeam.color.goalkeeper.outline, true)}`
                                             }}
                                         >
                                             <span>{activeTeam.lineupsSorted[0].player.shortName}</span>
@@ -291,7 +291,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                             </span>
                         </button>
                     </div>
-                    {activeTeam.lineupsSorted.map((item) => {
+                    {activeTeam.lineupsSorted.map(item => {
                         if (tabIndex === 0 && item.substitute) return false;
                         if (tabIndex === 1 && !item.substitute) return false;
                         return (
@@ -309,7 +309,7 @@ const Lineups = ({ id, teams, updateAutoHeight, hasActived, t }) => {
                                         {item.captain ? <span className="captain">C</span> : ''}
                                         {activeTeam.incidents && activeTeam.incidents[item.player.id] && (
                                             <span className="lineup-icon">
-                                                {activeTeam.incidents[item.player.id].map((incident) => {
+                                                {activeTeam.incidents[item.player.id].map(incident => {
                                                     return (
                                                         <span
                                                             key={Math.random()}

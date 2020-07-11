@@ -9,8 +9,8 @@ const FavTournament = ({ favEvents, tournaments, isLive, updateParentState, isFa
     let index = 0;
     return (
         <>
-            {tournaments.map((tournament) => {
-                return tournament.matches.map((match) => {
+            {tournaments.map(tournament => {
+                return tournament.matches.map(match => {
                     if (isLive && !isMatchLive(match)) return false;
                     if (favEvents.indexOf(match._id) < 0) return false;
                     index += 1;

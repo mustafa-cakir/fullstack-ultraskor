@@ -18,7 +18,7 @@ const UpdateMetaLeague = (leagueData, t) => {
                 leagueData.uniqueTournament.name
             )} top scorers, league stats`,
             alternate: HelperTranslateUrlTo('tr'),
-            hrefLang: 'tr',
+            hrefLang: 'tr'
         });
     } else if (language === 'tr') {
         if (window.location.pathname.split('/')[1] === 'league')
@@ -39,7 +39,7 @@ const UpdateMetaLeague = (leagueData, t) => {
                 leagueData.uniqueTournament.name
             )} gol krallığı`,
             alternate: HelperTranslateUrlTo('en'),
-            hrefLang: 'en',
+            hrefLang: 'en'
         });
     }
 };

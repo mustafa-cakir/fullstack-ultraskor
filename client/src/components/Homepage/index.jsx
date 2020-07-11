@@ -19,9 +19,9 @@ import UpdateMetaHomepage from '../../core/utils/updatemeta/homepage';
 import FavTournament from '../common/FavTournament';
 import ScrollToTop from '../common/ScrollToTop';
 
-let redScoreBarTimer = null;
+let miniTimer;
 
-const Homepage = ({ socket }) => {
+const Homepage = () => {
     const [t, i18n] = useTranslation();
     const stateFromLocalStorage = getFromLocalStorage('homepage');
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
@@ -63,7 +63,147 @@ const Homepage = ({ socket }) => {
     const currentDate = date || moment().subtract(2, 'hours').format('YYYY-MM-DD');
     const isToday = moment(currentDate, 'YYYY-MM-DD').isSame(moment(), 'day');
 
-    const initAxios = useCallback(() => {
+    const getMini = useCallback(() => {
+        axios
+            .get(`/api/get/${language}/event_getmini/1`)
+            .then((res) => {
+                console.log(res.data);
+                if (res.data && res.data.length) {
+                    res.data.forEach((item) => {
+                        const { match = {}, type } = item;
+                        const { _utid, _id, result: newResult = {} } = match;
+                        if (!_utid || !_id) return false;
+
+                        const tournamentIndex = refMainData.current.findIndex((x) => x._utid === _utid);
+                        if (tournamentIndex < 0) return false;
+
+                        const matchIndex = refMainData.current[tournamentIndex].matches.findIndex((x) => x._id === _id);
+                        if (matchIndex < 0) return false;
+
+                        const getMatch = refMainData.current[tournamentIndex].matches[matchIndex];
+                        const { status = {}, teams = {}, result: oldResult = {} } = getMatch;
+                        const { _id: statusId, text: statusText } = status;
+
+                        const { home: oldResultHome, away: oldResultAway, winner: oldWinner } = oldResult;
+                        const { home: newResultHome, away: newResultAway, winner: newWinner } = newResult;
+
+                        if (
+                            type === 'goal' &&
+                            (oldResultHome !== newResultHome ||
+                                oldResultAway !== newResultAway ||
+                                oldWinner !== newWinner)
+                        ) {
+                            console.log(
+                                `### GOAL!: ${teams.home.name} ${oldResultHome} - ${oldResultAway} ${teams.away.name} | ${status.text}  | NewResult: ${newResultHome} - ${newResultAway}`
+                            );
+                            const newMainData = update(refMainData.current, {
+                                [tournamentIndex]: {
+                                    matches: {
+                                        [matchIndex]: {
+                                            result: {
+                                                $set: newResult,
+                                            },
+                                        },
+                                    },
+                                },
+                            });
+                            refMainData.current = newMainData;
+                            setState({
+                                mainData: newMainData,
+                            });
+                        } else if (type === 'match_started' && statusId !== 6) {
+                            const newMainData = update(refMainData.current, {
+                                [tournamentIndex]: {
+                                    matches: {
+                                        [matchIndex]: {
+                                            status: {
+                                                $set: {
+                                                    name: '1. Half',
+                                                    text: '1',
+                                                    _doc: 'status',
+                                                    _id: 6,
+                                                },
+                                            },
+                                            result: { $set: newResult },
+                                        },
+                                    },
+                                },
+                            });
+                            refMainData.current = newMainData;
+                            setState({
+                                mainData: newMainData,
+                            });
+                            console.log(
+                                `## MatchStarted!! ${teams.home.name} ${newResultHome} - ${newResultAway} ${teams.away.name} | OldStatusText: ${statusText} | OldStatusID: ${statusId} | NewStatusText: 1 | OldStatusID: 6 | Type: ${type}`
+                            );
+                        } else if (type === 'match_ended' && statusId !== 100) {
+                            const newMainData = update(refMainData.current, {
+                                [tournamentIndex]: {
+                                    matches: {
+                                        [matchIndex]: {
+                                            status: {
+                                                $set: {
+                                                    name: 'Full Time',
+                                                    text: 'FT',
+                                                    _doc: 'status',
+                                                    _id: 100,
+                                                },
+                                            },
+                                            result: { $set: newResult },
+                                        },
+                                    },
+                                },
+                            });
+                            refMainData.current = newMainData;
+                            setState({
+                                mainData: newMainData,
+                            });
+                            console.log(
+                                `## MatchEnded!! ${teams.home.name} ${newResultHome} - ${newResultAway} ${teams.away.name} | OldStatusText: ${statusText} | OldStatusID: ${statusId} | NewStatusText: FT | OldStatusID: 100 |  Type: ${type}`
+                            );
+                        } else if (type === 'periodscore' && statusId !== 31) {
+                            const newMainData = update(refMainData.current, {
+                                [tournamentIndex]: {
+                                    matches: {
+                                        [matchIndex]: {
+                                            status: {
+                                                $set: {
+                                                    name: 'Half Time',
+                                                    text: 'HT',
+                                                    _doc: 'status',
+                                                    _id: 31,
+                                                },
+                                            },
+                                            result: { $set: newResult },
+                                        },
+                                    },
+                                },
+                            });
+                            refMainData.current = newMainData;
+                            setState({
+                                mainData: newMainData,
+                            });
+                            console.log(
+                                `## HalfTime!! ${teams.home.name} ${newResultHome} - ${newResultAway} ${teams.away.name} | OldStatusText: ${statusText} | OldStatusID: ${statusId} | NewStatusText: HT | OldStatusID: 31 | Type: ${type}`
+                            );
+                        }
+                    });
+                }
+
+                miniTimer = setTimeout(() => {
+                    getMini();
+                }, 5000);
+            })
+            .catch((err) => {
+                console.log(err);
+                setState({
+                    isLoading: false,
+                    error: 'something went wrong',
+                });
+            });
+    }, [language]);
+
+    const getData = useCallback(() => {
         setState({ isLoading: true });
         axios
             .get(`/api/homepage/${currentDate}/${language}`)
@@ -80,6 +220,7 @@ const Homepage = ({ socket }) => {
                 });
                 refMainData.current = tournaments;
                 UpdateMetaHomepage();
+                getMini();
             })
             .catch((err) => {
                 console.log(err);
@@ -88,134 +229,15 @@ const Homepage = ({ socket }) => {
                     error: 'something went wrong',
                 });
             });
-    }, [currentDate, language]);
-
-    const initGetData = useCallback(() => {
-        // if (document.body.classList.contains('initial-load')) {
-        //     document.body.classList.remove('initial-load');
-        //     setTimeout(() => {
-        //         initAxios();
-        //     }, 600);
-        // } else {
-        initAxios();
-        // }
-    }, [initAxios]);
-
-    const initRedScoreBar = useCallback(
-        (oldEvent, newEvent) => {
-            if (redScoreFavOnly && favEvents.length > 0 && favEvents.indexOf(newEvent.id) < 0) return false;
-            let redScoreBarType = null;
-            if (newEvent.status.code !== oldEvent.status.code) {
-                redScoreBarType = 'status_update';
-            }
-            if (newEvent.redCards.home > oldEvent.redCards.home) {
-                redScoreBarType = 'home_redcard';
-            }
-            if (newEvent.redCards.away > oldEvent.redCards.away) {
-                redScoreBarType = 'away_redcard';
-            }
-            if (newEvent.scores.home > oldEvent.scores.home) {
-                redScoreBarType = 'home_scored';
-            }
-            if (newEvent.scores.home < oldEvent.scores.home) {
-                redScoreBarType = 'home_scored_cancel';
-            }
-            if (newEvent.scores.away > oldEvent.scores.away) {
-                redScoreBarType = 'away_scored';
-            }
-            if (newEvent.scores.away < oldEvent.scores.away) {
-                redScoreBarType = 'away_scored_cancel';
-            }
-
-            if (redScoreBarType) {
-                setState({
-                    redScoreBarIncident: {
-                        type: redScoreBarType,
-                        event: newEvent,
-                    },
-                });
-
-                clearTimeout(redScoreBarTimer);
-                redScoreBarTimer = setTimeout(() => {
-                    setState({
-                        redScoreBarIncident: null,
-                    });
-                }, 15000);
-            }
-            return false;
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [redScoreFavOnly]
-    );
-
-    const onSocketReturnPushServiceData = useCallback(
-        (res) => {
-            if (!res) return false;
-            if (refMainData.current.length === 0) return false;
-            const { tournament, event } = res.ids;
-
-            const tournamentIndex = refMainData.current.findIndex((x) => x.tournament.id === tournament);
-            if (tournamentIndex < 0) return false;
-
-            const eventIndex = refMainData.current[tournamentIndex].events.findIndex((x) => x.id === event);
-            if (eventIndex < 0) return false;
-
-            const oldEvent = refMainData.current[tournamentIndex].events[eventIndex];
-            const newEvent = { ...oldEvent, ...res.event };
-            const newMainData = update(refMainData.current, {
-                [tournamentIndex]: { events: { [eventIndex]: { $set: newEvent } } },
-            });
-            refMainData.current = newMainData;
-            setState({
-                mainData: newMainData,
-            });
-            initRedScoreBar(oldEvent, newEvent);
-            return false;
-        },
-        [initRedScoreBar]
-    );
-
-    const onSocketConnect = useCallback(() => {
-        console.log('on connected!');
-        initGetData();
-        setState({
-            refreshButton: false,
-        });
-        socket.on('push-service', onSocketReturnPushServiceData);
-    }, [initGetData, socket, onSocketReturnPushServiceData]);
-
-    const onSocketDisconnect = useCallback(() => {
-        socket.removeListener('connect', onSocketConnect);
-        socket.on('connect', onSocketConnect);
-        socket.removeListener('push-service', onSocketReturnPushServiceData);
-        setState({
-            refreshButton: true,
-        });
-    }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
-
-    const initSocket = useCallback(() => {
-        socket.on('disconnect', onSocketDisconnect);
-        socket.on('push-service', onSocketReturnPushServiceData);
-    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
-
-    const removeSocket = useCallback(() => {
-        socket.removeListener('disconnect', onSocketDisconnect);
-        socket.removeListener('push-service', onSocketReturnPushServiceData);
-    }, [socket, onSocketDisconnect, onSocketReturnPushServiceData]);
-
-    useEffect(() => {
-        refMainData.current = mainData;
-    }, [mainData]);
+    }, [currentDate, language, getMini]);
 
     useEffect(() => {
         scrollTopOnClick();
-        initGetData();
-        // initSocket();
+        getData();
         return () => {
-            // removeSocket();
-            clearTimeout(redScoreBarTimer);
+            clearTimeout(miniTimer);
         };
-    }, [initGetData, page, initSocket, removeSocket]);
+    }, [getData, page]);
 
     useEffect(() => {
         setToLocaleStorage('homepage', {
@@ -262,7 +284,6 @@ const Homepage = ({ socket }) => {
                             page="homepage"
                             isLive={isLive}
                             filteredTournaments={filteredTournaments}
-                            socket={socket}
                             tournaments={mainData}
                             updateParentState={setState}
                             favEvents={favEvents}

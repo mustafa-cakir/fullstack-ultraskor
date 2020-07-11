@@ -16,12 +16,12 @@ const StandingTable = ({ standingsTables, teams, t }) => {
     const tabLower = tab.toLowerCase();
     const positionLabel = getPositionLabel();
 
-    const tabSwitcherHandler = (selectedTab) => {
+    const tabSwitcherHandler = selectedTab => {
         setTab(selectedTab);
     };
     return (
         <>
-            {standingsTables.map((item) => {
+            {standingsTables.map(item => {
                 const tableRows = [...item.tableRows].sort(
                     (a, b) => parseFloat(a[positionLabel]) - parseFloat(b[positionLabel])
                 );
@@ -104,7 +104,7 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {tableRows.map((row) => {
+                                        {tableRows.map(row => {
                                             return (
                                                 <tr
                                                     key={row.team.id}
@@ -135,7 +135,7 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                                 pathname: `/${t('team')}/${generateSlug(
                                                                     t(row.team.shortName)
                                                                 )}-${row.team.id}`,
-                                                                state: { isPrev: true },
+                                                                state: { isPrev: true }
                                                             }}
                                                             title={`${t(row.team.shortName)} - ${t(
                                                                 'Fixtures, highlights and standings, click for more'
@@ -153,7 +153,7 @@ const StandingTable = ({ standingsTables, teams, t }) => {
                                                                 pathname: `/${t('team')}/${generateSlug(
                                                                     t(row.team.shortName)
                                                                 )}-${row.team.id}`,
-                                                                state: { isPrev: true },
+                                                                state: { isPrev: true }
                                                             }}
                                                             title={`${t(row.team.shortName)} - ${t(
                                                                 'Fixtures, highlights and standings, click for more'
@@ -194,12 +194,12 @@ const StandingTable = ({ standingsTables, teams, t }) => {
 StandingTable.propTypes = {
     standingsTables: PropTypes.array.isRequired,
     teams: PropTypes.object,
-    t: PropTypes.func,
+    t: PropTypes.func
 };
 
 StandingTable.defaultProps = {
     teams: null,
-    t: () => {},
+    t: () => {}
 };
 
 export default withTranslation('translations')(StandingTable);

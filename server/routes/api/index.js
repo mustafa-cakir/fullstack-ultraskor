@@ -24,7 +24,7 @@ router.use((err, req, res, next) => {
             errors: Object.keys(err.errors).reduce((errors, key) => {
                 errors[key] = err.errors[key].message;
                 return errors;
-            }, {}),
+            }, {})
         });
     }
     return next(err);

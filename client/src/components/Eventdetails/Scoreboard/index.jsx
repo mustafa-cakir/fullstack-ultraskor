@@ -12,7 +12,7 @@ const Scoreboard = ({ event, t }) => {
                     <Link
                         to={{
                             pathname: `/${t('team')}/${generateSlug(t(event.teams.home.name))}-${event.teams.home.id}`,
-                            state: { isPrev: true },
+                            state: { isPrev: true }
                         }}
                         className="col-4 team-link"
                         title={`${t(event.teams.home.name)} - ${t(
@@ -56,7 +56,7 @@ const Scoreboard = ({ event, t }) => {
                     <Link
                         to={{
                             pathname: `/${t('team')}/${generateSlug(t(event.teams.away.name))}-${event.teams.away.id}`,
-                            state: { isPrev: true },
+                            state: { isPrev: true }
                         }}
                         className="col-4 team-link"
                         title={`${t(event.teams.home.name)} - ${t(
@@ -138,7 +138,7 @@ const IsInProgress = ({ event }) => {
 };
 
 const TeamForm = ({ data }) => {
-    return data.map((status) => (
+    return data.map(status => (
         <span key={Math.random()} className={`team-form team-form-${status}`}>
             <Trans>{status}</Trans>
         </span>

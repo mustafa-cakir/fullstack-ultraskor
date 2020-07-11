@@ -17,9 +17,9 @@ class BottomParagrah extends PureComponent {
         this.clickHandlerExpand = this.clickHandlerExpand.bind(this);
     }
 
-    componentDidMount() {
-        this.initGetData();
-    }
+    // componentDidMount() {
+    //     this.initGetData();
+    // }
 
     initGetData() {
         fetch(`/api/partial/footer/popularevents`)

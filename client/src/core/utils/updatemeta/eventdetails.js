@@ -60,7 +60,7 @@ const UpdateMetaEventdetails = (eventData, t) => {
             description,
             keywords: `${eventData.event.teams.home.slug} match results, ${eventData.event.teams.away.slug} match results, ${eventData.event.tournament.slug} results, ${eventData.event.slug} lineup, ${eventData.event.slug} results, fixtures`,
             alternate: HelperTranslateUrlTo('tr'),
-            hrefLang: 'tr',
+            hrefLang: 'tr'
         });
     } else if (language === 'tr') {
         if (window.location.pathname.split('/')[1] === 'match') window.location.href = HelperTranslateUrlTo('tr', true);
@@ -116,7 +116,7 @@ const UpdateMetaEventdetails = (eventData, t) => {
             description,
             keywords: `${eventData.event.teams.home.slug} mac sonuclari, ${eventData.event.teams.away.slug} mac sonuclari, ${eventData.event.tournament.slug} sonuclari, ${eventData.event.slug} macinin sonucu, ultraskor, canli maclar, iddaa sonuclari`,
             alternate: HelperTranslateUrlTo('en'),
-            hrefLang: 'en',
+            hrefLang: 'en'
         });
     }
 };

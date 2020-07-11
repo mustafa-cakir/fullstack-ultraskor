@@ -17,10 +17,10 @@ class Iddaa extends PureComponent {
                 id: 1,
                 name: 'All Bets',
                 priority: 1,
-                markets: [],
+                markets: []
             },
             iddaaFullMarketData: null,
-            error: null,
+            error: null
         };
         this.timeout = null;
         this.tabSwitcherHandler = this.tabSwitcherHandler.bind(this);
@@ -46,14 +46,14 @@ class Iddaa extends PureComponent {
                 this.props.eventData.event.status.type === 'inprogress' ? '/live' : ''
             }`
         )
-            .then((res) => {
+            .then(res => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then((res) => {
+            .then(res => {
                 // res.m = [];
                 this.setState({
                     iddaaFullMarketData: res,
@@ -63,9 +63,9 @@ class Iddaa extends PureComponent {
                             id: 1,
                             name: 'All Bets',
                             priority: 1,
-                            markets: [],
-                        },
-                    }),
+                            markets: []
+                        }
+                    })
                 });
                 if (this.props.eventData.event.status.type === 'inprogress' && res.min) {
                     this.timeout = setTimeout(() => {
@@ -73,23 +73,23 @@ class Iddaa extends PureComponent {
                     }, 15000);
                 }
             })
-            .catch((err) => {
+            .catch(err => {
                 this.setState({
                     error: err.toString(),
-                    loading: false,
+                    loading: false
                 });
             });
     };
 
     tabSwitcherHandler(tabIndex) {
         this.setState({
-            tabIndex: tabIndex,
+            tabIndex: tabIndex
         });
     }
 
     clickGroupHandler(group) {
         this.setState({
-            selectedGroup: group,
+            selectedGroup: group
         });
     }
 
@@ -98,8 +98,8 @@ class Iddaa extends PureComponent {
         const { markets } = group;
         let count = 0;
 
-        markets.forEach((market) => {
-            count += iddaaFullMarketData.m.filter((x) => x.muk === market).length;
+        markets.forEach(market => {
+            count += iddaaFullMarketData.m.filter(x => x.muk === market).length;
         });
 
         if (group.id === 1) count = iddaaFullMarketData.m.length;
@@ -162,7 +162,7 @@ class Iddaa extends PureComponent {
                                                                 <Icon name="fas fa-caret-down" />
                                                                 <div className="dropdown">
                                                                     <ul>
-                                                                        {marketGroups.map((group) => {
+                                                                        {marketGroups.map(group => {
                                                                             const count = this.getCountByGroup(group);
                                                                             if (count < 1) return null;
                                                                             return (
@@ -251,18 +251,17 @@ const PrintErrorOrGetFromParent = ({ iddaaMatchData }) => {
     );
 };
 
-const IddaaContainer = (props) => {
+const IddaaContainer = props => {
     const { iddaaFullMarketData, selectedGroup } = props;
     const { m } = iddaaFullMarketData;
 
-    let markets =
-        selectedGroup && selectedGroup.id > 1 ? m.filter((x) => selectedGroup.markets.indexOf(x.muk) > -1) : m;
+    let markets = selectedGroup && selectedGroup.id > 1 ? m.filter(x => selectedGroup.markets.indexOf(x.muk) > -1) : m;
 
     if (markets.length === 0) {
         markets = marketsPlaceholder;
     }
 
-    return markets.map((market) => {
+    return markets.map(market => {
         const mbs = market.mbs || props.iddaaMatchData.m[0].mbs;
         return (
             <div className="row iddaa-container" key={market.mid || Math.random()}>
@@ -276,7 +275,7 @@ const IddaaContainer = (props) => {
                 </div>
                 <div className="col col-8 col-right px-0">
                     <div className="row bets-values text-center">
-                        {market.o.map((odd) => {
+                        {market.o.map(odd => {
                             return (
                                 <div
                                     key={odd.ov || Math.random()}
@@ -301,7 +300,7 @@ class MatchTextInfo extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            showMore: false,
+            showMore: false
         };
     }
 
@@ -311,7 +310,7 @@ class MatchTextInfo extends PureComponent {
 
     showMoreClickHandler() {
         this.setState({
-            showMore: !this.state.showMore,
+            showMore: !this.state.showMore
         });
     }
 
@@ -324,12 +323,12 @@ class MatchTextInfo extends PureComponent {
                 </div>
             );
         }
-        let generalInfo = matchTextInfo.textList.filter((item) => {
+        let generalInfo = matchTextInfo.textList.filter(item => {
             return item.smartType === 'SmartList' || item.smartType === 'Smartist';
         });
 
         if (generalInfo.length === 0) {
-            generalInfo = matchTextInfo.textList.filter((item) => {
+            generalInfo = matchTextInfo.textList.filter(item => {
                 return item.textGroupName !== 'Ev Sahibi Takım' && item.textGroupName !== 'Misafir Takım';
             });
         }

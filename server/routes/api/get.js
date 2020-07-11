@@ -5,7 +5,7 @@ const { fetchSportRadarS5 } = require('../../fetch/sportradar');
 
 router.get('/:language/**', auth.optional, (req, res) => {
     const { language = 'en' } = req.params;
-    const cacheDur = cacheDuration.main[req.query.page] || 5;
+    const cacheDur = cacheDuration.main[req.params[0]] || 10;
     fetchSportRadarS5(language, req.params[0], cacheDur, false)
         .then((response) => {
             res.send(response.doc[0].data);

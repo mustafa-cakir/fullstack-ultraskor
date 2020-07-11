@@ -24,36 +24,36 @@ const Leageue = ({ t }) => {
         data: {},
         error: null,
         isLoading: true,
-        swiper: null,
+        swiper: null
     });
     const { tabIndex, clickedTabIndex, data, error, isLoading, swiper } = state;
 
     useEffect(() => {
         axios
             .get(`/api/u-tournament/${leagueid}/${seasonid}`)
-            .then((res) => {
+            .then(res => {
                 setState({
                     data: res.data,
                     isLoading: false,
-                    error: null,
+                    error: null
                 });
                 UpdateMetaLeague(res.data, t);
             })
-            .catch((err) => {
+            .catch(err => {
                 setState({
                     error: err,
-                    isLoading: false,
+                    isLoading: false
                 });
             });
     }, [leagueid, seasonid, t]);
 
-    const onInitSwiper = (swiperInstance) => {
+    const onInitSwiper = swiperInstance => {
         setState({
-            swiper: swiperInstance,
+            swiper: swiperInstance
         });
         swiperInstance.on('slideChange', () => {
             setState({
-                tabIndex: swiperInstance.activeIndex,
+                tabIndex: swiperInstance.activeIndex
             });
         });
     };
@@ -61,7 +61,7 @@ const Leageue = ({ t }) => {
     const handleTabChange = (e, value) => {
         if (swiper) swiper.slideTo(value);
         setState({
-            tabIndex: value,
+            tabIndex: value
         });
     };
 
@@ -78,8 +78,8 @@ const Leageue = ({ t }) => {
             label: t('LANG_Standing'),
             Component: StandingTable,
             props: {
-                standingsTables,
-            },
+                standingsTables
+            }
         });
 
     slides.push({
@@ -90,8 +90,8 @@ const Leageue = ({ t }) => {
             roundMatches,
             rounds,
             leagueid,
-            seasonid,
-        },
+            seasonid
+        }
     });
 
     if (tournamentInfo && tournamentInfo.teamOfTheWeek)
@@ -100,8 +100,8 @@ const Leageue = ({ t }) => {
             label: t('Team Of The Week'),
             Component: TeamOfTheWeek,
             props: {
-                teamOfTheWeek: tournamentInfo.teamOfTheWeek,
-            },
+                teamOfTheWeek: tournamentInfo.teamOfTheWeek
+            }
         });
 
     return (
@@ -124,7 +124,7 @@ const Leageue = ({ t }) => {
             <Swiper
                 swiperOptions={{
                     slidesPerView: 1,
-                    autoHeight: true,
+                    autoHeight: true
                 }}
                 navigation={false}
                 pagination={false}

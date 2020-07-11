@@ -13,7 +13,7 @@ class Event extends Component {
         this.homeTeamEl = React.createRef();
         this.awayTeamEl = React.createRef();
         this.state = {
-            favEventLoading: false,
+            favEventLoading: false
         };
     }
 
@@ -138,26 +138,26 @@ class Event extends Component {
         if (method === 'subscribeToTopic') {
             newFavEvents = update(favEvents, { $push: [eventId] });
         } else {
-            newFavEvents = favEvents.filter((item) => item !== eventId);
+            newFavEvents = favEvents.filter(item => item !== eventId);
         }
 
         this.setState({ favEventLoading: true });
 
-        askForPermissioToReceiveNotifications().then((token) => {
+        askForPermissioToReceiveNotifications().then(token => {
             const { updateParentState } = this.props;
             fetch(`/api/webpush`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     token: [token],
                     topic: `/topics/match_${eventId}`,
-                    method,
-                }),
+                    method
+                })
             })
-                .then((res) => {
+                .then(res => {
                     if (res.status === 200) {
                         this.setState({ favEventLoading: false });
                         return res;
@@ -167,14 +167,14 @@ class Event extends Component {
                 .then(() => {
                     console.log(`Successfully ${method} for /topics/match_${eventId}`);
                     updateParentState({
-                        favEvents: newFavEvents,
+                        favEvents: newFavEvents
                     });
                 })
-                .catch((err) => {
+                .catch(err => {
                     // error
                     this.setState({ favEventLoading: false });
                     updateParentState({
-                        favEvents: newFavEvents,
+                        favEvents: newFavEvents
                     });
                     console.log(`Failed to ${method} for /topics/match_${eventId} - Message returned: ${err}`);
                 });
@@ -194,7 +194,7 @@ class Event extends Component {
                         pathname: `/${t('match')}/${generateSlug(
                             `${t(event.teams.home.name)}-${t(event.teams.away.name)}`
                         )}-${t('live-score')}-${event._id}`,
-                        state: { isPrev: true, scrollY: 123 },
+                        state: { isPrev: true, scrollY: 123 }
                     }}
                     className={`event-link col p-0 row m-0 ${event.winner ? `winner-${event.winner}` : ''}`}
                     title={`${t(event.teams.home.name)} - ${t(event.teams.away.name)}  ${t(
@@ -282,7 +282,7 @@ const PrintAdditionalStatusText = ({ statusText }) => {
     );
 };
 
-const TeamForm = (props) => {
+const TeamForm = props => {
     const { event, selectedId } = props;
     let result = null;
     if (event.winner === 1) {

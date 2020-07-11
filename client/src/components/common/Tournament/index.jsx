@@ -16,7 +16,7 @@ const Tournament = ({
     selected,
     from,
     updateParentState,
-    tournaments,
+    tournaments
 }) => {
     let tournamentCount = 0;
     const [t] = useTranslation();
@@ -25,10 +25,10 @@ const Tournament = ({
     const lazyLoadLoadMoreBtn = () => {
         const newLazyLoadCount = parseFloat(lazyLoadCount) + 10;
         history.replace({
-            search: qsStringifier({ load: newLazyLoadCount }),
+            search: qsStringifier({ load: newLazyLoadCount })
         });
         updateParentState({
-            lazyLoadCount: newLazyLoadCount,
+            lazyLoadCount: newLazyLoadCount
         });
     };
 
@@ -36,7 +36,7 @@ const Tournament = ({
         <>
             {tournaments.map((tournament, index) => {
                 if (isLive) {
-                    const isAnyLive = tournament.matches.findIndex((match) => isMatchLive(match));
+                    const isAnyLive = tournament.matches.findIndex(match => isMatchLive(match));
                     if (isAnyLive < 0) return false;
                 }
 
@@ -70,7 +70,7 @@ const Tournament = ({
                                     pathname: `/${t('league')}/${generateSlug(tournament.name)}${t('-standing-')}${
                                         tournament._id
                                     }${t('-season-')}${tournament.seasonid}`,
-                                    state: { isPrev: true },
+                                    state: { isPrev: true }
                                 }}
                                 className="col tournament-name"
                                 title={`${tournament.name} - ${t(

@@ -17,13 +17,13 @@ const Headertabs = ({
     mainData,
     currentDate,
     isToday,
-    isFav,
+    isFav
 }) => {
     const [state, setState] = useReducer((currentState, newState) => ({ ...currentState, ...newState }), {
         isFilterDropdown: false,
         filteredTournamentsLocale: filteredTournaments,
         isSportDropdown: false,
-        isDateDropdown: false,
+        isDateDropdown: false
     });
     const { isFilterDropdown, filteredTournamentsLocale, isSportDropdown, isDateDropdown } = state;
 
@@ -33,7 +33,7 @@ const Headertabs = ({
         setState({
             isSportDropdown: !isSportDropdown,
             isFilterDropdown: false,
-            isDateDropdown: false,
+            isDateDropdown: false
         });
     };
 
@@ -41,7 +41,7 @@ const Headertabs = ({
         setState({
             isSportDropdown: false,
             isFilterDropdown: !isFilterDropdown,
-            isDateDropdown: false,
+            isDateDropdown: false
         });
     };
 
@@ -49,23 +49,23 @@ const Headertabs = ({
         setState({
             isSportDropdown: false,
             isFilterDropdown: false,
-            isDateDropdown: !isDateDropdown,
+            isDateDropdown: !isDateDropdown
         });
     };
 
     const toggleLive = () => {
         setParentState({
-            isLive: !isLive,
+            isLive: !isLive
         });
     };
 
     const toggleFav = () => {
         setParentState({
-            isFav: !isFav,
+            isFav: !isFav
         });
     };
 
-    const handleSelectedDay = (day) => {
+    const handleSelectedDay = day => {
         const selectedDay = moment(day).format('YYYY-MM-DD');
         if (currentDate !== selectedDay) {
             history.push(`/${t('matches')}/${t('date')}-${selectedDay}`);
@@ -73,37 +73,37 @@ const Headertabs = ({
 
         if (filteredTournaments.length > 0) {
             setParentState({
-                filteredTournaments: [],
+                filteredTournaments: []
             });
         }
 
         setState({
-            isDateDropdown: false,
+            isDateDropdown: false
         });
     };
 
-    const itemClickHandler = (id) => {
+    const itemClickHandler = id => {
         setState({
-            filteredTournamentsLocale: toggleValueInArray(filteredTournamentsLocale, id),
+            filteredTournamentsLocale: toggleValueInArray(filteredTournamentsLocale, id)
         });
     };
 
     const applyFilter = () => {
         setState({
-            isFilterDropdown: false,
+            isFilterDropdown: false
         });
         setParentState({
-            filteredTournaments: filteredTournamentsLocale,
+            filteredTournaments: filteredTournamentsLocale
         });
     };
 
     const clearFilter = () => {
         setState({
             isFilterDropdown: false,
-            filteredTournamentsLocale: [],
+            filteredTournamentsLocale: []
         });
         setParentState({
-            filteredTournaments: [],
+            filteredTournaments: []
         });
     };
 
@@ -205,7 +205,7 @@ const Headertabs = ({
                 </button>
                 {isDateDropdown ? (
                     <DayPicker
-                        onDayClick={(day) => handleSelectedDay(day)}
+                        onDayClick={day => handleSelectedDay(day)}
                         firstDayOfWeek={1}
                         selectedDays={new Date(currentDate)}
                         locale={language}
@@ -250,7 +250,7 @@ const Headertabs = ({
 
 const FilterItems = ({ mainData, itemClickHandler, filteredTournamentsLocale, language }) => {
     let index = 1;
-    return mainData.map((tournament) => {
+    return mainData.map(tournament => {
         index += 1;
         const classname = filteredTournamentsLocale.indexOf(tournament.tournament.uniqueId) > -1 ? ' checked' : '';
         return (

@@ -17,7 +17,7 @@ const Team = ({ t, i18n }) => {
         isLoading: true,
         error: null,
         tabIndex: 0,
-        clickedTabIndex: [0],
+        clickedTabIndex: [0]
     });
     const { infoData, tabIndex, clickedTabIndex } = state;
 
@@ -30,25 +30,25 @@ const Team = ({ t, i18n }) => {
     useEffect(() => {
         axios
             .get(`/api/team/info/${language}/${teamId}`)
-            .then((res) => {
+            .then(res => {
                 setState({
                     infoData: res.data,
                     isLoading: false,
-                    error: null,
+                    error: null
                 });
                 UpdateMetaTeam(res.data, t);
             })
             .catch(() => {
                 setState({
                     error: t('Something went wrong'),
-                    isLoading: false,
+                    isLoading: false
                 });
             });
     }, [language, t, teamId]);
     const handleTabChange = (e, value) => {
         if (swiper) swiper.slideTo(value);
         setState({
-            tabIndex: value,
+            tabIndex: value
         });
     };
 
@@ -58,11 +58,11 @@ const Team = ({ t, i18n }) => {
         });
     };
 
-    const onInitSwiper = (swiperInstance) => {
+    const onInitSwiper = swiperInstance => {
         swiper = swiperInstance;
         swiperInstance.on('slideChange', () => {
             setState({
-                tabIndex: swiperInstance.activeIndex,
+                tabIndex: swiperInstance.activeIndex
             });
         });
     };
@@ -75,8 +75,8 @@ const Team = ({ t, i18n }) => {
         Component: Fixture,
         props: {
             teamId,
-            updateAutoHeight,
-        },
+            updateAutoHeight
+        }
     });
 
     return (
@@ -96,7 +96,7 @@ const Team = ({ t, i18n }) => {
                         <div
                             className="bottom"
                             style={{
-                                color: `${infoData.homejersey ? invertColor(infoData.homejersey.base, true) : '#000'}`,
+                                color: `${infoData.homejersey ? invertColor(infoData.homejersey.base, true) : '#000'}`
                             }}
                         >
                             <span
@@ -157,7 +157,7 @@ const Team = ({ t, i18n }) => {
                 <Swiper
                     swiperOptions={{
                         slidesPerView: 1,
-                        autoHeight: true,
+                        autoHeight: true
                     }}
                     navigation={false}
                     pagination={false}

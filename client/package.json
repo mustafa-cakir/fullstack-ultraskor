@@ -39,7 +39,7 @@
     },
     "proxy": "http://localhost:5001",
     "scripts": {
-        "dev": "env-cmd -f .env.development react-scripts start",
+        "dev": "PORT=3002 env-cmd -f .env.development react-scripts start",
         "start": "env-cmd -f .env.development react-scripts start",
         "build": "env-cmd -f .env react-scripts build",
         "test": "react-scripts test --env=jsdom"

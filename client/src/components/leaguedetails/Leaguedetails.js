@@ -25,7 +25,7 @@ class Leaguedetails extends Component {
             leagueData: null,
             isFixtureTabClicked: this.props.match.params.activeTab === '1',
             activeTab: this.props.match.params.activeTab || null,
-            isTeamOfTheWeekClicked: false,
+            isTeamOfTheWeekClicked: false
         };
         smoothscroll.polyfill();
     }
@@ -42,9 +42,9 @@ class Leaguedetails extends Component {
         }
     }
 
-    swipeChanging = (index) => {
+    swipeChanging = index => {
         this.setState({
-            index: index,
+            index: index
         });
     };
 
@@ -53,22 +53,22 @@ class Leaguedetails extends Component {
         let api = `/u-tournament/${leagueid}/season/${seasonid}/json`;
 
         fetch(`/api/?query=${api}&page=leaguedetails`)
-            .then((res) => {
+            .then(res => {
                 if (res.status === 200) {
                     return res.json();
                 } else {
                     throw Error(`Can't retrieve information from server, ${res.status}`);
                 }
             })
-            .then((res) => {
+            .then(res => {
                 this.setState({
-                    leagueData: res,
+                    leagueData: res
                 });
                 this.updateMeta(res);
             })
-            .catch((err) => {
+            .catch(err => {
                 this.setState({
-                    leagueData: { error: err.toString() },
+                    leagueData: { error: err.toString() }
                 });
             });
     }
@@ -90,7 +90,7 @@ class Leaguedetails extends Component {
                     leagueData.uniqueTournament.name
                 )} top scorers, league stats`,
                 alternate: HelperTranslateUrlTo('tr'),
-                hrefLang: 'tr',
+                hrefLang: 'tr'
             });
         } else if (i18n.language === 'tr') {
             if (window.location.pathname.split('/')[1] === 'league')
@@ -111,7 +111,7 @@ class Leaguedetails extends Component {
                     leagueData.uniqueTournament.name
                 )} gol krallığı`,
                 alternate: HelperTranslateUrlTo('en'),
-                hrefLang: 'en',
+                hrefLang: 'en'
             });
         }
     }
@@ -159,7 +159,7 @@ class Leaguedetails extends Component {
 
         tabs.scrollTo({
             left: active.offsetLeft - (window.innerWidth - active.offsetWidth) / 2 + 7,
-            behavior: 'smooth',
+            behavior: 'smooth'
         });
     }
 
@@ -195,7 +195,7 @@ class Leaguedetails extends Component {
         this.tabs = [
             ...(leagueData.standingsTables.length > 0 ? [t('LANG_Standing')] : []),
             t('Fixture'),
-            ...(this.state.leagueData.tournamentInfo.teamOfTheWeek ? [t('Team Of The Week')] : []),
+            ...(this.state.leagueData.tournamentInfo.teamOfTheWeek ? [t('Team Of The Week')] : [])
             //t('Player Stats'),
             //t('Top Scorers'),
             //t('Weekly Highlights'),
@@ -209,7 +209,7 @@ class Leaguedetails extends Component {
                                 return (
                                     <li
                                         key={index}
-                                        onClick={(event) => this.swipeTabClick(event, index)}
+                                        onClick={event => this.swipeTabClick(event, index)}
                                         className={(this.state.index === index ? 'active' : '') + ' ripple-effect pink'}
                                     >
                                         <span>{tab}</span>
@@ -231,7 +231,7 @@ class Leaguedetails extends Component {
                         transitionEnd: this.swipeComplete,
                         swiping: this.swipeSwiping,
                         disableScroll: false,
-                        startSlide: this.state.activeTab ? parseInt(this.state.activeTab) : 0,
+                        startSlide: this.state.activeTab ? parseInt(this.state.activeTab) : 0
                     }}
                     ref={this.swipeEl}
                 >

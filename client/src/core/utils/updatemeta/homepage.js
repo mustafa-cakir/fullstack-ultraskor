@@ -4,7 +4,7 @@ import { HelperTranslateUrlTo, HelperUpdateMeta } from '../helper';
 
 const { language } = i18n;
 
-const UpdateMetaHomepage = (date) => {
+const UpdateMetaHomepage = date => {
     if (language === 'en') {
         const title = date
             ? `UltraSkor - Results & Matches on ${moment(date, 'YYYY-MM-DD').format(
@@ -19,7 +19,9 @@ const UpdateMetaHomepage = (date) => {
             : 'No Ads. Get the live football scores update, see football match results, match fixtures and match highlights from all around the world';
 
         const keywords = date
-            ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
+            ? `${moment(date, 'YYYY-MM-DD')
+                  .format('dddd')
+                  .toLowerCase()} matches, ${moment(date, 'YYYY-MM-DD')
                   .format('DD MMMM dddd')
                   .toLowerCase()} match results, `
             : '';
@@ -30,7 +32,7 @@ const UpdateMetaHomepage = (date) => {
             description,
             keywords: `${keywords}live scores, live football results, match results, football fixtures, eufa champions league results, highlights`,
             alternate: date ? HelperTranslateUrlTo('tr') : 'https://www.ultraskor.com',
-            hrefLang: 'tr',
+            hrefLang: 'tr'
         });
     } else {
         const title = date
@@ -46,7 +48,9 @@ const UpdateMetaHomepage = (date) => {
             : 'Reklamsız olarak canli maç skorlarını takip edebilir, biten maçların sonuçlarını, istatistiklerini görebilir, iddaa bültenlerini ve biten iddaa maç sonuçlarını görebilirsiniz.';
 
         const keywords = date
-            ? `${moment(date, 'YYYY-MM-DD').format('dddd').toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
+            ? `${moment(date, 'YYYY-MM-DD')
+                  .format('dddd')
+                  .toLowerCase()} maçları, ${moment(date, 'YYYY-MM-DD')
                   .format('DD MMMM dddd')
                   .toLowerCase()} maç sonucları, `
             : '';
@@ -57,7 +61,7 @@ const UpdateMetaHomepage = (date) => {
             description,
             keywords: `${keywords}canlı skor, mac sonuclari, ultraskor, sonuclar, iddaa sonuclari, maç özetleri`,
             alternate: date ? HelperTranslateUrlTo('en') : 'https://www.ultraskor.com/en',
-            hrefLang: 'en',
+            hrefLang: 'en'
         });
     }
 };

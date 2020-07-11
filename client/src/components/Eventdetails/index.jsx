@@ -31,7 +31,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
         refreshButton: false,
         isLoading: true,
         swiper: null,
-        iddaaData: null,
+        iddaaData: null
     });
     const { language } = i18n;
     const { tabIndex, clickedTabIndex, data, error, refreshButton, isLoading, swiper, iddaaData } = state;
@@ -43,9 +43,9 @@ const Eventdetails = ({ t, i18n, socket }) => {
         const isLive = event.status.type === 'inprogress';
         axios
             .get(`/api/iddaa/match/${ids.id_i}${isLive ? '/live' : ''}`)
-            .then((res) => {
+            .then(res => {
                 setState({
-                    iddaaData: res.data ? res.data : null,
+                    iddaaData: res.data ? res.data : null
                 });
             })
             .catch(() => {
@@ -60,24 +60,24 @@ const Eventdetails = ({ t, i18n, socket }) => {
             data: null,
             error: null,
             isLoading: true,
-            swiper: null,
+            swiper: null
         });
         axios
             .get(`/api/get/${language}/stats_match_get/${eventid}`)
-            .then((res) => {
+            .then(res => {
                 setState({
                     data: res.data,
                     isLoading: false,
-                    error: null,
+                    error: null
                 });
                 const { ids, event } = res.data;
                 if (ids && ids.id_i) getIddaaData(ids, event);
                 UpdateMetaEventdetails(res.data, t);
             })
-            .catch((err) => {
+            .catch(err => {
                 setState({
                     error: err,
-                    isLoading: false,
+                    isLoading: false
                 });
             });
     }, [eventid, getIddaaData, language, t]);
@@ -93,14 +93,14 @@ const Eventdetails = ({ t, i18n, socket }) => {
     }, [data]);
 
     const onSocketReturnPushServiceData = useCallback(
-        (res) => {
+        res => {
             if (!res || res.event.id !== eventid || !refData.current) return false;
             const oldEvent = refData.current.event;
             const newEvent = { ...oldEvent, ...res.event };
             const newData = update(refData.current, { event: { $set: newEvent } });
             refData.current = newData;
             setState({
-                data: newData,
+                data: newData
             });
             return false;
         },
@@ -111,7 +111,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
         console.log('on connected!');
         getData();
         setState({
-            refreshButton: false,
+            refreshButton: false
         });
         socket.on('push-service', onSocketReturnPushServiceData);
     }, [getData, socket, onSocketReturnPushServiceData]);
@@ -121,7 +121,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
         socket.on('connect', onSocketConnect);
         socket.removeListener('push-service', onSocketReturnPushServiceData);
         setState({
-            refreshButton: true,
+            refreshButton: true
         });
     }, [onSocketConnect, onSocketReturnPushServiceData, socket]);
 
@@ -155,8 +155,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
     // const { injuries, teams, stats, isStanding, isLineups } = event;
     const slides = [];
 
-    const swipeByTabId = (tabId) => {
-        const targetIndex = slides.findIndex((x) => x.id === tabId);
+    const swipeByTabId = tabId => {
+        const targetIndex = slides.findIndex(x => x.id === tabId);
         swiper.slideTo(targetIndex);
     };
 
@@ -167,8 +167,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
         props: {
             data,
             swipeByTabId,
-            iddaaData,
-        },
+            iddaaData
+        }
     });
 
     slides.push({
@@ -176,8 +176,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
         label: t('Live Tracker'),
         Component: LiveTracker,
         props: {
-            id: data._id,
-        },
+            id: data._id
+        }
     });
 
     // if (stats)
@@ -226,8 +226,8 @@ const Eventdetails = ({ t, i18n, socket }) => {
                 iddaaData,
                 textList,
                 updateAutoHeight,
-                isLive,
-            },
+                isLive
+            }
         });
 
     // if (teams)
@@ -258,13 +258,13 @@ const Eventdetails = ({ t, i18n, socket }) => {
         if (swiper) swiper.slideTo(value);
         setState({
             tabIndex: value,
-            clickedTabIndex: appendValueToArray(clickedTabIndex, slides[value] ? slides[value].id : 0),
+            clickedTabIndex: appendValueToArray(clickedTabIndex, slides[value] ? slides[value].id : 0)
         });
     };
 
-    const onInitSwiper = (swiperInstance) => {
+    const onInitSwiper = swiperInstance => {
         setState({
-            swiper: swiperInstance,
+            swiper: swiperInstance
         });
         swiperInstance.on('slideChange', () => {
             setState({
@@ -272,7 +272,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
                 clickedTabIndex: appendValueToArray(
                     clickedTabIndex,
                     slides[swiperInstance.activeIndex] ? slides[swiperInstance.activeIndex].id : 0
-                ),
+                )
             });
         });
     };
@@ -298,7 +298,7 @@ const Eventdetails = ({ t, i18n, socket }) => {
             <Swiper
                 swiperOptions={{
                     slidesPerView: 1,
-                    autoHeight: true,
+                    autoHeight: true
                 }}
                 navigation={false}
                 pagination={false}

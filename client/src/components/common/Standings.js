@@ -10,13 +10,13 @@ class Standings extends Component {
         super(props);
         this.state = {
             standingsTables: this.props.standingsTables,
-            tab: 'Total',
+            tab: 'Total'
         };
     }
 
     tabSwitcherHandler(tab) {
         this.setState({
-            tab: tab,
+            tab: tab
         });
     }
 
@@ -138,7 +138,7 @@ class Standings extends Component {
                                                                     pathname: `/${t('team')}/${generateSlug(
                                                                         t(row.team.shortName)
                                                                     )}-${row.team.id}`,
-                                                                    state: { isPrev: true },
+                                                                    state: { isPrev: true }
                                                                 }}
                                                                 title={`${t(row.team.shortName)} - ${t(
                                                                     'Fixtures, highlights and standings, click for more'
@@ -156,7 +156,7 @@ class Standings extends Component {
                                                                     pathname: `/${t('team')}/${generateSlug(
                                                                         t(row.team.shortName)
                                                                     )}-${row.team.id}`,
-                                                                    state: { isPrev: true },
+                                                                    state: { isPrev: true }
                                                                 }}
                                                                 title={`${t(row.team.shortName)} - ${t(
                                                                     'Fixtures, highlights and standings, click for more'
