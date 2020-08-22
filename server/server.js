@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-console.log('Tor disabled? : ', isTorDisabled);
+console.log('Tor Enabled : ', !isTorDisabled);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,7 +27,7 @@ cronService.init();
 newTorSessionService.init();
 // websocketService.init(io);
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
     socketService.init(socket, io);
 });
 

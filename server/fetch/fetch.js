@@ -9,7 +9,7 @@ let maxRetry = 100;
 let isIdle = true;
 
 module.exports = (options, resolve, reject, cache, isTor = false) => {
-    const onSuccess = response => {
+    const onSuccess = (response) => {
         if (cache && response) {
             cacheService.instance().set(cache.cacheKey, response, cache.cacheDuration);
             if (isDev) console.log(`## Cached: ${cache.cacheKey}`);
@@ -17,17 +17,16 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
         resolve(response);
     };
     const onError = () => {
-        reject('Error - 500');
+        reject('Oops, fetch.js error handler');
     };
 
     const remoteRequest = () => {
-        request(options)
-            .then(onSuccess)
-            .catch(onError);
+        request(options).then(onSuccess).catch(onError);
     };
 
     const remoteRequestUsingTor = () => {
         tor.request(options, (err, status, response) => {
+            console.log(maxRetry, isIdle);
             if (!err && status.statusCode === 200) {
                 onSuccess(response);
             } else if (maxRetry > 0 && isIdle) {
@@ -41,6 +40,7 @@ module.exports = (options, resolve, reject, cache, isTor = false) => {
                         console.log(`## TOR refreshed! New IP: `, torResponse);
                         remoteRequestUsingTor();
                     } else {
+                        console.log('## TOR refreshed failed');
                         onError();
                     }
                 });
